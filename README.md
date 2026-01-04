@@ -1,3 +1,16 @@
+// kurulacak vs extension'lar: 
+
+1. SQLTools 
+Publisher: Matheus Teixeira
+
+2. SQLTools PostgreSQL/Cockroach Driver
+Publisher: Matheus Teixeira
+
+Bu extension'larla db'ye bağlanılır. daha sonra bir sql yazıldığında "run script" yapılarak direk deploy alınır. 
+
+----------------------------------------------------
+
+
 // Dump the schema of the maindb database to a SQL file
 
 set PGPASSWORD=sizin şifre
