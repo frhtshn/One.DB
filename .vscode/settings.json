@@ -6,32 +6,43 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "nucleo_maindb",
-            "database": "maindb",
-            "username": "postgres",
-            "password": "12tamam90"
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "nucleo_tenantdb",
-            "database": "tenantdb_",
-            "username": "postgres",
-            "password": "12tamam90"
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5432,
-            "driver": "PostgreSQL",
             "name": "core",
             "database": "core",
             "username": "postgres",
             "password": "12tamam90"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "tenant",
+            "database": "tenant_",
+            "username": "postgres",
+            "password": "12tamam90"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "155.133.22.97",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "beta_core",
+            "database": "core",
+            "username": "admin",
+            "password": "StrongPass123!"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "155.133.22.97",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "beta_tenant",
+            "database": "tenant_",
+            "username": "admin",
+            "password": "StrongPass123!"
         }
     ]
 }

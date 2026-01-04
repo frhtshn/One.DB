@@ -1,3 +1,10 @@
+-- CREATE DATABASE
+-- Note: This must be run separately if the database doesn't exist
+-- CREATE DATABASE core WITH ENCODING 'UTF8';
+
+-- Connect to the core database before running the rest of this script
+-- Example: psql -U postgres -d core -f deploy_core.sql
+
 SET client_encoding = 'UTF8';
 
 BEGIN;

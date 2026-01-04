@@ -23,8 +23,14 @@ set PGPASSWORD=sizin şifre
 
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h localhost -U postgres -d maindb -f db\deploy_maindb.sql
 
-// Deploy all core 
+// Deploy Core 
 
-set PGPASSWORD=sizin şifre
+set PGPASSWORD=pass!
 
-"C:\Program Files\PostgreSQL\17\bin\psql.exe"-U postgres -d core -f deploy_core.sql
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 155.133.22.97 -U admin -d core -f deploy_core.sql
+
+// Deploy Tenant 
+
+set PGPASSWORD=pass!
+
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 155.133.22.97 -U admin -d tenant_ -f deploy_tenant.sql
