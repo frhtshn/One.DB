@@ -1,191 +1,192 @@
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AF', 'AFG', 'Afghanistan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('DZ', 'DZA', 'Algeria');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AD', 'AND', 'Andorra');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AO', 'AGO', 'Angola');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AG', 'ATG', 'Antigua and Barbuda');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AR', 'ARG', 'Argentina');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AM', 'ARM', 'Armenia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AU', 'AUS', 'Australia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AT', 'AUT', 'Austria');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AZ', 'AZE', 'Azerbaijan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BS', 'BHS', 'Bahamas');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BH', 'BHR', 'Bahrain');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BD', 'BGD', 'Bangladesh');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BB', 'BRB', 'Barbados');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BY', 'BLR', 'Belarus');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BE', 'BEL', 'Belgium');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BZ', 'BLZ', 'Belize');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BJ', 'BEN', 'Benin');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BT', 'BTN', 'Bhutan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BO', 'BOL', 'Bolivia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BA', 'BIH', 'Bosnia and Herzegovina');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BW', 'BWA', 'Botswana');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BR', 'BRA', 'Brazil');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BN', 'BRN', 'Brunei');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('BI', 'BDI', 'Burundi');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CM', 'CMR', 'Cameroon');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CA', 'CAN', 'Canada');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CV', 'CPV', 'Cape Verde');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CF', 'CAF', 'Central African Republic');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TD', 'TCD', 'Chad');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CL', 'CHL', 'Chile');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CN', 'CHN', 'China');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CO', 'COL', 'Colombia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KM', 'COM', 'Comoros');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CR', 'CRI', 'Costa Rica');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('HR', 'HRV', 'Croatia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CU', 'CUB', 'Cuba');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CY', 'CYP', 'Cyprus');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CZ', 'CZE', 'Czechia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CD', 'COD', 'Democratic Republic of Congo');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('DK', 'DNK', 'Denmark');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('DJ', 'DJI', 'Djibouti');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('DM', 'DMA', 'Dominica');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('DO', 'DOM', 'Dominican Republic');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('EC', 'ECU', 'Ecuador');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('EG', 'EGY', 'Egypt');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SV', 'SLV', 'El Salvador');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GQ', 'GNQ', 'Equatorial Guinea');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('EE', 'EST', 'Estonia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SZ', 'SWZ', 'Eswatini');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ET', 'ETH', 'Ethiopia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('FJ', 'FJI', 'Fiji');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('FI', 'FIN', 'Finland');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('FR', 'FRA', 'France');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GF', 'GUF', 'French Guiana');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GA', 'GAB', 'Gabon');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GM', 'GMB', 'Gambia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GE', 'GEO', 'Georgia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('DE', 'DEU', 'Germany');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GH', 'GHA', 'Ghana');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GR', 'GRC', 'Greece');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GL', 'GRL', 'Greenland');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GD', 'GRD', 'Grenada');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GT', 'GTM', 'Guatemala');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GN', 'GIN', 'Guinea');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GW', 'GNB', 'Guinea-Bissau');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GY', 'GUY', 'Guyana');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('HT', 'HTI', 'Haiti');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('VA', 'VAT', 'Holy See (Vatican City)');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('HN', 'HND', 'Honduras');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('HU', 'HUN', 'Hungary');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IS', 'ISL', 'Iceland');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IN', 'IND', 'India');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ID', 'IDN', 'Indonesia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IR', 'IRN', 'Iran');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IQ', 'IRQ', 'Iraq');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IE', 'IRL', 'Ireland');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IL', 'ISR', 'Israel');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('IT', 'ITA', 'Italy');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CI', 'CIV', 'Ivory Coast');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('JM', 'JAM', 'Jamaica');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('JP', 'JPN', 'Japan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('JO', 'JOR', 'Jordan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KZ', 'KAZ', 'Kazakhstan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KE', 'KEN', 'Kenya');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KI', 'KIR', 'Kiribati');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('XK', 'XKX', 'Kosovo');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KW', 'KWT', 'Kuwait');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KG', 'KGZ', 'Kyrgyzstan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LA', 'LAO', 'Laos');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LV', 'LVA', 'Latvia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LB', 'LBN', 'Lebanon');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LS', 'LSO', 'Lesotho');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LR', 'LBR', 'Liberia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LY', 'LBY', 'Libya');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LI', 'LIE', 'Liechtenstein');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LT', 'LTU', 'Lithuania');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LU', 'LUX', 'Luxembourg');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MG', 'MDG', 'Madagascar');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MW', 'MWI', 'Malawi');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MY', 'MYS', 'Malaysia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MV', 'MDV', 'Maldives');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ML', 'MLI', 'Mali');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MT', 'MLT', 'Malta');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MH', 'MHL', 'Marshall Islands');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MR', 'MRT', 'Mauritania');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MU', 'MUS', 'Mauritius');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MX', 'MEX', 'Mexico');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('FM', 'FSM', 'Micronesia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MD', 'MDA', 'Moldova');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MC', 'MCO', 'Monaco');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MN', 'MNG', 'Mongolia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ME', 'MNE', 'Montenegro');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MA', 'MAR', 'Morocco');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MZ', 'MOZ', 'Mozambique');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MM', 'MMR', 'Myanmar');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NA', 'NAM', 'Namibia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NR', 'NRU', 'Nauru');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NP', 'NPL', 'Nepal');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NL', 'NLD', 'Netherlands');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NZ', 'NZL', 'New Zealand');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NI', 'NIC', 'Nicaragua');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NE', 'NER', 'Niger');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NG', 'NGA', 'Nigeria');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KP', 'PRK', 'North Korea');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('MK', 'MKD', 'North Macedonia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('NO', 'NOR', 'Norway');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('OM', 'OMN', 'Oman');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PK', 'PAK', 'Pakistan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PW', 'PLW', 'Palau');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PS', 'PSE', 'Palestine');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PA', 'PAN', 'Panama');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PG', 'PNG', 'Papua New Guinea');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PY', 'PRY', 'Paraguay');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PE', 'PER', 'Peru');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PH', 'PHL', 'Philippines');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PL', 'POL', 'Poland');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PT', 'PRT', 'Portugal');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('PR', 'PRI', 'Puerto Rico');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('QA', 'QAT', 'Qatar');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CG', 'COG', 'Republic of the Congo');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('RO', 'ROU', 'Romania');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('RW', 'RWA', 'Rwanda');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LC', 'LCA', 'Saint Lucia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KN', 'KNA', 'Saint Kitts and Nevis');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('VC', 'VCT', 'Saint Vincent and the Grenadines');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('WS', 'WSM', 'Samoa');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SM', 'SMR', 'San Marino');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ST', 'STP', 'Sao Tome and Principe');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SA', 'SAU', 'Saudi Arabia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SN', 'SEN', 'Senegal');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('RS', 'SRB', 'Serbia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SC', 'SYC', 'Seychelles');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SL', 'SLE', 'Sierra Leone');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SK', 'SVK', 'Slovakia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SI', 'SVN', 'Slovenia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SB', 'SLB', 'Solomon Islands');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SO', 'SOM', 'Somalia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ZA', 'ZAF', 'South Africa');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('KR', 'KOR', 'South Korea');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SS', 'SSD', 'South Sudan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ES', 'ESP', 'Spain');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('LK', 'LKA', 'Sri Lanka');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SD', 'SDN', 'Sudan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SR', 'SUR', 'Suriname');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('SE', 'SWE', 'Sweden');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('CH', 'CHE', 'Switzerland');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TJ', 'TJK', 'Tajikistan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TZ', 'TZA', 'Tanzania');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TH', 'THA', 'Thailand');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TL', 'TLS', 'Timor-Leste');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TG', 'TGO', 'Togo');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TO', 'TON', 'Tonga');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TT', 'TTO', 'Trinidad and Tobago');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TR', 'TUR', 'Turkey');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TM', 'TKM', 'Turkmenistan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('TV', 'TUV', 'Tuvalu');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('UG', 'UGA', 'Uganda');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('UA', 'UKR', 'Ukraine');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('AE', 'ARE', 'United Arab Emirates');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('GB', 'GBR', 'United Kingdom');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('US', 'USA', 'United States');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('UY', 'URY', 'Uruguay');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('UZ', 'UZB', 'Uzbekistan');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('VU', 'VUT', 'Vanuatu');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('VE', 'VEN', 'Venezuela');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('VN', 'VNM', 'Vietnam');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('EH', 'ESH', 'Western Sahara');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('YE', 'YEM', 'Yemen');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ZM', 'ZMB', 'Zambia');
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES('ZW', 'ZWE', 'Zimbabwe');
+INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES 
+('AF', 'AFG', 'Afghanistan'),
+('DZ', 'DZA', 'Algeria'),
+('AD', 'AND', 'Andorra'),
+('AO', 'AGO', 'Angola'),
+('AG', 'ATG', 'Antigua and Barbuda'),
+('AR', 'ARG', 'Argentina'),
+('AM', 'ARM', 'Armenia'),
+('AU', 'AUS', 'Australia'),
+('AT', 'AUT', 'Austria'),
+('AZ', 'AZE', 'Azerbaijan'),
+('BS', 'BHS', 'Bahamas'),
+('BH', 'BHR', 'Bahrain'),
+('BD', 'BGD', 'Bangladesh'),
+('BB', 'BRB', 'Barbados'),
+('BY', 'BLR', 'Belarus'),
+('BE', 'BEL', 'Belgium'),
+('BZ', 'BLZ', 'Belize'),
+('BJ', 'BEN', 'Benin'),
+('BT', 'BTN', 'Bhutan'),
+('BO', 'BOL', 'Bolivia'),
+('BA', 'BIH', 'Bosnia and Herzegovina'),
+('BW', 'BWA', 'Botswana'),
+('BR', 'BRA', 'Brazil'),
+('BN', 'BRN', 'Brunei'),
+('BI', 'BDI', 'Burundi'),
+('CM', 'CMR', 'Cameroon'),
+('CA', 'CAN', 'Canada'),
+('CV', 'CPV', 'Cape Verde'),
+('CF', 'CAF', 'Central African Republic'),
+('TD', 'TCD', 'Chad'),
+('CL', 'CHL', 'Chile'),
+('CN', 'CHN', 'China'),
+('CO', 'COL', 'Colombia'),
+('KM', 'COM', 'Comoros'),
+('CR', 'CRI', 'Costa Rica'),
+('HR', 'HRV', 'Croatia'),
+('CU', 'CUB', 'Cuba'),
+('CY', 'CYP', 'Cyprus'),
+('CZ', 'CZE', 'Czechia'),
+('CD', 'COD', 'Democratic Republic of Congo'),
+('DK', 'DNK', 'Denmark'),
+('DJ', 'DJI', 'Djibouti'),
+('DM', 'DMA', 'Dominica'),
+('DO', 'DOM', 'Dominican Republic'),
+('EC', 'ECU', 'Ecuador'),
+('EG', 'EGY', 'Egypt'),
+('SV', 'SLV', 'El Salvador'),
+('GQ', 'GNQ', 'Equatorial Guinea'),
+('EE', 'EST', 'Estonia'),
+('SZ', 'SWZ', 'Eswatini'),
+('ET', 'ETH', 'Ethiopia'),
+('FJ', 'FJI', 'Fiji'),
+('FI', 'FIN', 'Finland'),
+('FR', 'FRA', 'France'),
+('GF', 'GUF', 'French Guiana'),
+('GA', 'GAB', 'Gabon'),
+('GM', 'GMB', 'Gambia'),
+('GE', 'GEO', 'Georgia'),
+('DE', 'DEU', 'Germany'),
+('GH', 'GHA', 'Ghana'),
+('GR', 'GRC', 'Greece'),
+('GL', 'GRL', 'Greenland'),
+('GD', 'GRD', 'Grenada'),
+('GT', 'GTM', 'Guatemala'),
+('GN', 'GIN', 'Guinea'),
+('GW', 'GNB', 'Guinea-Bissau'),
+('GY', 'GUY', 'Guyana'),
+('HT', 'HTI', 'Haiti'),
+('VA', 'VAT', 'Holy See (Vatican City)'),
+('HN', 'HND', 'Honduras'),
+('HU', 'HUN', 'Hungary'),
+('IS', 'ISL', 'Iceland'),
+('IN', 'IND', 'India'),
+('ID', 'IDN', 'Indonesia'),
+('IR', 'IRN', 'Iran'),
+('IQ', 'IRQ', 'Iraq'),
+('IE', 'IRL', 'Ireland'),
+('IL', 'ISR', 'Israel'),
+('IT', 'ITA', 'Italy'),
+('CI', 'CIV', 'Ivory Coast'),
+('JM', 'JAM', 'Jamaica'),
+('JP', 'JPN', 'Japan'),
+('JO', 'JOR', 'Jordan'),
+('KZ', 'KAZ', 'Kazakhstan'),
+('KE', 'KEN', 'Kenya'),
+('KI', 'KIR', 'Kiribati'),
+('XK', 'XKX', 'Kosovo'),
+('KW', 'KWT', 'Kuwait'),
+('KG', 'KGZ', 'Kyrgyzstan'),
+('LA', 'LAO', 'Laos'),
+('LV', 'LVA', 'Latvia'),
+('LB', 'LBN', 'Lebanon'),
+('LS', 'LSO', 'Lesotho'),
+('LR', 'LBR', 'Liberia'),
+('LY', 'LBY', 'Libya'),
+('LI', 'LIE', 'Liechtenstein'),
+('LT', 'LTU', 'Lithuania'),
+('LU', 'LUX', 'Luxembourg'),
+('MG', 'MDG', 'Madagascar'),
+('MW', 'MWI', 'Malawi'),
+('MY', 'MYS', 'Malaysia'),
+('MV', 'MDV', 'Maldives'),
+('ML', 'MLI', 'Mali'),
+('MT', 'MLT', 'Malta'),
+('MH', 'MHL', 'Marshall Islands'),
+('MR', 'MRT', 'Mauritania'),
+('MU', 'MUS', 'Mauritius'),
+('MX', 'MEX', 'Mexico'),
+('FM', 'FSM', 'Micronesia'),
+('MD', 'MDA', 'Moldova'),
+('MC', 'MCO', 'Monaco'),
+('MN', 'MNG', 'Mongolia'),
+('ME', 'MNE', 'Montenegro'),
+('MA', 'MAR', 'Morocco'),
+('MZ', 'MOZ', 'Mozambique'),
+('MM', 'MMR', 'Myanmar'),
+('NA', 'NAM', 'Namibia'),
+('NR', 'NRU', 'Nauru'),
+('NP', 'NPL', 'Nepal'),
+('NL', 'NLD', 'Netherlands'),
+('NZ', 'NZL', 'New Zealand'),
+('NI', 'NIC', 'Nicaragua'),
+('NE', 'NER', 'Niger'),
+('NG', 'NGA', 'Nigeria'),
+('KP', 'PRK', 'North Korea'),
+('MK', 'MKD', 'North Macedonia'),
+('NO', 'NOR', 'Norway'),
+('OM', 'OMN', 'Oman'),
+('PK', 'PAK', 'Pakistan'),
+('PW', 'PLW', 'Palau'),
+('PS', 'PSE', 'Palestine'),
+('PA', 'PAN', 'Panama'),
+('PG', 'PNG', 'Papua New Guinea'),
+('PY', 'PRY', 'Paraguay'),
+('PE', 'PER', 'Peru'),
+('PH', 'PHL', 'Philippines'),
+('PL', 'POL', 'Poland'),
+('PT', 'PRT', 'Portugal'),
+('PR', 'PRI', 'Puerto Rico'),
+('QA', 'QAT', 'Qatar'),
+('CG', 'COG', 'Republic of the Congo'),
+('RO', 'ROU', 'Romania'),
+('RW', 'RWA', 'Rwanda'),
+('LC', 'LCA', 'Saint Lucia'),
+('KN', 'KNA', 'Saint Kitts and Nevis'),
+('VC', 'VCT', 'Saint Vincent and the Grenadines'),
+('WS', 'WSM', 'Samoa'),
+('SM', 'SMR', 'San Marino'),
+('ST', 'STP', 'Sao Tome and Principe'),
+('SA', 'SAU', 'Saudi Arabia'),
+('SN', 'SEN', 'Senegal'),
+('RS', 'SRB', 'Serbia'),
+('SC', 'SYC', 'Seychelles'),
+('SL', 'SLE', 'Sierra Leone'),
+('SK', 'SVK', 'Slovakia'),
+('SI', 'SVN', 'Slovenia'),
+('SB', 'SLB', 'Solomon Islands'),
+('SO', 'SOM', 'Somalia'),
+('ZA', 'ZAF', 'South Africa'),
+('KR', 'KOR', 'South Korea'),
+('SS', 'SSD', 'South Sudan'),
+('ES', 'ESP', 'Spain'),
+('LK', 'LKA', 'Sri Lanka'),
+('SD', 'SDN', 'Sudan'),
+('SR', 'SUR', 'Suriname'),
+('SE', 'SWE', 'Sweden'),
+('CH', 'CHE', 'Switzerland'),
+('TJ', 'TJK', 'Tajikistan'),
+('TZ', 'TZA', 'Tanzania'),
+('TH', 'THA', 'Thailand'),
+('TL', 'TLS', 'Timor-Leste'),
+('TG', 'TGO', 'Togo'),
+('TO', 'TON', 'Tonga'),
+('TT', 'TTO', 'Trinidad and Tobago'),
+('TR', 'TUR', 'Turkey'),
+('TM', 'TKM', 'Turkmenistan'),
+('TV', 'TUV', 'Tuvalu'),
+('UG', 'UGA', 'Uganda'),
+('UA', 'UKR', 'Ukraine'),
+('AE', 'ARE', 'United Arab Emirates'),
+('GB', 'GBR', 'United Kingdom'),
+('US', 'USA', 'United States'),
+('UY', 'URY', 'Uruguay'),
+('UZ', 'UZB', 'Uzbekistan'),
+('VU', 'VUT', 'Vanuatu'),
+('VE', 'VEN', 'Venezuela'),
+('VN', 'VNM', 'Vietnam'),
+('EH', 'ESH', 'Western Sahara'),
+('YE', 'YEM', 'Yemen'),
+('ZM', 'ZMB', 'Zambia'),
+('ZW', 'ZWE', 'Zimbabwe');
