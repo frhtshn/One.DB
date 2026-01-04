@@ -1,9 +1,11 @@
 // Dump the schema of the maindb database to a SQL file
 
 set PGPASSWORD=sizin şifre
+
 "C:\Program Files\PostgreSQL\17\bin\pg_dump.exe" -h localhost -p 5432 -U postgres -d maindb --schema-only --no-owner --no-privileges --format=p --encoding=UTF8 > "C:\Projects\Git\nucleoDb\schema.sql"
 
 // Deploy the schema SQL file to the maindb database
 
 set PGPASSWORD=sizin şifre
+
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h localhost -U postgres -d maindb -f db\deploy_maindb.sql
