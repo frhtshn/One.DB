@@ -21,6 +21,17 @@
             "database": "tenantdb_",
             "username": "postgres",
             "password": "12tamam90"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "core",
+            "database": "core",
+            "username": "postgres",
+            "password": "12tamam90"
         }
     ]
 }

@@ -1,3 +1,5 @@
+SET client_encoding = 'UTF8';
+
 BEGIN;
 
 -- CREATE SCHEMAS
@@ -37,6 +39,12 @@ CREATE SCHEMA IF NOT EXISTS security;
 -- SECURITY TABLES
 \i core/tables/security/provider_secrets.sql
 \i core/tables/security/tenant_secrets.sql
+
+-- DATA SEEDING
+\i core/data/countries.sql
+\i core/data/currencies.sql
+\i core/data/languages.sql
+
 
 -- FUNCTIONS
 -- \i core/functions/your_function.sql
