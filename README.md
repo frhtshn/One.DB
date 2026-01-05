@@ -6,7 +6,7 @@ Publisher: Matheus Teixeira
 2. SQLTools PostgreSQL/Cockroach Driver
 Publisher: Matheus Teixeira
 
-Bu extension'larla db'ye bağlanılır. daha sonra bir sql yazıldığında "run script" yapılarak direk deploy alınır. 
+Bu extension'larla db'ye bağlanılır. daha sonra bir script yazıldığında "run script" yapılarak direk deploy alınır. 
 
 ----------------------------------------------------
 
