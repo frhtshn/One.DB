@@ -1,10 +1,3 @@
--- CREATE DATABASE
--- Note: This must be run separately if the database doesn't exist
--- CREATE DATABASE core WITH ENCODING 'UTF8';
-
--- Connect to the core database before running the rest of this script
--- Example: psql -U postgres -d core -f deploy_core.sql
-
 SET client_encoding = 'UTF8';
 
 BEGIN;
@@ -14,6 +7,15 @@ CREATE SCHEMA IF NOT EXISTS catalog;
 CREATE SCHEMA IF NOT EXISTS core;
 CREATE SCHEMA IF NOT EXISTS routing;
 CREATE SCHEMA IF NOT EXISTS security;
+CREATE SCHEMA IF NOT EXISTS infra;
+
+-- ENABLE EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS btree_gin WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 
 -- CATALOG TABLES
 \i core/tables/catalog/countries.sql

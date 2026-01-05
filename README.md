@@ -34,3 +34,7 @@ set PGPASSWORD=pass!
 set PGPASSWORD=pass!
 
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 155.133.22.97 -U admin -d tenant_ -f deploy_tenant.sql
+
+
+// tenant_ template example
+-- CREATE DATABASE tenant_ferhatbet WITH TEMPLATE tenant_;
