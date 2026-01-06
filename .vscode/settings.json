@@ -45,7 +45,5 @@
             "password": "StrongPass123!"
         }
     ],
-    "editor.occurrencesHighlight": "singleFile",
-    "editor.selectionHighlight": false,
     "sqltools.highlightQuery": false
 }
