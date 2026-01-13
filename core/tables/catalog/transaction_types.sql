@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS catalog.transaction_types CASCADE;
 
-CREATE TABLE core.transaction_types (
+CREATE TABLE catalog.transaction_types (
     code            varchar(50) PRIMARY KEY, -- IMMUTABLE
     category        varchar(30) NOT NULL,     -- BET, WIN, BONUS, PAYMENT, ADJUSTMENT
     product         varchar(30),              -- SPORTS, CASINO, POKER, PAYMENT
