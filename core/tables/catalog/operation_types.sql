@@ -1,8 +1,11 @@
 DROP TABLE IF EXISTS catalog.operation_types CASCADE;
 
 CREATE TABLE catalog.operation_types (
-    id bigserial PRIMARY KEY,
-    operation_code varchar(20) NOT NULL,
-    description varchar(100),
-    created_at timestamp without time zone NOT NULL DEFAULT now()
+    code              varchar(30) PRIMARY KEY, -- DEBIT, CREDIT, HOLD, RELEASE
+    wallet_effect     smallint NOT NULL,        -- -1, +1, 0
+    affects_balance   boolean NOT NULL,
+    affects_locked    boolean NOT NULL,
+    description       text,
+    is_active         boolean NOT NULL DEFAULT true
 );
+
