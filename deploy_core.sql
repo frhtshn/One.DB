@@ -43,6 +43,12 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 \i core/tables/core/tenant_providers.sql
 \i core/tables/core/tenant_settings.sql
 
+-- PRESENTATION TABLES
+\i core/tables/presentation/menus.sql
+\i core/tables/presentation/menu_pages.sql
+\i core/tables/presentation/pages.sql
+\i core/tables/presentation/tabs.sql
+
 -- ROUTING TABLES
 \i core/tables/routing/callback_routes.sql
 \i core/tables/routing/provider_callbacks.sql
@@ -51,6 +57,9 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 -- SECURITY TABLES
 \i core/tables/security/provider_secrets.sql
 \i core/tables/security/tenant_secrets.sql
+\i core/tables/security/roles.sql
+\i core/tables/security/users.sql
+\i core/tables/security/user_roles.sql
 
 -- DATA SEEDING
 \i core/data/countries.sql
