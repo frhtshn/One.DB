@@ -3,8 +3,8 @@ DROP TABLE IF EXISTS security.users CASCADE;
 CREATE TABLE security.users (
     id BIGSERIAL PRIMARY KEY,
 
-    company_id BIGINT NOT NULL
-        REFERENCES core.companies(id),
+    company_id BIGINT NOT NULL,
+        --REFERENCES core.companies(id),
 
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,        

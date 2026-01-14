@@ -25,13 +25,13 @@ set PGPASSWORD=sizin şifre
 
 // Deploy Core -> Beta Server
 
-set PGPASSWORD=pass!
+set PGPASSWORD=StrongPass123!
 
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 155.133.22.97 -U admin -d core -f deploy_core.sql
 
 // Deploy Tenant 
 
-set PGPASSWORD=pass!
+set PGPASSWORD=StrongPass123!
 
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 155.133.22.97 -U admin -d tenant_ -f deploy_tenant.sql
 

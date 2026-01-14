@@ -1,5 +1,3 @@
-// core/deploy_core.sql
-
 SET client_encoding = 'UTF8';
 
 BEGIN;
@@ -7,10 +5,10 @@ BEGIN;
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS catalog;
 CREATE SCHEMA IF NOT EXISTS core;
+CREATE SCHEMA IF NOT EXISTS presentation;
 CREATE SCHEMA IF NOT EXISTS routing;
 CREATE SCHEMA IF NOT EXISTS security;
 CREATE SCHEMA IF NOT EXISTS infra;
-CREATE SCHEMA IF NOT EXISTS presentation;
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
@@ -45,8 +43,8 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 
 -- PRESENTATION TABLES
 \i core/tables/presentation/menus.sql
-\i core/tables/presentation/menu_pages.sql
 \i core/tables/presentation/pages.sql
+\i core/tables/presentation/menu_pages.sql
 \i core/tables/presentation/tabs.sql
 
 -- ROUTING TABLES
@@ -65,7 +63,8 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 \i core/data/countries.sql
 \i core/data/currencies.sql
 \i core/data/languages.sql
-
+\i core/data/transaction_types.sql
+\i core/data/operation_types.sql
 
 -- FUNCTIONS
 -- \i core/functions/your_function.sql

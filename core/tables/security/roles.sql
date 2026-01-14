@@ -3,11 +3,11 @@ DROP TABLE IF EXISTS security.roles CASCADE;
 CREATE TABLE security.roles (
     id BIGSERIAL PRIMARY KEY,
 
-    company_id BIGINT NOT NULL
-        REFERENCES core.companies(id),
+    company_id BIGINT NOT NULL,
+        --REFERENCES core.companies(id),
 
-    tenant_id BIGINT NULL
-        REFERENCES core.tenants(id),
+    tenant_id BIGINT NULL,
+        --REFERENCES core.tenants(id),
         -- NULL = tüm tenant’larda geçerli role
 
     code VARCHAR(50) NOT NULL,

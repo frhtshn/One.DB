@@ -12,6 +12,6 @@ CREATE TABLE core.tenants (
     default_country character(2),
     timezone varchar(50),
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone NOT NULL DEFAULT now(),
-    CONSTRAINT tenants_company_id_fkey FOREIGN KEY (company_id) REFERENCES core.companies(id)
+    updated_at timestamp without time zone NOT NULL DEFAULT now()
+    --CONSTRAINT tenants_company_id_fkey FOREIGN KEY (company_id) REFERENCES core.companies(id)
 );
