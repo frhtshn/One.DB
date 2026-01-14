@@ -25,6 +25,7 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 \i tenant_/tables/auth/player_credentials.sql
 \i tenant_/tables/auth/player_groups.sql
 
+-- FINANCE TABLES
 \i tenant_/tables/finance/operation_types.sql
 \i tenant_/tables/finance/transaction_types.sql
 
