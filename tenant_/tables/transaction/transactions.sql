@@ -2,14 +2,29 @@ DROP TABLE IF EXISTS transaction.transactions CASCADE;
 
 CREATE TABLE transaction.transactions (
     id bigserial PRIMARY KEY,
+
     player_id bigint NOT NULL,
     wallet_id bigint NOT NULL,
-    transaction_type varchar(30) NOT NULL,
-    operation character(1) NOT NULL,
+
+    transaction_type_id smallint NOT NULL,
+    operation_type_id   smallint NOT NULL,
+
     amount numeric(18,8) NOT NULL,
+
     related_transaction_id bigint,
     idempotency_key varchar(100),
-    source varchar(30) NOT NULL,
+
+    source varchar(30) NOT NULL, -- GAME, PAYMENT, BONUS, ADMIN, MIGRATION
+
     metadata jsonb,
-    created_at timestamp without time zone NOT NULL DEFAULT now()
+
+    created_at timestamptz NOT NULL DEFAULT now(),
+
+    -- CONSTRAINT fk_transaction_type
+    --    FOREIGN KEY (transaction_type_id)
+    --    REFERENCES finance.transaction_types(id),
+
+    -- CONSTRAINT fk_operation_type
+    --    FOREIGN KEY (operation_type_id)
+    --    REFERENCES finance.operation_types(id)
 );
