@@ -21,7 +21,7 @@ set PGPASSWORD=sizin şifre
 
 set PGPASSWORD=sizin şifre
 
-"C:\Program Files\PostgreSQL\17\bin\psql.exe" -h localhost -U postgres -d core -f db\deploy_core.sql
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -h localhost -U postgres -d core -f deploy_core.sql
 
 // Deploy Core -> Beta Server
 
