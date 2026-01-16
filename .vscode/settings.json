@@ -43,6 +43,28 @@
             "database": "tenant_",
             "username": "admin",
             "password": "StrongPass123!"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "beta_core",
+            "database": "core",
+            "username": "postgres",
+            "password": "NucleoPostgres2026"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "beta_tenant",
+            "database": "tenant_",
+            "username": "postgres",
+            "password": "NucleoPostgres2026"
         }
     ],
     "sqltools.highlightQuery": false
