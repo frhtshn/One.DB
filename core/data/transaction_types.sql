@@ -12,12 +12,12 @@ VALUES
 ('horse_greyhound_bet', 'bet', 'sports', false, false, false, false, 'Horse/Greyhound bet'),
 -- WIN TRANSACTIONS
 ('sports_bet_win', 'win', 'sports', false,  false, false, true,  'Sports bet win'),
-('free_sports_bet_win', 'win', 'sports', true,  true,  false, true,  'Free sports bet win'),
+('free_sports_win', 'win', 'sports', true,  true,  false, true,  'Free sports bet win'),
 ('casino_bet_win', 'win', 'casino', false,  false, false, true,  'Casino bet win'),
-('live_casino_bet_win', 'win', 'casino', false,  false, false, true,  'Live casino bet win'),
+('live_casino_win', 'win', 'casino', false,  false, false, true,  'Live casino bet win'),
 ('poker_bet_win', 'win', 'poker', false,  false, false, true,  'Poker bet win'),
-('virtual_sports_bet_win', 'win', 'sports', false,  false, false, true,  'Virtual sports bet win'),
-('horse_greyhound_bet_win', 'win', 'sports', false,  false, false, true,  'Horse/Greyhound bet win'),
+('virtual_sports_win', 'win', 'sports', false,  false, false, true,  'Virtual sports bet win'),
+('horse_greyhound_win', 'win', 'sports', false,  false, false, true,  'Horse/Greyhound bet win'),
 ('casino_provider_bonus_win', 'win', 'casino', false,  false, false, true,  'Casino provider bonus win'),
 -- BONUS / ADJUSTMENT
 ('bonus_transaction', 'bonus', NULL, true,  false, false, false, 'Generic bonus'),
@@ -33,11 +33,11 @@ VALUES
 ('manual_fund_transfer', 'payment', 'payment', false, false, false, false, 'Manual fund transfer'),
 ('casino_transfer_funds', 'payment', 'casino', false, false, false, false, 'Casino fund transfer'),
 -- ROLLBACK TYPES
-('sports_bet_wager_rollback', 'bet', 'sports', true,  false, true,  false, 'Sports bet rollback'),
-('sports_bet_win_rollback', 'win', 'sports', true,  false, true,  false, 'Sports bet win rollback'),
-('free_sports_bet_win_rollback', 'win', 'sports', true,  true,  true,  false, 'Free sports bet win rollback'),
-('free_sports_bet_wager_rollback', 'bet', 'sports', true,  true,  true,  false, 'Free bet wager rollback'),
+('sports_bet_wager_rollback', 'bet', 'sports', false,  false, true,  false, 'Sports bet rollback'),
+('sports_win_rollback', 'win', 'sports', false,  false, true,  false, 'Sports bet win rollback'),
+('free_sports_win_rollback', 'win', 'sports', true,  true,  true,  false, 'Free sports bet win rollback'),
+('free_sports_wager_rollback', 'bet', 'sports', true,  true,  true,  false, 'Free bet wager rollback'),
 ('casino_bonus_transaction_rollback', 'bonus', 'casino', true,  false, true,  false, 'Casino bonus rollback'),
 ('bonus_transaction_rollback', 'bonus', NULL, true,  false, true,  false, 'Bonus rollback'),
 ('discount_transaction_rollback', 'bonus', NULL, true,  false, true,  false, 'Discount rollback'),
-('casino_adjustment_rollback', 'adjustment', 'casino', true,  false, true,  false, 'Casino adjustment rollback');
+('casino_adjustment_rollback', 'adjustment', 'casino', false,  false, true,  false, 'Casino adjustment rollback');
