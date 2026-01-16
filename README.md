@@ -23,11 +23,23 @@ set PGPASSWORD=sizin şifre
 
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h localhost -U postgres -d core -f deploy_core.sql
 
+
+
 // Deploy Core -> Beta Server
 
 set PGPASSWORD=StrongPass123!
 
 "C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 155.133.22.97 -U admin -d core -f deploy_core.sql
+
+
+// new beta server
+
+set PGPASSWORD=NucleoPostgres2026
+
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 207.180.241.230 -p 5433 -U postgres -d postgres -f create_core_db.sql
+
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core.sql
+
 
 // Deploy Tenant 
 
