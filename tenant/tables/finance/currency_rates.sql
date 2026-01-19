@@ -1,15 +1,24 @@
+DROP TABLE IF EXISTS finance.currency_rates CASCADE;
+
 CREATE TABLE finance.currency_rates (
-    id bigserial PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
-    base_currency character(3) NOT NULL,     -- tenant base (TRY / EUR / vs)
-    quote_currency character(3) NOT NULL,
+    provider VARCHAR(30) NOT NULL,          -- currencylayer, fixer, ecb
+    provider_base_currency CHAR(3) NOT NULL, -- USD / EUR
 
-    rate numeric(18,8) NOT NULL,
-    rate_date date NOT NULL,
+    target_currency CHAR(3) NOT NULL,
 
-    source varchar(50) NOT NULL,              -- xe, layer, fixer, manual
-    fetched_at timestamp NOT NULL,            -- API’den alındığı an
+    rate NUMERIC(18,8) NOT NULL,
 
-    created_at timestamp NOT NULL DEFAULT now()
+    rate_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL, -- provider zamanı
+    fetched_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,     -- API çağrı zamanı
+
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+
+    UNIQUE (
+        provider,
+        provider_base_currency,
+        target_currency,
+        rate_timestamp
+    )
 );
-
