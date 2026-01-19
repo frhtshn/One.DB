@@ -7,7 +7,7 @@ CREATE TABLE core.tenants (
     tenant_name varchar(255) NOT NULL,
     environment varchar(20) NOT NULL DEFAULT 'prod',
     status smallint NOT NULL DEFAULT 1,
-    default_currency character(3),
+    base_currency character(3),
     default_language character(2),
     default_country character(2),
     timezone varchar(50),
