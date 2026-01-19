@@ -19,30 +19,30 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 
 -- AUTH TABLES
-\i tenant_/tables/auth/players.sql
-\i tenant_/tables/auth/player_categories.sql
-\i tenant_/tables/auth/player_classification.sql
-\i tenant_/tables/auth/player_credentials.sql
-\i tenant_/tables/auth/player_groups.sql
+\i tenant/tables/auth/players.sql
+\i tenant/tables/auth/player_categories.sql
+\i tenant/tables/auth/player_classification.sql
+\i tenant/tables/auth/player_credentials.sql
+\i tenant/tables/auth/player_groups.sql
 
 -- FINANCE TABLES
-\i tenant_/tables/finance/operation_types.sql
-\i tenant_/tables/finance/transaction_types.sql
+\i tenant/tables/finance/operation_types.sql
+\i tenant/tables/finance/transaction_types.sql
 
 -- PROFILE TABLES
-\i tenant_/tables/profile/player_identity.sql
-\i tenant_/tables/profile/player_profile.sql
+\i tenant/tables/profile/player_identity.sql
+\i tenant/tables/profile/player_profile.sql
 
 -- TRANSACTION TABLES
-\i tenant_/tables/transaction/transactions.sql
-\i tenant_/tables/transaction/transaction_workflows.sql
-\i tenant_/tables/transaction/transaction_workflow_actions.sql
+\i tenant/tables/transaction/transactions.sql
+\i tenant/tables/transaction/transaction_workflows.sql
+\i tenant/tables/transaction/transaction_workflow_actions.sql
 
 -- WALLET TABLES
-\i tenant_/tables/wallet/wallets.sql
-\i tenant_/tables/wallet/wallet_snapshots.sql
+\i tenant/tables/wallet/wallets.sql
+\i tenant/tables/wallet/wallet_snapshots.sql
 
 -- FUNCTIONS
--- \i tenant_/functions/your_function.sql
+-- \i tenant/functions/your_function.sql
 
 COMMIT;
