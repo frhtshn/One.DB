@@ -25,7 +25,6 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 -- CATALOG TABLES
 \i core/tables/catalog/countries.sql
 \i core/tables/catalog/currencies.sql
-\i core/tables/catalog/currency_rates.sql
 \i core/tables/catalog/games.sql
 \i core/tables/catalog/languages.sql
 \i core/tables/catalog/localization_keys.sql

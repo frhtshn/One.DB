@@ -28,6 +28,7 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 -- FINANCE TABLES
 \i tenant/tables/finance/operation_types.sql
 \i tenant/tables/finance/transaction_types.sql
+\i tenant/tables/finance/currency_rates.sql
 
 -- PROFILE TABLES
 \i tenant/tables/profile/player_identity.sql
@@ -41,6 +42,10 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 -- WALLET TABLES
 \i tenant/tables/wallet/wallets.sql
 \i tenant/tables/wallet/wallet_snapshots.sql
+
+-- VIEWS
+\i tenant/views/finance/v_daily_base_rates.sql
+\i tenant/views/finance/v_cross_rates.sql
 
 -- FUNCTIONS
 -- \i tenant/functions/your_function.sql
