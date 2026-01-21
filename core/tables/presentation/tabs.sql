@@ -2,8 +2,7 @@ DROP TABLE IF EXISTS presentation.tabs CASCADE;
 
 CREATE TABLE presentation.tabs (
     id BIGSERIAL PRIMARY KEY,
-    page_id BIGINT NOT NULL
-        REFERENCES presentation.pages(id) ON DELETE CASCADE,
+    page_id BIGINT NOT NULL,
     code VARCHAR(50) NOT NULL,                        -- WALLET
     title_localization_key VARCHAR(150) NOT NULL,
     order_index INT NOT NULL,
@@ -11,4 +10,3 @@ CREATE TABLE presentation.tabs (
     is_active BOOLEAN NOT NULL DEFAULT true,
     UNIQUE (page_id, code)
 );
-

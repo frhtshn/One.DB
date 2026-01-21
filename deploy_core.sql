@@ -20,7 +20,6 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS btree_gin WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
-CREATE EXTENSION IF NOT EXISTS pg_partman WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- CATALOG TABLES
@@ -46,9 +45,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/tenant_settings.sql
 
 -- PRESENTATION TABLES
+\i core/tables/presentation/contexts.sql
+\i core/tables/presentation/menu_groups.sql
 \i core/tables/presentation/menus.sql
+\i core/tables/presentation/submenus.sql
 \i core/tables/presentation/pages.sql
-\i core/tables/presentation/menu_pages.sql
 \i core/tables/presentation/tabs.sql
 
 -- ROUTING TABLES
@@ -57,9 +58,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/routing/provider_endpoints.sql
 
 -- SECURITY TABLES
-\i core/tables/security/provider_secrets.sql
-\i core/tables/security/tenant_secrets.sql
-\i core/tables/security/roles.sql
+\i core/tables/security/permissions.sql
+\i core/tables/security/secrets_provider.sql
+\i core/tables/security/secrets_tenant.sql
+\i core/tables/security/tenant_roles.sql
+\i core/tables/security/role_permissions.sql
 \i core/tables/security/users.sql
 \i core/tables/security/user_roles.sql
 
@@ -69,6 +72,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/data/languages.sql
 \i core/data/transaction_types.sql
 \i core/data/operation_types.sql
+\i core/data/bo_ui.sql
 
 -- FUNCTIONS
 -- \i core/functions/your_function.sql

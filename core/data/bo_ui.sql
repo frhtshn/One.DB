@@ -137,45 +137,45 @@ VALUES
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.phone',
-  'FIELD',
+  'field',
   'bo.field.player.phone',
   'players.pii.view',
-  'MASK'
+  'mask'
 ),
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.email',
-  'FIELD',
+  'field',
   'bo.field.player.email',
   'players.pii.view',
-  'MASK'
+  'mask'
 ),
 
 -- ACTIONS
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.edit',
-  'BUTTON',
+  'button',
   'bo.button.player.edit',
   'players.edit',
-  'EDIT'
+  'edit'
 ),
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.export',
-  'BUTTON',
+  'button',
   'bo.button.player.export',
   'players.export',
-  'EDIT'
+  'edit'
 ),
 
 -- DEPOSIT PAGE ACTION
 (
   (SELECT id FROM presentation.pages WHERE code = 'deposit_list'),
   'deposit.export',
-  'BUTTON',
+  'button',
   'bo.button.deposit.export',
   'deposits.export',
-  'EDIT'
+  'edit'
 );
 

@@ -2,13 +2,8 @@ DROP TABLE IF EXISTS presentation.pages CASCADE;
 
 CREATE TABLE presentation.pages (
     id BIGSERIAL PRIMARY KEY,
-
-    menu_id BIGINT
-        REFERENCES presentation.menus(id) ON DELETE CASCADE,
-
-    submenu_id BIGINT
-        REFERENCES presentation.submenus(id) ON DELETE CASCADE,
-
+    menu_id BIGINT,
+    submenu_id BIGINT,
     code VARCHAR(50) NOT NULL,
     route VARCHAR(200) NOT NULL,
     title_localization_key VARCHAR(150) NOT NULL,
@@ -21,5 +16,3 @@ CREATE TABLE presentation.pages (
         (menu_id IS NULL AND submenu_id IS NOT NULL)
     )
 );
-
-
