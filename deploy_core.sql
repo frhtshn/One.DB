@@ -67,6 +67,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/user_roles.sql
 
 -- DATA SEEDING
+\i core/data/companies.sql
 \i core/data/countries.sql
 \i core/data/currencies.sql
 \i core/data/languages.sql
