@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS security.permissions CASCADE;
 
 CREATE TABLE security.permissions (
-    id BIGSERIAL PRIMARY KEY,
-    code VARCHAR(100) NOT NULL UNIQUE, -- player.phone.read
+    code VARCHAR(100) PRIMARY KEY,
     description VARCHAR(255)
 );
+
