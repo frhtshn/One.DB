@@ -10,3 +10,5 @@ CREATE TABLE core.companies (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+ALTER SEQUENCE core.companies_id_seq MINVALUE 0 RESTART WITH 0;
