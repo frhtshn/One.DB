@@ -10,12 +10,6 @@ Bu extension'larla db'ye bağlanılır. daha sonra bir script yazıldığında "
 
 ---
 
-// Dump the schema of the core database to a SQL file
-
-set PGPASSWORD=sizin şifre
-
-"pg_dump.exe" -h localhost -p 5432 -U postgres -d core --schema-only --no-owner --no-privileges --format=p --encoding=UTF8 > "C:\Projects\Git\nucleoDb\schema.sql"
-
 // Deploy the schema SQL file to the core database
 
 set PGPASSWORD=sizin şifre
