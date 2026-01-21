@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS security.tenant_secrets CASCADE;
+DROP TABLE IF EXISTS security.secrets_tenant CASCADE;
 
-CREATE TABLE security.tenant_secrets (
+CREATE TABLE security.secrets_tenant (
     id bigserial PRIMARY KEY,
     tenant_id bigint NOT NULL,
     secret_type varchar(50) NOT NULL,

@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS security.provider_secrets CASCADE;
+DROP TABLE IF EXISTS security.secrets_provider CASCADE;
 
-CREATE TABLE security.provider_secrets (
+CREATE TABLE security.secrets_provider (
     id bigserial PRIMARY KEY,
     provider_id bigint NOT NULL,
     secret_type varchar(50) NOT NULL,
