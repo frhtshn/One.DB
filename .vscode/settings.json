@@ -67,5 +67,16 @@
             "password": "NucleoPostgres2026"
         }
     ],
-    "sqltools.highlightQuery": false
+    "sqltools.highlightQuery": false,
+    "[sql]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
+    },
+    "files.associations": {
+        "*.psql": "sql"
+    },
+    "[psql]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": null
+    }
 }

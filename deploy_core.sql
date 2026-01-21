@@ -1,5 +1,4 @@
 SET client_encoding = 'UTF8';
-
 BEGIN;
 
 -- CREATE SCHEMAS
@@ -21,6 +20,8 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS btree_gin WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS pg_partman WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- CATALOG TABLES
 \i core/tables/catalog/countries.sql
