@@ -7,7 +7,7 @@ CREATE TABLE security.users (
         --REFERENCES core.companies(id),
 
     first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,        
+    last_name VARCHAR(50) NOT NULL,
 
     email VARCHAR(255) NOT NULL,
     username VARCHAR(50) NOT NULL,
