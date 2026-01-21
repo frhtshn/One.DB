@@ -71,10 +71,21 @@ VALUES
 );
 
 INSERT INTO presentation.pages
-(submenu_id, code, route, title_localization_key, required_permission)
+(menu_id, submenu_id, code, route, title_localization_key, required_permission)
 VALUES
--- PLAYERS LIST
+-- DASHBOARD (menu → direct page)
 (
+  (SELECT id FROM presentation.menus WHERE code = 'dashboard'),
+  NULL,
+  'dashboard',
+  '/dashboard',
+  'bo.page.dashboard',
+  'dashboard.view'
+),
+
+-- PLAYERS LIST (submenu → page)
+(
+  NULL,
   (SELECT id FROM presentation.submenus WHERE code = 'player_list'),
   'player_list',
   '/players/list',
@@ -82,14 +93,16 @@ VALUES
   'players.view'
 ),
 
--- DEPOSITS LIST
+-- DEPOSITS LIST (submenu → page)
 (
+  NULL,
   (SELECT id FROM presentation.submenus WHERE code = 'deposit_list'),
   'deposit_list',
   '/deposits',
   'bo.page.deposits.list',
   'deposits.view'
 );
+
 
 INSERT INTO presentation.tabs
 (page_id, code, title_localization_key, order_index, required_permission)
@@ -116,6 +129,7 @@ VALUES
   3,
   'players.kyc.view'
 );
+
 INSERT INTO presentation.contexts
 (page_id, code, context_type, label_localization_key, required_permission, behavior)
 VALUES
@@ -123,44 +137,45 @@ VALUES
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.phone',
-  'field',
+  'FIELD',
   'bo.field.player.phone',
   'players.pii.view',
-  'mask'
+  'MASK'
 ),
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.email',
-  'field',
+  'FIELD',
   'bo.field.player.email',
   'players.pii.view',
-  'mask'
+  'MASK'
 ),
 
 -- ACTIONS
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.edit',
-  'button',
+  'BUTTON',
   'bo.button.player.edit',
   'players.edit',
-  'edit'
+  'EDIT'
 ),
 (
   (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.export',
-  'button',
+  'BUTTON',
   'bo.button.player.export',
   'players.export',
-  'edit'
+  'EDIT'
 ),
 
 -- DEPOSIT PAGE ACTION
 (
   (SELECT id FROM presentation.pages WHERE code = 'deposit_list'),
   'deposit.export',
-  'button',
+  'BUTTON',
   'bo.button.deposit.export',
   'deposits.export',
-  'edit'
+  'EDIT'
 );
+
