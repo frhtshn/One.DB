@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS security.roles CASCADE;
+DROP TABLE IF EXISTS security.tenant_roles CASCADE;
 
-CREATE TABLE security.roles (
+CREATE TABLE security.tenant_roles (
     id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     code VARCHAR(50) NOT NULL,              -- SUPERADMIN
