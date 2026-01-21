@@ -2,14 +2,13 @@ DROP TABLE IF EXISTS presentation.pages CASCADE;
 
 CREATE TABLE presentation.pages (
     id BIGSERIAL PRIMARY KEY,
-
-    code VARCHAR(50) NOT NULL UNIQUE,
-    title VARCHAR(100) NOT NULL,
-
-    route VARCHAR(200) NOT NULL,
-    layout VARCHAR(50) NOT NULL DEFAULT 'default',
-
+    submenu_id BIGINT NOT NULL
+        REFERENCES presentation.submenus(id) ON DELETE CASCADE,
+    code VARCHAR(50) NOT NULL,                        -- PLAYER_DETAIL
+    route VARCHAR(200) NOT NULL,                     -- /players/detail/:id
+    title_localization_key VARCHAR(150) NOT NULL,
+    required_permission VARCHAR(100) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT true,
-
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    UNIQUE (submenu_id, code)
 );
+
