@@ -1,9 +1,9 @@
 INSERT INTO presentation.menu_groups
 (code, title_localization_key, order_index)
 VALUES
-('HOME',        'bo.menu_group.home',        1),
-('OPERATIONS',  'bo.menu_group.operations',  2),
-('DOCUMENTS',   'bo.menu_group.documents',   3);
+('home',        'bo.menu_group.home',        1),
+('operations',  'bo.menu_group.operations',  2),
+('documents',   'bo.menu_group.documents',   3);
 
 
 INSERT INTO presentation.menus
@@ -11,8 +11,8 @@ INSERT INTO presentation.menus
 VALUES
 -- HOME
 (
-  (SELECT id FROM presentation.menu_groups WHERE code = 'HOME'),
-  'DASHBOARD',
+  (SELECT id FROM presentation.menu_groups WHERE code = 'home'),
+  'dashboard',
   'bo.menu.dashboard',
   'dashboard',
   1,
@@ -21,16 +21,16 @@ VALUES
 
 -- OPERATIONS
 (
-  (SELECT id FROM presentation.menu_groups WHERE code = 'OPERATIONS'),
-  'PLAYERS',
+  (SELECT id FROM presentation.menu_groups WHERE code = 'operations'),
+  'players',
   'bo.menu.players',
   'users',
   1,
   'players.view'
 ),
 (
-  (SELECT id FROM presentation.menu_groups WHERE code = 'OPERATIONS'),
-  'DEPOSITS',
+  (SELECT id FROM presentation.menu_groups WHERE code = 'operations'),
+  'deposits',
   'bo.menu.deposits',
   'credit-card',
   2,
@@ -39,8 +39,8 @@ VALUES
 
 -- DOCUMENTS
 (
-  (SELECT id FROM presentation.menu_groups WHERE code = 'DOCUMENTS'),
-  'REPORTS',
+  (SELECT id FROM presentation.menu_groups WHERE code = 'documents'),
+  'reports',
   'bo.menu.reports',
   'file',
   1,
@@ -52,8 +52,8 @@ INSERT INTO presentation.submenus
 VALUES
 -- PLAYERS
 (
-  (SELECT id FROM presentation.menus WHERE code = 'PLAYERS'),
-  'PLAYER_LIST',
+  (SELECT id FROM presentation.menus WHERE code = 'players'),
+  'player_list',
   'bo.submenu.players.list',
   '/players/list',
   1,
@@ -62,8 +62,8 @@ VALUES
 
 -- DEPOSITS
 (
-  (SELECT id FROM presentation.menus WHERE code = 'DEPOSITS'),
-  'DEPOSIT_LIST',
+  (SELECT id FROM presentation.menus WHERE code = 'deposits'),
+  'deposit_list',
   'bo.submenu.deposits.list',
   '/deposits',
   1,
@@ -75,8 +75,8 @@ INSERT INTO presentation.pages
 VALUES
 -- PLAYERS LIST
 (
-  (SELECT id FROM presentation.submenus WHERE code = 'PLAYER_LIST'),
-  'PLAYER_LIST',
+  (SELECT id FROM presentation.submenus WHERE code = 'player_list'),
+  'player_list',
   '/players/list',
   'bo.page.players.list',
   'players.view'
@@ -84,8 +84,8 @@ VALUES
 
 -- DEPOSITS LIST
 (
-  (SELECT id FROM presentation.submenus WHERE code = 'DEPOSIT_LIST'),
-  'DEPOSIT_LIST',
+  (SELECT id FROM presentation.submenus WHERE code = 'deposit_list'),
+  'deposit_list',
   '/deposits',
   'bo.page.deposits.list',
   'deposits.view'
@@ -96,22 +96,22 @@ INSERT INTO presentation.tabs
 VALUES
 -- PLAYER LIST TABS
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
-  'OVERVIEW',
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
+  'overview',
   'bo.tab.player.overview',
   1,
   'players.view'
 ),
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
-  'WALLET',
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
+  'wallet',
   'bo.tab.player.wallet',
   2,
   'wallet.view'
 ),
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
-  'KYC',
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
+  'kyc',
   'bo.tab.player.kyc',
   3,
   'players.kyc.view'
@@ -121,46 +121,46 @@ INSERT INTO presentation.contexts
 VALUES
 -- PLAYER LIST FIELDS
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.phone',
-  'FIELD',
+  'field',
   'bo.field.player.phone',
   'players.pii.view',
-  'MASK'
+  'mask'
 ),
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.email',
-  'FIELD',
+  'field',
   'bo.field.player.email',
   'players.pii.view',
-  'MASK'
+  'mask'
 ),
 
 -- ACTIONS
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.edit',
-  'BUTTON',
+  'button',
   'bo.button.player.edit',
   'players.edit',
-  'EDIT'
+  'edit'
 ),
 (
-  (SELECT id FROM presentation.pages WHERE code = 'PLAYER_LIST'),
+  (SELECT id FROM presentation.pages WHERE code = 'player_list'),
   'player.export',
-  'BUTTON',
+  'button',
   'bo.button.player.export',
   'players.export',
-  'EDIT'
+  'edit'
 ),
 
 -- DEPOSIT PAGE ACTION
 (
-  (SELECT id FROM presentation.pages WHERE code = 'DEPOSIT_LIST'),
+  (SELECT id FROM presentation.pages WHERE code = 'deposit_list'),
   'deposit.export',
-  'BUTTON',
+  'button',
   'bo.button.deposit.export',
   'deposits.export',
-  'EDIT'
+  'edit'
 );
