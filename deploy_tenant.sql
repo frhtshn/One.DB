@@ -50,8 +50,18 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/marketing/player_acquisition.sql
 
 -- AFFILIATE TABLES
-\i tenant/tables/affiliate/player_affiliate_history.sql
+\i tenant/tables/affiliate/affiliates.sql
+\i tenant/tables/affiliate/affiliate_network.sql
+\i tenant/tables/affiliate/commission_plans.sql
+\i tenant/tables/affiliate/commission_tiers.sql
+\i tenant/tables/affiliate/affiliate_campaigns.sql
 \i tenant/tables/affiliate/player_affiliate_current.sql
+\i tenant/tables/affiliate/player_affiliate_history.sql
+\i tenant/tables/affiliate/network_commission_rules.sql
+\i tenant/tables/affiliate/commissions.sql
+\i tenant/tables/affiliate/affiliate_users.sql
+\i tenant/tables/affiliate/payout_requests.sql
+\i tenant/tables/affiliate/payouts.sql
 
 -- VIEWS
 \i tenant/views/finance/v_daily_base_rates.sql
