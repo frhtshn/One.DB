@@ -1,38 +1,63 @@
-// kurulacak vs extension'lar
+# NucleoDB
 
-1. SQLTools
+## Kurulacak VS Code Extension'ları
+
+1. **SQLTools**  
    Publisher: Matheus Teixeira
 
-2. SQLTools PostgreSQL/Cockroach Driver
+2. **SQLTools PostgreSQL/Cockroach Driver**  
    Publisher: Matheus Teixeira
 
-Bu extension'larla db'ye bağlanılır. daha sonra bir script yazıldığında "run script" yapılarak direk deploy alınır.
+Bu extension'larla db'ye bağlanılır. Daha sonra bir script yazıldığında "Run Script" yapılarak direk deploy alınır.
 
 ---
 
-// Deploy the schema SQL file to the core database
+## Deploy the Schema SQL File to the Core Database
 
-set PGPASSWORD=sizin şifre
-
+```bash
+set PGPASSWORD=sizin_şifre
 psql -h localhost -U postgres -d core -f deploy_core.sql
+```
 
-// Deploy Core -> Beta Server
+---
 
+## Deploy Core - Beta Server
+
+```bash
 set PGPASSWORD=StrongPass123!
-
 psql -h 155.133.22.97 -U admin -d core -f deploy_core.sql
+```
 
-// new beta server
+---
+
+## New Beta Server
+
+```bash
 set PGPASSWORD=NucleoPostgres2026
+```
 
-// create db
+### Create Database
+
+```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d postgres -f create_dbs.sql
+```
 
-// Deploy core
+### Deploy Core
+
+```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core.sql
+```
 
-// Deploy tenant
+### Deploy Tenant
+
+```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d tenant -f deploy_tenant.sql
+```
 
-// tenant template example
--- CREATE DATABASE tenant_ferhatbet WITH TEMPLATE tenant;
+---
+
+## Tenant Template Example
+
+```sql
+CREATE DATABASE tenant_ferhatbet WITH TEMPLATE tenant;
+```
