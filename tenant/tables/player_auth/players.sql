@@ -11,5 +11,3 @@ CREATE TABLE auth.players (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
-
--- CREATE INDEX idx_players_email_hash ON auth.players USING btree(email_hash);

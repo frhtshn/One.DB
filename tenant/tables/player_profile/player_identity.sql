@@ -8,5 +8,3 @@ CREATE TABLE profile.player_identity (
     identity_confirmed boolean NOT NULL DEFAULT false,
     verified_at timestamp without time zone
 );
-
--- CREATE INDEX idx_player_identity_no_hash ON profile.player_identity USING btree(identity_no_hash);

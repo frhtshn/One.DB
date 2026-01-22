@@ -10,7 +10,7 @@ CREATE TABLE transaction.transactions (
     operation_type_id   smallint NOT NULL,
 
     amount numeric(18,8) NOT NULL,
-    balance_after numeric(18,8) NOT NULL,    
+    balance_after numeric(18,8) NOT NULL,
 
     related_transaction_id bigint,
     idempotency_key varchar(100),
@@ -19,13 +19,5 @@ CREATE TABLE transaction.transactions (
 
     metadata jsonb,
 
-    created_at timestamptz NOT NULL DEFAULT now(),
-
-    -- CONSTRAINT fk_transaction_type
-    --    FOREIGN KEY (transaction_type_id)
-    --    REFERENCES finance.transaction_types(id),
-
-    -- CONSTRAINT fk_operation_type
-    --    FOREIGN KEY (operation_type_id)
-    --    REFERENCES finance.operation_types(id)
+    created_at timestamptz NOT NULL DEFAULT now()
 );

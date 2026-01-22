@@ -20,8 +20,3 @@ CREATE TABLE profile.player_profile (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
-
--- CREATE INDEX idx_player_profile_first_name_hash ON profile.player_profile USING btree(first_name_hash);
--- CREATE INDEX idx_player_profile_last_name_hash ON profile.player_profile USING btree(last_name_hash);
--- CREATE INDEX idx_player_profile_phone_hash ON profile.player_profile USING btree(phone_hash);
--- CREATE INDEX idx_player_profile_gsm_hash ON profile.player_profile USING btree(gsm_hash);
