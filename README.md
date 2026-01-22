@@ -1,4 +1,4 @@
-// kurulacak vs extension'lar:
+// kurulacak vs extension'lar
 
 1. SQLTools
    Publisher: Matheus Teixeira
