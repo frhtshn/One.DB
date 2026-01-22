@@ -10,6 +10,7 @@ CREATE TABLE transaction.transactions (
     operation_type_id   smallint NOT NULL,
 
     amount numeric(18,8) NOT NULL,
+    balance_after numeric(18,8) NOT NULL,    
 
     related_transaction_id bigint,
     idempotency_key varchar(100),
