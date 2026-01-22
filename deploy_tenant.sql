@@ -8,6 +8,8 @@ CREATE SCHEMA IF NOT EXISTS profile;
 CREATE SCHEMA IF NOT EXISTS transaction;
 CREATE SCHEMA IF NOT EXISTS finance;
 CREATE SCHEMA IF NOT EXISTS wallet;
+CREATE SCHEMA IF NOT EXISTS marketing;
+CREATE SCHEMA IF NOT EXISTS affiliate;
 CREATE SCHEMA IF NOT EXISTS infra;
 
 -- ENABLE EXTENSIONS
@@ -43,6 +45,13 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- WALLET TABLES
 \i tenant/tables/wallet/wallets.sql
 \i tenant/tables/wallet/wallet_snapshots.sql
+
+-- MARKETING TABLES
+\i tenant/tables/marketing/player_acquisition.sql
+
+-- AFFILIATE TABLES
+\i tenant/tables/affiliate/player_affiliate_history.sql
+\i tenant/tables/affiliate/player_affiliate_current.sql
 
 -- VIEWS
 \i tenant/views/finance/v_daily_base_rates.sql

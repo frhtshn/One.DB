@@ -66,6 +66,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/users.sql
 \i core/tables/security/user_roles.sql
 
+-- AFFILIATE TABLES
+\i core/tables/affiliate/traffic_sources.sql
+\i core/tables/affiliate/campaigns.sql
+\i core/tables/affiliate/attribution_models.sql
+
 -- DATA SEEDING
 \i core/data/companies.sql
 \i core/data/countries.sql
