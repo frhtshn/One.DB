@@ -7,6 +7,7 @@ CREATE SCHEMA IF NOT EXISTS core;
 CREATE SCHEMA IF NOT EXISTS presentation;
 CREATE SCHEMA IF NOT EXISTS routing;
 CREATE SCHEMA IF NOT EXISTS security;
+CREATE SCHEMA IF NOT EXISTS billing;
 CREATE SCHEMA IF NOT EXISTS infra;
 
 -- DROP UNUSED SCHEMAS
@@ -70,6 +71,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/affiliate/traffic_sources.sql
 \i core/tables/affiliate/campaigns.sql
 \i core/tables/affiliate/attribution_models.sql
+
+-- BILLING TABLES
+\i core/tables/billing/provider_commission_rates.sql
+\i core/tables/billing/tenant_provider_commission_overrides.sql
+\i core/tables/billing/tenant_commissions.sql
 
 -- DATA SEEDING
 \i core/data/companies.sql
