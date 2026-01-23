@@ -5,7 +5,6 @@ DROP TABLE IF EXISTS marketing.player_acquisition CASCADE;
 CREATE TABLE marketing.player_acquisition (
     id bigserial PRIMARY KEY,
     player_id bigint NOT NULL,              -- Oyuncu referansı
-    tenant_id bigint NOT NULL,              -- Tenant referansı
 
     acquisition_type varchar(30) NOT NULL,  -- Kazanım tipi
         -- AFFILIATE / ORGANIC / PAID / ADMIN
