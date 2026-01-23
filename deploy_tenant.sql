@@ -11,6 +11,7 @@ CREATE SCHEMA IF NOT EXISTS wallet;
 CREATE SCHEMA IF NOT EXISTS marketing;
 CREATE SCHEMA IF NOT EXISTS affiliate;
 CREATE SCHEMA IF NOT EXISTS infra;
+CREATE SCHEMA IF NOT EXISTS kyc;
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
@@ -48,6 +49,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- MARKETING TABLES
 \i tenant/tables/marketing/player_acquisition.sql
+
+-- KYC TABLES
+\i tenant/tables/kyc/player_kyc_cases.sql
+\i tenant/tables/kyc/player_kyc_workflows.sql
+\i tenant/tables/kyc/player_documents.sql
+\i tenant/tables/kyc/player_kyc_provider_logs.sql
 
 -- AFFILIATE TABLES
 \i tenant/tables/affiliate/affiliates.sql

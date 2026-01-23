@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS kyc.player_kyc_provider_logs CASCADE;
+
 CREATE TABLE kyc.player_kyc_provider_logs (
     id BIGSERIAL PRIMARY KEY,
 
