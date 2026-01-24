@@ -1,4 +1,4 @@
-# 🧱 NUCLEO – LOG / AUDIT / BUSINESS
+# NUCLEO – LOG / AUDIT / BUSINESS
 
 ## Log, Audit ve Retention Stratejisi
 

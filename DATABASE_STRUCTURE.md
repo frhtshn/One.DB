@@ -1,4 +1,4 @@
-# 🗃️ NUCLEO – VERİTABANI YAPISI
+# NUCLEO – VERİTABANI YAPISI
 
 ## Veritabanı Mimarisi ve Şema Organizasyonu
 
