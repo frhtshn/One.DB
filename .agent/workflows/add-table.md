@@ -36,15 +36,16 @@ Tablonun ait olduğu veritabanına göre ilgili deploy script'e `\i` satırı ek
 
 > ⚠️ `\i` satırını ilgili şema bölümüne, alfabetik veya mantıksal sıraya göre ekle.
 
-### 3. DATABASE_STRUCTURE.md Güncelle
+### 3. Dokümantasyonu Güncelle
 
 `/update-docs` kuralını uygula:
 
-- İlgili şema bölümüne tablo satırı ekle
-- Gerekirse şema açıklamasını güncelle
+- `DATABASE_STRUCTURE.md`: İlgili şema bölümüne tablo satırı ekle
+- `DB_ARCHITECTURE.md`: İlgili katman/şema tablosuna satır ekle
 
 ## Kontrol Listesi
 
 - [ ] SQL dosyası oluşturuldu
 - [ ] Deploy script güncellendi
 - [ ] DATABASE_STRUCTURE.md güncellendi
+- [ ] DB_ARCHITECTURE.md güncellendi

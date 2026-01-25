@@ -1,5 +1,5 @@
 ---
-description: Yeni tablo eklendiğinde DATABASE_STRUCTURE.md dosyasını güncelle
+description: Yeni tablo, şema veya veritabanı eklendiğinde dokümantasyonu güncelle
 ---
 
 # Veritabanı Dokümantasyonu Güncelleme Kuralı
@@ -32,23 +32,54 @@ Bu kural aşağıdaki durumlarda otomatik olarak uygulanmalıdır:
 10. Retention politikası güncellendiğinde
 11. Yeni bir veritabanı kategorisi eklendiğinde (log, audit, report vb.)
 
+## Güncellenecek Dosyalar
+
+Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidir:
+
+| Dosya                   | İçerik                         |
+| ----------------------- | ------------------------------ |
+| `DATABASE_STRUCTURE.md` | Detaylı tablo/şema yapısı      |
+| `DB_ARCHITECTURE.md`    | Mimari döküman (katmanlı yapı) |
+
 ## Güncelleme Adımları
 
+### 1. DATABASE_STRUCTURE.md Güncelleme
+
 1. Değişikliğin türünü belirle (tablo, şema, mimari)
-2. `DATABASE_STRUCTURE.md` dosyasında ilgili bölümü bul
+2. İlgili bölümü bul
 3. Uygun formatta güncelleme yap:
     - Tablo ekleme: İlgili şema tablosuna satır ekle
     - Şema ekleme: Yeni bölüm oluştur
     - Mimari değişiklik: İlgili açıklama bölümünü güncelle
-4. Genel özet tablosunu (Bölüm 1) gerekirse güncelle
+4. Genel özet tablosunu gerekirse güncelle
 
-## Tablo Ekleme Formatı
+### 2. DB_ARCHITECTURE.md Güncelleme
+
+1. Tablonun ait olduğu katmanı belirle:
+    - **Core Katmanı** (Bölüm 2): `core` veritabanı tabloları
+    - **Gateway Katmanı** (Bölüm 3): `game`, `finance` veritabanları
+    - **Tenant Katmanı** (Bölüm 4): `tenant` veritabanı tabloları
+2. İlgili tablo listesine yeni satır ekle
+3. View ekleniyorsa "Views" bölümüne ekle
+4. Veritabanı Özet Matrisi'ni (Bölüm 5) gerekirse güncelle
+
+## Tablo Ekleme Formatları
+
+### DATABASE_STRUCTURE.md formatı
 
 ```markdown
 | `tablo_adi` | Tablonun kısa açıklaması |
 ```
 
+### DB_ARCHITECTURE.md formatı
+
+```markdown
+| `şema` | `tablo_adi` | Tablonun kısa açıklaması |
+```
+
 ## Şema Ekleme Formatı
+
+### DATABASE_STRUCTURE.md
 
 ```markdown
 ### X.X yeni_sema Şeması
@@ -61,7 +92,28 @@ Bu kural aşağıdaki durumlarda otomatik olarak uygulanmalıdır:
 | `tablo_2` | İkinci tablonun açıklaması |
 ```
 
+### DB_ARCHITECTURE.md
+
+```markdown
+| `yeni_sema` | `tablo_1` | İlk tablonun açıklaması |
+| `yeni_sema` | `tablo_2` | İkinci tablonun açıklaması |
+```
+
+## Veritabanı Ekleme
+
+Yeni veritabanı eklendiğinde DB_ARCHITECTURE.md'de:
+
+1. İlgili katmana (Core/Gateway/Tenant) yeni bölüm ekle
+2. Veritabanı Özet Matrisi'ne (Bölüm 5) satır ekle
+3. Mimari diyagramını (Bölüm 6) güncelle
+
+## Kontrol Listesi
+
+- [ ] DATABASE_STRUCTURE.md güncellendi
+- [ ] DB_ARCHITECTURE.md güncellendi
+- [ ] Her iki dosyada format tutarlı
+
 ## Hatırlatma
 
-> Her değişiklikte bu kuralı uygula ve DATABASE_STRUCTURE.md dosyasını güncel tut!
+> Her değişiklikte bu kuralı uygula ve **her iki** dokümantasyon dosyasını güncel tut!
 > Dokümantasyon, kod kadar önemlidir.

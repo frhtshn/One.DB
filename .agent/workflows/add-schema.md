@@ -41,14 +41,22 @@ Yeni şema için tablo klasörü oluştur:
 - Core: `core/tables/<yeni_sema>/`
 - Tenant: `tenant/tables/<yeni_sema>/`
 
-### 3. DATABASE_STRUCTURE.md Güncelle
+### 3. Dokümantasyonu Güncelle
+
+**DATABASE_STRUCTURE.md:**
 
 - Şema listesi tablosuna yeni satır ekle
 - Yeni şema için bölüm oluştur (örn: `### 3.X yeni_sema Şeması`)
 - Şemanın amacını açıkla
+
+**DB_ARCHITECTURE.md:**
+
+- İlgili katmandaki (Core/Gateway/Tenant) tablo listesine şema satırları ekle
+- Veritabanı Özet Matrisi'ni gerekirse güncelle
 
 ## Kontrol Listesi
 
 - [ ] Deploy script'e `CREATE SCHEMA` eklendi
 - [ ] Tablo klasörü oluşturuldu (gerekirse)
 - [ ] DATABASE_STRUCTURE.md güncellendi
+- [ ] DB_ARCHITECTURE.md güncellendi
