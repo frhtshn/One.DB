@@ -31,6 +31,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/localization_keys.sql
 \i core/tables/catalog/localization_values.sql
 \i core/tables/catalog/operation_types.sql
+\i core/tables/catalog/payment_methods.sql
 \i core/tables/catalog/provider_settings.sql
 \i core/tables/catalog/provider_types.sql
 \i core/tables/catalog/providers.sql
@@ -42,7 +43,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/tenant_currencies.sql
 \i core/tables/core/tenant_games.sql
 \i core/tables/core/tenant_languages.sql
+\i core/tables/core/tenant_payment_methods.sql
 \i core/tables/core/tenant_providers.sql
+\i core/tables/core/tenant_provider_limits.sql
 \i core/tables/core/tenant_settings.sql
 
 -- PRESENTATION TABLES

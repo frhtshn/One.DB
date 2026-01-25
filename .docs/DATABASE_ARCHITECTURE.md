@@ -101,6 +101,7 @@ Referans dataları içerir. **Read-only** karakterlidir.
 | `localization_keys`   | Lokalizasyon anahtar tanımları             |
 | `localization_values` | Lokalizasyon çevirileri                    |
 | `operation_types`     | Operasyon tipi tanımları (DEBIT/CREDIT)    |
+| `payment_methods`     | Finance provider ödeme metodları kataloğu  |
 | `provider_settings`   | Provider yapılandırma şablonları           |
 | `provider_types`      | Provider tip kategorileri (GAME/FINANCE)   |
 | `providers`           | Provider (oyun/ödeme) tanımları            |
@@ -112,15 +113,17 @@ Referans dataları içerir. **Read-only** karakterlidir.
 
 Tenant ve şirket yönetimi.
 
-| Tablo               | Açıklama                                           |
-| ------------------- | -------------------------------------------------- |
-| `companies`         | Platform operatör şirketleri (faturalama seviyesi) |
-| `tenants`           | Tenant (marka/site) tanımları                      |
-| `tenant_currencies` | Tenant'a tanımlı para birimleri                    |
-| `tenant_games`      | Tenant'a açık oyunlar                              |
-| `tenant_languages`  | Tenant'a tanımlı diller                            |
-| `tenant_providers`  | Tenant-provider eşleştirmeleri                     |
-| `tenant_settings`   | Tenant özel konfigürasyonları                      |
+| Tablo                    | Açıklama                                           |
+| ------------------------ | -------------------------------------------------- |
+| `companies`              | Platform operatör şirketleri (faturalama seviyesi) |
+| `tenants`                | Tenant (marka/site) tanımları                      |
+| `tenant_currencies`      | Tenant'a tanımlı para birimleri                    |
+| `tenant_games`           | Tenant'a açık oyunlar                              |
+| `tenant_languages`       | Tenant'a tanımlı diller                            |
+| `tenant_payment_methods` | Tenant'a açık ödeme metodları                      |
+| `tenant_providers`       | Tenant-provider eşleştirmeleri                     |
+| `tenant_provider_limits` | Provider'ın tenant için belirlediği limitler       |
+| `tenant_settings`        | Tenant özel konfigürasyonları                      |
 
 ---
 
@@ -248,6 +251,7 @@ Her tenant için ayrı bir veritabanı oluşturulur. `tenant` şablon DB'si klon
 | `wallet`      | Oyuncu cüzdanları                 |
 | `transaction` | Finansal işlemler                 |
 | `finance`     | Finansal referans verileri        |
+| `game`        | Oyun konfigürasyonu ve ayarları   |
 | `marketing`   | Pazarlama ve edinim verileri      |
 | `kyc`         | KYC doğrulama süreçleri           |
 | `affiliate`   | Affiliate yönetimi ve komisyonlar |
@@ -282,7 +286,19 @@ Oyuncu profil ve kişisel bilgileri.
 
 ---
 
-### 6.4 wallet Şeması
+### 6.4 game Şeması
+
+Tenant-specific oyun konfigürasyonu.
+
+| Tablo           | Açıklama                                        |
+| --------------- | ----------------------------------------------- |
+| `game_settings` | Oyun görünüm, sıralama ve özelleştirme ayarları |
+
+> ⚠️ **Denormalizasyon**: Bu tablo core DB'den `game_id`, `game_code`, `provider_id`, `provider_code` alanlarını kopyalar. Cross-DB join yapılamadığı için gereklidir.
+
+---
+
+### 6.5 wallet Şeması
 
 Oyuncu cüzdan yönetimi.
 
@@ -309,11 +325,14 @@ Finansal işlem kayıtları.
 
 Finansal referans verileri.
 
-| Tablo               | Açıklama                 |
-| ------------------- | ------------------------ |
-| `operation_types`   | Operasyon tipi tanımları |
-| `transaction_types` | İşlem tipi tanımları     |
-| `currency_rates`    | Döviz kuru geçmişi       |
+| Tablo                     | Açıklama                                      |
+| ------------------------- | --------------------------------------------- |
+| `operation_types`         | Operasyon tipi tanımları                      |
+| `transaction_types`       | İşlem tipi tanımları                          |
+| `payment_method_settings` | Ödeme metodu görünüm ve özelleştirme ayarları |
+| `payment_method_limits`   | Tenant seviyesinde ödeme metodu limitleri     |
+| `payment_player_limits`   | Oyuncu seviyesinde ödeme limitleri            |
+| `currency_rates`          | Döviz kuru geçmişi                            |
 
 **Views:**
 
@@ -321,6 +340,14 @@ Finansal referans verileri.
 | -------------------- | ----------------------------- |
 | `v_daily_base_rates` | Günlük baz kur görünümü       |
 | `v_cross_rates`      | Çapraz kur hesaplama görünümü |
+
+> ⚠️ **Denormalizasyon**: `payment_method_settings` tablosu core DB'den `payment_method_id`, `payment_method_code`, `provider_id`, `provider_code` alanlarını kopyalar. Cross-DB join yapılamadığı için gereklidir.
+
+> 💡 **Hiyerarşik Limitler**: Ödeme limitleri 3 seviyede yönetilir:
+>
+> 1. **Provider Limitleri** (`core.tenant_provider_limits`) - Provider'ın tenant için belirlediği limitler
+> 2. **Tenant Limitleri** (`payment_method_limits`) - Tenant'ın kendi limitleri (provider limitleri içinde)
+> 3. **Oyuncu Limitleri** (`payment_player_limits`) - Oyuncu bazlı limitler (tenant limitleri içinde)
 
 ---
 

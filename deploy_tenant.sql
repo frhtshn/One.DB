@@ -10,6 +10,7 @@ CREATE SCHEMA IF NOT EXISTS finance;
 CREATE SCHEMA IF NOT EXISTS wallet;
 CREATE SCHEMA IF NOT EXISTS marketing;
 CREATE SCHEMA IF NOT EXISTS affiliate;
+CREATE SCHEMA IF NOT EXISTS game;
 CREATE SCHEMA IF NOT EXISTS infra;
 CREATE SCHEMA IF NOT EXISTS kyc;
 
@@ -33,6 +34,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/finance/operation_types.sql
 \i tenant/tables/finance/transaction_types.sql
 \i tenant/tables/finance/currency_rates.sql
+\i tenant/tables/finance/payment_method_settings.sql
+\i tenant/tables/finance/payment_method_limits.sql
+\i tenant/tables/finance/payment_player_limits.sql
+
+-- GAME TABLES
+\i tenant/tables/game/game_settings.sql
 
 -- PROFILE TABLES
 \i tenant/tables/profile/player_identity.sql
