@@ -365,7 +365,6 @@ Her tenant için ayrı bir veritabanı oluşturulur. `tenant` şablon DB'si klon
 | `transaction` | Finansal işlemler               |
 | `finance`     | Finansal referans verileri      |
 | `game`        | Oyun konfigürasyonu ve ayarları |
-| `marketing`   | Pazarlama ve edinim verileri    |
 | `kyc`         | KYC doğrulama süreçleri         |
 | `infra`       | PostgreSQL extension'ları       |
 
@@ -476,17 +475,9 @@ KYC (Know Your Customer) doğrulama süreçleri.
 
 ---
 
-### 6.8 marketing Şeması
-
-Pazarlama ve oyuncu edinim takibi.
-
-| Tablo                | Açıklama                 |
-| -------------------- | ------------------------ |
-| `player_acquisition` | Oyuncu edinim kaynakları |
-
 ---
 
-### 6.9 Tenant Affiliate Şeması (Plugin)
+### 6.8 Tenant Affiliate Şeması (Plugin)
 
 Tenant'a özel affiliate yönetimi ve komisyon takibi.
 

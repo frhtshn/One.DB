@@ -8,7 +8,6 @@ CREATE SCHEMA IF NOT EXISTS profile;
 CREATE SCHEMA IF NOT EXISTS transaction;
 CREATE SCHEMA IF NOT EXISTS finance;
 CREATE SCHEMA IF NOT EXISTS wallet;
-CREATE SCHEMA IF NOT EXISTS marketing;
 CREATE SCHEMA IF NOT EXISTS game;
 CREATE SCHEMA IF NOT EXISTS infra;
 CREATE SCHEMA IF NOT EXISTS kyc;
@@ -53,8 +52,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/wallet/wallets.sql
 \i tenant/tables/wallet/wallet_snapshots.sql
 
--- MARKETING TABLES
-\i tenant/tables/marketing/player_acquisition.sql
 
 -- KYC TABLES
 \i tenant/tables/kyc/player_kyc_cases.sql
