@@ -70,11 +70,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/users.sql
 \i core/tables/security/user_roles.sql
 
--- AFFILIATE TABLES
-\i core/tables/affiliate/traffic_sources.sql
-\i core/tables/affiliate/campaigns.sql
-\i core/tables/affiliate/attribution_models.sql
-
 -- BILLING TABLES
 \i core/tables/billing/provider_commission_rates.sql
 \i core/tables/billing/tenant_provider_commission_overrides.sql

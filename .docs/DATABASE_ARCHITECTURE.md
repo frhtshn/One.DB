@@ -83,7 +83,6 @@ Core veritabanı, platformun merkezi konfigürasyon ve yönetim verilerini barı
 | `routing`      | Provider endpoint ve callback yönlendirmesi |
 | `security`     | Kullanıcı, rol ve yetki yönetimi            |
 | `billing`      | Komisyon ve faturalandırma                  |
-| `affiliate`    | Affiliate platform yapılandırması           |
 | `infra`        | PostgreSQL extension'ları                   |
 
 ---
@@ -180,21 +179,64 @@ Komisyon ve faturalandırma.
 | `tenant_provider_commission_overrides` | Tenant bazlı komisyon override'ları |
 | `tenant_commissions`                   | Tenant komisyon hesaplamaları       |
 
+## 5. Affiliate Veritabanı (Plugin)
+
+Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Core ve Tenant DB'den ayrı çalışır.
+
+### 5.1 Şema Listesi
+
+| Şema         | Amaç                           |
+| ------------ | ------------------------------ |
+| `affiliate`  | Affiliate tanımları            |
+| `campaign`   | Kampanya ve trafik kaynakları  |
+| `commission` | Komisyon planları ve hesaplama |
+| `payout`     | Ödeme talepleri ve ödemeler    |
+| `tracking`   | Oyuncu-affiliate takibi        |
+| `infra`      | PostgreSQL extension'ları      |
+
+### 5.2 affiliate Şeması
+
+| Tablo               | Açıklama                  |
+| ------------------- | ------------------------- |
+| `affiliates`        | Affiliate tanımları       |
+| `affiliate_network` | Affiliate ağ yapısı (MLM) |
+| `affiliate_users`   | Affiliate kullanıcıları   |
+
+### 5.3 campaign Şeması
+
+| Tablo                 | Açıklama                |
+| --------------------- | ----------------------- |
+| `traffic_sources`     | Trafik kaynak tanımları |
+| `campaigns`           | Kampanya tanımları      |
+| `attribution_models`  | Attribution modelleri   |
+| `affiliate_campaigns` | Affiliate kampanyaları  |
+
+### 5.4 commission Şeması
+
+| Tablo                      | Açıklama               |
+| -------------------------- | ---------------------- |
+| `commission_plans`         | Komisyon planları      |
+| `commission_tiers`         | Komisyon kademeleri    |
+| `network_commission_rules` | MLM komisyon kuralları |
+| `commissions`              | Hesaplanan komisyonlar |
+
+### 5.5 payout Şeması
+
+| Tablo             | Açıklama             |
+| ----------------- | -------------------- |
+| `payout_requests` | Ödeme talepleri      |
+| `payouts`         | Gerçekleşen ödemeler |
+
+### 5.6 tracking Şeması
+
+| Tablo                      | Açıklama                     |
+| -------------------------- | ---------------------------- |
+| `player_affiliate_current` | Oyuncunun aktif affiliate'i  |
+| `player_affiliate_history` | Affiliate değişiklik geçmişi |
+
 ---
 
-### 4.8 affiliate Şeması (Core)
-
-Affiliate platform yapılandırması.
-
-| Tablo                | Açıklama                            |
-| -------------------- | ----------------------------------- |
-| `traffic_sources`    | Trafik kaynak tanımları             |
-| `campaigns`          | Kampanya tanımları                  |
-| `attribution_models` | Attribution model konfigürasyonları |
-
----
-
-## 5. Gateway Veritabanları
+## 6. Gateway Veritabanları
 
 Gateway katmanı, oyun ve finans provider'ları ile entegrasyonu yönetir.
 
@@ -244,18 +286,17 @@ Her tenant için ayrı bir veritabanı oluşturulur. `tenant` şablon DB'si klon
 
 ### 6.1 Şema Listesi
 
-| Şema          | Amaç                              |
-| ------------- | --------------------------------- |
-| `auth`        | Oyuncu kimlik doğrulama           |
-| `profile`     | Oyuncu profil bilgileri           |
-| `wallet`      | Oyuncu cüzdanları                 |
-| `transaction` | Finansal işlemler                 |
-| `finance`     | Finansal referans verileri        |
-| `game`        | Oyun konfigürasyonu ve ayarları   |
-| `marketing`   | Pazarlama ve edinim verileri      |
-| `kyc`         | KYC doğrulama süreçleri           |
-| `affiliate`   | Affiliate yönetimi ve komisyonlar |
-| `infra`       | PostgreSQL extension'ları         |
+| Şema          | Amaç                            |
+| ------------- | ------------------------------- |
+| `auth`        | Oyuncu kimlik doğrulama         |
+| `profile`     | Oyuncu profil bilgileri         |
+| `wallet`      | Oyuncu cüzdanları               |
+| `transaction` | Finansal işlemler               |
+| `finance`     | Finansal referans verileri      |
+| `game`        | Oyun konfigürasyonu ve ayarları |
+| `marketing`   | Pazarlama ve edinim verileri    |
+| `kyc`         | KYC doğrulama süreçleri         |
+| `infra`       | PostgreSQL extension'ları       |
 
 ---
 

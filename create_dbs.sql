@@ -49,6 +49,14 @@ WHERE NOT EXISTS (
 -- )
 -- \gexec
 
+-- Affiliate veritabanı: Affiliate yönetimi, komisyonlar ve ödemeler (Plugin)
+-- SELECT
+--   'CREATE DATABASE affiliate'
+-- WHERE NOT EXISTS (
+--   SELECT 1 FROM pg_database WHERE datname = 'affiliate'
+-- )
+-- \gexec
+
 
 -- ============================================================
 -- TENANT VERİTABANLARI (Kiracıya Özel)
