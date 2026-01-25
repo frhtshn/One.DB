@@ -4,6 +4,7 @@ CREATE TABLE routing.provider_callbacks (
     id bigserial PRIMARY KEY,
     provider_id bigint NOT NULL,
     callback_type varchar(50) NOT NULL,
+    allowed_ip_ranges cidr[],  -- IP whitelist (CIDR format)
     is_active boolean NOT NULL DEFAULT true,
     created_at timestamp without time zone NOT NULL DEFAULT now()
 );
