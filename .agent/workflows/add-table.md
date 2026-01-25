@@ -40,12 +40,10 @@ Tablonun ait olduğu veritabanına göre ilgili deploy script'e `\i` satırı ek
 
 `/update-docs` kuralını uygula:
 
-- `.docs/DATABASE_STRUCTURE.md`: İlgili şema bölümüne tablo satırı ekle
-- `.docs/DB_ARCHITECTURE.md`: İlgili katman/şema tablosuna satır ekle
+- `.docs/DATABASE_ARCHITECTURE.md`: İlgili şema bölümüne tablo satırı ekle
 
 ## Kontrol Listesi
 
 - [ ] SQL dosyası oluşturuldu
 - [ ] Deploy script güncellendi
-- [ ] .docs/DATABASE_STRUCTURE.md güncellendi
-- [ ] .docs/DB_ARCHITECTURE.md güncellendi
+- [ ] `.docs/DATABASE_ARCHITECTURE.md` güncellendi

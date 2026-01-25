@@ -16,11 +16,10 @@ Bu extension'larla db'ye bağlanılır. Daha sonra bir script yazıldığında "
 
 Detaylı mimari ve yapı dokümantasyonu için:
 
-| Dosya                                                | Açıklama                           |
-| ---------------------------------------------------- | ---------------------------------- |
-| [DATABASE_STRUCTURE.md](.docs/DATABASE_STRUCTURE.md) | Detaylı şema ve tablo yapısı       |
-| [DB_ARCHITECTURE.md](.docs/DB_ARCHITECTURE.md)       | Mimari döküman (katmanlı yapı)     |
-| [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)               | Log, audit ve retention stratejisi |
+| Dosya                                                      | Açıklama                                 |
+| ---------------------------------------------------------- | ---------------------------------------- |
+| [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md) | Veritabanı mimarisi, şemalar ve tablolar |
+| [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                     | Log, audit ve retention stratejisi       |
 
 ---
 

@@ -43,22 +43,15 @@ Eğer veritabanının kendi şemaları ve tabloları olacaksa:
 
 ### 4. Dokümantasyonu Güncelle
 
-**.docs/DATABASE_STRUCTURE.md:**
+`.docs/DATABASE_ARCHITECTURE.md` dosyasında:
 
-- Bölüm 1'deki genel özet tablosuna yeni veritabanını ekle
-- Yeni veritabanı için bölüm oluştur
-- Amacı, partition stratejisi ve retention bilgilerini ekle
-
-**.docs/DB_ARCHITECTURE.md:**
-
+- Bölüm 3 (Özet Matrisi) tablosuna yeni veritabanını ekle
 - İlgili katmana (Core/Gateway/Tenant) yeni bölüm ekle
-- Veritabanı Özet Matrisi'ne (Bölüm 5) satır ekle
-- Mimari diyagramını (Bölüm 6) güncelle (gerekirse)
+- Bölüm 2 (Diyagram) güncelle (gerekirse)
 
 ## Kontrol Listesi
 
 - [ ] create_dbs.sql güncellendi
 - [ ] Deploy script oluşturuldu (gerekirse)
 - [ ] Klasör yapısı oluşturuldu
-- [ ] .docs/DATABASE_STRUCTURE.md güncellendi
-- [ ] .docs/DB_ARCHITECTURE.md güncellendi
+- [ ] `.docs/DATABASE_ARCHITECTURE.md` güncellendi
