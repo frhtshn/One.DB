@@ -62,6 +62,8 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | `game_log`      | Oyun gateway teknik logları                | ✅              | Daily     | 7–14 gün    |
 | `finance`       | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
 | `finance_log`   | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
+| `affiliate`     | Affiliate tracking ve komisyon yönetimi    | ✅              | Daily     | Sınırsız    |
+| `bonus`         | Bonus, kampanya ve promosyon yönetimi      | ✅              | Monthly   | Sınırsız    |
 | `tenant`        | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
 | `tenant_log`    | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
 | `tenant_audit`  | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
@@ -196,43 +198,55 @@ Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Core ve T
 
 ### 5.2 affiliate Şeması
 
-| Tablo               | Açıklama                  |
-| ------------------- | ------------------------- |
-| `affiliates`        | Affiliate tanımları       |
-| `affiliate_network` | Affiliate ağ yapısı (MLM) |
-| `affiliate_users`   | Affiliate kullanıcıları   |
+Affiliate platform temel yapı taşları.
+
+| Tablo               | Açıklama                    | Kritik Alanlar                                     |
+| ------------------- | --------------------------- | -------------------------------------------------- |
+| `affiliates`        | Affiliate ana kaydı         | `affiliate_code`, `status`, `kyc_status`           |
+| `affiliate_network` | MLM (Multi-Level) ağ yapısı | `parent_affiliate_id`, `sub_affiliate_id`, `depth` |
+| `affiliate_users`   | Affiliate panel yetkilileri | `affiliate_id`, `email`, `role`                    |
 
 ### 5.3 campaign Şeması
 
-| Tablo                 | Açıklama                |
-| --------------------- | ----------------------- |
-| `traffic_sources`     | Trafik kaynak tanımları |
-| `campaigns`           | Kampanya tanımları      |
-| `attribution_models`  | Attribution modelleri   |
-| `affiliate_campaigns` | Affiliate kampanyaları  |
+Trafik ve kampanya yönetimi.
+
+| Tablo                 | Açıklama                     | Kritik Alanlar                                            |
+| --------------------- | ---------------------------- | --------------------------------------------------------- |
+| `traffic_sources`     | Trafik kaynakları            | `source_name`, `medium`, `postback_url`                   |
+| `campaigns`           | Affiliate kampanyaları       | `campaign_code`, `landing_page_url`                       |
+| `attribution_models`  | Atıf modelleri               | `model_name` (Last Click, First Click), `lookback_window` |
+| `affiliate_campaigns` | Affiliate-Kampanya eşleşmesi | `affiliate_id`, `campaign_id`, `commission_plan_id`       |
 
 ### 5.4 commission Şeması
 
-| Tablo                      | Açıklama               |
-| -------------------------- | ---------------------- |
-| `commission_plans`         | Komisyon planları      |
-| `commission_tiers`         | Komisyon kademeleri    |
-| `network_commission_rules` | MLM komisyon kuralları |
-| `commissions`              | Hesaplanan komisyonlar |
+Komisyon planlama ve hesaplama motoru.
+
+| Tablo                      | Açıklama               | Kritik Alanlar                                      |
+| -------------------------- | ---------------------- | --------------------------------------------------- |
+| `commission_plans`         | Komisyon planları      | `plan_type` (RevShare, CPA, Hybrid), `is_default`   |
+| `commission_tiers`         | Plan kademeleri        | `min_ngr`, `revenue_share_percentage`, `cpa_amount` |
+| `network_commission_rules` | MLM komisyon kuralları | `level`, `override_percentage`                      |
+| `commissions`              | Hesaplanan komisyonlar | `amount`, `source_amount` (NGR), `period`           |
 
 ### 5.5 payout Şeması
 
-| Tablo             | Açıklama             |
-| ----------------- | -------------------- |
-| `payout_requests` | Ödeme talepleri      |
-| `payouts`         | Gerçekleşen ödemeler |
+Ödeme yönetimi.
+
+| Tablo             | Açıklama            | Kritik Alanlar                       |
+| ----------------- | ------------------- | ------------------------------------ |
+| `payout_requests` | Ödeme talepleri     | `amount`, `payment_method`, `status` |
+| `payouts`         | Kesinleşen ödemeler | `transaction_ref`, `paid_at`         |
 
 ### 5.6 tracking Şeması
 
-| Tablo                      | Açıklama                     |
-| -------------------------- | ---------------------------- |
-| `player_affiliate_current` | Oyuncunun aktif affiliate'i  |
-| `player_affiliate_history` | Affiliate değişiklik geçmişi |
+Oyuncu takip sistemi.
+
+| Tablo                      | Açıklama                     | Kritik Alanlar                                   |
+| -------------------------- | ---------------------------- | ------------------------------------------------ |
+| `player_affiliate_current` | Oyuncunun mevcut affiliate'i | `player_id`, `affiliate_id`, `campaign_id`       |
+| `player_affiliate_history` | Atıf değişiklik geçmişi      | `old_affiliate_id`, `new_affiliate_id`, `reason` |
+
+> 💡 **Denormalizasyon**: `player_affiliate_current` tablosu `player_username`, `tenant_code` gibi alanları performans için kopyalar.
 
 ---
 
@@ -252,32 +266,45 @@ Bonus ve promosyon sistemi **bağımsız bir plugin** olarak tasarlanmıştır.
 
 ### bonus Şeması
 
-| Tablo            | Açıklama                           |
-| ---------------- | ---------------------------------- |
-| `bonus_types`    | Bonus tipi tanımları               |
-| `bonus_rules`    | Bonus kuralları ve çevrim şartları |
-| `bonus_triggers` | Otomatik tetikleyiciler            |
+Bonus kuralları ve mantık motoru.
+
+| Tablo            | Açıklama                  | Kritik Alanlar                                                 |
+| ---------------- | ------------------------- | -------------------------------------------------------------- |
+| `bonus_types`    | Bonus kategorileri        | `category` (Deposit, FreeSpin), `value_type` (%, Fixed)        |
+| `bonus_rules`    | Kural ve çevrim şartları  | `wagering_requirement` (30x), `max_bonus_amount`, `valid_days` |
+| `bonus_triggers` | Otomasyon tetikleyicileri | `trigger_type` (Registration, Deposit), `cron_schedule`        |
 
 ### promotion Şeması
 
-| Tablo         | Açıklama          |
-| ------------- | ----------------- |
-| `promo_codes` | Promosyon kodları |
+Manuel promosyon araçları.
+
+| Tablo         | Açıklama          | Kritik Alanlar                                        |
+| ------------- | ----------------- | ----------------------------------------------------- |
+| `promo_codes` | Promosyon kodları | `code` (WELCOME100), `max_redemptions`, `valid_until` |
 
 ### campaign Şeması
 
-| Tablo       | Açıklama           |
-| ----------- | ------------------ |
-| `campaigns` | Kampanya tanımları |
+Kampanya yönetimi.
+
+| Tablo       | Açıklama               | Kritik Alanlar                                     |
+| ----------- | ---------------------- | -------------------------------------------------- |
+| `campaigns` | Pazarlama kampanyaları | `campaign_type`, `total_budget`, `target_segments` |
 
 ### execution Şeması
 
-| Tablo               | Açıklama                     |
-| ------------------- | ---------------------------- |
-| `bonus_awards`      | Uygulanan bonuslar ve takibi |
-| `promo_redemptions` | Promosyon kodu kullanımları  |
+Uygulama ve takip katmanı.
+
+| Tablo               | Açıklama                     | Kritik Alanlar                                                    |
+| ------------------- | ---------------------------- | ----------------------------------------------------------------- |
+| `bonus_awards`      | Oyuncuya tanımlanan bonuslar | `bonus_amount`, `wagering_progress`, `status` (Active, Completed) |
+| `promo_redemptions` | Kod kullanım logları         | `promo_code`, `status` (Success, Failed)                          |
 
 > 💡 **Denormalizasyon**: `bonus_awards` tablosu tenant_id, tenant_code, player_id, player_username alanlarını kopyalar.
+
+> 🏢 **Tenant Sahipliği**: Konfigürasyon tabloları (`rules`, `triggers`, `campaigns`) `tenant_id` alanı içerir.
+>
+> - `tenant_id IS NULL`: Platform seviyesi (tüm tenant'lara açık)
+> - `tenant_id = X`: Sadece Tenant X'e özel (özelleştirilmiş)
 
 ---
 
