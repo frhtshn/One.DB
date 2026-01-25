@@ -19,10 +19,10 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            CORE VERİTABANLARI                               │
-│         (Merkezi: Şirketler, Tenantlar, Katalog, Güvenlik, Routing)         │
+│                            CORE & PLUGIN (SHARED)                           │
+│         (Merkezi: Şirketler, Tenantlar, Katalog, Bonus, Routing)            │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  core   │  core_log  │  core_audit  │  core_report                          │
+│  core   │  core_log  │  core_audit  │  bonus (Plugin)                       │
 └────────────────────────────────┬────────────────────────────────────────────┘
                                  │
 ┌────────────────────────────────┼────────────────────────────────────────────┐
@@ -37,12 +37,11 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
           ┌────────────┐   ┌────────────┐   ┌────────────┐
           │ tenant_001 │   │ tenant_002 │   │ tenant_XXX │
           │ (Oyuncular │   │ (Oyuncular │   │ (Oyuncular │
-          │  Cüzdanlar │   │  Cüzdanlar │   │  Cüzdanlar │
-          │  İşlemler) │   │  İşlemler) │   │  İşlemler) │
+          │  Cüzdanlar)│   │  Cüzdanlar)│   │  Cüzdanlar)│
           ├────────────┤   ├────────────┤   ├────────────┤
           │tenant_log  │   │tenant_log  │   │tenant_log  │
           │tenant_audit│   │tenant_audit│   │tenant_audit│
-          │tenant_report   │tenant_report   │tenant_report
+          │t_affiliate │   │t_affiliate │   │t_affiliate │
           └────────────┘   └────────────┘   └────────────┘
 ```
 
