@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS affiliate.payouts CASCADE;
+DROP TABLE IF EXISTS payout.payouts CASCADE;
 
 -- Ödemeler (Gerçekleşen ödemeler)
 -- Affiliate'lere yapılan gerçek ödemeler
-CREATE TABLE affiliate.payouts (
+CREATE TABLE payout.payouts (
     id bigserial PRIMARY KEY,
     affiliate_id bigint NOT NULL,           -- Affiliate referansı
     amount numeric(18,2) NOT NULL,          -- Ödeme tutarı

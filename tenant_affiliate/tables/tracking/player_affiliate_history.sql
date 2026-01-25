@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS affiliate.player_affiliate_history CASCADE;
 
 -- Oyuncu-Affiliate ilişki geçmişi (Audit)
 -- Oyuncunun hangi affiliate'lere ne zaman atandığını takip eder
-CREATE TABLE affiliate.player_affiliate_history (
+CREATE TABLE tracking.player_affiliate_history (
     id bigserial PRIMARY KEY,
     player_id bigint NOT NULL,              -- Oyuncu referansı
     affiliate_id bigint,                    -- Affiliate referansı

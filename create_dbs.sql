@@ -49,14 +49,6 @@ WHERE NOT EXISTS (
 -- )
 -- \gexec
 
--- Affiliate veritabanı: Affiliate yönetimi, komisyonlar ve ödemeler (Plugin)
--- SELECT
---   'CREATE DATABASE affiliate'
--- WHERE NOT EXISTS (
---   SELECT 1 FROM pg_database WHERE datname = 'affiliate'
--- )
--- \gexec
-
 -- Bonus veritabanı: Bonus, promosyon ve kampanya yönetimi (Plugin)
 -- SELECT
 --   'CREATE DATABASE bonus'
@@ -92,5 +84,14 @@ WHERE NOT EXISTS (
 --   'CREATE DATABASE tenant_report'
 -- WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'tenant_report'
+-- )
+-- \gexec
+
+-- Tenant Affiliate veritabanı: Kiracıya özel affiliate plugin veritabanı
+-- Her yeni tenant için 'tenant_affiliate_<CODE>' formatında oluşturulur
+-- SELECT
+--   'CREATE DATABASE tenant_affiliate'
+-- WHERE NOT EXISTS (
+--   SELECT 1 FROM pg_database WHERE datname = 'tenant_affiliate'
 -- )
 -- \gexec

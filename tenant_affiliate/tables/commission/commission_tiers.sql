@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS affiliate.commission_tiers CASCADE;
+DROP TABLE IF EXISTS commission.commission_tiers CASCADE;
 
 -- Komisyon kademeleri (10k %20 / 20k %25 / 30k %30 gibi)
--- Plana göre performans bazlı komisyon oranlarını tanımlar
-CREATE TABLE affiliate.commission_tiers (
+-- Plana göre-- NGR veya Ciro bazlı artan oranlı komisyon yapısı
+CREATE TABLE commission.commission_tiers (
     id bigserial PRIMARY KEY,
     commission_plan_id bigint NOT NULL,     -- Komisyon planı referansı
     metric varchar(30) NOT NULL,            -- NGR / GGR / DEPOSIT

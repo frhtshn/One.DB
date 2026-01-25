@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS affiliate.payout_requests CASCADE;
+DROP TABLE IF EXISTS payout.payout_requests CASCADE;
 
 -- Ödeme talepleri (Affiliate Panel)
--- Affiliate'lerin yaptığı para çekme talepleri
-CREATE TABLE affiliate.payout_requests (
+-- Affiliate tarafından oluşturulan ödeme talepleri
+CREATE TABLE payout.payout_requests (
     id bigserial PRIMARY KEY,
     affiliate_id bigint NOT NULL,           -- Affiliate referansı
     requested_amount numeric(18,2) NOT NULL, -- Talep edilen tutar

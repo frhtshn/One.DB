@@ -62,7 +62,7 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | `game_log`      | Oyun gateway teknik logları                | ✅              | Daily     | 7–14 gün    |
 | `finance`       | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
 | `finance_log`   | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
-| `affiliate`     | Affiliate tracking ve komisyon yönetimi    | ✅              | Daily     | Sınırsız    |
+| `affiliate`     | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
 | `bonus`         | Bonus, kampanya ve promosyon yönetimi      | ✅              | Monthly   | Sınırsız    |
 | `tenant`        | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
 | `tenant_log`    | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
@@ -183,7 +183,7 @@ Komisyon ve faturalandırma.
 
 ## 5. Affiliate Veritabanı (Plugin)
 
-Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Core ve Tenant DB'den ayrı çalışır.
+Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Her tenant için **ayrı bir veritabanı** olarak dağıtılır (`tenant_affiliate_XXX`).
 
 ### 5.1 Şema Listesi
 

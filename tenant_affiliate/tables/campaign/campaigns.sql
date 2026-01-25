@@ -1,10 +1,7 @@
 DROP TABLE IF EXISTS core.campaigns CASCADE;
 
--- Kampanya tanımları
 -- Affiliate veya reklam kampanyalarının merkezi kaydı
-CREATE TABLE core.campaigns (
-    id bigserial PRIMARY KEY,
-    tenant_id bigint NOT NULL,              -- Kampanyanın ait olduğu tenant
+CREATE TABLE campaign.campaigns (
     traffic_source_id smallint NOT NULL,    -- Trafik kaynağı referansı
     name varchar(100) NOT NULL,             -- Kampanya adı
     start_date date,                        -- Başlangıç tarihi

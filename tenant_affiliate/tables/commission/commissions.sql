@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS affiliate.commissions CASCADE;
 
 -- Hesaplanan komisyonlar (Output / Audit)
 -- Dönemsel olarak hesaplanan affiliate komisyonları
-CREATE TABLE affiliate.commissions (
+CREATE TABLE commission.commissions (
     id bigserial PRIMARY KEY,
     affiliate_id bigint NOT NULL,           -- Komisyon sahibi affiliate
     source_affiliate_id bigint,             -- Network ise kaynak alt affiliate
