@@ -351,11 +351,42 @@ KYC (Know Your Customer) doğrulama süreçleri.
 
 ---
 
-## 7. Tenant Affiliate Veritabanı (Plugin)
+## 7. Log, Audit ve Report Veritabanları
+
+### 7.1 Log Veritabanları
+
+| DB                  | Partition | Retention | Not                              |
+| ------------------- | --------- | --------- | -------------------------------- |
+| `core_log`          | Daily     | 30–90 gün | ERROR, WARN, INFO seviye loglar  |
+| `tenant_log_<code>` | Daily     | 30–90 gün | Kiracıya özel operasyonel loglar |
+| `game_log`          | Daily     | 7–14 gün  | Yüksek hacim - DROP zorunlu      |
+| `finance_log`       | Daily     | 14–30 gün | Yüksek hacim - DROP zorunlu      |
+
+### 7.2 Audit Veritabanları
+
+| DB                    | İçerik                                                         | Retention |
+| --------------------- | -------------------------------------------------------------- | --------- |
+| `core_audit`          | Tenant lifecycle, gateway enable/disable, yetki değişiklikleri | 5–10 yıl  |
+| `tenant_audit_<code>` | Oyuncu durum değişiklikleri, yetkili aksiyonları               | 5–10 yıl  |
+
+> ⚠️ Audit verileri **silinmez**. Regülasyon gereği 5–10 yıl saklanır.
+
+### 7.3 Report Veritabanları
+
+| DB                     | İçerik                                              |
+| ---------------------- | --------------------------------------------------- |
+| `core_report`          | Platform geneli istatistikler, tenant karşılaştırma |
+| `tenant_report_<code>` | Oyuncu aktivite, gelir/gider, affiliate performans  |
+
+> Detaylı retention stratejisi için: [LOGSTRATEGY.md](LOGSTRATEGY.md)
+
+---
+
+## 8. Tenant Affiliate Veritabanı (Plugin)
 
 Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Her tenant için **ayrı bir veritabanı** olarak dağıtılır (`tenant_affiliate_XXX`).
 
-### 7.1 Şema Listesi
+### 8.1 Şema Listesi
 
 | Şema         | Amaç                           |
 | ------------ | ------------------------------ |
@@ -420,7 +451,7 @@ Oyuncu takip sistemi.
 
 ---
 
-## 8. Bonus Veritabanı (Plugin)
+## 9. Bonus Veritabanı (Plugin)
 
 Bonus ve promosyon sistemi **bağımsız bir plugin** olarak tasarlanmıştır.
 
@@ -475,37 +506,6 @@ Uygulama ve takip katmanı.
 >
 > - `tenant_id IS NULL`: Platform seviyesi (tüm tenant'lara açık)
 > - `tenant_id = X`: Sadece Tenant X'e özel (özelleştirilmiş)
-
----
-
-## 9. Log, Audit ve Report Veritabanları
-
-### 9.1 Log Veritabanları
-
-| DB                  | Partition | Retention | Not                              |
-| ------------------- | --------- | --------- | -------------------------------- |
-| `core_log`          | Daily     | 30–90 gün | ERROR, WARN, INFO seviye loglar  |
-| `tenant_log_<code>` | Daily     | 30–90 gün | Kiracıya özel operasyonel loglar |
-| `game_log`          | Daily     | 7–14 gün  | Yüksek hacim - DROP zorunlu      |
-| `finance_log`       | Daily     | 14–30 gün | Yüksek hacim - DROP zorunlu      |
-
-### 9.2 Audit Veritabanları
-
-| DB                    | İçerik                                                         | Retention |
-| --------------------- | -------------------------------------------------------------- | --------- |
-| `core_audit`          | Tenant lifecycle, gateway enable/disable, yetki değişiklikleri | 5–10 yıl  |
-| `tenant_audit_<code>` | Oyuncu durum değişiklikleri, yetkili aksiyonları               | 5–10 yıl  |
-
-> ⚠️ Audit verileri **silinmez**. Regülasyon gereği 5–10 yıl saklanır.
-
-### 9.3 Report Veritabanları
-
-| DB                     | İçerik                                              |
-| ---------------------- | --------------------------------------------------- |
-| `core_report`          | Platform geneli istatistikler, tenant karşılaştırma |
-| `tenant_report_<code>` | Oyuncu aktivite, gelir/gider, affiliate performans  |
-
-> Detaylı retention stratejisi için: [LOGSTRATEGY.md](LOGSTRATEGY.md)
 
 ---
 
