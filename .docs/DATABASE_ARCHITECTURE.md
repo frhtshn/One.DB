@@ -131,15 +131,15 @@ Tenant ve şirket yönetimi.
 
 Backoffice kullanıcı ve yetki yönetimi.
 
-| Tablo              | Açıklama                        |
-| ------------------ | ------------------------------- |
-| `permissions`      | Sistem yetki tanımları          |
-| `secrets_provider` | Provider API key ve secret'ları |
-| `secrets_tenant`   | Tenant özel secret'ları         |
-| `tenant_roles`     | Tenant bazlı rol tanımları      |
-| `role_permissions` | Rol-yetki eşleştirmeleri        |
-| `users`            | Backoffice kullanıcıları        |
-| `user_roles`       | Kullanıcı-rol atamaları         |
+| Tablo              | Açıklama                                                   |
+| ------------------ | ---------------------------------------------------------- |
+| `permissions`      | Sistem yetki tanımları                                     |
+| `secrets_provider` | Provider API key ve secret'ları (global)                   |
+| `secrets_tenant`   | Tenant özel secret'ları (environment: prod/staging/shadow) |
+| `tenant_roles`     | Tenant bazlı rol tanımları                                 |
+| `role_permissions` | Rol-yetki eşleştirmeleri                                   |
+| `users`            | Backoffice kullanıcıları                                   |
+| `user_roles`       | Kullanıcı-rol atamaları                                    |
 
 ---
 
