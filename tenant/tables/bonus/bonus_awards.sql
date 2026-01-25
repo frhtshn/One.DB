@@ -1,13 +1,10 @@
-DROP TABLE IF EXISTS execution.bonus_awards CASCADE;
+DROP TABLE IF EXISTS bonus.bonus_awards CASCADE;
 
-CREATE TABLE execution.bonus_awards (
+CREATE TABLE bonus.bonus_awards (
     id bigserial PRIMARY KEY,
 
     -- Denormalize edilmiş bilgiler
-    tenant_id bigint NOT NULL,
-    tenant_code varchar(50) NOT NULL,
     player_id bigint NOT NULL,
-    player_username varchar(150),
 
     -- Bonus bilgileri
     bonus_rule_id bigint NOT NULL,

@@ -11,6 +11,7 @@ CREATE SCHEMA IF NOT EXISTS wallet;
 CREATE SCHEMA IF NOT EXISTS game;
 CREATE SCHEMA IF NOT EXISTS infra;
 CREATE SCHEMA IF NOT EXISTS kyc;
+CREATE SCHEMA IF NOT EXISTS bonus;
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
@@ -58,6 +59,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/kyc/player_kyc_workflows.sql
 \i tenant/tables/kyc/player_documents.sql
 \i tenant/tables/kyc/player_kyc_provider_logs.sql
+
+-- BONUS TABLES
+\i tenant/tables/bonus/bonus_awards.sql
+\i tenant/tables/bonus/promo_redemptions.sql
 
 -- VIEWS
 \i tenant/views/finance/v_daily_base_rates.sql

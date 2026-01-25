@@ -62,11 +62,12 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | 7   | `finance`          | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
 | 8   | `finance_log`      | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
 | 9   | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
-| 10  | `bonus`            | Bonus, kampanya ve promosyon yönetimi      | ✅              | Monthly   | Sınırsız    |
+| 10  | `bonus`            | Bonus ve promosyon yapılandırması          | ✅              | ❌        | Sınırsız    |
 | 11  | `tenant`           | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
 | 12  | `tenant_log`       | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
-| 13  | `tenant_audit`     | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
-| 14  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
+| 13  | `tenant_log`       | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
+| 14  | `tenant_audit`     | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
+| 15  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
 
 ---
 
@@ -241,6 +242,7 @@ Her tenant için ayrı bir veritabanı oluşturulur. `tenant` şablon DB'si klon
 | `finance`     | Finansal referans verileri      |
 | `game`        | Oyun konfigürasyonu ve ayarları |
 | `kyc`         | KYC doğrulama süreçleri         |
+| `bonus`       | Bonus uygulama ve takibi        |
 | `infra`       | PostgreSQL extension'ları       |
 
 ---
@@ -451,56 +453,31 @@ Oyuncu takip sistemi.
 
 ---
 
-## 9. Bonus Veritabanı (Plugin)
+### 9.1 Bonus Veritabanı (Global)
 
-Bonus ve promosyon sistemi **bağımsız bir plugin** olarak tasarlanmıştır.
+Bonus ve promosyon sistemi **konfigürasyon** katmanıdır.
 
-### 8.1 Şema Listesi
+#### 9.1.1 Şema Listesi
 
 | Şema        | Amaç                              |
 | ----------- | --------------------------------- |
 | `bonus`     | Bonus kuralları ve tetikleyiciler |
 | `promotion` | Promosyon kodları                 |
 | `campaign`  | Kampanya yönetimi                 |
-| `execution` | Bonus uygulamaları ve takibi      |
 | `infra`     | PostgreSQL extension'ları         |
 
-### 8.2 bonus Şeması
+### 9.2 Tenant Bonus Şeması (Tenant-Specific)
 
-Bonus kuralları ve mantık motoru.
+Bonus uygulama ve takip katmanı. Ana **tenant veritabanı** altında `bonus` şeması olarak yer alır.
 
-| Tablo            | Açıklama                  | Kritik Alanlar                                                 |
-| ---------------- | ------------------------- | -------------------------------------------------------------- |
-| `bonus_types`    | Bonus kategorileri        | `category` (Deposit, FreeSpin), `value_type` (%, Fixed)        |
-| `bonus_rules`    | Kural ve çevrim şartları  | `wagering_requirement` (30x), `max_bonus_amount`, `valid_days` |
-| `bonus_triggers` | Otomasyon tetikleyicileri | `trigger_type` (Registration, Deposit), `cron_schedule`        |
-
-### 8.3 promotion Şeması
-
-Manuel promosyon araçları.
-
-| Tablo         | Açıklama          | Kritik Alanlar                                        |
-| ------------- | ----------------- | ----------------------------------------------------- |
-| `promo_codes` | Promosyon kodları | `code` (WELCOME100), `max_redemptions`, `valid_until` |
-
-### 8.4 campaign Şeması
-
-Kampanya yönetimi.
-
-| Tablo       | Açıklama               | Kritik Alanlar                                     |
-| ----------- | ---------------------- | -------------------------------------------------- |
-| `campaigns` | Pazarlama kampanyaları | `campaign_type`, `total_budget`, `target_segments` |
-
-### 8.5 execution Şeması
-
-Uygulama ve takip katmanı.
+#### 9.2.1 Tablo Listesi
 
 | Tablo               | Açıklama                     | Kritik Alanlar                                                    |
 | ------------------- | ---------------------------- | ----------------------------------------------------------------- |
 | `bonus_awards`      | Oyuncuya tanımlanan bonuslar | `bonus_amount`, `wagering_progress`, `status` (Active, Completed) |
 | `promo_redemptions` | Kod kullanım logları         | `promo_code`, `status` (Success, Failed)                          |
 
-> 💡 **Denormalizasyon**: `bonus_awards` tablosu tenant_id, tenant_code, player_id, player_username alanlarını kopyalar.
+> 💡 **Denormalizasyon**: `bonus_awards` tablosu player_id alanını kopyalar.
 
 > 🏢 **Tenant Sahipliği**: Konfigürasyon tabloları (`rules`, `triggers`, `campaigns`) `tenant_id` alanı içerir.
 >
