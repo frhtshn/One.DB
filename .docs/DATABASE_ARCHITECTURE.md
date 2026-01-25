@@ -52,22 +52,22 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ## 3. Veritabanı Özet Matrisi
 
-| Veritabanı      | Amaç                                       | Tenant Bağımsız | Partition | Retention   |
-| --------------- | ------------------------------------------ | --------------- | --------- | ----------- |
-| `core`          | Platform yapılandırması ve merkezi veriler | ✅              | ❌        | Sınırsız    |
-| `core_log`      | Merkezi teknik log kayıtları               | ✅              | Daily     | 30–90 gün   |
-| `core_audit`    | Platform karar ve değişiklik audit         | ✅              | ❌        | 5–10 yıl    |
-| `core_report`   | Merkezi raporlama ve BI verileri           | ✅              | Opsiyonel | İş ihtiyacı |
-| `game`          | Oyun gateway entegrasyon durumu            | ✅              | Daily     | 14–30 gün   |
-| `game_log`      | Oyun gateway teknik logları                | ✅              | Daily     | 7–14 gün    |
-| `finance`       | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
-| `finance_log`   | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
-| `affiliate`     | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
-| `bonus`         | Bonus, kampanya ve promosyon yönetimi      | ✅              | Monthly   | Sınırsız    |
-| `tenant`        | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
-| `tenant_log`    | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
-| `tenant_audit`  | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
-| `tenant_report` | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
+| Veritabanı         | Amaç                                       | Tenant Bağımsız | Partition | Retention   |
+| ------------------ | ------------------------------------------ | --------------- | --------- | ----------- |
+| `core`             | Platform yapılandırması ve merkezi veriler | ✅              | ❌        | Sınırsız    |
+| `core_log`         | Merkezi teknik log kayıtları               | ✅              | Daily     | 30–90 gün   |
+| `core_audit`       | Platform karar ve değişiklik audit         | ✅              | ❌        | 5–10 yıl    |
+| `core_report`      | Merkezi raporlama ve BI verileri           | ✅              | Opsiyonel | İş ihtiyacı |
+| `game`             | Oyun gateway entegrasyon durumu            | ✅              | Daily     | 14–30 gün   |
+| `game_log`         | Oyun gateway teknik logları                | ✅              | Daily     | 7–14 gün    |
+| `finance`          | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
+| `finance_log`      | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
+| `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
+| `bonus`            | Bonus, kampanya ve promosyon yönetimi      | ✅              | Monthly   | Sınırsız    |
+| `tenant`           | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
+| `tenant_log`       | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
+| `tenant_audit`     | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
+| `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
 
 ---
 
@@ -181,7 +181,7 @@ Komisyon ve faturalandırma.
 | `tenant_provider_commission_overrides` | Tenant bazlı komisyon override'ları |
 | `tenant_commissions`                   | Tenant komisyon hesaplamaları       |
 
-## 5. Affiliate Veritabanı (Plugin)
+## 5. Tenant Affiliate Veritabanı (Plugin)
 
 Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Her tenant için **ayrı bir veritabanı** olarak dağıtılır (`tenant_affiliate_XXX`).
 
@@ -487,9 +487,9 @@ Pazarlama ve oyuncu edinim takibi.
 
 ---
 
-### 6.9 affiliate Şeması (Tenant)
+### 6.9 Tenant Affiliate Şeması (Plugin)
 
-Affiliate yönetimi ve komisyon takibi.
+Tenant'a özel affiliate yönetimi ve komisyon takibi.
 
 | Tablo                      | Açıklama                     |
 | -------------------------- | ---------------------------- |
