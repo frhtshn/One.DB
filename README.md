@@ -12,7 +12,7 @@ Bu extension'larla db'ye bağlanılır. Daha sonra bir script yazıldığında "
 
 ---
 
-## 📚 Dokümantasyon
+## Dokümantasyon
 
 Detaylı mimari ve yapı dokümantasyonu için:
 
