@@ -57,6 +57,14 @@ WHERE NOT EXISTS (
 -- )
 -- \gexec
 
+-- Bonus veritabanı: Bonus, promosyon ve kampanya yönetimi (Plugin)
+-- SELECT
+--   'CREATE DATABASE bonus'
+-- WHERE NOT EXISTS (
+--   SELECT 1 FROM pg_database WHERE datname = 'bonus'
+-- )
+-- \gexec
+
 
 -- ============================================================
 -- TENANT VERİTABANLARI (Kiracıya Özel)

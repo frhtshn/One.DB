@@ -236,6 +236,51 @@ Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Core ve T
 
 ---
 
+## 5.7 Bonus Veritabanı (Plugin)
+
+Bonus ve promosyon sistemi **bağımsız bir plugin** olarak tasarlanmıştır.
+
+### Şema Listesi
+
+| Şema        | Amaç                              |
+| ----------- | --------------------------------- |
+| `bonus`     | Bonus kuralları ve tetikleyiciler |
+| `promotion` | Promosyon kodları                 |
+| `campaign`  | Kampanya yönetimi                 |
+| `execution` | Bonus uygulamaları ve takibi      |
+| `infra`     | PostgreSQL extension'ları         |
+
+### bonus Şeması
+
+| Tablo            | Açıklama                           |
+| ---------------- | ---------------------------------- |
+| `bonus_types`    | Bonus tipi tanımları               |
+| `bonus_rules`    | Bonus kuralları ve çevrim şartları |
+| `bonus_triggers` | Otomatik tetikleyiciler            |
+
+### promotion Şeması
+
+| Tablo         | Açıklama          |
+| ------------- | ----------------- |
+| `promo_codes` | Promosyon kodları |
+
+### campaign Şeması
+
+| Tablo       | Açıklama           |
+| ----------- | ------------------ |
+| `campaigns` | Kampanya tanımları |
+
+### execution Şeması
+
+| Tablo               | Açıklama                     |
+| ------------------- | ---------------------------- |
+| `bonus_awards`      | Uygulanan bonuslar ve takibi |
+| `promo_redemptions` | Promosyon kodu kullanımları  |
+
+> 💡 **Denormalizasyon**: `bonus_awards` tablosu tenant_id, tenant_code, player_id, player_username alanlarını kopyalar.
+
+---
+
 ## 6. Gateway Veritabanları
 
 Gateway katmanı, oyun ve finans provider'ları ile entegrasyonu yönetir.
