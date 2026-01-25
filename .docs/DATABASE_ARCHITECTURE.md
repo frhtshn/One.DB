@@ -180,134 +180,9 @@ Komisyon ve faturalandırma.
 | `tenant_provider_commission_overrides` | Tenant bazlı komisyon override'ları |
 | `tenant_commissions`                   | Tenant komisyon hesaplamaları       |
 
-## 5. Tenant Affiliate Veritabanı (Plugin)
-
-Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Her tenant için **ayrı bir veritabanı** olarak dağıtılır (`tenant_affiliate_XXX`).
-
-### 5.1 Şema Listesi
-
-| Şema         | Amaç                           |
-| ------------ | ------------------------------ |
-| `affiliate`  | Affiliate tanımları            |
-| `campaign`   | Kampanya ve trafik kaynakları  |
-| `commission` | Komisyon planları ve hesaplama |
-| `payout`     | Ödeme talepleri ve ödemeler    |
-| `tracking`   | Oyuncu-affiliate takibi        |
-| `infra`      | PostgreSQL extension'ları      |
-
-### 5.2 affiliate Şeması
-
-Affiliate platform temel yapı taşları.
-
-| Tablo               | Açıklama                    | Kritik Alanlar                                     |
-| ------------------- | --------------------------- | -------------------------------------------------- |
-| `affiliates`        | Affiliate ana kaydı         | `affiliate_code`, `status`, `kyc_status`           |
-| `affiliate_network` | MLM (Multi-Level) ağ yapısı | `parent_affiliate_id`, `sub_affiliate_id`, `depth` |
-| `affiliate_users`   | Affiliate panel yetkilileri | `affiliate_id`, `email`, `role`                    |
-
-### 5.3 campaign Şeması
-
-Trafik ve kampanya yönetimi.
-
-| Tablo                 | Açıklama                     | Kritik Alanlar                                            |
-| --------------------- | ---------------------------- | --------------------------------------------------------- |
-| `traffic_sources`     | Trafik kaynakları            | `source_name`, `medium`, `postback_url`                   |
-| `campaigns`           | Affiliate kampanyaları       | `campaign_code`, `landing_page_url`                       |
-| `attribution_models`  | Atıf modelleri               | `model_name` (Last Click, First Click), `lookback_window` |
-| `affiliate_campaigns` | Affiliate-Kampanya eşleşmesi | `affiliate_id`, `campaign_id`, `commission_plan_id`       |
-
-### 5.4 commission Şeması
-
-Komisyon planlama ve hesaplama motoru.
-
-| Tablo                      | Açıklama               | Kritik Alanlar                                      |
-| -------------------------- | ---------------------- | --------------------------------------------------- |
-| `commission_plans`         | Komisyon planları      | `plan_type` (RevShare, CPA, Hybrid), `is_default`   |
-| `commission_tiers`         | Plan kademeleri        | `min_ngr`, `revenue_share_percentage`, `cpa_amount` |
-| `network_commission_rules` | MLM komisyon kuralları | `level`, `override_percentage`                      |
-| `commissions`              | Hesaplanan komisyonlar | `amount`, `source_amount` (NGR), `period`           |
-
-### 5.5 payout Şeması
-
-Ödeme yönetimi.
-
-| Tablo             | Açıklama            | Kritik Alanlar                       |
-| ----------------- | ------------------- | ------------------------------------ |
-| `payout_requests` | Ödeme talepleri     | `amount`, `payment_method`, `status` |
-| `payouts`         | Kesinleşen ödemeler | `transaction_ref`, `paid_at`         |
-
-### 5.6 tracking Şeması
-
-Oyuncu takip sistemi.
-
-| Tablo                      | Açıklama                     | Kritik Alanlar                                   |
-| -------------------------- | ---------------------------- | ------------------------------------------------ |
-| `player_affiliate_current` | Oyuncunun mevcut affiliate'i | `player_id`, `affiliate_id`, `campaign_id`       |
-| `player_affiliate_history` | Atıf değişiklik geçmişi      | `old_affiliate_id`, `new_affiliate_id`, `reason` |
-
-> 💡 **Denormalizasyon**: `player_affiliate_current` tablosu `player_username`, `tenant_code` gibi alanları performans için kopyalar.
-
 ---
 
-## 5.7 Bonus Veritabanı (Plugin)
-
-Bonus ve promosyon sistemi **bağımsız bir plugin** olarak tasarlanmıştır.
-
-### Şema Listesi
-
-| Şema        | Amaç                              |
-| ----------- | --------------------------------- |
-| `bonus`     | Bonus kuralları ve tetikleyiciler |
-| `promotion` | Promosyon kodları                 |
-| `campaign`  | Kampanya yönetimi                 |
-| `execution` | Bonus uygulamaları ve takibi      |
-| `infra`     | PostgreSQL extension'ları         |
-
-### bonus Şeması
-
-Bonus kuralları ve mantık motoru.
-
-| Tablo            | Açıklama                  | Kritik Alanlar                                                 |
-| ---------------- | ------------------------- | -------------------------------------------------------------- |
-| `bonus_types`    | Bonus kategorileri        | `category` (Deposit, FreeSpin), `value_type` (%, Fixed)        |
-| `bonus_rules`    | Kural ve çevrim şartları  | `wagering_requirement` (30x), `max_bonus_amount`, `valid_days` |
-| `bonus_triggers` | Otomasyon tetikleyicileri | `trigger_type` (Registration, Deposit), `cron_schedule`        |
-
-### promotion Şeması
-
-Manuel promosyon araçları.
-
-| Tablo         | Açıklama          | Kritik Alanlar                                        |
-| ------------- | ----------------- | ----------------------------------------------------- |
-| `promo_codes` | Promosyon kodları | `code` (WELCOME100), `max_redemptions`, `valid_until` |
-
-### campaign Şeması
-
-Kampanya yönetimi.
-
-| Tablo       | Açıklama               | Kritik Alanlar                                     |
-| ----------- | ---------------------- | -------------------------------------------------- |
-| `campaigns` | Pazarlama kampanyaları | `campaign_type`, `total_budget`, `target_segments` |
-
-### execution Şeması
-
-Uygulama ve takip katmanı.
-
-| Tablo               | Açıklama                     | Kritik Alanlar                                                    |
-| ------------------- | ---------------------------- | ----------------------------------------------------------------- |
-| `bonus_awards`      | Oyuncuya tanımlanan bonuslar | `bonus_amount`, `wagering_progress`, `status` (Active, Completed) |
-| `promo_redemptions` | Kod kullanım logları         | `promo_code`, `status` (Success, Failed)                          |
-
-> 💡 **Denormalizasyon**: `bonus_awards` tablosu tenant_id, tenant_code, player_id, player_username alanlarını kopyalar.
-
-> 🏢 **Tenant Sahipliği**: Konfigürasyon tabloları (`rules`, `triggers`, `campaigns`) `tenant_id` alanı içerir.
->
-> - `tenant_id IS NULL`: Platform seviyesi (tüm tenant'lara açık)
-> - `tenant_id = X`: Sadece Tenant X'e özel (özelleştirilmiş)
-
----
-
-## 6. Gateway Veritabanları
+## 5. Gateway Veritabanları
 
 Gateway katmanı, oyun ve finans provider'ları ile entegrasyonu yönetir.
 
@@ -420,7 +295,7 @@ Oyuncu cüzdan yönetimi.
 
 ---
 
-### 6.5 transaction Şeması
+### 6.6 transaction Şeması
 
 Finansal işlem kayıtları.
 
@@ -432,7 +307,7 @@ Finansal işlem kayıtları.
 
 ---
 
-### 6.6 finance Şeması
+### 6.7 finance Şeması
 
 Finansal referans verileri.
 
@@ -444,6 +319,7 @@ Finansal referans verileri.
 | `payment_method_limits`   | Tenant seviyesinde ödeme metodu limitleri     |
 | `payment_player_limits`   | Oyuncu seviyesinde ödeme limitleri            |
 | `currency_rates`          | Döviz kuru geçmişi                            |
+| `currency_rates_latest`   | En son döviz kurları (cross-rate hesaplama)   |
 
 **Views:**
 
@@ -462,7 +338,7 @@ Finansal referans verileri.
 
 ---
 
-### 6.7 kyc Şeması
+### 6.8 kyc Şeması
 
 KYC (Know Your Customer) doğrulama süreçleri.
 
@@ -475,32 +351,136 @@ KYC (Know Your Customer) doğrulama süreçleri.
 
 ---
 
+## 7. Tenant Affiliate Veritabanı (Plugin)
+
+Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Her tenant için **ayrı bir veritabanı** olarak dağıtılır (`tenant_affiliate_XXX`).
+
+### 7.1 Şema Listesi
+
+| Şema         | Amaç                           |
+| ------------ | ------------------------------ |
+| `affiliate`  | Affiliate tanımları            |
+| `campaign`   | Kampanya ve trafik kaynakları  |
+| `commission` | Komisyon planları ve hesaplama |
+| `payout`     | Ödeme talepleri ve ödemeler    |
+| `tracking`   | Oyuncu-affiliate takibi        |
+| `infra`      | PostgreSQL extension'ları      |
+
+### 7.2 affiliate Şeması
+
+Affiliate platform temel yapı taşları.
+
+| Tablo               | Açıklama                    | Kritik Alanlar                                     |
+| ------------------- | --------------------------- | -------------------------------------------------- |
+| `affiliates`        | Affiliate ana kaydı         | `affiliate_code`, `status`, `kyc_status`           |
+| `affiliate_network` | MLM (Multi-Level) ağ yapısı | `parent_affiliate_id`, `sub_affiliate_id`, `depth` |
+| `affiliate_users`   | Affiliate panel yetkilileri | `affiliate_id`, `email`, `role`                    |
+
+### 7.3 campaign Şeması
+
+Trafik ve kampanya yönetimi.
+
+| Tablo                 | Açıklama                     | Kritik Alanlar                                            |
+| --------------------- | ---------------------------- | --------------------------------------------------------- |
+| `traffic_sources`     | Trafik kaynakları            | `source_name`, `medium`, `postback_url`                   |
+| `campaigns`           | Affiliate kampanyaları       | `campaign_code`, `landing_page_url`                       |
+| `attribution_models`  | Atıf modelleri               | `model_name` (Last Click, First Click), `lookback_window` |
+| `affiliate_campaigns` | Affiliate-Kampanya eşleşmesi | `affiliate_id`, `campaign_id`, `commission_plan_id`       |
+
+### 7.4 commission Şeması
+
+Komisyon planlama ve hesaplama motoru.
+
+| Tablo                      | Açıklama               | Kritik Alanlar                                      |
+| -------------------------- | ---------------------- | --------------------------------------------------- |
+| `commission_plans`         | Komisyon planları      | `plan_type` (RevShare, CPA, Hybrid), `is_default`   |
+| `commission_tiers`         | Plan kademeleri        | `min_ngr`, `revenue_share_percentage`, `cpa_amount` |
+| `network_commission_rules` | MLM komisyon kuralları | `level`, `override_percentage`                      |
+| `commissions`              | Hesaplanan komisyonlar | `amount`, `source_amount` (NGR), `period`           |
+
+### 7.5 payout Şeması
+
+Ödeme yönetimi.
+
+| Tablo             | Açıklama            | Kritik Alanlar                       |
+| ----------------- | ------------------- | ------------------------------------ |
+| `payout_requests` | Ödeme talepleri     | `amount`, `payment_method`, `status` |
+| `payouts`         | Kesinleşen ödemeler | `transaction_ref`, `paid_at`         |
+
+### 7.6 tracking Şeması
+
+Oyuncu takip sistemi.
+
+| Tablo                      | Açıklama                     | Kritik Alanlar                                   |
+| -------------------------- | ---------------------------- | ------------------------------------------------ |
+| `player_affiliate_current` | Oyuncunun mevcut affiliate'i | `player_id`, `affiliate_id`, `campaign_id`       |
+| `player_affiliate_history` | Atıf değişiklik geçmişi      | `old_affiliate_id`, `new_affiliate_id`, `reason` |
+
+> 💡 **Denormalizasyon**: `player_affiliate_current` tablosu `player_username`, `tenant_code` gibi alanları performans için kopyalar.
+
 ---
 
-### 6.8 Tenant Affiliate Şeması (Plugin)
+## 8. Bonus Veritabanı (Plugin)
 
-Tenant'a özel affiliate yönetimi ve komisyon takibi.
+Bonus ve promosyon sistemi **bağımsız bir plugin** olarak tasarlanmıştır.
 
-| Tablo                      | Açıklama                     |
-| -------------------------- | ---------------------------- |
-| `affiliates`               | Affiliate tanımları          |
-| `affiliate_network`        | Affiliate ağ yapısı (MLM)    |
-| `commission_plans`         | Komisyon planları            |
-| `commission_tiers`         | Komisyon kademeleri          |
-| `affiliate_campaigns`      | Affiliate kampanyaları       |
-| `player_affiliate_current` | Oyuncunun aktif affiliate'i  |
-| `player_affiliate_history` | Affiliate değişiklik geçmişi |
-| `network_commission_rules` | MLM komisyon kuralları       |
-| `commissions`              | Hesaplanan komisyonlar       |
-| `affiliate_users`          | Affiliate kullanıcıları      |
-| `payout_requests`          | Ödeme talepleri              |
-| `payouts`                  | Gerçekleşen ödemeler         |
+### 8.1 Şema Listesi
+
+| Şema        | Amaç                              |
+| ----------- | --------------------------------- |
+| `bonus`     | Bonus kuralları ve tetikleyiciler |
+| `promotion` | Promosyon kodları                 |
+| `campaign`  | Kampanya yönetimi                 |
+| `execution` | Bonus uygulamaları ve takibi      |
+| `infra`     | PostgreSQL extension'ları         |
+
+### 8.2 bonus Şeması
+
+Bonus kuralları ve mantık motoru.
+
+| Tablo            | Açıklama                  | Kritik Alanlar                                                 |
+| ---------------- | ------------------------- | -------------------------------------------------------------- |
+| `bonus_types`    | Bonus kategorileri        | `category` (Deposit, FreeSpin), `value_type` (%, Fixed)        |
+| `bonus_rules`    | Kural ve çevrim şartları  | `wagering_requirement` (30x), `max_bonus_amount`, `valid_days` |
+| `bonus_triggers` | Otomasyon tetikleyicileri | `trigger_type` (Registration, Deposit), `cron_schedule`        |
+
+### 8.3 promotion Şeması
+
+Manuel promosyon araçları.
+
+| Tablo         | Açıklama          | Kritik Alanlar                                        |
+| ------------- | ----------------- | ----------------------------------------------------- |
+| `promo_codes` | Promosyon kodları | `code` (WELCOME100), `max_redemptions`, `valid_until` |
+
+### 8.4 campaign Şeması
+
+Kampanya yönetimi.
+
+| Tablo       | Açıklama               | Kritik Alanlar                                     |
+| ----------- | ---------------------- | -------------------------------------------------- |
+| `campaigns` | Pazarlama kampanyaları | `campaign_type`, `total_budget`, `target_segments` |
+
+### 8.5 execution Şeması
+
+Uygulama ve takip katmanı.
+
+| Tablo               | Açıklama                     | Kritik Alanlar                                                    |
+| ------------------- | ---------------------------- | ----------------------------------------------------------------- |
+| `bonus_awards`      | Oyuncuya tanımlanan bonuslar | `bonus_amount`, `wagering_progress`, `status` (Active, Completed) |
+| `promo_redemptions` | Kod kullanım logları         | `promo_code`, `status` (Success, Failed)                          |
+
+> 💡 **Denormalizasyon**: `bonus_awards` tablosu tenant_id, tenant_code, player_id, player_username alanlarını kopyalar.
+
+> 🏢 **Tenant Sahipliği**: Konfigürasyon tabloları (`rules`, `triggers`, `campaigns`) `tenant_id` alanı içerir.
+>
+> - `tenant_id IS NULL`: Platform seviyesi (tüm tenant'lara açık)
+> - `tenant_id = X`: Sadece Tenant X'e özel (özelleştirilmiş)
 
 ---
 
-## 7. Log, Audit ve Report Veritabanları
+## 9. Log, Audit ve Report Veritabanları
 
-### 7.1 Log Veritabanları
+### 9.1 Log Veritabanları
 
 | DB                  | Partition | Retention | Not                              |
 | ------------------- | --------- | --------- | -------------------------------- |
@@ -509,7 +489,7 @@ Tenant'a özel affiliate yönetimi ve komisyon takibi.
 | `game_log`          | Daily     | 7–14 gün  | Yüksek hacim - DROP zorunlu      |
 | `finance_log`       | Daily     | 14–30 gün | Yüksek hacim - DROP zorunlu      |
 
-### 7.2 Audit Veritabanları
+### 9.2 Audit Veritabanları
 
 | DB                    | İçerik                                                         | Retention |
 | --------------------- | -------------------------------------------------------------- | --------- |
@@ -518,7 +498,7 @@ Tenant'a özel affiliate yönetimi ve komisyon takibi.
 
 > ⚠️ Audit verileri **silinmez**. Regülasyon gereği 5–10 yıl saklanır.
 
-### 7.3 Report Veritabanları
+### 9.3 Report Veritabanları
 
 | DB                     | İçerik                                              |
 | ---------------------- | --------------------------------------------------- |
@@ -529,7 +509,7 @@ Tenant'a özel affiliate yönetimi ve komisyon takibi.
 
 ---
 
-## 8. PostgreSQL Extension'ları
+## 10. PostgreSQL Extension'ları
 
 Tüm veritabanlarında `infra` şemasında aşağıdaki extension'lar etkindir:
 
@@ -545,7 +525,7 @@ Tüm veritabanlarında `infra` şemasında aşağıdaki extension'lar etkindir:
 
 ---
 
-## 9. Deploy Scriptleri
+## 11. Deploy Scriptleri
 
 | Script              | Amaç                                |
 | ------------------- | ----------------------------------- |
@@ -555,7 +535,7 @@ Tüm veritabanlarında `infra` şemasında aşağıdaki extension'lar etkindir:
 
 ---
 
-## 10. Altın Kurallar
+## 12. Altın Kurallar
 
 > **"Core paylaşılır, tenant izole edilir."**
 
