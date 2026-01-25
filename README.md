@@ -12,6 +12,18 @@ Bu extension'larla db'ye bağlanılır. Daha sonra bir script yazıldığında "
 
 ---
 
+## 📚 Dokümantasyon
+
+Detaylı mimari ve yapı dokümantasyonu için:
+
+| Dosya                                                | Açıklama                           |
+| ---------------------------------------------------- | ---------------------------------- |
+| [DATABASE_STRUCTURE.md](.docs/DATABASE_STRUCTURE.md) | Detaylı şema ve tablo yapısı       |
+| [DB_ARCHITECTURE.md](.docs/DB_ARCHITECTURE.md)       | Mimari döküman (katmanlı yapı)     |
+| [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)               | Log, audit ve retention stratejisi |
+
+---
+
 ## Deploy the Schema SQL File to the Core Database
 
 ```bash

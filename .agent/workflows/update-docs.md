@@ -36,14 +36,14 @@ Bu kural aşağıdaki durumlarda otomatik olarak uygulanmalıdır:
 
 Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidir:
 
-| Dosya                   | İçerik                         |
-| ----------------------- | ------------------------------ |
-| `DATABASE_STRUCTURE.md` | Detaylı tablo/şema yapısı      |
-| `DB_ARCHITECTURE.md`    | Mimari döküman (katmanlı yapı) |
+| Dosya                         | İçerik                         |
+| ----------------------------- | ------------------------------ |
+| `.docs/DATABASE_STRUCTURE.md` | Detaylı tablo/şema yapısı      |
+| `.docs/DB_ARCHITECTURE.md`    | Mimari döküman (katmanlı yapı) |
 
 ## Güncelleme Adımları
 
-### 1. DATABASE_STRUCTURE.md Güncelleme
+### 1. .docs/DATABASE_STRUCTURE.md Güncelleme
 
 1. Değişikliğin türünü belirle (tablo, şema, mimari)
 2. İlgili bölümü bul
@@ -53,7 +53,7 @@ Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidi
     - Mimari değişiklik: İlgili açıklama bölümünü güncelle
 4. Genel özet tablosunu gerekirse güncelle
 
-### 2. DB_ARCHITECTURE.md Güncelleme
+### 2. .docs/DB_ARCHITECTURE.md Güncelleme
 
 1. Tablonun ait olduğu katmanı belirle:
     - **Core Katmanı** (Bölüm 2): `core` veritabanı tabloları
@@ -65,13 +65,13 @@ Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidi
 
 ## Tablo Ekleme Formatları
 
-### DATABASE_STRUCTURE.md formatı
+### .docs/DATABASE_STRUCTURE.md formatı
 
 ```markdown
 | `tablo_adi` | Tablonun kısa açıklaması |
 ```
 
-### DB_ARCHITECTURE.md formatı
+### .docs/DB_ARCHITECTURE.md formatı
 
 ```markdown
 | `şema` | `tablo_adi` | Tablonun kısa açıklaması |
@@ -79,7 +79,7 @@ Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidi
 
 ## Şema Ekleme Formatı
 
-### DATABASE_STRUCTURE.md
+### .docs/DATABASE_STRUCTURE.md
 
 ```markdown
 ### X.X yeni_sema Şeması
@@ -92,7 +92,7 @@ Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidi
 | `tablo_2` | İkinci tablonun açıklaması |
 ```
 
-### DB_ARCHITECTURE.md
+### .docs/DB_ARCHITECTURE.md
 
 ```markdown
 | `yeni_sema` | `tablo_1` | İlk tablonun açıklaması |
@@ -101,7 +101,7 @@ Değişiklik yapıldığında aşağıdaki **her iki dosya** da güncellenmelidi
 
 ## Veritabanı Ekleme
 
-Yeni veritabanı eklendiğinde DB_ARCHITECTURE.md'de:
+Yeni veritabanı eklendiğinde .docs/DB_ARCHITECTURE.md'de:
 
 1. İlgili katmana (Core/Gateway/Tenant) yeni bölüm ekle
 2. Veritabanı Özet Matrisi'ne (Bölüm 5) satır ekle
@@ -109,8 +109,8 @@ Yeni veritabanı eklendiğinde DB_ARCHITECTURE.md'de:
 
 ## Kontrol Listesi
 
-- [ ] DATABASE_STRUCTURE.md güncellendi
-- [ ] DB_ARCHITECTURE.md güncellendi
+- [ ] .docs/DATABASE_STRUCTURE.md güncellendi
+- [ ] .docs/DB_ARCHITECTURE.md güncellendi
 - [ ] Her iki dosyada format tutarlı
 
 ## Hatırlatma
