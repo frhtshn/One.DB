@@ -28,5 +28,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- CAMPAIGN TABLES
 \i bonus/tables/campaign/campaigns.sql
 
--- Removed execution tables, moved to deploy_tenant_bonus.sql
+-- CONSTRAINTS (FK constraints - en sonda yükle)
+\i bonus/constraints/bonus.sql
+
+-- INDEXES (Performans indexleri - en sonda yükle)
+\i bonus/indexes/bonus.sql
+
 COMMIT;

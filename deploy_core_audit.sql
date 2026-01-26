@@ -18,4 +18,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
 \i core_audit/functions/backoffice/auth_audit_list_by_type.sql
 \i core_audit/functions/backoffice/auth_audit_failed_logins.sql
 
+-- INDEXES (Performans indexleri - en sonda yükle)
+\i core_audit/indexes/backoffice.sql
+
 COMMIT;

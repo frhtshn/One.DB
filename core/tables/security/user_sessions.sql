@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS security.user_sessions CASCADE;
 
 CREATE TABLE security.user_sessions (
     id VARCHAR(50) PRIMARY KEY,                            -- Oturum ID (Session ID)
-    user_id BIGINT NOT NULL REFERENCES security.users(id) ON DELETE CASCADE, -- Kullanıcı ID
+    user_id BIGINT NOT NULL,                               -- Kullanıcı ID (FK: security.users)
     refresh_token_id VARCHAR(100) NOT NULL,                -- Refresh token ID
     ip_address VARCHAR(50),                                -- IP adresi
     user_agent VARCHAR(500),                               -- User Agent

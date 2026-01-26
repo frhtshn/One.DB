@@ -64,3 +64,28 @@ ALTER TABLE core.tenant_providers
 ALTER TABLE core.tenant_settings
     ADD CONSTRAINT fk_tenant_settings_tenant
     FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+
+-- tenant_payment_methods -> tenants
+ALTER TABLE core.tenant_payment_methods
+    ADD CONSTRAINT fk_tenant_payment_methods_tenant
+    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+
+-- tenant_payment_methods -> payment_methods
+ALTER TABLE core.tenant_payment_methods
+    ADD CONSTRAINT fk_tenant_payment_methods_payment_method
+    FOREIGN KEY (payment_method_id) REFERENCES catalog.payment_methods(id);
+
+-- tenant_provider_limits -> tenants
+ALTER TABLE core.tenant_provider_limits
+    ADD CONSTRAINT fk_tenant_provider_limits_tenant
+    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+
+-- tenant_provider_limits -> providers
+ALTER TABLE core.tenant_provider_limits
+    ADD CONSTRAINT fk_tenant_provider_limits_provider
+    FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
+
+-- tenant_provider_limits -> payment_methods
+ALTER TABLE core.tenant_provider_limits
+    ADD CONSTRAINT fk_tenant_provider_limits_payment_method
+    FOREIGN KEY (payment_method_id) REFERENCES catalog.payment_methods(id);

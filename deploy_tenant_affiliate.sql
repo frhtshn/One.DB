@@ -44,4 +44,22 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_affiliate/tables/tracking/player_affiliate_current.sql
 \i tenant_affiliate/tables/tracking/player_affiliate_history.sql
 
+-- =============================================================================
+-- CONSTRAINTS - Must be loaded AFTER all tables are created
+-- =============================================================================
+\i tenant_affiliate/constraints/affiliate.sql
+\i tenant_affiliate/constraints/campaign.sql
+\i tenant_affiliate/constraints/commission.sql
+\i tenant_affiliate/constraints/payout.sql
+\i tenant_affiliate/constraints/tracking.sql
+
+-- =============================================================================
+-- INDEXES - Must be loaded LAST for optimal performance
+-- =============================================================================
+\i tenant_affiliate/indexes/affiliate.sql
+\i tenant_affiliate/indexes/campaign.sql
+\i tenant_affiliate/indexes/commission.sql
+\i tenant_affiliate/indexes/payout.sql
+\i tenant_affiliate/indexes/tracking.sql
+
 COMMIT;

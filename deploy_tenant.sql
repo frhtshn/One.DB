@@ -106,13 +106,31 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/views/finance/v_daily_base_rates.sql
 \i tenant/views/finance/v_cross_rates.sql
 
--- CONSTRAINTS
-\i tenant/constraints/content.sql
-
--- INDEXES
-\i tenant/indexes/content.sql
-
 -- FUNCTIONS
 -- \i tenant/functions/your_function.sql
+
+-- =============================================================================
+-- CONSTRAINTS - Must be loaded AFTER all tables are created
+-- =============================================================================
+\i tenant/constraints/auth.sql
+\i tenant/constraints/profile.sql
+\i tenant/constraints/wallet.sql
+\i tenant/constraints/transaction.sql
+\i tenant/constraints/kyc.sql
+\i tenant/constraints/bonus.sql
+\i tenant/constraints/content.sql
+
+-- =============================================================================
+-- INDEXES - Must be loaded LAST for optimal performance
+-- =============================================================================
+\i tenant/indexes/auth.sql
+\i tenant/indexes/profile.sql
+\i tenant/indexes/wallet.sql
+\i tenant/indexes/transaction.sql
+\i tenant/indexes/finance.sql
+\i tenant/indexes/kyc.sql
+\i tenant/indexes/bonus.sql
+\i tenant/indexes/game.sql
+\i tenant/indexes/content.sql
 
 COMMIT;

@@ -33,4 +33,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
 \i core_log/functions/logs/core_audit_create.sql
 \i core_log/functions/logs/core_audit_list.sql
 
+-- INDEXES (Performans indexleri - en sonda yükle)
+\i core_log/indexes/backoffice.sql
+\i core_log/indexes/logs.sql
+
 COMMIT;

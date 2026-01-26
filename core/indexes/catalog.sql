@@ -19,8 +19,14 @@ CREATE INDEX idx_provider_settings_provider_id ON catalog.provider_settings USIN
 -- localization_values.localization_key_id -> localization_keys.id
 CREATE INDEX idx_localization_values_key_id ON catalog.localization_values USING btree(localization_key_id);
 
+-- localization_values.language_code (localization_messages_get, localization_export functions)
+CREATE INDEX idx_localization_values_language ON catalog.localization_values USING btree(language_code);
+
 -- localization_values (lookup by key + language)
 CREATE UNIQUE INDEX idx_localization_values_key_lang ON catalog.localization_values USING btree(localization_key_id, language_code);
+
+-- localization_keys.localization_key (unique lookup)
+CREATE UNIQUE INDEX idx_localization_keys_key ON catalog.localization_keys USING btree(localization_key);
 
 -- localization_keys (lookup by domain/category)
 CREATE INDEX idx_localization_keys_domain ON catalog.localization_keys USING btree(domain);

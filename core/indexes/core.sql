@@ -39,3 +39,21 @@ CREATE INDEX idx_tenant_settings_tenant_id ON core.tenant_settings USING btree(t
 
 -- tenant_settings (unique lookup)
 CREATE UNIQUE INDEX idx_tenant_settings_tenant_key ON core.tenant_settings USING btree(tenant_id, setting_key);
+
+-- tenant_payment_methods.tenant_id -> tenants.id
+CREATE INDEX idx_tenant_payment_methods_tenant_id ON core.tenant_payment_methods USING btree(tenant_id);
+
+-- tenant_payment_methods.payment_method_id -> payment_methods.id
+CREATE INDEX idx_tenant_payment_methods_payment_method_id ON core.tenant_payment_methods USING btree(payment_method_id);
+
+-- tenant_payment_methods (unique lookup)
+CREATE UNIQUE INDEX idx_tenant_payment_methods_tenant_method ON core.tenant_payment_methods USING btree(tenant_id, payment_method_id);
+
+-- tenant_provider_limits.tenant_id -> tenants.id
+CREATE INDEX idx_tenant_provider_limits_tenant_id ON core.tenant_provider_limits USING btree(tenant_id);
+
+-- tenant_provider_limits.provider_id -> providers.id
+CREATE INDEX idx_tenant_provider_limits_provider_id ON core.tenant_provider_limits USING btree(provider_id);
+
+-- tenant_provider_limits (unique lookup)
+CREATE UNIQUE INDEX idx_tenant_provider_limits_lookup ON core.tenant_provider_limits USING btree(tenant_id, provider_id, payment_method_id);

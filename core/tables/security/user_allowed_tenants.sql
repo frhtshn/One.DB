@@ -7,10 +7,10 @@
 DROP TABLE IF EXISTS security.user_allowed_tenants CASCADE;
 
 CREATE TABLE security.user_allowed_tenants (
-    user_id BIGINT NOT NULL REFERENCES security.users(id) ON DELETE CASCADE, -- Kullanıcı ID
-    tenant_id BIGINT NOT NULL REFERENCES core.tenants(id) ON DELETE CASCADE, -- Tenant ID
+    user_id BIGINT NOT NULL,                               -- Kullanıcı ID (FK: security.users)
+    tenant_id BIGINT NOT NULL,                             -- Tenant ID (FK: core.tenants)
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
-    created_by BIGINT REFERENCES security.users(id),       -- Oluşturan kullanıcı
+    created_by BIGINT,                                     -- Oluşturan kullanıcı (FK: security.users)
 
     PRIMARY KEY (user_id, tenant_id)
 );

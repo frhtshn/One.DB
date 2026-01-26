@@ -183,9 +183,26 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Presentation Functions
 \i core/functions/presentation/build_page_json.sql
 \i core/functions/presentation/get_structure.sql
+
 -- TRIGGERS
 \i core/triggers/update_updated_at_column.sql
 \i core/triggers/security_triggers.sql
 \i core/triggers/presentation_triggers.sql
+
+-- CONSTRAINTS (FK constraints - en sonda yükle)
+\i core/constraints/catalog.sql
+\i core/constraints/core.sql
+\i core/constraints/presentation.sql
+\i core/constraints/routing.sql
+\i core/constraints/security.sql
+\i core/constraints/billing.sql
+
+-- INDEXES (Performans indexleri - en sonda yükle)
+\i core/indexes/catalog.sql
+\i core/indexes/core.sql
+\i core/indexes/presentation.sql
+\i core/indexes/routing.sql
+\i core/indexes/security.sql
+\i core/indexes/billing.sql
 
 COMMIT;

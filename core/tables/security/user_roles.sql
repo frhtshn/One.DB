@@ -8,8 +8,8 @@ DROP TABLE IF EXISTS security.user_roles CASCADE;
 
 CREATE TABLE security.user_roles (
     id BIGSERIAL PRIMARY KEY,                              -- Kayıt ID
-    user_id BIGINT NOT NULL REFERENCES security.users(id) ON DELETE CASCADE, -- Kullanıcı ID
-    role_id BIGINT NOT NULL REFERENCES security.roles(id) ON DELETE CASCADE, -- Rol ID
+    user_id BIGINT NOT NULL,                               -- Kullanıcı ID (FK: security.users)
+    role_id BIGINT NOT NULL,                               -- Rol ID (FK: security.roles)
     assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- Atanma zamanı
     assigned_by BIGINT,                                    -- Atayan kullanıcı
 
