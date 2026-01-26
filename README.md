@@ -30,6 +30,11 @@ set PGPASSWORD=sizin_şifre
 psql -h localhost -U postgres -d core -f deploy_core.sql
 ```
 
+### Create Database local
+
+```bash
+psql -h localhost -U postgres -d postgres -f create_dbs.sql
+```
 ---
 
 ## Deploy Core - Beta Server
@@ -47,7 +52,7 @@ psql -h 155.133.22.97 -U admin -d core -f deploy_core.sql
 set PGPASSWORD=NucleoPostgres2026
 ```
 
-### Create Database
+### Create Database beta
 
 ```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d postgres -f create_dbs.sql

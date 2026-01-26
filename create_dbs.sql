@@ -18,12 +18,21 @@ WHERE NOT EXISTS (
 \gexec
 
 -- Core log veritabanı: Sistem genelinde merkezi log kayıtları
--- SELECT
---   'CREATE DATABASE core_log'
--- WHERE NOT EXISTS (
---   SELECT 1 FROM pg_database WHERE datname = 'core_log'
--- )
--- \gexec
+SELECT
+  'CREATE DATABASE core_log'
+WHERE NOT EXISTS (
+  SELECT 1 FROM pg_database WHERE datname = 'core_log'
+)
+\gexec
+
+-- Core audit veritabanı: Merkezi denetim ve uyumluluk kayıtları
+SELECT
+  'CREATE DATABASE core_audit'
+WHERE NOT EXISTS (
+  SELECT 1 FROM pg_database WHERE datname = 'core_audit'
+)
+\gexec
+
 
 -- Core rapor veritabanı: Merkezi raporlama ve analitik verileri
 -- SELECT
