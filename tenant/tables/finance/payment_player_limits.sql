@@ -34,3 +34,5 @@ CREATE TABLE finance.payment_player_limits (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE finance.payment_player_limits IS 'Player-specific payment limits for responsible gaming or admin-imposed restrictions';

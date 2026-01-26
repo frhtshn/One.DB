@@ -26,3 +26,5 @@ CREATE TABLE profile.player_profile (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE profile.player_profile IS 'Player personal information with encrypted PII fields for GDPR/KVKK compliance';

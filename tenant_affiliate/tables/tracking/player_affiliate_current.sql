@@ -13,3 +13,5 @@ CREATE TABLE tracking.player_affiliate_current (
     campaign_id bigint,                                    -- Güncel kampanya ID (FK: campaign.campaigns)
     assigned_at timestamp without time zone NOT NULL DEFAULT now() -- Atama zamanı
 );
+
+COMMENT ON TABLE tracking.player_affiliate_current IS 'Current player-affiliate assignment for fast lookup without querying history table';

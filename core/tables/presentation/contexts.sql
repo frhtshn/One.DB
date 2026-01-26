@@ -20,3 +20,5 @@ CREATE TABLE presentation.contexts (
         CHECK (behavior IN ('hide','mask','readonly','edit')),
     UNIQUE (page_id, code)                                 -- Sayfa başına benzersiz context kodu
 );
+
+COMMENT ON TABLE presentation.contexts IS 'Page field and action permission contexts controlling visibility and behavior of UI elements based on user permissions';

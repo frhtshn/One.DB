@@ -13,3 +13,5 @@ CREATE TABLE wallet.wallet_snapshots (
     last_transaction_id bigint NOT NULL,          -- Son işlem ID (tutarlılık kontrolü için)
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE wallet.wallet_snapshots IS 'Real-time wallet balance snapshots updated with each transaction for performance optimization';

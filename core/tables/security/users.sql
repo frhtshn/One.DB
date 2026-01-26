@@ -37,3 +37,5 @@ CREATE TABLE security.users (
     UNIQUE (company_id, email),                            -- Şirket başına benzersiz e-posta
     UNIQUE (company_id, username)                          -- Şirket başına benzersiz kullanıcı adı
 );
+
+COMMENT ON TABLE security.users IS 'BackOffice administrator user accounts with authentication credentials, 2FA settings, and company association';

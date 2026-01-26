@@ -62,6 +62,8 @@ CREATE TABLE billing.tenant_commissions (
     UNIQUE (tenant_id, provider_id, product_code, commission_type, period_key, tier_order, currency)
 );
 
+COMMENT ON TABLE billing.tenant_commissions IS 'Calculated tenant commissions with tier-based breakdowns updated by workers for real-time or periodic billing';
+
 -- Worker upsert örneği:
 -- Her kademe için ayrı satır:
 -- Kademe 1 (0-200K): base_amount=200000, rate=20, commission=40000

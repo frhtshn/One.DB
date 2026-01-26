@@ -21,3 +21,5 @@ CREATE TABLE auth.player_credentials (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE auth.player_credentials IS 'Player authentication credentials including Argon2d hashed passwords and 2FA secrets';

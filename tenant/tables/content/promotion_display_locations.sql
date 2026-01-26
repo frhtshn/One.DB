@@ -16,6 +16,8 @@ CREATE TABLE content.promotion_display_locations (
     created_by INTEGER
 );
 
+COMMENT ON TABLE content.promotion_display_locations IS 'Promotion placement configuration for homepage, lobby, deposit page, and other display areas';
+
 -- Örnek kullanım:
 -- homepage: Ana sayfa promosyon bloğu
 -- lobby: Oyun lobisi banner alanı

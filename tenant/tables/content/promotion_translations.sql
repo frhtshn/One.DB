@@ -25,3 +25,5 @@ CREATE TABLE content.promotion_translations (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.promotion_translations IS 'Multilingual promotion content including titles, descriptions, terms, and CTA elements';

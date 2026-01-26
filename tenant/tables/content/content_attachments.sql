@@ -14,3 +14,5 @@ CREATE TABLE content.content_attachments (
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     created_by INTEGER
 );
+
+COMMENT ON TABLE content.content_attachments IS 'File attachments for content items including images, documents, and media files';

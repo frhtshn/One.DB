@@ -42,3 +42,5 @@ CREATE TABLE bonus.bonus_awards (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE bonus.bonus_awards IS 'Player bonus awards tracking wagering requirements, progress, and completion status';

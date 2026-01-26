@@ -18,3 +18,5 @@ CREATE TABLE finance.transaction_types (
     is_reportable   boolean NOT NULL,              -- Raporlara dahil mi?
     is_active       boolean NOT NULL DEFAULT true  -- Aktif mi?
 );
+
+COMMENT ON TABLE finance.transaction_types IS 'Financial transaction type catalog for deposits, withdrawals, bets, wins, bonuses, and adjustments';

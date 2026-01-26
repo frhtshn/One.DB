@@ -16,3 +16,5 @@ CREATE TABLE finance.currency_rates_latest (
 
     PRIMARY KEY (provider, provider_base_currency, target_currency)
 );
+
+COMMENT ON TABLE finance.currency_rates_latest IS 'Latest currency exchange rates per currency pair for real-time conversion lookups';

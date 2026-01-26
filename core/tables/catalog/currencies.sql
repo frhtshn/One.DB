@@ -15,3 +15,5 @@ CREATE TABLE catalog.currencies (
     created_at TIMESTAMP NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
 
+COMMENT ON TABLE catalog.currencies IS 'Currency reference catalog containing ISO 4217 compliant currency codes and symbols';
+

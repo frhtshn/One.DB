@@ -24,6 +24,8 @@ CREATE TABLE billing.tenant_commission_plan_tiers (
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
 
+COMMENT ON TABLE billing.tenant_commission_plan_tiers IS 'Custom tier definitions for tenant-specific commission plans with override rate brackets';
+
 -- Örnek senaryo:
 -- TenantA için EGT özel anlaşma:
 -- tier_order=1: tier_from=0, tier_to=150000, rate=18.00 (ilk 150K EUR için %18)

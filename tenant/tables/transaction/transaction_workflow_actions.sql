@@ -15,3 +15,5 @@ CREATE TABLE transaction.transaction_workflow_actions (
     note varchar(255),                            -- Açıklama/not
     created_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE transaction.transaction_workflow_actions IS 'Workflow action history tracking approvals, rejections, assignments, and escalations';

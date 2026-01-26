@@ -16,3 +16,5 @@ CREATE TABLE catalog.provider_settings (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE catalog.provider_settings IS 'Provider configuration settings stored as key-value pairs such as api_url, timeout, retry_count';

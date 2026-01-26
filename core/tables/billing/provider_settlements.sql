@@ -69,3 +69,5 @@ CREATE TABLE billing.provider_settlements (
     -- Provider + period benzersiz
     UNIQUE (provider_id, period_key)
 );
+
+COMMENT ON TABLE billing.provider_settlements IS 'Provider settlement and reconciliation records comparing internal calculations with provider statements for dispute resolution';

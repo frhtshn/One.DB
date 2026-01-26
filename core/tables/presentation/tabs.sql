@@ -17,3 +17,5 @@ CREATE TABLE presentation.tabs (
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     UNIQUE (page_id, code)                                 -- Sayfa başına benzersiz sekme kodu
 );
+
+COMMENT ON TABLE presentation.tabs IS 'Page tab panel definitions for organizing content within pages like Player Detail tabs: Profile, Wallet, Transactions';

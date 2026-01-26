@@ -13,3 +13,5 @@ CREATE TABLE affiliate.affiliate_network (
     level smallint NOT NULL DEFAULT 0,                     -- Hiyerarşi seviyesi (root = 0)
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE affiliate.affiliate_network IS 'Affiliate network hierarchy for multi-level marketing and sub-affiliate structures';

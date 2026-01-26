@@ -30,3 +30,5 @@ CREATE TABLE core.tenant_provider_limits (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_provider_limits IS 'Tenant provider limit definitions for deposit and withdrawal limits per provider and payment method combination';

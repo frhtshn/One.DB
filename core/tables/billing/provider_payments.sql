@@ -49,3 +49,5 @@ CREATE TABLE billing.provider_payments (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE billing.provider_payments IS 'Payments made to providers including bank transfers, netting, and crypto with approval workflow';

@@ -16,3 +16,5 @@ CREATE TABLE security.secrets_provider (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     rotated_at timestamp without time zone                 -- Son anahtar rotasyon zamanı
 );
+
+COMMENT ON TABLE security.secrets_provider IS 'Provider secrets storage for sensitive credentials like API keys, secret keys, and webhook secrets with encryption at application layer';

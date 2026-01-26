@@ -15,3 +15,5 @@ CREATE TABLE presentation.menu_groups (
     required_permission VARCHAR(100),                      -- Gerekli yetki kodu (opsiyonel)
     is_active BOOLEAN NOT NULL DEFAULT true                -- Aktif/pasif durumu
 );
+
+COMMENT ON TABLE presentation.menu_groups IS 'BackOffice menu group definitions for sidebar navigation categories like HOME, PLAYERS, REPORTS, SETTINGS';

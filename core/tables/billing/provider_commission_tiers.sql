@@ -24,6 +24,8 @@ CREATE TABLE billing.provider_commission_tiers (
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
 
+COMMENT ON TABLE billing.provider_commission_tiers IS 'Provider tiered commission rate brackets defining progressive rates based on GGR/NGR volume thresholds';
+
 -- Örnek veri açıklaması:
 -- EGT için GGR bazlı kademeli komisyon:
 -- tier_order=1: tier_from=0, tier_to=200000, rate=20.00 (ilk 200K EUR için %20)

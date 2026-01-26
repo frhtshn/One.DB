@@ -30,3 +30,5 @@ CREATE TABLE campaign.campaigns (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE campaign.campaigns IS 'Marketing campaigns management including welcome, deposit bonus, tournament, and seasonal promotions with budget tracking and audience segmentation';

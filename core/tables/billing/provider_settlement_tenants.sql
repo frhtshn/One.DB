@@ -38,3 +38,5 @@ CREATE TABLE billing.provider_settlement_tenants (
     -- Settlement + Tenant benzersiz
     UNIQUE (provider_settlement_id, tenant_id)
 );
+
+COMMENT ON TABLE billing.provider_settlement_tenants IS 'Per-tenant breakdown within provider settlements for detailed reconciliation and variance analysis';

@@ -14,3 +14,5 @@ CREATE TABLE profile.player_identity (
     identity_confirmed boolean NOT NULL DEFAULT false, -- Kimlik doğrulandı mı?
     verified_at timestamp without time zone       -- Doğrulama tarihi
 );
+
+COMMENT ON TABLE profile.player_identity IS 'Player identity documents (ID/passport) with encrypted storage and verification status';

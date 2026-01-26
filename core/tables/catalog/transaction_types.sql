@@ -20,3 +20,5 @@ CREATE TABLE catalog.transaction_types (
     is_active       boolean NOT NULL DEFAULT true,         -- Aktif/pasif durumu
     created_at      timestamptz NOT NULL DEFAULT now()     -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE catalog.transaction_types IS 'Transaction type reference catalog for all financial transaction types such as BET, WIN, DEPOSIT, WITHDRAWAL, BONUS';

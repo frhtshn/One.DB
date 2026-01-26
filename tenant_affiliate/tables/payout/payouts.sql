@@ -16,3 +16,5 @@ CREATE TABLE payout.payouts (
     status smallint NOT NULL,                              -- Durum: 0=Oluşturuldu, 1=Ödendi
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE payout.payouts IS 'Affiliate payout records tracking actual payments made for approved commissions';

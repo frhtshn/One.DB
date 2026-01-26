@@ -13,3 +13,5 @@ CREATE TABLE auth.player_categories (
     description varchar(255),                     -- Açıklama
     created_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE auth.player_categories IS 'Player segmentation categories for VIP tiers such as Bronze, Silver, Gold, Platinum';

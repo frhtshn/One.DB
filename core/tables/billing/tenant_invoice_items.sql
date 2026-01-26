@@ -40,3 +40,5 @@ CREATE TABLE billing.tenant_invoice_items (
 
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE billing.tenant_invoice_items IS 'Tenant invoice line item details for commissions, adjustments, and discounts with calculation breakdown';

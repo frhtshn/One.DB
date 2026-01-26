@@ -27,3 +27,5 @@ CREATE TABLE transaction.transactions (
 
     created_at timestamptz NOT NULL DEFAULT now() -- İşlem zamanı
 );
+
+COMMENT ON TABLE transaction.transactions IS 'Append-only financial transaction ledger recording all money movements with full audit trail';

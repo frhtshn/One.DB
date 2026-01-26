@@ -17,3 +17,5 @@ CREATE TABLE bonus.bonus_types (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE bonus.bonus_types IS 'Lookup table for bonus type definitions including deposit match, free spins, free bets, cashback, and loyalty rewards';

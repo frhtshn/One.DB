@@ -22,3 +22,5 @@ CREATE TABLE bonus.bonus_triggers (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE bonus.bonus_triggers IS 'Manages automatic bonus triggers based on events such as registration, first deposit, bets, losses, and VIP level changes';

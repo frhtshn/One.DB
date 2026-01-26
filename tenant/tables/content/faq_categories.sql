@@ -11,3 +11,5 @@ CREATE TABLE content.faq_categories (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.faq_categories IS 'FAQ category definitions for organizing frequently asked questions';

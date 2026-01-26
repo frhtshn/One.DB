@@ -14,3 +14,5 @@ CREATE TABLE core.tenant_languages (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_languages IS 'Tenant language enablement table defining which languages are supported by each tenant';

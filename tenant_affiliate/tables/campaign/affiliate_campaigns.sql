@@ -16,3 +16,5 @@ CREATE TABLE affiliate.affiliate_campaigns (
     end_date date,                                         -- Eşleşme bitiş tarihi (NULL = süresiz)
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE affiliate.affiliate_campaigns IS 'Affiliate-campaign assignments linking affiliates to campaigns with commission plan references';

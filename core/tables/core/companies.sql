@@ -18,4 +18,4 @@ CREATE TABLE core.companies (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
-ALTER SEQUENCE core.companies_id_seq MINVALUE 0 RESTART WITH 0;
+COMMENT ON TABLE core.companies IS 'Master company table for registered holdings and organizations. Each company can have multiple tenants'; SEQUENCE core.companies_id_seq MINVALUE 0 RESTART WITH 0;

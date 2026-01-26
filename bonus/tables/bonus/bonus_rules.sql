@@ -34,3 +34,5 @@ CREATE TABLE bonus.bonus_rules (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE bonus.bonus_rules IS 'Defines bonus rules including deposit match conditions, wagering requirements, and usage limits';

@@ -21,3 +21,5 @@ CREATE TABLE content.content_translations (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.content_translations IS 'Multilingual content translations with title, body, and SEO metadata per language';

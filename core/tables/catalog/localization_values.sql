@@ -14,3 +14,5 @@ CREATE TABLE catalog.localization_values (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE catalog.localization_values IS 'Localization translation values containing translated text for each key per language';

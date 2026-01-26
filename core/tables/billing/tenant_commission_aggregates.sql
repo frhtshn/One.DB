@@ -52,6 +52,8 @@ CREATE TABLE billing.tenant_commission_aggregates (
     UNIQUE (tenant_id, provider_id, product_code, period_key, currency)
 );
 
+COMMENT ON TABLE billing.tenant_commission_aggregates IS 'Cumulative GGR/NGR totals within billing periods updated by workers for tiered commission calculations';
+
 -- Worker upsert örneği:
 -- INSERT INTO billing.tenant_commission_aggregates (...)
 -- VALUES (...)

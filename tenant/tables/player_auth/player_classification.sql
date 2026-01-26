@@ -13,3 +13,5 @@ CREATE TABLE auth.player_classification (
     player_category_id bigint,                    -- Bağlı kategori (opsiyonel)
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE auth.player_classification IS 'Player classification assignments linking players to categories and groups for targeting';

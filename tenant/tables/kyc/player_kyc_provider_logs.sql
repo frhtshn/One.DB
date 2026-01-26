@@ -29,3 +29,5 @@ CREATE TABLE kyc.player_kyc_provider_logs (
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+COMMENT ON TABLE kyc.player_kyc_provider_logs IS 'External KYC provider API call logs for integrations like Sumsub and Onfido';
+

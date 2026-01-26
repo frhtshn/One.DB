@@ -16,3 +16,5 @@ CREATE TABLE affiliate.affiliate_users (
     last_login_at timestamp without time zone,             -- Son başarılı giriş zamanı
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE affiliate.affiliate_users IS 'Affiliate panel user accounts with authentication for affiliate dashboard access';

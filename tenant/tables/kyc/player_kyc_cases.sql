@@ -36,3 +36,5 @@ CREATE TABLE kyc.player_kyc_cases (
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+COMMENT ON TABLE kyc.player_kyc_cases IS 'Player KYC verification cases tracking status, level, and risk assessment through the verification process';
+

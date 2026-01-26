@@ -14,3 +14,5 @@ CREATE TABLE core.tenant_games (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_games IS 'Tenant game enablement table defining which games from the catalog are available for each tenant';

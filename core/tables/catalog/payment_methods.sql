@@ -17,3 +17,5 @@ CREATE TABLE catalog.payment_methods (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE catalog.payment_methods IS 'Payment method catalog listing available methods per payment provider such as credit card, e-wallet, bank transfer';

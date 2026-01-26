@@ -34,3 +34,5 @@ CREATE TABLE finance.payment_method_limits (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE finance.payment_method_limits IS 'Tenant-level payment method limits overriding core database defaults with processing fees';

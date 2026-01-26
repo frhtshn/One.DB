@@ -13,3 +13,5 @@ CREATE TABLE finance.operation_types (
     affects_balance   boolean NOT NULL,             -- Bakiyeyi etkiler mi?
     affects_locked    boolean NOT NULL              -- Kilitli bakiyeyi etkiler mi?
 );
+
+COMMENT ON TABLE finance.operation_types IS 'Wallet operation type definitions for credit, debit, lock, and unlock operations';

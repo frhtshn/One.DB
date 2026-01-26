@@ -25,3 +25,5 @@ CREATE TABLE billing.tenant_commission_rate_tiers (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
+COMMENT ON TABLE billing.tenant_commission_rate_tiers IS 'Standard tiered commission rate brackets for progressive tenant billing based on volume thresholds';
+

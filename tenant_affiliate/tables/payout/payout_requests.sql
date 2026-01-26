@@ -16,3 +16,5 @@ CREATE TABLE payout.payout_requests (
     requested_at timestamp without time zone NOT NULL DEFAULT now(), -- Talep zamanı
     processed_at timestamp without time zone               -- İşlem (onay/red) zamanı
 );
+
+COMMENT ON TABLE payout.payout_requests IS 'Affiliate payout requests submitted through partner portal with approval workflow';

@@ -15,3 +15,5 @@ CREATE TABLE catalog.localization_keys (
     description varchar(255),                              -- Anahtar açıklaması
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE catalog.localization_keys IS 'Localization key registry for all translatable text resources in BackOffice and frontend applications';

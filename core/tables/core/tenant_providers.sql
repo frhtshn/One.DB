@@ -15,3 +15,5 @@ CREATE TABLE core.tenant_providers (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_providers IS 'Tenant provider enablement table defining which service providers are activated for each tenant';

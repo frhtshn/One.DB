@@ -14,3 +14,5 @@ CREATE TABLE affiliate.affiliates (
     status smallint NOT NULL,                              -- Durum: 0=Pasif, 1=Aktif, 2=Askıda, 3=Kapatıldı
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE affiliate.affiliates IS 'Affiliate master table for partnership accounts representing commercial entities';

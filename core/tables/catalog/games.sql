@@ -17,3 +17,5 @@ CREATE TABLE catalog.games (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE catalog.games IS 'Master game catalog containing all games from integrated providers';

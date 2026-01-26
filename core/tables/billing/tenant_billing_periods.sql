@@ -37,3 +37,5 @@ CREATE TABLE billing.tenant_billing_periods (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE billing.tenant_billing_periods IS 'Tenant billing period definitions for managing monthly or weekly invoice cycles with calculation and closure status tracking';

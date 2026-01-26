@@ -17,3 +17,5 @@ CREATE TABLE routing.provider_endpoints (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE routing.provider_endpoints IS 'Provider API endpoint definitions containing URLs for different gateway environments and endpoint types like deposit, withdraw, game launch';

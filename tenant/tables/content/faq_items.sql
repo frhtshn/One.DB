@@ -14,3 +14,5 @@ CREATE TABLE content.faq_items (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.faq_items IS 'FAQ items with view counts and helpfulness ratings for customer self-service';

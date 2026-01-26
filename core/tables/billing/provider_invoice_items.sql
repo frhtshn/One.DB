@@ -46,3 +46,5 @@ CREATE TABLE billing.provider_invoice_items (
 
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE billing.provider_invoice_items IS 'Provider invoice line item details with tenant breakdown for commission, license fees, and adjustments';

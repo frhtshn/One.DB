@@ -14,3 +14,5 @@ CREATE TABLE core.tenant_payment_methods (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_payment_methods IS 'Tenant payment method enablement table defining which payment methods are available for each tenant';

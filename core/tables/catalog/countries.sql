@@ -11,3 +11,5 @@ CREATE TABLE catalog.countries (
     country_code_a3 character(3) NOT NULL UNIQUE, -- ISO 3166-1 alpha-3 ülke kodu (TUR, DEU, USA)
     country_name varchar(100) NOT NULL          -- Ülke tam adı (İngilizce)
 );
+
+COMMENT ON TABLE catalog.countries IS 'Country reference catalog containing ISO 3166-1 compliant country codes';

@@ -16,3 +16,5 @@ CREATE TABLE wallet.wallets (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE wallet.wallets IS 'Player wallets supporting multiple currencies and types (real, bonus, locked) per player';

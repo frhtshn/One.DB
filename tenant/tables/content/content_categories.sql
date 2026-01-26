@@ -11,3 +11,5 @@ CREATE TABLE content.content_categories (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.content_categories IS 'Content category definitions for organizing content types into logical groups';

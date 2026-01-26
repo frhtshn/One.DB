@@ -13,3 +13,5 @@ CREATE TABLE auth.player_groups (
     description varchar(255),                     -- Açıklama
     created_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE auth.player_groups IS 'Player groups for promotional targeting such as high rollers, new members, dormant players';

@@ -13,3 +13,5 @@ CREATE TABLE catalog.provider_types (
     provider_type_name varchar(100) NOT NULL,              -- Tip görünen adı: Game Provider, Payment Gateway
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE catalog.provider_types IS 'Provider type categories defining the service category such as GAME, PAYMENT, SMS, KYC';

@@ -16,3 +16,5 @@ CREATE TABLE content.content_types (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.content_types IS 'Content type definitions such as terms, privacy policy, about us with display settings';

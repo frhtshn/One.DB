@@ -19,3 +19,4 @@ CREATE TABLE commission.commissions (
     status smallint NOT NULL,                              -- Durum: 0=Hesaplandı, 1=Onaylandı, 2=Ödendi
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+COMMENT ON TABLE commission.commissions IS 'Calculated affiliate commissions for periodic payments with approval workflow and audit tracking';

@@ -13,3 +13,5 @@ CREATE TABLE security.user_roles (
     role_id BIGINT NOT NULL,                               -- Rol ID (FK: security.tenant_roles)
     PRIMARY KEY (user_id, tenant_id, role_id)              -- Composite primary key
 );
+
+COMMENT ON TABLE security.user_roles IS 'User-tenant-role mapping table allowing users to have different roles across different tenants';

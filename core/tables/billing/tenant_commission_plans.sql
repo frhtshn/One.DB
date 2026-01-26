@@ -37,3 +37,5 @@ CREATE TABLE billing.tenant_commission_plans (
     -- Tenant + Provider + Product için tek aktif plan
     UNIQUE (tenant_id, provider_id, product_code, commission_type, valid_from)
 );
+
+COMMENT ON TABLE billing.tenant_commission_plans IS 'Custom tenant commission plans overriding default provider rates with flat or tiered structures';

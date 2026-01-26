@@ -68,3 +68,5 @@ CREATE TABLE billing.provider_invoices (
     -- Provider + invoice_number benzersiz
     UNIQUE (provider_id, invoice_number)
 );
+
+COMMENT ON TABLE billing.provider_invoices IS 'Invoices received from providers for game, payment, and other services with payment tracking and reconciliation status';

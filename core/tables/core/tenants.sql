@@ -21,3 +21,5 @@ CREATE TABLE core.tenants (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenants IS 'Tenant master table where each tenant represents a brand, site, or operation with its own isolated database';

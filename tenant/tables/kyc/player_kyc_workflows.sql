@@ -28,3 +28,5 @@ CREATE TABLE kyc.player_kyc_workflows (
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+COMMENT ON TABLE kyc.player_kyc_workflows IS 'KYC workflow history tracking all status changes, approvals, and rejections for audit purposes';
+

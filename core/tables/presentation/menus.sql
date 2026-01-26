@@ -17,3 +17,5 @@ CREATE TABLE presentation.menus (
     required_permission VARCHAR(100) NOT NULL,             -- Gerekli yetki kodu
     is_active BOOLEAN NOT NULL DEFAULT true                -- Aktif/pasif durumu
 );
+
+COMMENT ON TABLE presentation.menus IS 'BackOffice main menu items with localization, icons, ordering, and permission requirements';

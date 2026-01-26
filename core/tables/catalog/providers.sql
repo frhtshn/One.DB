@@ -14,3 +14,5 @@ CREATE TABLE catalog.providers (
     is_active boolean NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE catalog.providers IS 'Service provider catalog for games, payments, SMS, KYC and other integrated services';

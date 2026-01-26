@@ -65,7 +65,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/permissions.sql
 \i core/tables/security/secrets_provider.sql
 \i core/tables/security/secrets_tenant.sql
-\i core/tables/security/tenant_roles.sql
 \i core/tables/security/role_permissions.sql
 \i core/tables/security/users.sql
 \i core/tables/security/user_roles.sql
@@ -98,7 +97,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/data/languages.sql
 \i core/data/transaction_types.sql
 \i core/data/operation_types.sql
-\i core/data/bo_ui.sql
+--\i core/data/bo_ui.sql
 
 -- FUNCTIONS
 -- \i core/functions/your_function.sql

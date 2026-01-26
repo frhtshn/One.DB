@@ -14,3 +14,5 @@ CREATE TABLE commission.commission_plans (
     base_currency char(3) NOT NULL,                        -- Baz para birimi (TRY, EUR, USD)
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE commission.commission_plans IS 'Affiliate commission plan definitions supporting revenue share, CPA, and hybrid models';

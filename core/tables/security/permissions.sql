@@ -12,4 +12,6 @@ CREATE TABLE security.permissions (
     description VARCHAR(255)                               -- Yetki açıklaması
 );
 
+COMMENT ON TABLE security.permissions IS 'Permission definitions catalog containing all atomic permissions such as players.view, transactions.refund';
+
 

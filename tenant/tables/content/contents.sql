@@ -15,3 +15,5 @@ CREATE TABLE content.contents (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.contents IS 'CMS content master table for pages, articles, and static content with versioning and scheduling';

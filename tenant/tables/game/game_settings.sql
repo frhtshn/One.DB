@@ -36,3 +36,5 @@ CREATE TABLE game.game_settings (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE game.game_settings IS 'Tenant game configurations with display settings, custom branding, and bet limits per game';

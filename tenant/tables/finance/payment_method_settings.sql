@@ -32,3 +32,5 @@ CREATE TABLE finance.payment_method_settings (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE finance.payment_method_settings IS 'Tenant payment method configurations with display settings and custom branding options';

@@ -31,3 +31,5 @@ CREATE TABLE billing.tenant_invoice_payments (
     recorded_by bigint,                                    -- Kaydeden kullanıcı ID (FK: security.users)
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE billing.tenant_invoice_payments IS 'Payment records from tenants for invoices including partial payments, bank transfers, and netting arrangements';

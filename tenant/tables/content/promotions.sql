@@ -24,3 +24,5 @@ CREATE TABLE content.promotions (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.promotions IS 'Site promotions master table integrated with bonus module for welcome, deposit, and seasonal offers';

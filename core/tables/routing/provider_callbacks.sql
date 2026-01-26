@@ -15,3 +15,5 @@ CREATE TABLE routing.provider_callbacks (
     is_active boolean NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE routing.provider_callbacks IS 'Provider callback configurations including IP whitelisting and callback type definitions for incoming provider requests';

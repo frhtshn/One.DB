@@ -16,3 +16,5 @@ CREATE TABLE core.tenant_settings (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_settings IS 'Tenant-specific configuration settings stored as key-value pairs such as withdrawal limits and KYC requirements';

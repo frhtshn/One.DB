@@ -17,3 +17,5 @@ CREATE TABLE catalog.operation_types (
     is_active         boolean NOT NULL DEFAULT true        -- Aktif/pasif durumu
 );
 
+COMMENT ON TABLE catalog.operation_types IS 'Wallet operation type catalog defining DEBIT, CREDIT, HOLD, RELEASE operations and their effect on wallet balances';
+

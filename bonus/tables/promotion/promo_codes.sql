@@ -20,3 +20,5 @@ CREATE TABLE promotion.promo_codes (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE promotion.promo_codes IS 'Promotional codes that players can redeem for bonuses, with redemption limits and validity periods';

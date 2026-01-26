@@ -16,3 +16,5 @@ CREATE TABLE commission.commission_tiers (
     rate numeric(5,2) NOT NULL,                            -- Komisyon oranı (yüzde)
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE commission.commission_tiers IS 'Progressive commission tier structures based on NGR, GGR, deposit, or turnover metrics';

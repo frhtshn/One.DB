@@ -15,3 +15,5 @@ CREATE TABLE campaign.campaigns (
     end_date date,                                         -- Bitiş tarihi (NULL = süresiz)
     status smallint NOT NULL                               -- Durum: 0=Pasif, 1=Aktif, 2=Tamamlandı
 );
+
+COMMENT ON TABLE campaign.campaigns IS 'Affiliate campaign definitions for traffic tracking and commission calculations';

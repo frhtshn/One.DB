@@ -12,3 +12,5 @@ CREATE TABLE campaign.attribution_models (
     code varchar(30) UNIQUE,                               -- Model kodu: FIRST_CLICK, LAST_CLICK, LINEAR
     description varchar(100)                               -- Model açıklaması
 );
+
+COMMENT ON TABLE campaign.attribution_models IS 'Attribution model definitions for campaign tracking such as first click, last click, and linear models';

@@ -33,3 +33,5 @@ CREATE TABLE billing.tenant_commission_rates (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
+COMMENT ON TABLE billing.tenant_commission_rates IS 'Standard tenant commission rates defining default charges from Nucleo to whitelabels per provider and product';
+

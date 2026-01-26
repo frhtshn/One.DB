@@ -14,3 +14,5 @@ CREATE TABLE core.tenant_currencies (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+
+COMMENT ON TABLE core.tenant_currencies IS 'Tenant currency enablement table defining which currencies are available for each tenant';

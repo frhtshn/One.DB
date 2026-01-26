@@ -15,3 +15,5 @@ CREATE TABLE routing.callback_routes (
     is_active boolean NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE routing.callback_routes IS 'Callback routing maps determining which tenant receives provider callbacks based on unique route keys';

@@ -11,3 +11,5 @@ CREATE TABLE content.faq_category_translations (
     updated_at TIMESTAMP WITHOUT TIME ZONE,
     updated_by INTEGER
 );
+
+COMMENT ON TABLE content.faq_category_translations IS 'Multilingual translations for FAQ category names and descriptions';

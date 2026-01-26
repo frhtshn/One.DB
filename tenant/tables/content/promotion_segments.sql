@@ -16,6 +16,8 @@ CREATE TABLE content.promotion_segments (
     created_by INTEGER
 );
 
+COMMENT ON TABLE content.promotion_segments IS 'Promotion audience targeting by player category, VIP level, country, or custom segments';
+
 -- Segment tipleri:
 -- player_category: Oyuncu kategorisi (bronze, silver, gold, platinum)
 -- player_group: Oyuncu grubu ID'si

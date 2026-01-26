@@ -50,3 +50,5 @@ CREATE TABLE kyc.player_documents (
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+COMMENT ON TABLE kyc.player_documents IS 'KYC document uploads including identity cards, passports, and proof of address with encrypted storage';
+

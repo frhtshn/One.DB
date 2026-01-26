@@ -12,3 +12,5 @@ CREATE TABLE security.role_permissions (
     permission_code VARCHAR(100) NOT NULL,                 -- Yetki kodu (FK: security.permissions)
     PRIMARY KEY (role_id, permission_code)                 -- Composite primary key
 );
+
+COMMENT ON TABLE security.role_permissions IS 'Role-permission mapping table defining which permissions are granted to each role';

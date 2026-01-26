@@ -13,3 +13,5 @@ CREATE TABLE affiliate.network_commission_rules (
     rate numeric(5,2) NOT NULL,                            -- Komisyon oranı (yüzde)
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
+
+COMMENT ON TABLE affiliate.network_commission_rules IS 'Network commission rules for sub-affiliate MLM structures defining parent-level revenue sharing';

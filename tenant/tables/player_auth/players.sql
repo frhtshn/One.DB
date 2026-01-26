@@ -17,3 +17,5 @@ CREATE TABLE auth.players (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE auth.players IS 'Player account master table with encrypted email storage for GDPR compliance';

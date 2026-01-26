@@ -12,3 +12,5 @@ CREATE TABLE campaign.traffic_sources (
     code varchar(30) NOT NULL UNIQUE,                      -- Kaynak kodu: ORGANIC, AFFILIATE, PAID_ADS
     description varchar(100)                               -- Kaynak açıklaması
 );
+
+COMMENT ON TABLE campaign.traffic_sources IS 'Traffic source type definitions for affiliate tracking such as organic, affiliate, paid ads, social, referral';

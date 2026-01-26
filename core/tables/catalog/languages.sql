@@ -11,3 +11,5 @@ CREATE TABLE catalog.languages (
     language_name varchar(100) NOT NULL,      -- Dil tam adı (Turkish, English)
     is_active boolean NOT NULL DEFAULT true   -- Aktif/pasif durumu
 );
+
+COMMENT ON TABLE catalog.languages IS 'Language reference catalog containing ISO 639-1 compliant language codes';

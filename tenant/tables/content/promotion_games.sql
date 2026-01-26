@@ -16,6 +16,8 @@ CREATE TABLE content.promotion_games (
     created_by INTEGER
 );
 
+COMMENT ON TABLE content.promotion_games IS 'Promotion game filters defining eligible games by provider, category, or specific game IDs';
+
 -- Örnek kullanımlar:
 -- filter_type='provider', filter_value='pragmatic', is_include=TRUE  → Sadece Pragmatic oyunlarında geçerli
 -- filter_type='category', filter_value='slots', is_include=TRUE      → Sadece slot oyunlarında geçerli

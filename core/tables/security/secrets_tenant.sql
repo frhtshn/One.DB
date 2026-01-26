@@ -17,3 +17,5 @@ CREATE TABLE security.secrets_tenant (
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     rotated_at timestamp without time zone                 -- Son anahtar rotasyon zamanı
 );
+
+COMMENT ON TABLE security.secrets_tenant IS 'Tenant secrets storage for sensitive credentials like JWT secrets and encryption keys, supporting multiple environments';

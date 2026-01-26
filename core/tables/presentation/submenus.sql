@@ -18,3 +18,5 @@ CREATE TABLE presentation.submenus (
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     UNIQUE (menu_id, code)                                 -- Menü başına benzersiz alt menü kodu
 );
+
+COMMENT ON TABLE presentation.submenus IS 'BackOffice submenu items linked to parent menus with routing, localization, and permission settings';

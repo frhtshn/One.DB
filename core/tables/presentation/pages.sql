@@ -24,3 +24,5 @@ CREATE TABLE presentation.pages (
         (menu_id IS NULL AND submenu_id IS NOT NULL)
     )
 );
+
+COMMENT ON TABLE presentation.pages IS 'BackOffice page definitions with routes, localization, and permissions linked to menus or submenus';

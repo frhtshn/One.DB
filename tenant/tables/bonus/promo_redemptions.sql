@@ -24,3 +24,5 @@ CREATE TABLE bonus.promo_redemptions (
     redeemed_at timestamp without time zone NOT NULL DEFAULT now(), -- Kullanım tarihi
     created_at timestamp without time zone NOT NULL DEFAULT now()
 );
+
+COMMENT ON TABLE bonus.promo_redemptions IS 'Promotional code redemption records tracking player usage to prevent duplicate redemptions';

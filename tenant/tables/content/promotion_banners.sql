@@ -20,3 +20,5 @@ CREATE TABLE content.promotion_banners (
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     created_by INTEGER
 );
+
+COMMENT ON TABLE content.promotion_banners IS 'Promotion banner images per device type and language for responsive display';

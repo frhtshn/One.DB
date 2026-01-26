@@ -28,3 +28,5 @@ CREATE TABLE finance.currency_rates (
         rate_timestamp
     )
 );
+
+COMMENT ON TABLE finance.currency_rates IS 'Historical currency exchange rates from external APIs for audit and reporting purposes';

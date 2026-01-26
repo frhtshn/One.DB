@@ -16,3 +16,5 @@ CREATE TABLE content.content_versions (
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     created_by INTEGER
 );
+
+COMMENT ON TABLE content.content_versions IS 'Content version history for auditing and rollback capabilities with change notes';
