@@ -105,6 +105,26 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 --\i core/data/bo_ui.sql
 
 -- FUNCTIONS
--- \i core/functions/your_function.sql
-
+\i core/functions/catalog/localization_messages_get.sql
+\i core/functions/catalog/language_list_active.sql
+\i core/functions/catalog/language_list.sql
+\i core/functions/catalog/language_get.sql
+\i core/functions/catalog/language_create.sql
+\i core/functions/catalog/language_update.sql
+\i core/functions/catalog/language_delete.sql
+\i core/functions/security/user_permission_list.sql
+\i core/functions/security/user_login_failed_increment.sql
+\i core/functions/security/user_login_failed_reset.sql
+\i core/functions/security/session_list.sql
+\i core/functions/security/session_revoke.sql
+\i core/functions/security/session_revoke_all.sql
+\i core/functions/security/session_save.sql
+\i core/functions/security/permission_check.sql
+\i core/functions/security/user_unlock.sql
+\i core/functions/security/user_authenticate.sql
+\i core/functions/security/user_permission_set.sql
+\i core/functions/security/user_permission_remove.sql
+\i core/functions/security/user_permission_override_list.sql
+\i core/functions/security/permission_exists.sql
+\i core/functions/security/permission_cleanup_expired.sql
 COMMIT;

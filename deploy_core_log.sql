@@ -16,4 +16,21 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
 \i core_log/tables/logs/dead_letter_messages.sql
 \i core_log/tables/logs/audit_logs.sql
 
+-- FUNCTIONS
+\i core_log/functions/backoffice/audit_create.sql
+\i core_log/functions/backoffice/audit_list.sql
+\i core_log/functions/backoffice/audit_get.sql
+\i core_log/functions/logs/error_log.sql
+\i core_log/functions/logs/error_list.sql
+\i core_log/functions/logs/error_get.sql
+\i core_log/functions/logs/error_stats.sql
+\i core_log/functions/logs/dead_letter_create.sql
+\i core_log/functions/logs/dead_letter_list_pending.sql
+\i core_log/functions/logs/dead_letter_get.sql
+\i core_log/functions/logs/dead_letter_update_status.sql
+\i core_log/functions/logs/dead_letter_stats.sql
+\i core_log/functions/logs/dead_letter_retry.sql
+\i core_log/functions/logs/core_audit_create.sql
+\i core_log/functions/logs/core_audit_list.sql
+
 COMMIT;
