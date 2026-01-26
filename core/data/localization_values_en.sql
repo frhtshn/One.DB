@@ -1,0 +1,211 @@
+-- ============================================================================
+-- LOCALIZATION VALUES - ENGLISH (en)
+-- ============================================================================
+
+INSERT INTO catalog.localization_values (localization_key_id, language_code, localized_text, created_at)
+SELECT k.id, 'en', v.text, NOW()
+FROM catalog.localization_keys k
+JOIN (VALUES
+    -- Validation (LocalizedValidator)
+    ('validation.summary', 'Validation failed: {0} error(s)'),
+    ('validation.field.required', '{0} is required'),
+    ('validation.field.max-length', '{0} cannot exceed {1} characters'),
+    ('validation.field.min-length', '{0} must be at least {1} characters'),
+    ('validation.field.length', '{0} must be between {1} and {2} characters'),
+    ('validation.field.exact-length', '{0} must be exactly {1} characters'),
+    ('validation.format.email-invalid', '{0} is not a valid email address'),
+    ('validation.format.url-invalid', '{0} is not a valid URL'),
+    ('validation.format.invalid', '{0} has invalid format'),
+    ('validation.format.timezone-invalid', '{0} is not a valid timezone'),
+    ('validation.range.greater-than-zero', '{0} must be greater than zero'),
+    ('validation.range.between', '{0} must be between {1} and {2}'),
+    ('validation.range.min', '{0} must be at least {1}'),
+    ('validation.filter.sort-field-invalid', '{0} must be one of: {1}'),
+    ('validation.filter.sort-order-invalid', '{0} must be ''asc'' or ''desc'''),
+    ('validation.request.invalid', 'Invalid request'),
+    ('validation.password.required', 'Password is required'),
+    ('validation.password.min-length', 'Password must be at least {0} characters'),
+    ('validation.password.max-length', 'Password cannot exceed {0} characters'),
+    ('validation.password.require-uppercase', 'Password must contain at least one uppercase letter'),
+    ('validation.password.require-lowercase', 'Password must contain at least one lowercase letter'),
+    ('validation.password.require-digit', 'Password must contain at least one digit'),
+    ('validation.password.require-special', 'Password must contain at least one special character'),
+
+    -- Error Messages - Field
+    ('error.field.missing', 'Required field is missing: ''{0}'''),
+    ('error.field.invalid', 'Invalid field ''{0}'': {1}'),
+
+    -- Error Messages - CRUD
+    ('error.crud.create-failed', '{0} creation failed'),
+    ('error.crud.update-failed', '{0} update failed'),
+
+    -- Error Messages - Business
+    ('error.business.insufficient-balance', 'Insufficient balance. Required: {0}, Available: {1}'),
+    ('error.business.invalid-status-transition', 'Cannot transition from {0} to {1}'),
+
+    -- Error Messages - System Cache
+    ('error.system.cache.connection-failed', 'Cache connection failed'),
+    ('error.system.cache.operation-failed', 'Cache operation failed: {0}'),
+
+    -- Error Messages - System Circuit Breaker
+    ('error.system.circuit-breaker.database', 'Database circuit breaker is open'),
+    ('error.system.circuit-breaker.cache', 'Cache circuit breaker is open'),
+    ('error.system.circuit-breaker.external-api', 'Circuit breaker is open for {0}'),
+    ('error.system.circuit-breaker.messaging', 'Messaging circuit breaker is open for {0}'),
+
+    -- Error Messages - Conflict
+    ('error.conflict.duplicate', '{0} already exists: {1}'),
+    ('error.conflict.concurrency', '{0} {1} was modified by another process'),
+
+    -- Error Messages - System Database
+    ('error.system.database.connection-failed', 'Database connection failed'),
+    ('error.system.database.query-failed', 'Database query failed: {0}'),
+    ('error.system.database.invalid-tenant-id', 'Invalid tenant ID: {0}'),
+    ('error.system.database.command-failed', 'Database operation failed: {0}'),
+
+    -- Error Messages - Forbidden
+    ('error.forbidden.resource', 'You do not have permission to access {0}. Required permission: {1}'),
+    ('error.tenant.access-denied', 'Access denied for tenant {0}'),
+
+    -- Error Messages - System Grain
+    ('error.system.grain.activation-failed', 'Grain activation failed: {0} (key: {1})'),
+    ('error.system.grain.operation-failed', 'Grain operation failed: {0}'),
+
+    -- Error Messages - System Operation
+    ('error.system.operation.timeout', 'Operation ''{0}'' timed out after {1} seconds'),
+    ('error.system.rate-limit.exceeded', 'Rate limit exceeded (client: ''{0}''): {1}/{2}. Retry after {3} seconds.'),
+
+    -- Error Messages - System Silo
+    ('error.system.silo.unavailable', 'Silo is unavailable'),
+    ('error.system.silo.cluster-unavailable', 'Orleans cluster is unavailable'),
+    ('error.system.silo.auth-init-failed', 'Auth infrastructure initialization failed'),
+
+    -- Error Messages - Tenant
+    ('error.tenant.not-active', 'Tenant {0} is not active'),
+    ('error.tenant.configuration-invalid', 'Tenant {0} configuration is invalid: {1}'),
+
+    -- Error Messages - Resource
+    ('error.resource.not-found', '{0} not found: {1}'),
+
+    -- Error Messages - Config
+    ('error.config.missing-required', 'Required configuration is missing: {0}'),
+    ('error.config.cannot-resolve-hostname', 'Cannot resolve hostname: {0}'),
+    ('error.config.invalid-value', 'Invalid configuration value ''{0}'': {1}'),
+
+    -- Error Messages - System Replica
+    ('error.system.replica.write-not-allowed', 'Write operation not allowed on replica. Identifier: {0}, Operation: {1}. Use primary instance.'),
+
+    -- Error Messages - Auth Token
+    ('error.auth.token.missing', 'Authentication token is required'),
+    ('error.auth.token.invalid', 'Invalid authentication token: {0}'),
+    ('error.auth.token.expired', 'Authentication token has expired'),
+    ('error.auth.token.revoked', 'Token has been revoked'),
+    ('error.auth.token.not-found', 'Token not found'),
+    ('error.auth.token.refresh-invalid', 'Invalid or expired refresh token'),
+    ('error.auth.token.refresh-required', 'Refresh token is required'),
+    ('error.auth.token.refresh-failed', 'Token refresh failed'),
+
+    -- Error Messages - Auth Login
+    ('error.auth.login.throttled', 'Too many login attempts. Please wait {0} seconds.'),
+    ('error.auth.login.failed', 'Login failed'),
+    ('error.auth.login.account-locked', 'Your account is locked. Please wait until {0}.'),
+    ('error.auth.login.invalid-credentials', 'Invalid username or password'),
+
+    -- Error Messages - Auth User
+    ('error.auth.user.invalid-id', 'Invalid user ID'),
+    ('error.auth.user.not-found', 'User not found'),
+    ('error.auth.admin.not-found', 'Admin user info not found'),
+
+    -- Error Messages - Auth Session
+    ('error.auth.session.not-found', 'Session not found'),
+    ('error.auth.session.id-required', 'Session ID is required'),
+    ('error.auth.session.use-logout-endpoint', 'Use the logout endpoint to terminate the current session'),
+    ('error.auth.session.revoke-failed', 'Session revocation failed'),
+
+    -- Error Messages - Auth Logout
+    ('error.auth.logout.failed', 'Logout failed'),
+    ('error.auth.logout.all-failed', 'Logout all sessions failed'),
+
+    -- Error Messages - Auth Unlock
+    ('error.auth.unlock.failed', 'Failed to unlock account'),
+
+    -- Success Messages - Auth
+    ('success.auth.logout', 'Logged out successfully'),
+    ('success.auth.logout-all', 'All sessions terminated'),
+    ('success.auth.session-revoked', 'Session terminated'),
+    ('success.auth.unlocked', 'Account unlocked'),
+
+    -- Success Messages - Presentation
+    ('success.presentation.cache-invalidated', 'Presentation cache invalidated'),
+
+    -- Error Messages - Permission
+    ('error.permission.not-found', 'Permission not found'),
+    ('error.permission.grant.failed', 'Failed to grant permission'),
+    ('error.permission.deny.failed', 'Failed to deny permission'),
+    ('error.permission.remove.failed', 'Failed to remove permission'),
+    ('error.permission.deleted', 'Permission has been deleted'),
+    ('error.permission.create.code-required', 'Permission code is required'),
+    ('error.permission.create.code-exists', 'Permission code already exists'),
+    ('error.permission.create.code-deleted', 'Permission code is deleted. Use restore'),
+    ('error.permission.update.is-deleted', 'Deleted permission cannot be updated'),
+    ('error.permission.delete.already-deleted', 'Permission is already deleted'),
+    ('error.permission.restore.not-deleted', 'Permission is not deleted'),
+    ('error.permission.create.failed', 'Failed to create permission'),
+    ('error.permission.update.failed', 'Failed to update permission'),
+    ('error.permission.delete.failed', 'Failed to delete permission'),
+    ('error.permission.restore.failed', 'Failed to restore permission'),
+
+    -- Error Messages - Role
+    ('error.role.not-found', 'Role not found'),
+    ('error.role.create.code-exists', 'Role code already exists'),
+    ('error.role.create.code-deleted', 'Role code is deleted. Use restore'),
+    ('error.role.deleted', 'Cannot operate on deleted role'),
+    ('error.role.delete.already-deleted', 'Role is already deleted'),
+    ('error.role.restore.not-deleted', 'Role is not deleted'),
+    ('error.role.system-protected', 'System role cannot be modified'),
+    ('error.role.list.failed', 'Failed to get role list'),
+    ('error.role.get.failed', 'Failed to get role'),
+    ('error.role.create.failed', 'Failed to create role'),
+    ('error.role.update.failed', 'Failed to update role'),
+    ('error.role.delete.failed', 'Failed to delete role'),
+    ('error.role.restore.failed', 'Failed to restore role'),
+    ('error.role.assign.failed', 'Failed to assign role'),
+    ('error.role.remove.failed', 'Failed to remove role'),
+    ('error.role.bulk-assign.failed', 'Bulk permission assignment failed'),
+    ('error.role.assign-permission.failed', 'Failed to assign permission to role'),
+    ('error.role.remove-permission.failed', 'Failed to remove permission from role'),
+    ('error.role.assign-tenant.failed', 'Failed to assign tenant role'),
+    ('error.role.remove-tenant.failed', 'Failed to remove tenant role'),
+    ('error.role.user-not-found', 'User not found'),
+    ('error.role.permission-not-found', 'Permission not found'),
+    ('error.role.permission-deleted', 'Cannot assign deleted permission'),
+    ('error.role.operation-failed', 'Role operation failed'),
+    ('error.role.tenant-mismatch', 'Tenant mismatch'),
+
+    -- Error Messages - User
+    ('error.user.not-found', 'User not found'),
+
+    -- Error Messages - Localization
+    ('error.localization.language-code-invalid', 'Invalid language code: {0}'),
+    ('error.localization.language-name-invalid', 'Invalid language name'),
+    ('error.localization.key.not-found', 'Localization key not found'),
+    ('error.localization.key.invalid', 'Invalid localization key'),
+    ('error.localization.key.exists', 'Localization key already exists'),
+    ('error.localization.domain-invalid', 'Invalid domain'),
+    ('error.localization.translation.not-found', 'Translation not found'),
+
+    -- Error Messages - Language
+    ('error.language.not-found', 'Language not found'),
+    ('error.language.create.code-exists', 'This language code already exists'),
+    ('error.language.code-invalid', 'Invalid language code. Must be 2 characters'),
+    ('error.language.name-invalid', 'Invalid language name. Must be at least 2 characters'),
+    ('error.language.delete.has-translations', 'Cannot delete language. It has existing translations'),
+
+    -- Error Messages - SQL
+    ('error.sql.function-name-invalid', 'Invalid function name: {0}'),
+    ('error.sql.identifier-too-long', 'Identifier ''{0}'' is too long: {1} characters (max {2})'),
+    ('error.sql.command-not-allowed', 'SQL command not allowed. Allowed prefixes: {0}'),
+    ('error.sql.stacked-query', 'Multiple SQL commands (stacked queries) are not allowed'),
+    ('error.sql.system-table-access', 'Access to system tables is not allowed')
+) AS v(key, text) ON k.localization_key = v.key
+ON CONFLICT DO NOTHING;
