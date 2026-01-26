@@ -105,26 +105,79 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 --\i core/data/bo_ui.sql
 
 -- FUNCTIONS
-\i core/functions/catalog/localization_messages_get.sql
-\i core/functions/catalog/language_list_active.sql
-\i core/functions/catalog/language_list.sql
-\i core/functions/catalog/language_get.sql
-\i core/functions/catalog/language_create.sql
-\i core/functions/catalog/language_update.sql
-\i core/functions/catalog/language_delete.sql
-\i core/functions/security/user_permission_list.sql
-\i core/functions/security/user_login_failed_increment.sql
-\i core/functions/security/user_login_failed_reset.sql
-\i core/functions/security/session_list.sql
-\i core/functions/security/session_revoke.sql
-\i core/functions/security/session_revoke_all.sql
-\i core/functions/security/session_save.sql
-\i core/functions/security/permission_check.sql
-\i core/functions/security/user_unlock.sql
-\i core/functions/security/user_authenticate.sql
-\i core/functions/security/user_permission_set.sql
-\i core/functions/security/user_permission_remove.sql
-\i core/functions/security/user_permission_override_list.sql
-\i core/functions/security/permission_exists.sql
-\i core/functions/security/permission_cleanup_expired.sql
+-- Language Functions
+\i core/functions/catalog/languages/language_list_active.sql
+\i core/functions/catalog/languages/language_list.sql
+\i core/functions/catalog/languages/language_get.sql
+\i core/functions/catalog/languages/language_create.sql
+\i core/functions/catalog/languages/language_update.sql
+\i core/functions/catalog/languages/language_delete.sql
+
+-- Localization Functions
+-- Localization Functions
+\i core/functions/catalog/localization/localization_key_list.sql
+\i core/functions/catalog/localization/localization_key_get.sql
+\i core/functions/catalog/localization/localization_key_create.sql
+\i core/functions/catalog/localization/localization_key_update.sql
+\i core/functions/catalog/localization/localization_key_delete.sql
+\i core/functions/catalog/localization/localization_value_upsert.sql
+\i core/functions/catalog/localization/localization_value_delete.sql
+\i core/functions/catalog/localization/localization_domain_list.sql
+\i core/functions/catalog/localization/localization_category_list.sql
+\i core/functions/catalog/localization/localization_export.sql
+\i core/functions/catalog/localization/localization_import.sql
+\i core/functions/catalog/localization/localization_messages_get.sql
+-- Session Functions
+\i core/functions/security/session/session_list.sql
+\i core/functions/security/session/session_save.sql
+\i core/functions/security/session/session_revoke.sql
+\i core/functions/security/session/session_revoke_all.sql
+\i core/functions/security/session/session_cleanup_expired.sql
+
+-- User Functions
+\i core/functions/security/users/user_login_failed_increment.sql
+\i core/functions/security/users/user_login_failed_reset.sql
+\i core/functions/security/users/user_unlock.sql
+
+-- Permission Functions
+\i core/functions/security/permissions/permission_exists.sql
+\i core/functions/security/permissions/permission_category_list.sql
+\i core/functions/security/permissions/permission_list.sql
+\i core/functions/security/permissions/permission_get.sql
+\i core/functions/security/permissions/permission_create.sql
+\i core/functions/security/permissions/permission_update.sql
+\i core/functions/security/permissions/permission_delete.sql
+\i core/functions/security/permissions/permission_restore.sql
+\i core/functions/security/permissions/permission_cleanup_expired.sql
+\i core/functions/security/permissions/permission_check.sql
+\i core/functions/security/permissions/user_permission_list.sql
+\i core/functions/security/permissions/user_permission_override_list.sql
+\i core/functions/security/permissions/user_permission_set.sql
+\i core/functions/security/permissions/user_permission_remove.sql
+
+-- Role Functions
+\i core/functions/security/roles/is_system_role.sql
+\i core/functions/security/roles/role_list.sql
+\i core/functions/security/roles/role_get.sql
+\i core/functions/security/roles/role_create.sql
+\i core/functions/security/roles/role_update.sql
+\i core/functions/security/roles/role_delete.sql
+\i core/functions/security/roles/role_restore.sql
+\i core/functions/security/roles/role_permission_list.sql
+\i core/functions/security/roles/role_permission_assign.sql
+\i core/functions/security/roles/role_permission_remove.sql
+\i core/functions/security/roles/role_permission_bulk_assign.sql
+\i core/functions/security/roles/user_role_list.sql
+\i core/functions/security/roles/user_role_assign.sql
+\i core/functions/security/roles/user_role_remove.sql
+\i core/functions/security/roles/user_tenant_role_list.sql
+\i core/functions/security/roles/user_tenant_role_assign.sql
+\i core/functions/security/roles/user_tenant_role_remove.sql
+
+-- Auth Functions
+\i core/functions/security/auth/user_authenticate.sql
+
+-- Presentation Functions
+\i core/functions/presentation/build_page_json.sql
+\i core/functions/presentation/get_structure.sql
 COMMIT;
