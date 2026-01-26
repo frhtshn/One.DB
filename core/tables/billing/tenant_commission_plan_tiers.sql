@@ -1,13 +1,13 @@
 -- =============================================
--- Tablo: billing.tenant_commission_tiers
--- Açıklama: Tenant kademeli komisyon oranları
--- Tenant özel planları için kademe tanımları
--- Her tenant farklı kademelere sahip olabilir
+-- Tablo: billing.tenant_commission_plan_tiers
+-- Açıklama: Tenant özel plan kademeleri
+-- Belirli tenant'lar için özel/override kademe tanımları
+-- Standart kademeler: tenant_commission_rate_tiers
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_commission_tiers CASCADE;
+DROP TABLE IF EXISTS billing.tenant_commission_plan_tiers CASCADE;
 
-CREATE TABLE billing.tenant_commission_tiers (
+CREATE TABLE billing.tenant_commission_plan_tiers (
     id bigserial PRIMARY KEY,                              -- Benzersiz kademe kimliği
     tenant_commission_plan_id bigint NOT NULL,             -- Tenant komisyon planı ID (FK: billing.tenant_commission_plans)
 

@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS billing.tenant_commission_aggregates CASCADE;
 CREATE TABLE billing.tenant_commission_aggregates (
     id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
     tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
-    provider_code varchar(50) NOT NULL,                    -- Provider kodu: EGT, PRAGMATIC
+    provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS
 
     -- Dönem bilgileri
@@ -49,13 +49,13 @@ CREATE TABLE billing.tenant_commission_aggregates (
     updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
 
     -- Upsert için unique constraint
-    UNIQUE (tenant_id, provider_code, product_code, period_key, currency)
+    UNIQUE (tenant_id, provider_id, product_code, period_key, currency)
 );
 
 -- Worker upsert örneği:
 -- INSERT INTO billing.tenant_commission_aggregates (...)
 -- VALUES (...)
--- ON CONFLICT (tenant_id, provider_code, product_code, period_key, currency)
+-- ON CONFLICT (tenant_id, provider_id, product_code, period_key, currency)
 -- DO UPDATE SET
 --   total_bet = tenant_commission_aggregates.total_bet + EXCLUDED.total_bet,
 --   total_ggr = tenant_commission_aggregates.total_ggr + EXCLUDED.total_ggr,

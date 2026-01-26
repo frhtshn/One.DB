@@ -176,14 +176,22 @@ Komisyon ve faturalandırma.
 
 | Tablo                          | Açıklama                      |
 | ------------------------------ | ----------------------------- |
-| `billing_periods`              | Fatura dönemleri              |
-| `invoices`                     | Faturalar                     |
-| `invoice_items`                | Fatura kalemleri              |
-| `invoice_payments`             | Fatura ödemeleri              |
 | `provider_commission_rates`    | Provider komisyon oranları    |
 | `provider_commission_tiers`    | Provider komisyon kademeleri  |
+| `provider_invoices`            | Provider faturaları           |
+| `provider_invoice_items`       | Provider fatura kalemleri     |
+| `provider_payments`            | Provider ödemeleri            |
+| `provider_settlements`         | Provider mutabakatları        |
+| `provider_settlement_tenants`  | Provider mutabakat dağılımı   |
+| `tenant_billing_periods`       | Tenant fatura dönemleri       |
+| `tenant_invoices`              | Tenant faturaları             |
+| `tenant_invoice_items`         | Tenant fatura kalemleri       |
+| `tenant_invoice_payments`      | Tenant fatura ödemeleri       |
 | `tenant_commission_plans`      | Tenant komisyon planları      |
+| `tenant_commission_rates`      | Tenant komisyon oranları      |
 | `tenant_commission_tiers`      | Tenant komisyon kademeleri    |
+| `tenant_commission_plan_tiers` | Tenant plan kademeleri        |
+| `tenant_commission_rate_tiers` | Tenant oran kademeleri        |
 | `tenant_commissions`           | Tenant komisyon hesaplamaları |
 | `tenant_commission_aggregates` | Tenant komisyon özetleri      |
 

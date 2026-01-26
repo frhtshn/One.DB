@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS billing.tenant_commission_plans CASCADE;
 CREATE TABLE billing.tenant_commission_plans (
     id bigserial PRIMARY KEY,                              -- Benzersiz plan kimliği
     tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
-    provider_code varchar(50) NOT NULL,                    -- Provider kodu: EGT, PRAGMATIC, NETENT
+    provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS, PAYMENT
     commission_type varchar(20) NOT NULL,                  -- Komisyon tipi: GGR, NGR, TURNOVER
 
@@ -35,5 +35,5 @@ CREATE TABLE billing.tenant_commission_plans (
     updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
 
     -- Tenant + Provider + Product için tek aktif plan
-    UNIQUE (tenant_id, provider_code, product_code, commission_type, valid_from)
+    UNIQUE (tenant_id, provider_id, product_code, commission_type, valid_from)
 );

@@ -70,17 +70,26 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/users.sql
 \i core/tables/security/user_roles.sql
 
--- BILLING TABLES
-\i core/tables/billing/billing_periods.sql
-\i core/tables/billing/provider_commission_rates.sql
-\i core/tables/billing/provider_commission_tiers.sql
+-- BILLING TABLES (Tenant Faturalama - Nucleo'nun Alacakları)
+\i core/tables/billing/tenant_billing_periods.sql
+\i core/tables/billing/tenant_commission_rates.sql
+\i core/tables/billing/tenant_commission_rate_tiers.sql
 \i core/tables/billing/tenant_commission_plans.sql
-\i core/tables/billing/tenant_commission_tiers.sql
+\i core/tables/billing/tenant_commission_plan_tiers.sql
 \i core/tables/billing/tenant_commission_aggregates.sql
 \i core/tables/billing/tenant_commissions.sql
-\i core/tables/billing/invoices.sql
-\i core/tables/billing/invoice_items.sql
-\i core/tables/billing/invoice_payments.sql
+\i core/tables/billing/tenant_invoices.sql
+\i core/tables/billing/tenant_invoice_items.sql
+\i core/tables/billing/tenant_invoice_payments.sql
+
+-- BILLING TABLES (Provider Ödemeleri - Nucleo'nun Borçları)
+\i core/tables/billing/provider_commission_rates.sql
+\i core/tables/billing/provider_commission_tiers.sql
+\i core/tables/billing/provider_settlements.sql
+\i core/tables/billing/provider_settlement_tenants.sql
+\i core/tables/billing/provider_invoices.sql
+\i core/tables/billing/provider_invoice_items.sql
+\i core/tables/billing/provider_payments.sql
 
 -- DATA SEEDING
 \i core/data/companies.sql

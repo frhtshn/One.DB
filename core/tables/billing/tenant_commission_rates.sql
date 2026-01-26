@@ -1,13 +1,14 @@
 -- =============================================
--- Tablo: billing.provider_commission_rates
--- Açıklama: Provider komisyon plan tanımları
--- Her provider için ürün bazında komisyon planı
--- Sabit oran veya kademeli (tiered) yapı olabilir
+-- Tablo: billing.tenant_commission_rates
+-- Açıklama: Tenant standart komisyon oranları
+-- Nucleo'nun tenant'lardan alacağı standart oranlar
+-- Her provider/ürün için varsayılan komisyon planı
+-- Belirli tenant özel oranları: tenant_commission_plans
 -- =============================================
 
-DROP TABLE IF EXISTS billing.provider_commission_rates CASCADE;
+DROP TABLE IF EXISTS billing.tenant_commission_rates CASCADE;
 
-CREATE TABLE billing.provider_commission_rates (
+CREATE TABLE billing.tenant_commission_rates (
     id bigserial PRIMARY KEY,                              -- Benzersiz komisyon kimliği
     provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS, PAYMENT
@@ -25,6 +26,10 @@ CREATE TABLE billing.provider_commission_rates (
     valid_to date,                                         -- Geçerlilik bitiş tarihi (NULL = süresiz)
     is_active boolean NOT NULL DEFAULT true,               -- Aktif/pasif durumu
 
+    -- Açıklama
+    description text,                                      -- Plan açıklaması
+
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
+

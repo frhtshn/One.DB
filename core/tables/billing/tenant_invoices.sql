@@ -1,16 +1,15 @@
 -- =============================================
--- Tablo: billing.invoices
--- Açıklama: Provider fatura ana tablosu
--- Tenant'lara kesilen provider komisyon faturaları
+-- Tablo: billing.tenant_invoices
+-- Açıklama: Tenant'lara kesilen faturalar
+-- Nucleo'nun whitelabel'lardan alacağı komisyon faturaları
 -- Birden fazla komisyon kaydı tek faturada toplanabilir
 -- =============================================
 
-DROP TABLE IF EXISTS billing.invoices CASCADE;
+DROP TABLE IF EXISTS billing.tenant_invoices CASCADE;
 
-CREATE TABLE billing.invoices (
+CREATE TABLE billing.tenant_invoices (
     id bigserial PRIMARY KEY,                              -- Benzersiz fatura kimliği
     tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
-    provider_code varchar(50) NOT NULL,                    -- Provider kodu
 
     -- Fatura bilgileri
     invoice_number varchar(50) NOT NULL UNIQUE,            -- Benzersiz fatura numarası

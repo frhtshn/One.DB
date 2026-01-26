@@ -1,15 +1,15 @@
 -- =============================================
--- Tablo: billing.invoice_items
--- Açıklama: Fatura kalem detayları
+-- Tablo: billing.tenant_invoice_items
+-- Açıklama: Tenant fatura kalem detayları
 -- Her fatura satırının detay bilgileri
 -- Komisyon kayıtlarıyla ilişkilendirilir
 -- =============================================
 
-DROP TABLE IF EXISTS billing.invoice_items CASCADE;
+DROP TABLE IF EXISTS billing.tenant_invoice_items CASCADE;
 
-CREATE TABLE billing.invoice_items (
+CREATE TABLE billing.tenant_invoice_items (
     id bigserial PRIMARY KEY,                              -- Benzersiz kalem kimliği
-    invoice_id bigint NOT NULL,                            -- Fatura ID (FK: billing.invoices)
+    tenant_invoice_id bigint NOT NULL,                     -- Fatura ID (FK: billing.tenant_invoices)
     tenant_commission_id bigint,                           -- Komisyon kaydı ID (FK: billing.tenant_commissions)
 
     -- Kalem bilgileri

@@ -1,15 +1,15 @@
 -- =============================================
--- Tablo: billing.invoice_payments
--- Açıklama: Fatura ödeme kayıtları
--- Faturalara yapılan ödemelerin takibi
+-- Tablo: billing.tenant_invoice_payments
+-- Açıklama: Tenant fatura ödeme kayıtları
+-- Tenant'lardan gelen ödemelerin takibi
 -- Kısmi ödemeler için birden fazla kayıt olabilir
 -- =============================================
 
-DROP TABLE IF EXISTS billing.invoice_payments CASCADE;
+DROP TABLE IF EXISTS billing.tenant_invoice_payments CASCADE;
 
-CREATE TABLE billing.invoice_payments (
+CREATE TABLE billing.tenant_invoice_payments (
     id bigserial PRIMARY KEY,                              -- Benzersiz ödeme kimliği
-    invoice_id bigint NOT NULL,                            -- Fatura ID (FK: billing.invoices)
+    tenant_invoice_id bigint NOT NULL,                     -- Fatura ID (FK: billing.tenant_invoices)
 
     -- Ödeme bilgileri
     payment_date date NOT NULL,                            -- Ödeme tarihi

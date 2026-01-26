@@ -1,13 +1,14 @@
 -- =============================================
--- Tablo: billing.billing_periods
--- Açıklama: Faturalama dönem tanımları
+-- Tablo: billing.tenant_billing_periods
+-- Açıklama: Tenant faturalama dönem tanımları
+-- Nucleo'nun tenant'lara kestiği fatura dönemleri
 -- Aylık/haftalık faturalama dönemlerinin yönetimi
 -- Dönem kapanış ve hesaplama durumu takibi
 -- =============================================
 
-DROP TABLE IF EXISTS billing.billing_periods CASCADE;
+DROP TABLE IF EXISTS billing.tenant_billing_periods CASCADE;
 
-CREATE TABLE billing.billing_periods (
+CREATE TABLE billing.tenant_billing_periods (
     id bigserial PRIMARY KEY,                              -- Benzersiz dönem kimliği
 
     -- Dönem bilgileri
