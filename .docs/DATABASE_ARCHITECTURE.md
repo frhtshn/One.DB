@@ -243,6 +243,7 @@ Her tenant için ayrı bir veritabanı oluşturulur. `tenant` şablon DB'si klon
 | `game`        | Oyun konfigürasyonu ve ayarları |
 | `kyc`         | KYC doğrulama süreçleri         |
 | `bonus`       | Bonus uygulama ve takibi        |
+| `content`     | İçerik ve FAQ yönetimi          |
 | `infra`       | PostgreSQL extension'ları       |
 
 ---
@@ -350,6 +351,29 @@ KYC (Know Your Customer) doğrulama süreçleri.
 | `player_kyc_workflows`     | KYC süreç adımları               |
 | `player_documents`         | Oyuncu belge yüklemeleri         |
 | `player_kyc_provider_logs` | KYC provider entegrasyon logları |
+
+---
+
+### 6.9 content Şeması
+
+CMS ve dinamik içerik yönetimi.
+
+| Tablo                 | Açıklama                 |
+| --------------------- | ------------------------ |
+| `content_categories`  | İçerik kategori ağacı    |
+| `content_types`       | İçerik tip tanımları     |
+| `contents`            | Dinamik içerikler        |
+| `content_versions`    | İçerik versiyon geçmişi  |
+| `content_attachments` | Medya ve dosya ekleri    |
+| `faq_categories`      | SSS kategorileri         |
+| `faq_items`           | SSS soru-cevap kayıtları |
+| `promotions`          | Promosyon tanımları      |
+| `promotion_banners`   | Promosyon görselleri     |
+| `promotion_locations` | Gösterim alanları        |
+| `promotion_segments`  | Hedef kitle segmentleri  |
+| `promotion_games`     | Dahil olan oyunlar       |
+
+> 🌐 **Lokalizasyon**: Tüm tanımlar `_translations` tabloları ile çoklu dil desteğine sahiptir.
 
 ---
 
@@ -465,6 +489,28 @@ Bonus ve promosyon sistemi **konfigürasyon** katmanıdır.
 | `promotion` | Promosyon kodları                 |
 | `campaign`  | Kampanya yönetimi                 |
 | `infra`     | PostgreSQL extension'ları         |
+
+#### 9.1.2 bonus Şeması
+
+Bonus kural motoru tanımları.
+
+| Tablo            | Açıklama                          |
+| ---------------- | --------------------------------- |
+| `bonus_types`    | Bonus tipleri (Deposit, FreeSpin) |
+| `bonus_rules`    | Kazanım ve çevrim kuralları       |
+| `bonus_triggers` | Otomatik bonus tetikleyicileri    |
+
+#### 9.1.3 promotion Şeması
+
+| Tablo         | Açıklama          |
+| ------------- | ----------------- |
+| `promo_codes` | Promosyon kodları |
+
+#### 9.1.4 campaign Şeması
+
+| Tablo       | Açıklama                  |
+| ----------- | ------------------------- |
+| `campaigns` | Global kampanya tanımları |
 
 ### 9.2 Tenant Bonus Şeması (Tenant-Specific)
 

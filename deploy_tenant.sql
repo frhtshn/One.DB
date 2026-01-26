@@ -1,7 +1,7 @@
 SET client_encoding = 'UTF8';
 
 BEGIN;
-TR87 0001 2009 1410 0001 3208 19
+
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS auth;
 CREATE SCHEMA IF NOT EXISTS profile;
@@ -12,6 +12,7 @@ CREATE SCHEMA IF NOT EXISTS game;
 CREATE SCHEMA IF NOT EXISTS infra;
 CREATE SCHEMA IF NOT EXISTS kyc;
 CREATE SCHEMA IF NOT EXISTS bonus;
+CREATE SCHEMA IF NOT EXISTS content;
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
@@ -64,9 +65,35 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/bonus/bonus_awards.sql
 \i tenant/tables/bonus/promo_redemptions.sql
 
+-- CONTENT MANAGEMENT TABLES
+\i tenant/tables/content/content_categories.sql
+\i tenant/tables/content/content_category_translations.sql
+\i tenant/tables/content/content_types.sql
+\i tenant/tables/content/content_type_translations.sql
+\i tenant/tables/content/contents.sql
+\i tenant/tables/content/content_translations.sql
+\i tenant/tables/content/content_versions.sql
+\i tenant/tables/content/content_attachments.sql
+\i tenant/tables/content/faq_categories.sql
+\i tenant/tables/content/faq_category_translations.sql
+\i tenant/tables/content/faq_items.sql
+\i tenant/tables/content/faq_item_translations.sql
+\i tenant/tables/content/promotions.sql
+\i tenant/tables/content/promotion_translations.sql
+\i tenant/tables/content/promotion_banners.sql
+\i tenant/tables/content/promotion_display_locations.sql
+\i tenant/tables/content/promotion_segments.sql
+\i tenant/tables/content/promotion_games.sql
+
 -- VIEWS
 \i tenant/views/finance/v_daily_base_rates.sql
 \i tenant/views/finance/v_cross_rates.sql
+
+-- CONSTRAINTS
+\i tenant/constraints/content.sql
+
+-- INDEXES
+\i tenant/indexes/content.sql
 
 -- FUNCTIONS
 -- \i tenant/functions/your_function.sql
