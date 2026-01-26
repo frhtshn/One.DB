@@ -1,13 +1,18 @@
+-- =============================================
+-- Tablo: affiliate.affiliate_users
+-- Açıklama: Affiliate panel kullanıcıları
+-- Affiliate'lerin sisteme giriş yapan kullanıcıları
+-- Bir affiliate'in birden fazla kullanıcısı olabilir
+-- =============================================
+
 DROP TABLE IF EXISTS affiliate.affiliate_users CASCADE;
 
--- Affiliate kullanıcıları (Affiliate Panel Login)
--- Affiliate'lerin sisteme giriş yapan kullanıcıları
 CREATE TABLE affiliate.affiliate_users (
-    id bigserial PRIMARY KEY,
-    affiliate_id bigint NOT NULL,           -- Affiliate referansı
-    email varchar(150) NOT NULL,            -- E-posta adresi
-    password varchar(255) NOT NULL,         -- Şifre hash'i
-    status smallint NOT NULL,               -- ACTIVE / SUSPENDED
-    last_login_at timestamp without time zone,  -- Son giriş zamanı
-    created_at timestamp without time zone NOT NULL DEFAULT now()
+    id bigserial PRIMARY KEY,                              -- Benzersiz kullanıcı kimliği
+    affiliate_id bigint NOT NULL,                          -- Affiliate ID (FK: affiliate.affiliates)
+    email varchar(150) NOT NULL,                           -- E-posta adresi (giriş için)
+    password varchar(255) NOT NULL,                        -- Hash'lenmiş şifre (bcrypt/argon2)
+    status smallint NOT NULL,                              -- Durum: 0=Pasif, 1=Aktif, 2=Askıda
+    last_login_at timestamp without time zone,             -- Son başarılı giriş zamanı
+    created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );

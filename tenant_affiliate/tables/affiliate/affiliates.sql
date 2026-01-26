@@ -1,11 +1,16 @@
+-- =============================================
+-- Tablo: affiliate.affiliates
+-- Açıklama: Affiliate ana tanım tablosu
+-- Sistemdeki tüm affiliate (ortaklık) hesapları
+-- Her affiliate bir ticari varlığı temsil eder
+-- =============================================
+
 DROP TABLE IF EXISTS affiliate.affiliates CASCADE;
 
--- Affiliate tanımları (Ticari Varlık)
--- Sistemdeki tüm affiliate hesaplarını tutar
 CREATE TABLE affiliate.affiliates (
-    id bigserial PRIMARY KEY,
-    code varchar(50) UNIQUE NOT NULL,       -- Benzersiz affiliate kodu
-    name varchar(150) NOT NULL,             -- Affiliate adı
-    status smallint NOT NULL,               -- ACTIVE / SUSPENDED / CLOSED
-    created_at timestamp without time zone NOT NULL DEFAULT now()
+    id bigserial PRIMARY KEY,                              -- Benzersiz affiliate kimliği
+    code varchar(50) UNIQUE NOT NULL,                      -- Benzersiz affiliate kodu (referans için)
+    name varchar(150) NOT NULL,                            -- Affiliate ticari adı/unvanı
+    status smallint NOT NULL,                              -- Durum: 0=Pasif, 1=Aktif, 2=Askıda, 3=Kapatıldı
+    created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
