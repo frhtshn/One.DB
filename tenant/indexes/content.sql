@@ -79,3 +79,79 @@ CREATE INDEX idx_promotion_segments_type ON content.promotion_segments(segment_t
 -- promotion_games
 CREATE INDEX idx_promotion_games_promotion ON content.promotion_games(promotion_id);
 CREATE INDEX idx_promotion_games_filter ON content.promotion_games(filter_type, filter_value);
+
+-- =============================================
+-- SLIDE MANAGEMENT INDEXES
+-- =============================================
+
+-- slide_placements
+CREATE UNIQUE INDEX idx_slide_placements_code ON content.slide_placements(code);
+CREATE INDEX idx_slide_placements_active ON content.slide_placements(is_active);
+
+-- slide_categories
+CREATE UNIQUE INDEX idx_slide_categories_code ON content.slide_categories(code);
+CREATE INDEX idx_slide_categories_active ON content.slide_categories(is_active);
+CREATE INDEX idx_slide_categories_sort ON content.slide_categories(sort_order);
+
+-- slide_category_translations
+CREATE INDEX idx_slide_category_trans_category ON content.slide_category_translations(category_id);
+CREATE INDEX idx_slide_category_trans_language ON content.slide_category_translations(language_code);
+
+-- slides
+CREATE UNIQUE INDEX idx_slides_code ON content.slides(code) WHERE code IS NOT NULL;
+CREATE INDEX idx_slides_placement ON content.slides(placement_id);
+CREATE INDEX idx_slides_category ON content.slides(category_id);
+CREATE INDEX idx_slides_active ON content.slides(is_active, is_deleted) WHERE is_active = TRUE AND is_deleted = FALSE;
+CREATE INDEX idx_slides_dates ON content.slides(start_date, end_date);
+CREATE INDEX idx_slides_placement_order ON content.slides(placement_id, sort_order, priority DESC) WHERE is_active = TRUE AND is_deleted = FALSE;
+CREATE INDEX idx_slides_segments ON content.slides USING GIN(segment_ids) WHERE segment_ids IS NOT NULL;
+CREATE INDEX idx_slides_countries ON content.slides USING GIN(country_codes) WHERE country_codes IS NOT NULL;
+
+-- slide_translations
+CREATE INDEX idx_slide_trans_slide ON content.slide_translations(slide_id);
+CREATE INDEX idx_slide_trans_language ON content.slide_translations(language_code);
+
+-- slide_images
+CREATE INDEX idx_slide_images_slide ON content.slide_images(slide_id);
+CREATE INDEX idx_slide_images_device ON content.slide_images(slide_id, device_type);
+CREATE INDEX idx_slide_images_language ON content.slide_images(slide_id, language_code) WHERE language_code IS NOT NULL;
+
+-- slide_schedules
+CREATE INDEX idx_slide_schedules_slide ON content.slide_schedules(slide_id);
+CREATE INDEX idx_slide_schedules_active ON content.slide_schedules(slide_id, is_active) WHERE is_active = TRUE;
+
+-- =============================================
+-- POPUP MANAGEMENT INDEXES
+-- =============================================
+
+-- popup_types
+CREATE UNIQUE INDEX idx_popup_types_code ON content.popup_types(code);
+CREATE INDEX idx_popup_types_active ON content.popup_types(is_active);
+
+-- popup_type_translations
+CREATE INDEX idx_popup_type_trans_type ON content.popup_type_translations(popup_type_id);
+CREATE INDEX idx_popup_type_trans_language ON content.popup_type_translations(language_code);
+
+-- popups
+CREATE UNIQUE INDEX idx_popups_code ON content.popups(code) WHERE code IS NOT NULL;
+CREATE INDEX idx_popups_type ON content.popups(popup_type_id);
+CREATE INDEX idx_popups_active ON content.popups(is_active, is_deleted) WHERE is_active = TRUE AND is_deleted = FALSE;
+CREATE INDEX idx_popups_dates ON content.popups(start_date, end_date);
+CREATE INDEX idx_popups_trigger ON content.popups(trigger_type);
+CREATE INDEX idx_popups_priority ON content.popups(priority DESC) WHERE is_active = TRUE AND is_deleted = FALSE;
+CREATE INDEX idx_popups_segments ON content.popups USING GIN(segment_ids) WHERE segment_ids IS NOT NULL;
+CREATE INDEX idx_popups_countries ON content.popups USING GIN(country_codes) WHERE country_codes IS NOT NULL;
+CREATE INDEX idx_popups_pages ON content.popups USING GIN(page_urls) WHERE page_urls IS NOT NULL;
+
+-- popup_translations
+CREATE INDEX idx_popup_trans_popup ON content.popup_translations(popup_id);
+CREATE INDEX idx_popup_trans_language ON content.popup_translations(language_code);
+
+-- popup_images
+CREATE INDEX idx_popup_images_popup ON content.popup_images(popup_id);
+CREATE INDEX idx_popup_images_device ON content.popup_images(popup_id, device_type);
+CREATE INDEX idx_popup_images_language ON content.popup_images(popup_id, language_code) WHERE language_code IS NOT NULL;
+
+-- popup_schedules
+CREATE INDEX idx_popup_schedules_popup ON content.popup_schedules(popup_id);
+CREATE INDEX idx_popup_schedules_active ON content.popup_schedules(popup_id, is_active) WHERE is_active = TRUE;

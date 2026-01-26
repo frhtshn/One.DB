@@ -85,6 +85,23 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/content/promotion_segments.sql
 \i tenant/tables/content/promotion_games.sql
 
+-- Slide Management
+\i tenant/tables/content/slide_placements.sql
+\i tenant/tables/content/slide_categories.sql
+\i tenant/tables/content/slide_category_translations.sql
+\i tenant/tables/content/slides.sql
+\i tenant/tables/content/slide_translations.sql
+\i tenant/tables/content/slide_images.sql
+\i tenant/tables/content/slide_schedules.sql
+
+-- Popup Management
+\i tenant/tables/content/popup_types.sql
+\i tenant/tables/content/popup_type_translations.sql
+\i tenant/tables/content/popups.sql
+\i tenant/tables/content/popup_translations.sql
+\i tenant/tables/content/popup_images.sql
+\i tenant/tables/content/popup_schedules.sql
+
 -- VIEWS
 \i tenant/views/finance/v_daily_base_rates.sql
 \i tenant/views/finance/v_cross_rates.sql
