@@ -61,13 +61,12 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | 6   | `game_log`         | Oyun gateway teknik logları                | ✅              | Daily     | 7–14 gün    |
 | 7   | `finance`          | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
 | 8   | `finance_log`      | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
-| 9   | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
-| 10  | `bonus`            | Bonus ve promosyon yapılandırması          | ✅              | ❌        | Sınırsız    |
-| 11  | `tenant`           | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
+| 9   | `bonus`            | Bonus ve promosyon yapılandırması          | ✅              | ❌        | Sınırsız    |
+| 10  | `tenant`           | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
+| 11  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
 | 12  | `tenant_log`       | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
-| 13  | `tenant_log`       | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
-| 14  | `tenant_audit`     | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
-| 15  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
+| 13  | `tenant_audit`     | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
+| 14  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
 
 ---
 
