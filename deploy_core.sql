@@ -71,9 +71,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/user_roles.sql
 
 -- BILLING TABLES
+\i core/tables/billing/billing_periods.sql
 \i core/tables/billing/provider_commission_rates.sql
-\i core/tables/billing/tenant_provider_commission_overrides.sql
+\i core/tables/billing/provider_commission_tiers.sql
+\i core/tables/billing/tenant_commission_plans.sql
+\i core/tables/billing/tenant_commission_tiers.sql
+\i core/tables/billing/tenant_commission_aggregates.sql
 \i core/tables/billing/tenant_commissions.sql
+\i core/tables/billing/invoices.sql
+\i core/tables/billing/invoice_items.sql
+\i core/tables/billing/invoice_payments.sql
 
 -- DATA SEEDING
 \i core/data/companies.sql

@@ -174,11 +174,18 @@ Provider endpoint yönetimi.
 
 Komisyon ve faturalandırma.
 
-| Tablo                                  | Açıklama                            |
-| -------------------------------------- | ----------------------------------- |
-| `provider_commission_rates`            | Provider komisyon oranları          |
-| `tenant_provider_commission_overrides` | Tenant bazlı komisyon override'ları |
-| `tenant_commissions`                   | Tenant komisyon hesaplamaları       |
+| Tablo                          | Açıklama                      |
+| ------------------------------ | ----------------------------- |
+| `billing_periods`              | Fatura dönemleri              |
+| `invoices`                     | Faturalar                     |
+| `invoice_items`                | Fatura kalemleri              |
+| `invoice_payments`             | Fatura ödemeleri              |
+| `provider_commission_rates`    | Provider komisyon oranları    |
+| `provider_commission_tiers`    | Provider komisyon kademeleri  |
+| `tenant_commission_plans`      | Tenant komisyon planları      |
+| `tenant_commission_tiers`      | Tenant komisyon kademeleri    |
+| `tenant_commissions`           | Tenant komisyon hesaplamaları |
+| `tenant_commission_aggregates` | Tenant komisyon özetleri      |
 
 ---
 
