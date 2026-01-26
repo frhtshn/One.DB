@@ -572,10 +572,43 @@ Tüm veritabanlarında `infra` şemasında aşağıdaki extension'lar etkindir:
 
 ---
 
-## 12. Altın Kurallar
+## 13. Fonksiyon ve Trigger Mimarisi
+
+Core veritabanı fonksiyonları ve trigger'ları belirli bir klasör yapısında yönetilir. "Separation of Concerns" prensibi uygulanmıştır.
+
+### 13.1 Fonksiyonlar (`core/functions/`)
+
+- **Common (`core/functions/common/`):** Tüm şemalar tarafından kullanılabilen genel fonksiyonlar (örn: `update_updated_at_column`).
+- **Catalog (`core/functions/catalog/`):**
+    - `languages/`: Dil yönetimi (CRUD).
+    - `localization/`: Çeviri anahtarı ve değeri yönetimi (Import/Export dahil).
+- **Security (`core/functions/security/`):**
+    - `auth/`: Kullanıcı doğrulama.
+    - `session/`: Oturum yönetimi ve temizliği.
+    - `users/`: Kullanıcı işlemleri (kilit açma, login denemeleri).
+    - `roles/`: Rol tanımları ve atamaları.
+    - `permissions/`: Yetki tanımları ve kontrolleri.
+- **Presentation (`core/functions/presentation/`):**
+    - UI yapılandırmasını (menüler, sayfalar) JSON olarak sunan fonksiyonlar (`get_structure`, `build_page_json`).
+
+### 13.2 Triggerlar (`core/triggers/`)
+
+Trigger tanımları fonksiyon tanımlarından ayrılmıştır.
+
+- **`update_updated_at_column.sql`:** `updated_at` kolonunu otomatik güncelleyen genel trigger fonksiyonu.
+- **`security_triggers.sql`:** Security şeması tabloları (`users`, `roles`, `permissions`) için trigger atamaları.
+- **`presentation_triggers.sql`:** Presentation şeması tabloları (`menus`, `pages` vb.) için trigger atamaları.
+
+Yeni fonksiyon veya trigger eklerken `.agent/workflows/add-function.md` ve `.agent/workflows/add-trigger.md` yönergeleri takip edilmelidir.
+
+---
+
+## 14. Altın Kurallar
 
 > **"Core paylaşılır, tenant izole edilir."**
 
 > **"Log kısa ömürlüdür, audit kalıcıdır."**
 
 > **"Her tenant için ayrı veritabanı = tam izolasyon."**
+
+> **"Fonksiyonlar modüler, triggerlar merkezi yönetilir."**

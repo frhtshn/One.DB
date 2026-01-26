@@ -12,7 +12,7 @@ Bu kural aşağıdaki durumlarda otomatik olarak uygulanmalıdır:
 
 1. Proje içinde herhangi bir klasöre yeni SQL tablo dosyası eklendiğinde:
     - `core/`, `core_log/`, `core_audit/`, `core_report/`, `bonus/`
-    - `tenant/`, `tenant_log/`, `tenant_audit/`, `tenant_report/`, `affiliate/`
+    - `tenant/`, `tenant_log/`, `tenant_audit/`, `tenant_report/`, `tenant_affiliate/`
     - `game/`, `game_log/`
     - `finance/`, `finance_log/`
 2. Mevcut bir tablo silindiğinde veya yeniden adlandırıldığında

@@ -180,4 +180,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Presentation Functions
 \i core/functions/presentation/build_page_json.sql
 \i core/functions/presentation/get_structure.sql
+-- TRIGGERS
+\i core/triggers/update_updated_at_column.sql
+\i core/triggers/security_triggers.sql
+\i core/triggers/presentation_triggers.sql
+
 COMMIT;
