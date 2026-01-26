@@ -1,10 +1,16 @@
+-- =============================================
+-- Tablo: catalog.providers
+-- Açıklama: Servis sağlayıcı kataloğu
+-- Oyun, ödeme, SMS vb. tüm entegre servis sağlayıcıları
+-- =============================================
+
 DROP TABLE IF EXISTS catalog.providers CASCADE;
 
 CREATE TABLE catalog.providers (
-    id bigserial PRIMARY KEY,
-    provider_type_id bigint NOT NULL,
-    provider_code varchar(50) NOT NULL,
-    provider_name varchar(255) NOT NULL,
-    is_active boolean NOT NULL DEFAULT true,
-    created_at timestamp without time zone NOT NULL DEFAULT now()
+    id bigserial PRIMARY KEY,                              -- Benzersiz provider kimliği
+    provider_type_id bigint NOT NULL,                      -- Provider tipi ID (FK: catalog.provider_types)
+    provider_code varchar(50) NOT NULL,                    -- Sistem kodu: PRAGMATIC, EVOLUTION, PAYTR
+    provider_name varchar(255) NOT NULL,                   -- Görünen ad: Pragmatic Play, Evolution Gaming
+    is_active boolean NOT NULL DEFAULT true,               -- Aktif/pasif durumu
+    created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );

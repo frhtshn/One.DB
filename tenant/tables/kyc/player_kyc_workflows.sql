@@ -1,24 +1,29 @@
+-- =============================================
+-- Player KYC Workflows (KYC İş Akışı Geçmişi)
+-- KYC vakası üzerindeki tüm işlemler
+-- Durum değişiklikleri, onay/red geçmişi
+-- =============================================
+
 DROP TABLE IF EXISTS kyc.player_kyc_workflows CASCADE;
 
 CREATE TABLE kyc.player_kyc_workflows (
     id BIGSERIAL PRIMARY KEY,
 
-    kyc_case_id BIGINT NOT NULL,
+    kyc_case_id BIGINT NOT NULL,                  -- Bağlı KYC vakası ID
 
-    previous_status VARCHAR(30),
-    current_status VARCHAR(30) NOT NULL,
+    previous_status VARCHAR(30),                  -- Önceki durum
+    current_status VARCHAR(30) NOT NULL,          -- Yeni durum
 
-    action VARCHAR(50),
-    -- DOCUMENT_UPLOADED
-    -- REVIEW_STARTED
-    -- APPROVED
-    -- REJECTED
-    -- EXPIRED
+    action VARCHAR(50),                           -- Yapılan işlem
+    -- DOCUMENT_UPLOADED: Belge yüklendi
+    -- REVIEW_STARTED: İnceleme başladı
+    -- APPROVED: Onaylandı
+    -- REJECTED: Reddedildi
+    -- EXPIRED: Süresi doldu
 
-    performed_by BIGINT,
-    -- reviewer / system user
+    performed_by BIGINT,                          -- İşlemi yapan (inceleyici veya sistem)
 
-    reason VARCHAR(255),
+    reason VARCHAR(255),                          -- İşlem açıklaması
 
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );

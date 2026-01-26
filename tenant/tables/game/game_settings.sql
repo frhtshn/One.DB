@@ -1,31 +1,37 @@
+-- =============================================
+-- Game Settings (Oyun Ayarları)
+-- Tenant'ın kullandığı oyunlar ve özelleştirmeleri
+-- Core DB'den denormalize edilmiş + tenant override'ları
+-- =============================================
+
 DROP TABLE IF EXISTS game.game_settings CASCADE;
 
 CREATE TABLE game.game_settings (
     id bigserial PRIMARY KEY,
 
     -- Core DB'den denormalize edilmiş alanlar (catalog.games + catalog.providers)
-    game_id bigint NOT NULL,
-    game_code varchar(100) NOT NULL,
-    game_name varchar(255) NOT NULL,
-    provider_id bigint NOT NULL,
-    provider_code varchar(50) NOT NULL,
+    game_id bigint NOT NULL,                      -- Core DB'deki oyun ID
+    game_code varchar(100) NOT NULL,              -- Oyun kodu: sweet_bonanza, gates_of_olympus
+    game_name varchar(255) NOT NULL,              -- Oyun adı
+    provider_id bigint NOT NULL,                  -- Provider ID (Pragmatic, NetEnt vb.)
+    provider_code varchar(50) NOT NULL,           -- Provider kodu
 
     -- Tenant'a özel görünüm ayarları
-    display_order int,
-    is_visible boolean NOT NULL DEFAULT true,
-    is_featured boolean NOT NULL DEFAULT false,
+    display_order int,                            -- Sıralama
+    is_visible boolean NOT NULL DEFAULT true,     -- Görünür mü?
+    is_featured boolean NOT NULL DEFAULT false,   -- Öne çıkarılsın mı?
 
     -- Tenant'a özel özelleştirmeler
-    custom_name varchar(255),
-    custom_thumbnail_url varchar(500),
+    custom_name varchar(255),                     -- Özel oyun adı
+    custom_thumbnail_url varchar(500),            -- Özel küçük resim URL
 
     -- Tenant'a özel oyun limitleri
-    min_bet decimal(18,2),
-    max_bet decimal(18,2),
+    min_bet decimal(18,2),                        -- Minimum bahis tutarı
+    max_bet decimal(18,2),                        -- Maksimum bahis tutarı
 
     -- Ek metadata
-    tags jsonb,
-    metadata jsonb,
+    tags jsonb,                                   -- Etiketler: ["new", "popular", "jackpot"]
+    metadata jsonb,                               -- Ek bilgiler
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
