@@ -102,6 +102,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/data/languages.sql
 \i core/data/transaction_types.sql
 \i core/data/operation_types.sql
+\i core/data/localization_keys.sql
 --\i core/data/bo_ui.sql
 
 -- FUNCTIONS
