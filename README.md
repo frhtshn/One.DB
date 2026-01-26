@@ -23,11 +23,10 @@ Detaylı mimari ve yapı dokümantasyonu için:
 
 ---
 
-## Deploy the Schema SQL File to the Core Database
+## Local Server (Localhost)
 
 ```bash
 set PGPASSWORD=sizin_şifre
-psql -h localhost -U postgres -d core -f deploy_core.sql
 ```
 
 ### Create Database local
@@ -35,6 +34,43 @@ psql -h localhost -U postgres -d core -f deploy_core.sql
 ```bash
 psql -h localhost -U postgres -d postgres -f create_dbs.sql
 ```
+
+### Deploy Core
+
+```bash
+psql -h localhost -U postgres -d core -f deploy_core.sql
+```
+
+### Deploy Tenant
+
+```bash
+psql -h localhost -U postgres -d tenant -f deploy_tenant.sql
+```
+
+### Deploy Core Log
+
+```bash
+psql -h localhost -U postgres -d core_log -f deploy_core_log.sql
+```
+
+### Deploy Core Audit
+
+```bash
+psql -h localhost -U postgres -d core_audit -f deploy_core_audit.sql
+```
+
+### Deploy Bonus
+
+```bash
+psql -h localhost -U postgres -d bonus -f deploy_bonus.sql
+```
+
+### Deploy Tenant Affiliate
+
+```bash
+psql -h localhost -U postgres -d tenant_affiliate -f deploy_tenant_affiliate.sql
+```
+
 ---
 
 ## Deploy Core - Beta Server
@@ -68,6 +104,30 @@ psql -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core.sql
 
 ```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d tenant -f deploy_tenant.sql
+```
+
+### Deploy Core Log
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d core_log -f deploy_core_log.sql
+```
+
+### Deploy Core Audit
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d core_audit -f deploy_core_audit.sql
+```
+
+### Deploy Bonus
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d bonus -f deploy_bonus.sql
+```
+
+### Deploy Tenant Affiliate
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_affiliate -f deploy_tenant_affiliate.sql
 ```
 
 ---
