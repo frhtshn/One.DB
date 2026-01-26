@@ -1,21 +1,23 @@
 -- =============================================
 -- Tablo: presentation.tabs
--- Açıklama: Sayfa içi sekme tanımları
--- Bir sayfadaki tab panelleri buradan yönetilir
--- Örnek: Player Detail > Profile, Wallet, Transactions, Documents
+-- Açıklama: Sayfa İçi Sekmeler
+-- Sayfalarda kullanılan sekmeler (Overview, Wallet, KYC vb.)
 -- =============================================
 
 DROP TABLE IF EXISTS presentation.tabs CASCADE;
 
 CREATE TABLE presentation.tabs (
     id BIGSERIAL PRIMARY KEY,                              -- Benzersiz sekme kimliği
-    page_id BIGINT NOT NULL,                               -- Sayfa ID (FK: presentation.pages)
-    code VARCHAR(50) NOT NULL,                             -- Sekme kodu: WALLET, PROFILE, TRANSACTIONS
-    title_localization_key VARCHAR(150) NOT NULL,          -- Çeviri anahtarı: bo.tab.wallet
+    page_id BIGINT NOT NULL,                               -- Sayfa ID
+    code VARCHAR(50) NOT NULL,                             -- Sekme kodu
+    title_localization_key VARCHAR(150) NOT NULL,          -- Çeviri anahtarı
     order_index INT NOT NULL,                              -- Sıralama indeksi
     required_permission VARCHAR(100) NOT NULL,             -- Gerekli yetki kodu
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
-    UNIQUE (page_id, code)                                 -- Sayfa başına benzersiz sekme kodu
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+
+    CONSTRAINT uq_tabs_page_code UNIQUE (page_id, code)
 );
 
-COMMENT ON TABLE presentation.tabs IS 'Page tab panel definitions for organizing content within pages like Player Detail tabs: Profile, Wallet, Transactions';
+COMMENT ON TABLE presentation.tabs IS 'In-page tabs (Overview, Wallet, KYC...)';

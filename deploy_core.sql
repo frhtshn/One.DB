@@ -63,11 +63,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- SECURITY TABLES
 \i core/tables/security/permissions.sql
+\i core/tables/security/roles.sql
+\i core/tables/security/role_permissions.sql
 \i core/tables/security/secrets_provider.sql
 \i core/tables/security/secrets_tenant.sql
-\i core/tables/security/role_permissions.sql
 \i core/tables/security/users.sql
 \i core/tables/security/user_roles.sql
+\i core/tables/security/user_tenant_roles.sql
+\i core/tables/security/user_sessions.sql
+\i core/tables/security/user_permission_overrides.sql
+\i core/tables/security/user_allowed_tenants.sql
 
 -- BILLING TABLES (Tenant Faturalama - Nucleo'nun Alacakları)
 \i core/tables/billing/tenant_billing_periods.sql

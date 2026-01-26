@@ -1,24 +1,28 @@
 -- =============================================
 -- Tablo: presentation.contexts
--- Açıklama: Sayfa içi alan/eylem yetki kontrolleri
--- Belirli alanların veya butonların gösterimini kontrol eder
--- Davranış: hide (gizle), mask (maskele), readonly, edit
+-- Açıklama: UI Elemanları ve Yetki Davranışları
+-- Alan, buton, aksiyon gibi elemanların yetkiye göre görünürlüğü
+-- Öncelik: edit > readonly > mask > hide
 -- =============================================
 
 DROP TABLE IF EXISTS presentation.contexts CASCADE;
 
 CREATE TABLE presentation.contexts (
     id BIGSERIAL PRIMARY KEY,                              -- Benzersiz context kimliği
-    page_id BIGINT NOT NULL,                               -- Sayfa ID (FK: presentation.pages)
-    code VARCHAR(100) NOT NULL,                            -- Context kodu: player.phone, player.balance
-    context_type VARCHAR(20) NOT NULL CHECK (              -- Context tipi
-        context_type IN ('field','action','section','button')
+    page_id BIGINT NOT NULL,                               -- Sayfa ID
+    code VARCHAR(100) NOT NULL,                            -- Context kodu
+    context_type VARCHAR(20) NOT NULL,                     -- Tip: field, action, section, button
+    label_localization_key VARCHAR(150),                   -- Etiket çeviri anahtarı
+    permission_edit VARCHAR(100),                          -- Düzenleme yetkisi
+    permission_readonly VARCHAR(100),                      -- Okuma yetkisi
+    permission_mask VARCHAR(100),                          -- Maskeleme yetkisi
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+
+    CONSTRAINT chk_contexts_type CHECK (
+        context_type IN ('field', 'action', 'section', 'button')
     ),
-    label_localization_key VARCHAR(150),                   -- Etiket çeviri anahtarı: bo.field.player.phone
-    required_permission VARCHAR(100) NOT NULL,             -- Gerekli yetki kodu
-    behavior VARCHAR(20) NOT NULL DEFAULT 'hide'           -- Yetkisiz durumda davranış
-        CHECK (behavior IN ('hide','mask','readonly','edit')),
-    UNIQUE (page_id, code)                                 -- Sayfa başına benzersiz context kodu
+    CONSTRAINT uq_contexts_page_code UNIQUE (page_id, code)
 );
 
-COMMENT ON TABLE presentation.contexts IS 'Page field and action permission contexts controlling visibility and behavior of UI elements based on user permissions';
+COMMENT ON TABLE presentation.contexts IS 'UI elements (field, button, action, section) permission-based behavior';

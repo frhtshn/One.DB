@@ -1,22 +1,24 @@
 -- =============================================
 -- Tablo: presentation.submenus
--- Açıklama: Backoffice alt menü öğeleri
--- Her alt menü bir ana menüye bağlıdır
--- Örnek: Players > Player List, Player Search
+-- Açıklama: Alt Menü Öğeleri
+-- Ana menülere bağlı alt menüler (Player List, Player Search vb.)
 -- =============================================
 
 DROP TABLE IF EXISTS presentation.submenus CASCADE;
 
 CREATE TABLE presentation.submenus (
     id BIGSERIAL PRIMARY KEY,                              -- Benzersiz alt menü kimliği
-    menu_id BIGINT NOT NULL,                               -- Ana menü ID (FK: presentation.menus)
-    code VARCHAR(50) NOT NULL,                             -- Alt menü kodu: PLAYER_LIST, PLAYER_SEARCH
-    title_localization_key VARCHAR(150) NOT NULL,          -- Çeviri anahtarı: bo.submenu.player_list
-    route VARCHAR(200),                                    -- Yönlendirme adresi: /players/list
+    menu_id BIGINT NOT NULL,                               -- Ana menü ID
+    code VARCHAR(50) NOT NULL,                             -- Alt menü kodu
+    title_localization_key VARCHAR(150) NOT NULL,          -- Çeviri anahtarı
+    route VARCHAR(200),                                    -- Yönlendirme adresi
     order_index INT NOT NULL,                              -- Sıralama indeksi
     required_permission VARCHAR(100) NOT NULL,             -- Gerekli yetki kodu
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
-    UNIQUE (menu_id, code)                                 -- Menü başına benzersiz alt menü kodu
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+
+    CONSTRAINT uq_submenus_menu_code UNIQUE (menu_id, code)
 );
 
-COMMENT ON TABLE presentation.submenus IS 'BackOffice submenu items linked to parent menus with routing, localization, and permission settings';
+COMMENT ON TABLE presentation.submenus IS 'Submenu items (Player List, Player Search...)';
