@@ -19,6 +19,7 @@ Detaylı mimari ve yapı dokümantasyonu için:
 | Dosya                                                      | Açıklama                                 |
 | ---------------------------------------------------------- | ---------------------------------------- |
 | [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md) | Veritabanı mimarisi, şemalar ve tablolar |
+| [DATABASE_FUNCTIONS.md](.docs/DATABASE_FUNCTIONS.md)       | Stored procedures ve trigger referansı   |
 | [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                     | Log, audit ve retention stratejisi       |
 
 ---
