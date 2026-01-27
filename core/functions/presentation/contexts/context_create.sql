@@ -19,7 +19,7 @@ DECLARE
 BEGIN
     -- Check required fields
     IF p_page_id IS NULL OR p_code IS NULL OR p_type IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.context.missing-required-fields';
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.context.missing-required-fields';
     END IF;
 
     -- Insert

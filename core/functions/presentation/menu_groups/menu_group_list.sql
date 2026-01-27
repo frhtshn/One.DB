@@ -16,7 +16,8 @@ BEGIN
     -- Total count
     SELECT COUNT(*)
     INTO v_total_count
-    FROM presentation.menu_groups;
+    FROM presentation.menu_groups
+    WHERE is_active;
 
     -- Items listesi
     SELECT COALESCE(jsonb_agg(
@@ -37,7 +38,8 @@ BEGIN
         ) ORDER BY mg.order_index
     ), '[]'::jsonb)
     INTO v_items
-    FROM presentation.menu_groups mg;
+    FROM presentation.menu_groups mg
+    WHERE mg.is_active;
 
     RETURN jsonb_build_object(
         'items', v_items,
