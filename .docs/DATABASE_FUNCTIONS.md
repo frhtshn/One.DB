@@ -12,14 +12,14 @@ Merkezi yönetim, güvenlik ve backoffice UI fonksiyonları.
 
 Backoffice UI yapısını yöneten fonksiyonlar.
 
-#### Genel Yapı
+#### Genel Yapı (`.../structure/`, `.../pages/`)
 
 - **`presentation.get_structure()`**:
     - Tüm menü, sayfa ve yetki ağacını JSON olarak döner (Cache: MD5 hash).
 - **`presentation.build_page_json(p_page_id BIGINT)`**:
     - Tek bir sayfanın (tablar ve contextler dahil) JSON yapısını oluşturur.
 
-#### Menu Group Yönetimi
+#### Menu Group Yönetimi (`.../menu_groups/`)
 
 - **`presentation.menu_group_create`**: Yeni menü grubu oluşturur.
 - **`presentation.menu_group_update`**: Menü grubunu günceller.
@@ -27,7 +27,7 @@ Backoffice UI yapısını yöneten fonksiyonlar.
 - **`presentation.menu_group_get`**: Menü grubu detayını getirir.
 - **`presentation.menu_group_list`**: Menü gruplarını listeler.
 
-#### Menu Yönetimi
+#### Menu Yönetimi (`.../menus/`)
 
 - **`presentation.menu_create`**: Yeni menü oluşturur.
 - **`presentation.menu_update`**: Menüyü günceller.
@@ -35,14 +35,14 @@ Backoffice UI yapısını yöneten fonksiyonlar.
 - **`presentation.menu_get`**: Menü detayını getirir.
 - **`presentation.menu_list`**: Menüleri listeler.
 
-#### Submenu Yönetimi
+#### Submenu Yönetimi (`.../submenus/`)
 
 - **`presentation.submenu_create`**: Yeni alt menü oluşturur.
 - **`presentation.submenu_update`**: Alt menüyü günceller.
 - **`presentation.submenu_delete`**: Alt menüyü siler.
 - **`presentation.submenu_list`**: Alt menüleri listeler.
 
-#### Page Yönetimi
+#### Page Yönetimi (`.../pages/`)
 
 - **`presentation.page_create`**: Yeni sayfa oluşturur.
 - **`presentation.page_update`**: Sayfayı günceller.
@@ -50,14 +50,14 @@ Backoffice UI yapısını yöneten fonksiyonlar.
 - **`presentation.page_get`**: Sayfa detayını getirir.
 - **`presentation.page_list`**: Sayfaları listeler.
 
-#### Tab Yönetimi
+#### Tab Yönetimi (`.../tabs/`)
 
 - **`presentation.tab_create`**: Sayfa içi tab oluşturur.
 - **`presentation.tab_update`**: Tabı günceller.
 - **`presentation.tab_delete`**: Tabı siler.
 - **`presentation.tab_list`**: Tabları listeler.
 
-#### Context Yönetimi
+#### Context Yönetimi (`.../contexts/`)
 
 - **`presentation.context_create`**: Sayfa içi içerik alanı (context) oluşturur.
 - **`presentation.context_update`**: Contexti günceller.

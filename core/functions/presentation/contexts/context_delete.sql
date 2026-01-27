@@ -11,13 +11,16 @@ CREATE OR REPLACE FUNCTION presentation.context_delete(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Check existence
-    IF NOT EXISTS (SELECT 1 FROM presentation.contexts WHERE id = p_id) THEN
+    -- Check existence and active status
+    IF NOT EXISTS (SELECT 1 FROM presentation.contexts WHERE id = p_id AND is_active) THEN
         RAISE EXCEPTION 'error.context.not-found';
     END IF;
 
-    -- Soft delete: remove context (hard delete, since no is_active field)
-    DELETE FROM presentation.contexts WHERE id = p_id;
+    -- Soft delete: set is_active to FALSE
+    UPDATE presentation.contexts
+    SET is_active = FALSE,
+        updated_at = NOW()
+    WHERE id = p_id;
 END;
 $$;
 
