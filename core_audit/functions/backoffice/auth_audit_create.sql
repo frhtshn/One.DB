@@ -1,8 +1,11 @@
--- ============================================================================
--- AUTH AUDIT LOG FUNCTIONS
--- ============================================================================
 
--- Save auth audit event - returns BIGINT ID
+-- ================================================================
+-- AUTH_AUDIT_CREATE: Kimlik denetim log kaydı ekler
+-- Bu fonksiyon bir kimlik denetim logu oluşturur ve BIGINT döner
+-- ================================================================
+
+DROP FUNCTION IF EXISTS backoffice.auth_audit_create(BIGINT,BIGINT,BIGINT,VARCHAR,TEXT,VARCHAR,VARCHAR,BOOLEAN,VARCHAR);
+
 CREATE OR REPLACE FUNCTION backoffice.auth_audit_create(
     p_user_id BIGINT,
     p_company_id BIGINT,
@@ -14,11 +17,11 @@ CREATE OR REPLACE FUNCTION backoffice.auth_audit_create(
     p_success BOOLEAN DEFAULT TRUE,
     p_error_message VARCHAR(500) DEFAULT NULL
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_id BIGINT;
+    v_id BIGINT; -- Oluşturulan kimlik denetim logunun ID'si
 BEGIN
     INSERT INTO backoffice.auth_audit_log (
         user_id, company_id, tenant_id, event_type,
@@ -31,8 +34,8 @@ BEGIN
     )
     RETURNING backoffice.auth_audit_log.id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_create IS 'Saves an auth audit event, returns BIGINT ID';
+COMMENT ON FUNCTION backoffice.auth_audit_create IS 'Adds an auth audit log entry. Returns BIGINT.';

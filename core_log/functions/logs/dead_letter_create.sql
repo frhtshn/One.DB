@@ -1,10 +1,11 @@
--- ============================================================================
--- DEAD LETTER FUNCTIONS
--- ============================================================================
+
+-- ================================================================
+-- DEAD_LETTER_CREATE: Dead letter (ileti hatası) mesajı ekler
+-- Bu fonksiyon bir dead letter mesajı oluşturur ve UUID döner
+-- ================================================================
 
 DROP FUNCTION IF EXISTS logs.dead_letter_create(VARCHAR, VARCHAR, VARCHAR, JSONB, TEXT, TEXT, INT, VARCHAR);
 
--- Save dead letter message - returns UUID
 CREATE OR REPLACE FUNCTION logs.dead_letter_create(
     p_event_id VARCHAR(255),
     p_event_type VARCHAR(255),
@@ -15,11 +16,11 @@ CREATE OR REPLACE FUNCTION logs.dead_letter_create(
     p_retry_count INT DEFAULT 0,
     p_status VARCHAR(50) DEFAULT 'pending'
 )
-RETURNS TABLE(id UUID)
+RETURNS UUID
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_id UUID;
+    v_id UUID; -- Oluşturulan dead letter mesajının UUID'si
 BEGIN
     INSERT INTO logs.dead_letter_messages (
         event_id, event_type, tenant_id, payload,
@@ -30,8 +31,8 @@ BEGIN
     )
     RETURNING logs.dead_letter_messages.id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
-COMMENT ON FUNCTION logs.dead_letter_create IS 'Saves a dead letter message for later retry/analysis';
+COMMENT ON FUNCTION logs.dead_letter_create IS 'Adds a dead letter message. Returns UUID.';

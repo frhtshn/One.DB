@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION catalog.localization_key_create(
     p_category VARCHAR,
     p_description VARCHAR DEFAULT NULL
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -35,7 +35,7 @@ BEGIN
     VALUES (v_key, LOWER(TRIM(p_domain)), LOWER(TRIM(p_category)), TRIM(p_description))
     RETURNING catalog.localization_keys.id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 

@@ -1,8 +1,11 @@
--- ============================================================================
--- ENTITY AUDIT LOG FUNCTIONS
--- ============================================================================
 
--- Save entity audit log entry - returns UUID
+-- ================================================================
+-- AUDIT_CREATE: Varlık denetim log kaydı ekler
+-- Bu fonksiyon bir varlık denetim logu oluşturur ve UUID döner
+-- ================================================================
+
+DROP FUNCTION IF EXISTS backoffice.audit_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TIMESTAMPTZ);
+
 CREATE OR REPLACE FUNCTION backoffice.audit_create(
     p_event_id VARCHAR(255) DEFAULT NULL,
     p_original_event_id VARCHAR(255) DEFAULT NULL,
@@ -17,11 +20,11 @@ CREATE OR REPLACE FUNCTION backoffice.audit_create(
     p_correlation_id VARCHAR(255) DEFAULT NULL,
     p_forwarded_at TIMESTAMPTZ DEFAULT NULL
 )
-RETURNS TABLE(id UUID)
+RETURNS UUID
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_id UUID;
+    v_id UUID; -- Oluşturulan varlık denetim logunun UUID'si
 BEGIN
     INSERT INTO backoffice.audit_logs (
         event_id, original_event_id, tenant_id, user_id,
@@ -37,8 +40,8 @@ BEGIN
     )
     RETURNING backoffice.audit_logs.id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.audit_create IS 'Saves an entity audit log entry, returns UUID';
+COMMENT ON FUNCTION backoffice.audit_create IS 'Adds an entity audit log entry. Returns UUID.';

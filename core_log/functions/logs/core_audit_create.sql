@@ -1,10 +1,11 @@
--- ============================================================================
--- CORE AUDIT LOG FUNCTIONS
--- ============================================================================
+
+-- ================================================================
+-- CORE_AUDIT_CREATE: Çekirdek denetim log kaydı ekler
+-- Bu fonksiyon bir denetim logu oluşturur ve UUID döner
+-- ================================================================
 
 DROP FUNCTION IF EXISTS logs.core_audit_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT, VARCHAR, VARCHAR);
 
--- Save core audit log entry - returns UUID
 CREATE OR REPLACE FUNCTION logs.core_audit_create(
     p_event_id VARCHAR(255),
     p_user_id VARCHAR(255) DEFAULT NULL,
@@ -16,11 +17,11 @@ CREATE OR REPLACE FUNCTION logs.core_audit_create(
     p_ip_address VARCHAR(50) DEFAULT NULL,
     p_correlation_id VARCHAR(255) DEFAULT NULL
 )
-RETURNS TABLE(id UUID)
+RETURNS UUID
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_id UUID;
+    v_id UUID; -- Oluşturulan log kaydının UUID'si
 BEGIN
     INSERT INTO logs.audit_logs (
         event_id, user_id, action, entity_type, entity_id,
@@ -33,8 +34,8 @@ BEGIN
     )
     RETURNING logs.audit_logs.id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
-COMMENT ON FUNCTION logs.core_audit_create IS 'Saves a core audit log entry, returns UUID';
+COMMENT ON FUNCTION logs.core_audit_create IS 'Adds a core audit log entry. Returns UUID.';

@@ -1,10 +1,11 @@
--- ============================================================================
--- ERROR LOG FUNCTIONS
--- ============================================================================
+
+-- ================================================================
+-- ERROR_LOG: Uygulama hatası loglar
+-- Bu fonksiyon bir hata logu oluşturur ve ID döner
+-- ================================================================
 
 DROP FUNCTION IF EXISTS logs.error_log(TEXT, TEXT, TEXT, INT, BOOLEAN, BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ);
 
--- Log error - returns inserted ID
 CREATE OR REPLACE FUNCTION logs.error_log(
     p_error_code TEXT,
     p_error_message TEXT,
@@ -23,11 +24,11 @@ CREATE OR REPLACE FUNCTION logs.error_log(
     p_cluster_name TEXT DEFAULT NULL,
     p_occurred_at TIMESTAMPTZ DEFAULT NOW()
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_id BIGINT;
+    v_id BIGINT; -- Oluşturulan hata logunun ID'si
 BEGIN
     INSERT INTO logs.error_logs (
         error_code, error_message, exception_type, http_status_code,
@@ -43,8 +44,8 @@ BEGIN
     )
     RETURNING logs.error_logs.id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
-COMMENT ON FUNCTION logs.error_log IS 'Logs an application error, returns ID';
+COMMENT ON FUNCTION logs.error_log IS 'Adds an application error log entry. Returns ID.';

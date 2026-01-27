@@ -32,10 +32,6 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
     END IF;
 
-    -- Silinmiş kullanıcı güncellenemez (status = -1 ise soft deleted)
-    IF v_current_user.status = -1 THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.user.update.is-deleted';
-    END IF;
 
     -- Email benzersizlik kontrolü (değişiyorsa)
     IF p_email IS NOT NULL AND LOWER(TRIM(p_email)) != v_current_user.email THEN
