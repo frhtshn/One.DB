@@ -35,7 +35,6 @@ BEGIN
         'updatedAt', m.updated_at,
         'deletedAt', m.deleted_at,
         'isActive', m.is_active,
-        'isSystem', m.is_system,
         'description', m.description,
         'createdBy', cu.username,
         'updatedBy', uu.username,

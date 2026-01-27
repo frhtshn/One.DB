@@ -31,7 +31,6 @@ BEGIN
         ),
         'submenus', '[]'::jsonb, -- to be filled by frontend or join if needed
         'pages', '[]'::jsonb,    -- to be filled by frontend or join if needed
-        'isSystem', m.is_system,
         'description', m.description,
         'createdBy', m.created_by,
         'updatedBy', m.updated_by,
