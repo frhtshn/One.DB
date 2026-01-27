@@ -30,7 +30,7 @@ BEGIN
             SELECT COUNT(1) FROM presentation.submenus s WHERE s.menu_id = m.id AND s.is_active
         ),
         'submenus', '[]'::jsonb, -- to be filled by frontend or join if needed
-        'pages', '[]'::jsonb,    -- to be filled by frontend or join if needed
+        'pages', '[]'::jsonb    -- to be filled by frontend or join if needed
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.menus m
