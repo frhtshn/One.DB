@@ -3,6 +3,8 @@
 -- Key ve domain her zaman lowercase, kebab-case
 -- ============================================================================
 
+TRUNCATE TABLE catalog.localization_keys CASCADE;
+
 INSERT INTO catalog.localization_keys (localization_key, domain, category, description) VALUES
 
 -- ============================================================================
@@ -39,6 +41,14 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- ERROR MESSAGES (Exception siniflarinda kullanilan)
 -- Pattern: error.{domain}.{sub-domain?}.{reason}
 -- ============================================================================
+
+-- Logs Exceptions (Dead Letter, Error, Audit)
+('error.logs.errornotfound', 'error', 'logs', 'Error log bulunamadi'),
+('error.logs.deadletternotfound', 'error', 'logs', 'Dead letter bulunamadi'),
+('error.logs.auditnotfound', 'error', 'logs', 'Audit log bulunamadi'),
+
+-- Auth - Account Status
+('error.auth.account-inactive', 'error', 'auth', 'Hesap aktif degil'),
 
 -- BadRequest - Field Errors
 ('error.field.missing', 'error', 'field', 'Zorunlu alan eksik. Args: {0}=fieldName'),
@@ -195,6 +205,23 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 
 -- User Exceptions
 ('error.user.not-found', 'error', 'user', 'Kullanici bulunamadi'),
+('error.user.create.email-exists', 'error', 'user', 'Email adresi zaten kayitli'),
+('error.user.create.username-exists', 'error', 'user', 'Kullanici adi bu sirkette zaten mevcut'),
+('error.user.update.is-deleted', 'error', 'user', 'Silinmis kullanici guncellenemez'),
+('error.user.update.email-exists', 'error', 'user', 'Email adresi baska kullanicida kayitli'),
+('error.user.update.username-exists', 'error', 'user', 'Kullanici adi bu sirkette baska kullanicida mevcut'),
+('error.user.delete.already-deleted', 'error', 'user', 'Kullanici zaten silinmis'),
+('error.user.reset-password.is-deleted', 'error', 'user', 'Silinmis kullanicinin sifresi sifirlanamaz'),
+('error.user.restore.not-deleted', 'error', 'user', 'Kullanici silinmis degil'),
+
+-- Company Exceptions
+('error.company.not-found', 'error', 'company', 'Sirket bulunamadi veya pasif'),
+
+-- Menu Group Exceptions
+('error.menu-group.not-found', 'error', 'menu-group', 'Menu grubu bulunamadi'),
+('error.menu-group.code-exists', 'error', 'menu-group', 'Menu grup kodu zaten mevcut'),
+('error.menu-group.delete.already-deleted', 'error', 'menu-group', 'Menu grubu zaten silinmis'),
+('error.menu-group.restore.not-deleted', 'error', 'menu-group', 'Menu grubu silinmis degil'),
 
 -- Localization Exceptions
 ('error.localization.language-code-invalid', 'error', 'localization', 'Gecersiz dil kodu. Args: {0}=langCode'),

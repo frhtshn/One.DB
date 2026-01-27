@@ -9,27 +9,23 @@ CREATE OR REPLACE FUNCTION security.role_update(
     p_id BIGINT,
     p_name VARCHAR DEFAULT NULL,
     p_description VARCHAR DEFAULT NULL,
-    p_updated_by BIGINT DEFAULT NULL
+    p_updated_by BIGINT DEFAULT NULL,
+    p_status SMALLINT DEFAULT NULL
 )
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-    v_current_status SMALLINT;
     v_current_code VARCHAR;
 BEGIN
-    -- Get current state
-    SELECT status, code INTO v_current_status, v_current_code
+    -- Role var mi kontrol et
+    SELECT code INTO v_current_code
     FROM security.roles
     WHERE id = p_id;
 
-    IF v_current_status IS NULL THEN
+    IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.role.not-found';
-    END IF;
-
-    IF v_current_status = 0 THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.role.deleted';
     END IF;
 
     -- Protect system roles
@@ -37,7 +33,7 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.role.system-protected';
     END IF;
 
-    -- Update
+    -- Guncelle (sadece verilen alanlar)
     UPDATE security.roles
     SET
         name = COALESCE(NULLIF(TRIM(p_name), ''), name),
@@ -45,8 +41,12 @@ BEGIN
             WHEN p_description IS NOT NULL THEN NULLIF(TRIM(p_description), '')
             ELSE description
         END,
+        status = COALESCE(p_status, status),
         updated_at = NOW(),
-        updated_by = COALESCE(p_updated_by, updated_by)
+        updated_by = COALESCE(p_updated_by, updated_by),
+        -- Restore durumunda deleted bilgilerini temizle
+        deleted_at = CASE WHEN p_status = 1 THEN NULL ELSE deleted_at END,
+        deleted_by = CASE WHEN p_status = 1 THEN NULL ELSE deleted_by END
     WHERE id = p_id;
 END;
 $$;

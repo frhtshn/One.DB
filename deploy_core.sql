@@ -181,6 +181,45 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/auth/user_authenticate.sql
 
 -- Presentation Functions
+-- Menu Groups
+\i core/functions/presentation/menu_group_list.sql
+\i core/functions/presentation/menu_group_get.sql
+\i core/functions/presentation/menu_group_create.sql
+\i core/functions/presentation/menu_group_update.sql
+\i core/functions/presentation/menu_group_delete.sql
+
+-- Menus
+\i core/functions/presentation/menu_list.sql
+\i core/functions/presentation/menu_get.sql
+\i core/functions/presentation/menu_create.sql
+\i core/functions/presentation/menu_update.sql
+\i core/functions/presentation/menu_delete.sql
+
+-- Submenus
+\i core/functions/presentation/submenu_list.sql
+\i core/functions/presentation/submenu_create.sql
+\i core/functions/presentation/submenu_update.sql
+\i core/functions/presentation/submenu_delete.sql
+
+-- Pages
+\i core/functions/presentation/page_list.sql
+\i core/functions/presentation/page_get.sql
+\i core/functions/presentation/page_create.sql
+\i core/functions/presentation/page_update.sql
+\i core/functions/presentation/page_delete.sql
+
+-- Tabs
+\i core/functions/presentation/tab_list.sql
+\i core/functions/presentation/tab_create.sql
+\i core/functions/presentation/tab_update.sql
+\i core/functions/presentation/tab_delete.sql
+
+-- Contexts
+\i core/functions/presentation/context_list.sql
+\i core/functions/presentation/context_create.sql
+\i core/functions/presentation/context_update.sql
+\i core/functions/presentation/context_delete.sql
+
 \i core/functions/presentation/build_page_json.sql
 \i core/functions/presentation/get_structure.sql
 

@@ -25,35 +25,18 @@
         {
             "ssh": "Disabled",
             "previewLimit": 50,
-            "server": "155.133.22.97",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "beta_core",
-            "database": "core",
-            "username": "admin",
-            "password": "StrongPass123!"
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "155.133.22.97",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "beta_tenant",
-            "database": "tenant_",
-            "username": "admin",
-            "password": "StrongPass123!"
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
             "name": "beta_core",
             "database": "core",
             "username": "postgres",
-            "password": "NucleoPostgres2026"
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
         },
         {
             "ssh": "Disabled",
@@ -64,7 +47,12 @@
             "name": "beta_tenant",
             "database": "tenant_",
             "username": "postgres",
-            "password": "NucleoPostgres2026"
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
         }
     ],
     "sqltools.highlightQuery": false,

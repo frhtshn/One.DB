@@ -2,6 +2,8 @@
 -- LOCALIZATION VALUES - ENGLISH (en)
 -- ============================================================================
 
+DELETE FROM catalog.localization_values WHERE language_code = 'en';
+
 INSERT INTO catalog.localization_values (localization_key_id, language_code, localized_text, created_at)
 SELECT k.id, 'en', v.text, NOW()
 FROM catalog.localization_keys k
@@ -30,6 +32,14 @@ JOIN (VALUES
     ('validation.password.require-lowercase', 'Password must contain at least one lowercase letter'),
     ('validation.password.require-digit', 'Password must contain at least one digit'),
     ('validation.password.require-special', 'Password must contain at least one special character'),
+
+    -- Error Messages - Logs
+    ('error.logs.errornotfound', 'Error log not found'),
+    ('error.logs.deadletternotfound', 'Dead letter not found'),
+    ('error.logs.auditnotfound', 'Audit log not found'),
+
+    -- Error Messages - Auth Account Status
+    ('error.auth.account-inactive', 'Account is inactive'),
 
     -- Error Messages - Field
     ('error.field.missing', 'Required field is missing: ''{0}'''),
@@ -184,6 +194,23 @@ JOIN (VALUES
 
     -- Error Messages - User
     ('error.user.not-found', 'User not found'),
+    ('error.user.create.email-exists', 'This email address is already registered'),
+    ('error.user.create.username-exists', 'This username is already in use in this company'),
+    ('error.user.update.is-deleted', 'Deleted user cannot be updated'),
+    ('error.user.update.email-exists', 'This email address is registered to another user'),
+    ('error.user.update.username-exists', 'This username is in use by another user in this company'),
+    ('error.user.delete.already-deleted', 'User is already deleted'),
+    ('error.user.reset-password.is-deleted', 'Cannot reset password for deleted user'),
+    ('error.user.restore.not-deleted', 'User is not deleted'),
+
+    -- Error Messages - Company
+    ('error.company.not-found', 'Company not found or inactive'),
+
+    -- Error Messages - Menu Group
+    ('error.menu-group.not-found', 'Menu group not found'),
+    ('error.menu-group.code-exists', 'Menu group code already exists'),
+    ('error.menu-group.delete.already-deleted', 'Menu group is already deleted'),
+    ('error.menu-group.restore.not-deleted', 'Menu group is not deleted'),
 
     -- Error Messages - Localization
     ('error.localization.language-code-invalid', 'Invalid language code: {0}'),

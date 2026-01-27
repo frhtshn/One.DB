@@ -44,12 +44,12 @@ BEGIN
 
     -- Kullanici bulunamadi
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0401', MESSAGE = 'error.auth.invalid-credentials';
+        RAISE EXCEPTION USING ERRCODE = 'P0401', MESSAGE = 'error.auth.login.invalid-credentials';
     END IF;
 
     -- Hesap kilitli mi?
     IF v_user.is_locked AND (v_user.locked_until IS NULL OR v_user.locked_until > NOW()) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0423', MESSAGE = 'error.auth.account-locked';
+        RAISE EXCEPTION USING ERRCODE = 'P0423', MESSAGE = 'error.auth.login.account-locked';
     END IF;
 
     -- Hesap aktif degilse

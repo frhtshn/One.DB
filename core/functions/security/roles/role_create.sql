@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION security.role_create(
     p_description VARCHAR DEFAULT NULL,
     p_created_by BIGINT DEFAULT NULL
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
@@ -46,7 +46,7 @@ BEGIN
     VALUES (v_code, TRIM(p_name), NULLIF(TRIM(p_description), ''), 1, NOW(), NOW(), p_created_by)
     RETURNING security.roles.id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 

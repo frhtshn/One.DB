@@ -2,6 +2,8 @@
 -- LOCALIZATION VALUES - TURKISH (tr)
 -- ============================================================================
 
+DELETE FROM catalog.localization_values WHERE language_code = 'tr';
+
 INSERT INTO catalog.localization_values (localization_key_id, language_code, localized_text, created_at)
 SELECT k.id, 'tr', v.text, NOW()
 FROM catalog.localization_keys k
@@ -30,6 +32,14 @@ JOIN (VALUES
     ('validation.password.require-lowercase', 'Şifre en az bir küçük harf içermeli'),
     ('validation.password.require-digit', 'Şifre en az bir rakam içermeli'),
     ('validation.password.require-special', 'Şifre en az bir özel karakter içermeli'),
+
+    -- Error Messages - Logs
+    ('error.logs.errornotfound', 'Error log bulunamadı'),
+    ('error.logs.deadletternotfound', 'Dead letter bulunamadı'),
+    ('error.logs.auditnotfound', 'Audit log bulunamadı'),
+
+    -- Error Messages - Auth Account Status
+    ('error.auth.account-inactive', 'Hesap aktif değil'),
 
     -- Error Messages - Field
     ('error.field.missing', 'Zorunlu alan eksik: ''{0}'''),
@@ -184,6 +194,23 @@ JOIN (VALUES
 
     -- Error Messages - User
     ('error.user.not-found', 'Kullanıcı bulunamadı'),
+    ('error.user.create.email-exists', 'Bu e-posta adresi zaten kayıtlı'),
+    ('error.user.create.username-exists', 'Bu kullanıcı adı şirkette zaten kullanılıyor'),
+    ('error.user.update.is-deleted', 'Silinmiş kullanıcı güncellenemez'),
+    ('error.user.update.email-exists', 'Bu e-posta adresi başka bir kullanıcıda kayıtlı'),
+    ('error.user.update.username-exists', 'Bu kullanıcı adı şirkette başka bir kullanıcıda mevcut'),
+    ('error.user.delete.already-deleted', 'Kullanıcı zaten silinmiş'),
+    ('error.user.reset-password.is-deleted', 'Silinmiş kullanıcının şifresi sıfırlanamaz'),
+    ('error.user.restore.not-deleted', 'Kullanıcı silinmiş değil'),
+
+    -- Error Messages - Company
+    ('error.company.not-found', 'Şirket bulunamadı veya pasif durumda'),
+
+    -- Error Messages - Menu Group
+    ('error.menu-group.not-found', 'Menü grubu bulunamadı'),
+    ('error.menu-group.code-exists', 'Menü grup kodu zaten mevcut'),
+    ('error.menu-group.delete.already-deleted', 'Menü grubu zaten silinmiş'),
+    ('error.menu-group.restore.not-deleted', 'Menü grubu silinmiş değil'),
 
     -- Error Messages - Localization
     ('error.localization.language-code-invalid', 'Geçersiz dil kodu: {0}'),

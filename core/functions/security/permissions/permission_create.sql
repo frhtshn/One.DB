@@ -13,7 +13,7 @@ CREATE OR REPLACE FUNCTION security.permission_create(
     p_description VARCHAR(500) DEFAULT NULL,
     p_category VARCHAR(50) DEFAULT 'general'
 )
-RETURNS TABLE(id INT)
+RETURNS INT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -51,7 +51,7 @@ BEGIN
     VALUES (v_normalized_code, TRIM(p_name), NULLIF(TRIM(p_description), ''), LOWER(TRIM(p_category)), 1)
     RETURNING security.permissions.id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 
