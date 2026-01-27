@@ -67,7 +67,7 @@ BEGIN
     LEFT JOIN catalog.localization_keys lk ON lk.localization_key = m.title_localization_key
     LEFT JOIN presentation.menu_groups mg ON mg.id = m.menu_group_id
     LEFT JOIN catalog.localization_keys mg_lk ON mg_lk.localization_key = mg.title_localization_key
-    LEFT JOIN core.permissions perm ON perm.code = m.required_permission
+    LEFT JOIN security.permissions perm ON perm.code = m.required_permission
     WHERE m.id = p_menu_id
       AND m.is_active;
 
