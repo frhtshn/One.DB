@@ -17,6 +17,16 @@ ALTER TABLE affiliate.affiliate_users
     ADD CONSTRAINT fk_affiliate_users_affiliate
     FOREIGN KEY (affiliate_id) REFERENCES affiliate.affiliates(id) ON DELETE CASCADE;
 
+-- affiliate_users -> affiliate_users (created by)
+ALTER TABLE affiliate.affiliate_users
+    ADD CONSTRAINT fk_affiliate_users_created_by
+    FOREIGN KEY (created_by_user_id) REFERENCES affiliate.affiliate_users(id) ON DELETE SET NULL;
+
+-- affiliate_users -> affiliates (created by affiliate - üst affiliate)
+ALTER TABLE affiliate.affiliate_users
+    ADD CONSTRAINT fk_affiliate_users_created_by_affiliate
+    FOREIGN KEY (created_by_affiliate_id) REFERENCES affiliate.affiliates(id) ON DELETE SET NULL;
+
 -- affiliate_campaigns -> affiliates
 ALTER TABLE affiliate.affiliate_campaigns
     ADD CONSTRAINT fk_affiliate_campaigns_affiliate
