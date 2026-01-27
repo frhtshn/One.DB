@@ -12,10 +12,57 @@ Merkezi yönetim, güvenlik ve backoffice UI fonksiyonları.
 
 Backoffice UI yapısını yöneten fonksiyonlar.
 
+#### Genel Yapı
+
 - **`presentation.get_structure()`**:
     - Tüm menü, sayfa ve yetki ağacını JSON olarak döner (Cache: MD5 hash).
 - **`presentation.build_page_json(p_page_id BIGINT)`**:
     - Tek bir sayfanın (tablar ve contextler dahil) JSON yapısını oluşturur.
+
+#### Menu Group Yönetimi
+
+- **`presentation.menu_group_create`**: Yeni menü grubu oluşturur.
+- **`presentation.menu_group_update`**: Menü grubunu günceller.
+- **`presentation.menu_group_delete`**: Menü grubunu siler.
+- **`presentation.menu_group_get`**: Menü grubu detayını getirir.
+- **`presentation.menu_group_list`**: Menü gruplarını listeler.
+
+#### Menu Yönetimi
+
+- **`presentation.menu_create`**: Yeni menü oluşturur.
+- **`presentation.menu_update`**: Menüyü günceller.
+- **`presentation.menu_delete`**: Menüyü siler.
+- **`presentation.menu_get`**: Menü detayını getirir.
+- **`presentation.menu_list`**: Menüleri listeler.
+
+#### Submenu Yönetimi
+
+- **`presentation.submenu_create`**: Yeni alt menü oluşturur.
+- **`presentation.submenu_update`**: Alt menüyü günceller.
+- **`presentation.submenu_delete`**: Alt menüyü siler.
+- **`presentation.submenu_list`**: Alt menüleri listeler.
+
+#### Page Yönetimi
+
+- **`presentation.page_create`**: Yeni sayfa oluşturur.
+- **`presentation.page_update`**: Sayfayı günceller.
+- **`presentation.page_delete`**: Sayfayı siler.
+- **`presentation.page_get`**: Sayfa detayını getirir.
+- **`presentation.page_list`**: Sayfaları listeler.
+
+#### Tab Yönetimi
+
+- **`presentation.tab_create`**: Sayfa içi tab oluşturur.
+- **`presentation.tab_update`**: Tabı günceller.
+- **`presentation.tab_delete`**: Tabı siler.
+- **`presentation.tab_list`**: Tabları listeler.
+
+#### Context Yönetimi
+
+- **`presentation.context_create`**: Sayfa içi içerik alanı (context) oluşturur.
+- **`presentation.context_update`**: Contexti günceller.
+- **`presentation.context_delete`**: Contexti siler.
+- **`presentation.context_list`**: Contextleri listeler.
 
 ### 1.2 Security Şeması (`core/functions/security/`)
 
@@ -30,6 +77,14 @@ Backoffice UI yapısını yöneten fonksiyonlar.
 
 #### Kullanıcı Yönetimi (`.../users/`)
 
+- **`security.user_create`**: Yeni kullanıcı oluşturur.
+- **`security.user_update`**: Kullanıcı bilgilerini günceller.
+- **`security.user_delete`**: Kullanıcıyı siler.
+- **`security.user_get`**: Kullanıcı detayını getirir.
+- **`security.user_list`**: Kullanıcıları listeler (filtreli).
+- **`security.user_check_email_exists`**: Email adresinin kullanımda olup olmadığını kontrol eder.
+- **`security.user_check_username_exists`**: Kullanıcı adının kullanımda olup olmadığını kontrol eder.
+- **`security.user_reset_password`**: Kullanıcı şifresini sıfırlar/günceller.
 - **`security.user_unlock`**: Kilitlenmiş kullanıcının kilidini kaldırır.
 - **`security.user_login_failed_increment`**: Başarısız giriş sayacını artırır.
 - **`security.user_login_failed_reset`**: Başarısız giriş sayacını sıfırlar.
@@ -175,13 +230,13 @@ _(Sadece partitioning ve otomatik temizlik triggerları mevcuttur)_
 
 Veri bütünlüğünü sağlamak ve audit loglarını oluşturmak için kullanılan otomatik tetikleyiciler.
 
-### 3.1 Genel Triggerlar (`core/triggers/`)
+### 5.1 Genel Triggerlar (`core/triggers/`)
 
 - **`update_updated_at_column`**:
     - `core.update_updated_at_column()` fonksiyonunu çağırır.
     - Kayıt güncellendiğinde `updated_at` kolonunu otomatik olarak `NOW()` yapar.
 
-### 3.2 Security Triggerlar (`core/triggers/security_triggers.sql`)
+### 5.2 Security Triggerlar (`core/triggers/security_triggers.sql`)
 
 Aşağıdaki tablolarda yapılan değişiklikleri `core_audit` veritabanına loglar:
 
@@ -191,7 +246,7 @@ Aşağıdaki tablolarda yapılan değişiklikleri `core_audit` veritabanına log
 - `security.user_roles`
 - `security.role_permissions`
 
-### 3.3 Presentation Triggerlar (`core/triggers/presentation_triggers.sql`)
+### 5.3 Presentation Triggerlar (`core/triggers/presentation_triggers.sql`)
 
 Aşağıdaki tablolarda değişiklik olduğunda `updated_at` alanını güncelleyerek cache invalidation sağlar:
 
