@@ -17,7 +17,7 @@ BEGIN
     SELECT jsonb_build_object(
         'id', m.id,
         'code', m.code,
-        'title', lk.localization_key, -- localization key
+            'title', COALESCE(lk.localization_key, m.title_localization_key), -- localization key
         'icon', m.icon,
         'order', m.order_index,
         'permission', m.required_permission,
