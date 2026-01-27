@@ -29,3 +29,7 @@ ALTER TABLE presentation.tabs
 ALTER TABLE presentation.contexts
     ADD CONSTRAINT fk_contexts_page
     FOREIGN KEY (page_id) REFERENCES presentation.pages(id);
+
+-- Unique Constraints
+ALTER TABLE presentation.pages
+    ADD CONSTRAINT uq_pages_code UNIQUE (code);

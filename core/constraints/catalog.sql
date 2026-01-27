@@ -24,3 +24,7 @@ ALTER TABLE catalog.localization_values
 ALTER TABLE catalog.localization_values
     ADD CONSTRAINT fk_localization_values_language
     FOREIGN KEY (language_code) REFERENCES catalog.languages(language_code);
+
+-- Unique Constraints
+ALTER TABLE catalog.localization_keys
+    ADD CONSTRAINT uq_localization_keys_key UNIQUE (localization_key);
