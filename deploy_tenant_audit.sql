@@ -1,0 +1,26 @@
+SET client_encoding = 'UTF8';
+
+BEGIN;
+
+-- CREATE SCHEMAS
+CREATE SCHEMA IF NOT EXISTS affiliate_audit;
+CREATE SCHEMA IF NOT EXISTS infra;
+
+-- ENABLE EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
+
+-- =============================================================================
+-- AFFILIATE AUDIT TABLES
+-- Affiliate Backoffice kullanıcı oturum ve aksiyon logları
+-- =============================================================================
+\i tenant_audit/tables/affiliate/login_sessions.sql
+\i tenant_audit/tables/affiliate/login_attempts.sql
+\i tenant_audit/tables/affiliate/user_actions.sql
+
+-- =============================================================================
+-- INDEXES
+-- =============================================================================
+\i tenant_audit/indexes/affiliate.sql
+
+COMMIT;

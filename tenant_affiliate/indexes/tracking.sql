@@ -60,3 +60,47 @@ CREATE INDEX idx_player_finance_daily_affiliate ON tracking.player_finance_stats
 CREATE INDEX idx_player_finance_daily_date ON tracking.player_finance_stats_daily USING btree(stats_date DESC);
 CREATE INDEX idx_player_finance_daily_affiliate_date ON tracking.player_finance_stats_daily USING btree(affiliate_id, stats_date DESC);
 CREATE INDEX idx_player_finance_daily_cost ON tracking.player_finance_stats_daily USING btree(affiliate_id, stats_date, total_finance_cost) WHERE total_finance_cost > 0;
+
+-- =============================================
+-- Tracking Links, Clicks, Registrations, Promo Codes
+-- =============================================
+
+-- tracking_links
+CREATE INDEX idx_tracking_links_affiliate ON tracking.tracking_links USING btree(affiliate_id);
+CREATE INDEX idx_tracking_links_campaign ON tracking.tracking_links USING btree(campaign_id) WHERE campaign_id IS NOT NULL;
+CREATE INDEX idx_tracking_links_short_code ON tracking.tracking_links USING btree(short_code) WHERE short_code IS NOT NULL;
+CREATE INDEX idx_tracking_links_custom_slug ON tracking.tracking_links USING btree(custom_slug) WHERE custom_slug IS NOT NULL;
+CREATE INDEX idx_tracking_links_type ON tracking.tracking_links USING btree(link_type);
+CREATE INDEX idx_tracking_links_status ON tracking.tracking_links USING btree(is_active, affiliate_id);
+CREATE INDEX idx_tracking_links_created ON tracking.tracking_links USING btree(created_at DESC);
+
+-- link_clicks
+CREATE INDEX idx_link_clicks_click_id ON tracking.link_clicks USING btree(click_id);
+CREATE INDEX idx_link_clicks_tracking_link ON tracking.link_clicks USING btree(tracking_link_id);
+CREATE INDEX idx_link_clicks_affiliate ON tracking.link_clicks USING btree(affiliate_id);
+CREATE INDEX idx_link_clicks_clicked_at ON tracking.link_clicks USING btree(clicked_at DESC);
+CREATE INDEX idx_link_clicks_affiliate_date ON tracking.link_clicks USING btree(affiliate_id, clicked_at DESC);
+CREATE INDEX idx_link_clicks_ip_hash ON tracking.link_clicks USING btree(ip_hash);
+CREATE INDEX idx_link_clicks_unconverted ON tracking.link_clicks USING btree(clicked_at DESC) WHERE is_converted = false;
+CREATE INDEX idx_link_clicks_country ON tracking.link_clicks USING btree(country) WHERE country IS NOT NULL;
+CREATE INDEX idx_link_clicks_device ON tracking.link_clicks USING btree(device_type) WHERE device_type IS NOT NULL;
+
+-- player_registrations
+CREATE INDEX idx_player_registrations_player ON tracking.player_registrations USING btree(player_id);
+CREATE INDEX idx_player_registrations_affiliate ON tracking.player_registrations USING btree(affiliate_id) WHERE affiliate_id IS NOT NULL;
+CREATE INDEX idx_player_registrations_campaign ON tracking.player_registrations USING btree(campaign_id) WHERE campaign_id IS NOT NULL;
+CREATE INDEX idx_player_registrations_link ON tracking.player_registrations USING btree(tracking_link_id) WHERE tracking_link_id IS NOT NULL;
+CREATE INDEX idx_player_registrations_click ON tracking.player_registrations USING btree(click_id) WHERE click_id IS NOT NULL;
+CREATE INDEX idx_player_registrations_registered ON tracking.player_registrations USING btree(registered_at DESC);
+CREATE INDEX idx_player_registrations_affiliate_date ON tracking.player_registrations USING btree(affiliate_id, registered_at DESC);
+CREATE INDEX idx_player_registrations_source ON tracking.player_registrations USING btree(attribution_source);
+CREATE INDEX idx_player_registrations_ftd_pending ON tracking.player_registrations USING btree(affiliate_id) WHERE is_ftd_completed = false AND affiliate_id IS NOT NULL;
+CREATE INDEX idx_player_registrations_qualified ON tracking.player_registrations USING btree(affiliate_id, qualified_at) WHERE is_qualified = true;
+CREATE INDEX idx_player_registrations_promo ON tracking.player_registrations USING btree(promo_code_id) WHERE promo_code_id IS NOT NULL;
+
+-- promo_codes
+CREATE INDEX idx_promo_codes_code ON tracking.promo_codes USING btree(code);
+CREATE INDEX idx_promo_codes_affiliate ON tracking.promo_codes USING btree(affiliate_id);
+CREATE INDEX idx_promo_codes_campaign ON tracking.promo_codes USING btree(campaign_id) WHERE campaign_id IS NOT NULL;
+CREATE INDEX idx_promo_codes_active ON tracking.promo_codes USING btree(is_active, valid_from, valid_until);
+CREATE INDEX idx_promo_codes_created ON tracking.promo_codes USING btree(created_at DESC);

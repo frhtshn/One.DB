@@ -8,8 +8,6 @@ CREATE SCHEMA IF NOT EXISTS campaign;
 CREATE SCHEMA IF NOT EXISTS commission;
 CREATE SCHEMA IF NOT EXISTS payout;
 CREATE SCHEMA IF NOT EXISTS tracking;
-CREATE SCHEMA IF NOT EXISTS affiliate_audit;
-CREATE SCHEMA IF NOT EXISTS affiliate_log;
 CREATE SCHEMA IF NOT EXISTS infra;
 
 -- ENABLE EXTENSIONS
@@ -56,16 +54,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_affiliate/tables/tracking/player_stats_monthly.sql
 \i tenant_affiliate/tables/tracking/affiliate_stats_daily.sql
 \i tenant_affiliate/tables/tracking/affiliate_stats_monthly.sql
-
--- AUDIT TABLES (Affiliate BO)
-\i tenant_audit/tables/affiliate/login_sessions.sql
-\i tenant_audit/tables/affiliate/login_attempts.sql
-\i tenant_audit/tables/affiliate/user_actions.sql
-
--- LOG TABLES (Affiliate BO)
-\i tenant_log/tables/affiliate/api_requests.sql
-\i tenant_log/tables/affiliate/report_generations.sql
-\i tenant_log/tables/affiliate/commission_calculations.sql
+\i tenant_affiliate/tables/tracking/tracking_links.sql
+\i tenant_affiliate/tables/tracking/link_clicks.sql
+\i tenant_affiliate/tables/tracking/promo_codes.sql
+\i tenant_affiliate/tables/tracking/player_registrations.sql
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created
@@ -84,7 +76,5 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_affiliate/indexes/commission.sql
 \i tenant_affiliate/indexes/payout.sql
 \i tenant_affiliate/indexes/tracking.sql
-\i tenant_audit/indexes/affiliate.sql
-\i tenant_log/indexes/affiliate.sql
 
 COMMIT;

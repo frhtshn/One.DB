@@ -51,22 +51,22 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ## 3. Veritabanı Özet Matrisi
 
-| #   | Veritabanı         | Amaç                                       | Tenant Bağımsız | Partition | Retention   |
-| --- | ------------------ | ------------------------------------------ | --------------- | --------- | ----------- |
-| 1   | `core`             | Platform yapılandırması ve merkezi veriler | ✅              | ❌        | Sınırsız    |
-| 2   | `core_log`         | Merkezi teknik log kayıtları               | ✅              | Daily     | 30–90 gün   |
-| 3   | `core_audit`       | Platform karar ve değişiklik audit         | ✅              | ❌        | 5–10 yıl    |
-| 4   | `core_report`      | Merkezi raporlama ve BI verileri           | ✅              | Opsiyonel | İş ihtiyacı |
-| 5   | `game`             | Oyun gateway entegrasyon durumu            | ✅              | Daily     | 14–30 gün   |
-| 6   | `game_log`         | Oyun gateway teknik logları                | ✅              | Daily     | 7–14 gün    |
-| 7   | `finance`          | Finans gateway entegrasyon durumu          | ✅              | Daily     | 14–30 gün   |
-| 8   | `finance_log`      | Finans gateway teknik logları              | ✅              | Daily     | 14–30 gün   |
-| 9   | `bonus`            | Bonus ve promosyon yapılandırması          | ✅              | ❌        | Sınırsız    |
-| 10  | `tenant`           | Kiracıya özel iş verileri                  | ❌              | Monthly   | Sınırsız    |
-| 11  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | ❌              | Monthly   | Sınırsız    |
-| 12  | `tenant_log`       | Kiracıya özel operasyonel loglar           | ❌              | Daily     | 30–90 gün   |
-| 13  | `tenant_audit`     | Kiracıya özel audit kayıtları              | ❌              | Yearly    | 5–10 yıl    |
-| 14  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | ❌              | Opsiyonel | İş ihtiyacı |
+| #   | Veritabanı         | Amaç                                                      | Tenant Bağımsız | Partition | Retention   |
+| --- | ------------------ | --------------------------------------------------------- | --------------- | --------- | ----------- |
+| 1   | `core`             | Platform yapılandırması ve merkezi veriler                | ✅              | ❌        | Sınırsız    |
+| 2   | `core_log`         | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
+| 3   | `core_audit`       | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
+| 4   | `core_report`      | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
+| 5   | `game`             | Oyun gateway entegrasyon durumu                           | ✅              | Daily     | 14–30 gün   |
+| 6   | `game_log`         | Oyun gateway teknik logları                               | ✅              | Daily     | 7–14 gün    |
+| 7   | `finance`          | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
+| 8   | `finance_log`      | Finans gateway teknik logları                             | ✅              | Daily     | 14–30 gün   |
+| 9   | `bonus`            | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
+| 10  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
+| 11  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
+| 12  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
+| 13  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
+| 14  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
 
 ---
 
@@ -395,19 +395,19 @@ CMS ve dinamik içerik yönetimi.
 
 ### 7.1 Log Veritabanları
 
-| DB                  | Partition | Retention | Not                              |
-| ------------------- | --------- | --------- | -------------------------------- |
-| `core_log`          | Daily     | 30–90 gün | ERROR, WARN, INFO seviye loglar  |
-| `tenant_log_<code>` | Daily     | 30–90 gün | Kiracıya özel operasyonel loglar |
-| `game_log`          | Daily     | 7–14 gün  | Yüksek hacim - DROP zorunlu      |
-| `finance_log`       | Daily     | 14–30 gün | Yüksek hacim - DROP zorunlu      |
+| DB                  | Partition | Retention | Not                                                          |
+| ------------------- | --------- | --------- | ------------------------------------------------------------ |
+| `core_log`          | Daily     | 30–90 gün | ERROR, WARN, INFO seviye loglar                              |
+| `tenant_log_<code>` | Daily     | 30–90 gün | Kiracıya özel operasyonel loglar (Şema: `affiliate_log` vb.) |
+| `game_log`          | Daily     | 7–14 gün  | Yüksek hacim - DROP zorunlu                                  |
+| `finance_log`       | Daily     | 14–30 gün | Yüksek hacim - DROP zorunlu                                  |
 
 ### 7.2 Audit Veritabanları
 
-| DB                    | İçerik                                                         | Retention |
-| --------------------- | -------------------------------------------------------------- | --------- |
-| `core_audit`          | Tenant lifecycle, gateway enable/disable, yetki değişiklikleri | 5–10 yıl  |
-| `tenant_audit_<code>` | Oyuncu durum değişiklikleri, yetkili aksiyonları               | 5–10 yıl  |
+| DB                    | İçerik                                                                         | Retention |
+| --------------------- | ------------------------------------------------------------------------------ | --------- |
+| `core_audit`          | Tenant lifecycle, gateway enable/disable, yetki değişiklikleri                 | 5–10 yıl  |
+| `tenant_audit_<code>` | Oyuncu durum değişiklikleri, yetkili aksiyonları (Şema: `affiliate_audit` vb.) | 5–10 yıl  |
 
 > ⚠️ Audit verileri **silinmez**. Regülasyon gereği 5–10 yıl saklanır.
 
@@ -437,7 +437,7 @@ Affiliate sistemi **bağımsız bir plugin** olarak tasarlanmıştır. Her tenan
 | `tracking`   | Oyuncu-affiliate takibi        |
 | `infra`      | PostgreSQL extension'ları      |
 
-### 7.2 affiliate Şeması
+### 8.2 affiliate Şeması
 
 Affiliate platform temel yapı taşları.
 
@@ -447,7 +447,7 @@ Affiliate platform temel yapı taşları.
 | `affiliate_network` | MLM (Multi-Level) ağ yapısı | `parent_affiliate_id`, `sub_affiliate_id`, `depth` |
 | `affiliate_users`   | Affiliate panel yetkilileri | `affiliate_id`, `email`, `role`                    |
 
-### 7.3 campaign Şeması
+### 8.3 campaign Şeması
 
 Trafik ve kampanya yönetimi.
 
@@ -458,36 +458,53 @@ Trafik ve kampanya yönetimi.
 | `attribution_models`  | Atıf modelleri               | `model_name` (Last Click, First Click), `lookback_window` |
 | `affiliate_campaigns` | Affiliate-Kampanya eşleşmesi | `affiliate_id`, `campaign_id`, `commission_plan_id`       |
 
-### 7.4 commission Şeması
+### 8.4 commission Şeması
 
 Komisyon planlama ve hesaplama motoru.
 
-| Tablo                      | Açıklama               | Kritik Alanlar                                      |
-| -------------------------- | ---------------------- | --------------------------------------------------- |
-| `commission_plans`         | Komisyon planları      | `plan_type` (RevShare, CPA, Hybrid), `is_default`   |
-| `commission_tiers`         | Plan kademeleri        | `min_ngr`, `revenue_share_percentage`, `cpa_amount` |
-| `network_commission_rules` | MLM komisyon kuralları | `level`, `override_percentage`                      |
-| `commissions`              | Hesaplanan komisyonlar | `amount`, `source_amount` (NGR), `period`           |
+| Tablo                              | Açıklama                  | Kritik Alanlar                                      |
+| ---------------------------------- | ------------------------- | --------------------------------------------------- |
+| `commission_plans`                 | Komisyon planları         | `plan_type` (RevShare, CPA, Hybrid), `is_default`   |
+| `commission_tiers`                 | Plan kademeleri           | `min_ngr`, `revenue_share_percentage`, `cpa_amount` |
+| `cost_allocation_settings`         | Maliyet yansıtma ayarları | `deduct_bonus_cost`, `carry_forward_negative`       |
+| `negative_balance_carryforward`    | Negatif bakiye taşıma     | `remaining_amount`, `status`, `source_month`        |
+| `network_commission_rules`         | MLM komisyon kuralları    | `level`, `override_percentage`                      |
+| `network_commission_distributions` | MLM hakediş dağılımı      | `from_affiliate_id`, `to_affiliate_id`, `amount`    |
+| `network_commission_splits`        | MLM dağılım kuralları     | `split_type`, `percentage`                          |
+| `commissions`                      | Hesaplanan komisyonlar    | `amount`, `source_amount` (NGR), `period`           |
 
-### 7.5 payout Şeması
+### 8.5 payout Şeması
 
 Ödeme yönetimi.
 
-| Tablo             | Açıklama            | Kritik Alanlar                       |
-| ----------------- | ------------------- | ------------------------------------ |
-| `payout_requests` | Ödeme talepleri     | `amount`, `payment_method`, `status` |
-| `payouts`         | Kesinleşen ödemeler | `transaction_ref`, `paid_at`         |
+| Tablo                | Açıklama                 | Kritik Alanlar                       |
+| -------------------- | ------------------------ | ------------------------------------ |
+| `payout_requests`    | Ödeme talepleri          | `amount`, `payment_method`, `status` |
+| `payout_commissions` | Ödeme-Komisyon eşleşmesi | `payout_request_id`, `commission_id` |
+| `payouts`            | Kesinleşen ödemeler      | `transaction_ref`, `paid_at`         |
 
-### 7.6 tracking Şeması
+### 8.6 tracking Şeması
 
-Oyuncu takip sistemi.
+Oyuncu takip sistemi ve istatistikler.
 
-| Tablo                      | Açıklama                     | Kritik Alanlar                                   |
-| -------------------------- | ---------------------------- | ------------------------------------------------ |
-| `player_affiliate_current` | Oyuncunun mevcut affiliate'i | `player_id`, `affiliate_id`, `campaign_id`       |
-| `player_affiliate_history` | Atıf değişiklik geçmişi      | `old_affiliate_id`, `new_affiliate_id`, `reason` |
+| Tablo                        | Açıklama                     | Kritik Alanlar                                   |
+| ---------------------------- | ---------------------------- | ------------------------------------------------ |
+| `tracking_links`             | Takip linkleri               | `slug`, `campaign_id`, `redirect_url`            |
+| `link_clicks`                | Link tıklama logları         | `ip_address`, `referrer`, `is_unique`            |
+| `transaction_events`         | Finansal olay akışı          | `player_id`, `amount`, `operation_type`          |
+| `player_registrations`       | Oyuncu kayıt olayları        | `player_id`, `registered_at`, `campaign_id`      |
+| `player_affiliate_current`   | Oyuncunun mevcut affiliate'i | `player_id`, `affiliate_id`, `campaign_id`       |
+| `player_affiliate_history`   | Atıf değişiklik geçmişi      | `old_affiliate_id`, `new_affiliate_id`, `reason` |
+| `affiliate_stats_daily`      | Affiliate günlük özet        | `clicks`, `registrations`, `ftd_count`           |
+| `affiliate_stats_monthly`    | Affiliate aylık özet         | `ngr`, `commission_amount`                       |
+| `player_game_stats_daily`    | Oyuncu oyun istatistikleri   | `bet_amount`, `win_amount`, `ggr`                |
+| `player_finance_stats_daily` | Oyuncu finans istatistikleri | `deposit_amount`, `withdrawal_amount`            |
+| `player_stats_monthly`       | Oyuncu aylık özet            | `total_ngr`, `admin_fee_deduction`               |
+| `promo_codes`                | Takip amaçlı promo kodlar    | `code`, `campaign_id`                            |
 
 > 💡 **Denormalizasyon**: `player_affiliate_current` tablosu `player_username`, `tenant_code` gibi alanları performans için kopyalar.
+>
+> 📊 **İstatistikler**: `_stats` tabloları realtime raporlama için önceden hesaplanmış (pre-aggregated) verileri tutar.
 
 ---
 
@@ -508,23 +525,23 @@ Bonus ve promosyon sistemi **konfigürasyon** katmanıdır.
 
 Bonus kural motoru tanımları.
 
-| Tablo            | Açıklama                          |
-| ---------------- | --------------------------------- |
-| `bonus_types`    | Bonus tipleri (Deposit, FreeSpin) |
-| `bonus_rules`    | Kazanım ve çevrim kuralları       |
-| `bonus_triggers` | Otomatik bonus tetikleyicileri    |
+| Tablo            | Açıklama                          | Kritik Alanlar                                           |
+| ---------------- | --------------------------------- | -------------------------------------------------------- |
+| `bonus_types`    | Bonus tipleri (Deposit, FreeSpin) | `type_code`, `category`, `value_type`                    |
+| `bonus_rules`    | Kazanım ve çevrim kuralları       | `wagering_requirement`, `min_deposit`, `expires_in_days` |
+| `bonus_triggers` | Otomatik bonus tetikleyicileri    | `trigger_type` (Registration, Deposit), `schedule_cron`  |
 
 #### 9.1.3 promotion Şeması
 
-| Tablo         | Açıklama          |
-| ------------- | ----------------- |
-| `promo_codes` | Promosyon kodları |
+| Tablo         | Açıklama          | Kritik Alanlar                           |
+| ------------- | ----------------- | ---------------------------------------- |
+| `promo_codes` | Promosyon kodları | `code`, `max_redemptions`, `valid_until` |
 
 #### 9.1.4 campaign Şeması
 
-| Tablo       | Açıklama                  |
-| ----------- | ------------------------- |
-| `campaigns` | Global kampanya tanımları |
+| Tablo       | Açıklama                  | Kritik Alanlar                                     |
+| ----------- | ------------------------- | -------------------------------------------------- |
+| `campaigns` | Global kampanya tanımları | `campaign_type`, `total_budget`, `target_segments` |
 
 ### 9.2 Tenant Bonus Şeması (Tenant-Specific)
 
@@ -564,42 +581,23 @@ Tüm veritabanlarında `infra` şemasında aşağıdaki extension'lar etkindir:
 
 ## 11. Deploy Scriptleri
 
-| Script              | Amaç                                |
-| ------------------- | ----------------------------------- |
-| `create_dbs.sql`    | Veritabanı oluşturma                |
-| `deploy_core.sql`   | Core veritabanı şema ve tabloları   |
-| `deploy_tenant.sql` | Tenant veritabanı şema ve tabloları |
+| Script                        | Amaç                                         |
+| ----------------------------- | -------------------------------------------- |
+| `create_dbs.sql`              | Tüm veritabanlarını oluşturur (boş)          |
+| `deploy_core.sql`             | Core veritabanı şema, tablo ve fonksiyonları |
+| `deploy_core_log.sql`         | Core Log veritabanı yapısı                   |
+| `deploy_core_audit.sql`       | Core Audit veritabanı yapısı                 |
+| `deploy_bonus.sql`            | Bonus (Global) veritabanı yapısı             |
+| `deploy_tenant.sql`           | Tenant (Şablon) veritabanı yapısı            |
+| `deploy_tenant_log.sql`       | Tenant Log veritabanı yapısı                 |
+| `deploy_tenant_audit.sql`     | Tenant Audit veritabanı yapısı               |
+| `deploy_tenant_affiliate.sql` | Tenant Affiliate (Plugin) veritabanı yapısı  |
 
 ---
 
 ## 13. Fonksiyon ve Trigger Mimarisi
 
-Core veritabanı fonksiyonları ve trigger'ları belirli bir klasör yapısında yönetilir. "Separation of Concerns" prensibi uygulanmıştır.
-
-### 13.1 Fonksiyonlar (`core/functions/`)
-
-- **Common (`core/functions/common/`):** Tüm şemalar tarafından kullanılabilen genel fonksiyonlar (örn: `update_updated_at_column`).
-- **Catalog (`core/functions/catalog/`):**
-    - `languages/`: Dil yönetimi (CRUD).
-    - `localization/`: Çeviri anahtarı ve değeri yönetimi (Import/Export dahil).
-- **Security (`core/functions/security/`):**
-    - `auth/`: Kullanıcı doğrulama.
-    - `session/`: Oturum yönetimi ve temizliği.
-    - `users/`: Kullanıcı işlemleri (kilit açma, login denemeleri).
-    - `roles/`: Rol tanımları ve atamaları.
-    - `permissions/`: Yetki tanımları ve kontrolleri.
-- **Presentation (`core/functions/presentation/`):**
-    - UI yapılandırmasını (menüler, sayfalar) JSON olarak sunan fonksiyonlar (`get_structure`, `build_page_json`).
-
-### 13.2 Triggerlar (`core/triggers/`)
-
-Trigger tanımları fonksiyon tanımlarından ayrılmıştır.
-
-- **`update_updated_at_column.sql`:** `updated_at` kolonunu otomatik güncelleyen genel trigger fonksiyonu.
-- **`security_triggers.sql`:** Security şeması tabloları (`users`, `roles`, `permissions`) için trigger atamaları.
-- **`presentation_triggers.sql`:** Presentation şeması tabloları (`menus`, `pages` vb.) için trigger atamaları.
-
-Yeni fonksiyon veya trigger eklerken `.agent/workflows/add-function.md` ve `.agent/workflows/add-trigger.md` yönergeleri takip edilmelidir.
+> ℹ️ **Bilgi**: Fonksiyon ve trigger mimarisi detayları ayrı bir dokümana taşınmıştır: [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md)
 
 ---
 
@@ -610,5 +608,3 @@ Yeni fonksiyon veya trigger eklerken `.agent/workflows/add-function.md` ve `.age
 > **"Log kısa ömürlüdür, audit kalıcıdır."**
 
 > **"Her tenant için ayrı veritabanı = tam izolasyon."**
-
-> **"Fonksiyonlar modüler, triggerlar merkezi yönetilir."**
