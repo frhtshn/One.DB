@@ -17,7 +17,7 @@ BEGIN
     SELECT jsonb_build_object(
         'id', m.id,
         'code', m.code,
-        'title', lk.key, -- localization key
+        'title', lk.localization_key, -- localization key
         'icon', m.icon,
         'order', m.order_index,
         'permission', m.required_permission,
@@ -26,7 +26,7 @@ BEGIN
         'menuGroup', jsonb_build_object(
             'id', mg.id,
             'code', mg.code,
-            'title', mg_lk.key,
+            'title', mg_lk.localization_key,
             'order', mg.order_index,
             'permission', mg.required_permission,
             'isActive', mg.is_active
@@ -47,32 +47,32 @@ BEGIN
             SELECT jsonb_agg(jsonb_build_object(
                 'id', s.id,
                 'code', s.code,
-                'title', slk.key,
+                'title', slk.localization_key,
                 'order', s.order_index,
                 'isActive', s.is_active
             ))
             FROM presentation.submenus s
-            LEFT JOIN catalog.localization_keys slk ON slk.key = s.title_localization_key
+            LEFT JOIN catalog.localization_keys slk ON slk.localization_key = s.title_localization_key
             WHERE s.menu_id = m.id AND s.is_active
         ), '[]'::jsonb),
         'pages', COALESCE((
             SELECT jsonb_agg(jsonb_build_object(
                 'id', p.id,
                 'code', p.code,
-                'title', plk.key,
+                'title', plk.localization_key,
                 'order', p.order_index,
                 'isActive', p.is_active
             ))
             FROM presentation.pages p
-            LEFT JOIN catalog.localization_keys plk ON plk.key = p.title_localization_key
+            LEFT JOIN catalog.localization_keys plk ON plk.localization_key = p.title_localization_key
             WHERE p.menu_id = m.id AND p.is_active
         ), '[]'::jsonb)
     )
     INTO v_menu
     FROM presentation.menus m
-    LEFT JOIN catalog.localization_keys lk ON lk.key = m.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.localization_key = m.title_localization_key
     LEFT JOIN presentation.menu_groups mg ON mg.id = m.menu_group_id
-    LEFT JOIN catalog.localization_keys mg_lk ON mg_lk.key = mg.title_localization_key
+    LEFT JOIN catalog.localization_keys mg_lk ON mg_lk.localization_key = mg.title_localization_key
     LEFT JOIN core.users cu ON cu.id = m.created_by
     LEFT JOIN core.users uu ON uu.id = m.updated_by
     LEFT JOIN core.users du ON du.id = m.deleted_by

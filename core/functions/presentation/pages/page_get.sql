@@ -18,7 +18,7 @@ BEGIN
         'id', p.id,
         'code', p.code,
         'route', p.route,
-        'title', lk.key,
+        'title', lk.localization_key,
         'permission', p.required_permission,
         'menuId', p.menu_id,
         'submenuId', p.submenu_id,
@@ -30,7 +30,7 @@ BEGIN
     )
     INTO v_page
     FROM presentation.pages p
-    LEFT JOIN catalog.localization_keys lk ON lk.key = p.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.localization_key = p.title_localization_key
     WHERE p.id = p_page_id
       AND p.is_active;
 

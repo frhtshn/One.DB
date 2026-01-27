@@ -18,7 +18,7 @@ BEGIN
     SELECT COALESCE(jsonb_agg(jsonb_build_object(
         'id', m.id,
         'code', m.code,
-        'title', lk.key, -- localization key
+        'title', lk.localization_key, -- localization key
         'icon', m.icon,
         'order', m.order_index,
         'permission', m.required_permission,
@@ -40,7 +40,7 @@ BEGIN
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.menus m
-    LEFT JOIN catalog.localization_keys lk ON lk.key = m.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.localization_key = m.title_localization_key
     WHERE m.menu_group_id = p_menu_group_id
       AND m.is_active;
 
