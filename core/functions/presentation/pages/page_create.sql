@@ -1,10 +1,8 @@
 -- ================================================================
--- PAGE_CREATE: Yeni Sayfa Oluşturma
--- Menü veya alt menüye bağlı yeni bir sayfa oluşturur.
+-- PAGE_CREATE: Yeni sayfa oluşturur
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.page_create CASCADE;
-
 CREATE OR REPLACE FUNCTION presentation.page_create(
     p_menu_id BIGINT DEFAULT NULL,
     p_submenu_id BIGINT DEFAULT NULL,
@@ -14,7 +12,7 @@ CREATE OR REPLACE FUNCTION presentation.page_create(
     p_required_permission TEXT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT TRUE
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -54,7 +52,7 @@ BEGIN
         NOW()
     ) RETURNING id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 

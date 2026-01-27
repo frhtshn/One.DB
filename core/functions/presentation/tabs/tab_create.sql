@@ -1,10 +1,8 @@
 -- ================================================================
--- TAB_CREATE: Yeni Sekme Oluşturma
--- Sayfaya bağlı yeni bir sekme oluşturur.
+-- TAB_CREATE: Yeni sekme oluşturur
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.tab_create CASCADE;
-
 CREATE OR REPLACE FUNCTION presentation.tab_create(
     p_page_id BIGINT,
     p_code TEXT,
@@ -13,7 +11,7 @@ CREATE OR REPLACE FUNCTION presentation.tab_create(
     p_required_permission TEXT,
     p_is_active BOOLEAN DEFAULT TRUE
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -46,7 +44,7 @@ BEGIN
         NOW()
     ) RETURNING id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 

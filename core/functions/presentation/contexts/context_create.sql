@@ -1,10 +1,8 @@
 -- ================================================================
--- CONTEXT_CREATE: Yeni Context Oluşturma
--- Sayfaya bağlı yeni bir context (bağlam) oluşturur.
+-- CONTEXT_CREATE: Yeni context oluşturur
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.context_create CASCADE;
-
 CREATE OR REPLACE FUNCTION presentation.context_create(
     p_page_id BIGINT,
     p_code VARCHAR,
@@ -13,7 +11,7 @@ CREATE OR REPLACE FUNCTION presentation.context_create(
     p_permission_edit VARCHAR DEFAULT NULL,
     p_permission_readonly VARCHAR DEFAULT NULL,
     p_permission_mask VARCHAR DEFAULT NULL
-) RETURNS TABLE(id BIGINT)
+) RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -43,7 +41,7 @@ BEGIN
         p_permission_mask
     ) RETURNING id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 

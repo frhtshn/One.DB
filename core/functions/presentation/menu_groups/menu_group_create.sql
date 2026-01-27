@@ -1,8 +1,8 @@
 -- ================================================================
--- MENU_GROUP_CREATE: Yeni Menü Grubu Oluşturma
--- Kod benzersizliği kontrolü ile yeni bir menü grubu oluşturur.
+-- MENU_GROUP_CREATE: Yeni menü grubu oluştur
 -- ================================================================
 
+-- Tüm overload'ları CASCADE ile temizle
 DROP FUNCTION IF EXISTS presentation.menu_group_create CASCADE;
 
 CREATE OR REPLACE FUNCTION presentation.menu_group_create(
@@ -48,4 +48,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.menu_group_create IS 'Creates a new menu group with unique code validation. Returns BIGINT.';
+COMMENT ON FUNCTION presentation.menu_group_create IS 'Creates a new menu group with unique code validation';

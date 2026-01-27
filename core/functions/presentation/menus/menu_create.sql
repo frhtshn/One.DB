@@ -17,7 +17,7 @@ CREATE OR REPLACE FUNCTION presentation.menu_create(
     p_is_system BOOLEAN DEFAULT FALSE,
     p_is_active BOOLEAN DEFAULT TRUE
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -58,7 +58,7 @@ BEGIN
         NOW()
     ) RETURNING id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 

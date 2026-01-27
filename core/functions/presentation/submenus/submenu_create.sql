@@ -1,10 +1,8 @@
 -- ================================================================
--- SUBMENU_CREATE: Yeni Alt Menü Oluşturma
--- Menüye bağlı yeni bir alt menü oluşturur.
+-- SUBMENU_CREATE: Yeni alt menü oluşturur
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.submenu_create CASCADE;
-
 CREATE OR REPLACE FUNCTION presentation.submenu_create(
     p_menu_id BIGINT,
     p_code TEXT,
@@ -13,7 +11,7 @@ CREATE OR REPLACE FUNCTION presentation.submenu_create(
     p_order_index INT DEFAULT NULL,
     p_required_permission TEXT DEFAULT NULL
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -48,7 +46,7 @@ BEGIN
         NOW()
     ) RETURNING id INTO v_new_id;
 
-    RETURN QUERY SELECT v_new_id;
+    RETURN v_new_id;
 END;
 $$;
 
