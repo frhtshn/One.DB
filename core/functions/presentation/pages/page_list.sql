@@ -32,7 +32,7 @@ BEGIN
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.pages p
-    LEFT JOIN catalog.localization_keys lk ON lk.id = p.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.key = p.title_localization_key
     WHERE (p_menu_id IS NULL OR p.menu_id = p_menu_id)
       AND (p_submenu_id IS NULL OR p.submenu_id = p_submenu_id)
       AND p.is_active;

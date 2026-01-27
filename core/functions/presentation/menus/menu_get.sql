@@ -52,7 +52,7 @@ BEGIN
                 'isActive', s.is_active
             ))
             FROM presentation.submenus s
-            LEFT JOIN catalog.localization_keys slk ON slk.id = s.title_localization_key
+            LEFT JOIN catalog.localization_keys slk ON slk.key = s.title_localization_key
             WHERE s.menu_id = m.id AND s.is_active
         ), '[]'::jsonb),
         'pages', COALESCE((
@@ -64,15 +64,15 @@ BEGIN
                 'isActive', p.is_active
             ))
             FROM presentation.pages p
-            LEFT JOIN catalog.localization_keys plk ON plk.id = p.title_localization_key
+            LEFT JOIN catalog.localization_keys plk ON plk.key = p.title_localization_key
             WHERE p.menu_id = m.id AND p.is_active
         ), '[]'::jsonb)
     )
     INTO v_menu
     FROM presentation.menus m
-    LEFT JOIN catalog.localization_keys lk ON lk.id = m.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.key = m.title_localization_key
     LEFT JOIN presentation.menu_groups mg ON mg.id = m.menu_group_id
-    LEFT JOIN catalog.localization_keys mg_lk ON mg_lk.id = mg.title_localization_key
+    LEFT JOIN catalog.localization_keys mg_lk ON mg_lk.key = mg.title_localization_key
     LEFT JOIN core.users cu ON cu.id = m.created_by
     LEFT JOIN core.users uu ON uu.id = m.updated_by
     LEFT JOIN core.users du ON du.id = m.deleted_by

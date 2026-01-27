@@ -28,7 +28,7 @@ BEGIN
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.tabs t
-    LEFT JOIN catalog.localization_keys lk ON lk.id = t.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.key = t.title_localization_key
     WHERE t.page_id = p_page_id
       AND t.is_active;
 

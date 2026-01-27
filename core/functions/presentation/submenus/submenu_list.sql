@@ -30,7 +30,7 @@ BEGIN
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.submenus s
-    LEFT JOIN catalog.localization_keys lk ON lk.id = s.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.key = s.title_localization_key
     WHERE s.menu_id = p_menu_id
       AND s.is_active;
 
