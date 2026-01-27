@@ -33,12 +33,8 @@ BEGIN
         ),
         'createdAt', m.created_at,
         'updatedAt', m.updated_at,
-        'deletedAt', m.deleted_at,
         'isActive', m.is_active,
         'description', m.description,
-        'createdBy', cu.username,
-        'updatedBy', uu.username,
-        'deletedBy', du.username,
         'submenuCount', (
             SELECT COUNT(1) FROM presentation.submenus s WHERE s.menu_id = m.id AND s.is_active
         ),

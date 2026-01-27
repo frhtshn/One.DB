@@ -31,11 +31,6 @@ BEGIN
         ),
         'submenus', '[]'::jsonb, -- to be filled by frontend or join if needed
         'pages', '[]'::jsonb,    -- to be filled by frontend or join if needed
-        'description', m.description,
-        'createdBy', m.created_by,
-        'updatedBy', m.updated_by,
-        'deletedAt', m.deleted_at,
-        'deletedBy', m.deleted_by
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.menus m
