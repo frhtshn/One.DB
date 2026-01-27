@@ -41,7 +41,7 @@ BEGIN
             SELECT jsonb_agg(jsonb_build_object(
                 'id', s.id,
                 'code', s.code,
-                'title', slk.localization_key,
+                'title', COALESCE(slk.localization_key, s.title_localization_key),
                 'order', s.order_index,
                 'isActive', s.is_active
             ))
@@ -53,7 +53,7 @@ BEGIN
             SELECT jsonb_agg(jsonb_build_object(
                 'id', p.id,
                 'code', p.code,
-                'title', plk.localization_key,
+                'title', COALESCE(plk.localization_key, p.title_localization_key),
                 'order', p.order_index,
                 'isActive', p.is_active
             ))

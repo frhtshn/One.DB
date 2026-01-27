@@ -20,7 +20,7 @@ BEGIN
         'id', p.id,
         'code', p.code,
         'route', p.route,
-        'title', lk.localization_key,
+        'title', COALESCE(lk.localization_key, p.title_localization_key),
         'permission', p.required_permission,
         'menuId', p.menu_id,
         'submenuId', p.submenu_id,

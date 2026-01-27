@@ -31,7 +31,8 @@ BEGIN
     )
     INTO v_result
     FROM presentation.menu_groups mg
-    WHERE mg.id = p_menu_group_id;
+    WHERE mg.id = p_menu_group_id
+        AND mg.is_active;
 
     IF v_result IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.menu-group.not-found';

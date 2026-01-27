@@ -18,7 +18,7 @@ BEGIN
     SELECT COALESCE(jsonb_agg(jsonb_build_object(
         'id', t.id,
         'code', t.code,
-        'title', lk.localization_key,
+        'title', COALESCE(lk.localization_key, t.title_localization_key),
         'order', t.order_index,
         'permission', t.required_permission,
         'pageId', t.page_id,

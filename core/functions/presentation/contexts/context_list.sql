@@ -29,12 +29,14 @@ BEGIN
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.contexts c
-    WHERE c.page_id = p_page_id;
+    WHERE c.page_id = p_page_id
+        AND c.is_active;
 
     SELECT COUNT(1)
     INTO v_total_count
     FROM presentation.contexts c
-    WHERE c.page_id = p_page_id;
+    WHERE c.page_id = p_page_id
+        AND c.is_active;
 
     RETURN jsonb_build_object(
         'items', v_items,
