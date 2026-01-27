@@ -17,6 +17,7 @@ CREATE TABLE presentation.menus (
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+    deleted_at TIMESTAMPTZ,                                -- Silinme zamanı
 
     CONSTRAINT uq_menus_code UNIQUE (code)
 );

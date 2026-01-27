@@ -18,6 +18,7 @@ CREATE TABLE presentation.contexts (
     permission_mask VARCHAR(100),                          -- Maskeleme yetkisi
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+    is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
 
     CONSTRAINT chk_contexts_type CHECK (
         context_type IN ('field', 'action', 'section', 'button')
