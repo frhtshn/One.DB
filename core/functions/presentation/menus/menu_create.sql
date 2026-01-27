@@ -11,10 +11,7 @@ CREATE OR REPLACE FUNCTION presentation.menu_create(
     p_title_localization_key TEXT,
     p_order_index INT,
     p_required_permission TEXT DEFAULT NULL,
-    p_created_by BIGINT DEFAULT NULL,
-    p_description TEXT DEFAULT NULL,
     p_icon TEXT DEFAULT NULL,
-    p_is_system BOOLEAN DEFAULT FALSE,
     p_is_active BOOLEAN DEFAULT TRUE
 )
 RETURNS BIGINT
@@ -34,26 +31,20 @@ BEGIN
         menu_group_id,
         code,
         title_localization_key,
-        description,
         order_index,
         icon,
         required_permission,
-        is_system,
         is_active,
-        created_by,
         created_at,
         updated_at
     ) VALUES (
         p_menu_group_id,
         UPPER(TRIM(p_code)),
         p_title_localization_key,
-        NULLIF(TRIM(p_description), ''),
         p_order_index,
         NULLIF(TRIM(p_icon), ''),
         NULLIF(TRIM(p_required_permission), ''),
-        p_is_system,
         p_is_active,
-        p_created_by,
         NOW(),
         NOW()
     ) RETURNING id INTO v_new_id;
