@@ -30,7 +30,7 @@ BEGIN
     )
     INTO v_page
     FROM presentation.pages p
-    LEFT JOIN core.localization_keys lk ON lk.id = p.title_localization_key
+    LEFT JOIN catalog.localization_keys lk ON lk.id = p.title_localization_key
     WHERE p.id = p_page_id
       AND p.is_active;
 
