@@ -14,6 +14,7 @@ CREATE TABLE presentation.pages (
     route VARCHAR(200) NOT NULL,                           -- Yönlendirme adresi
     title_localization_key VARCHAR(150) NOT NULL,          -- Çeviri anahtarı
     required_permission VARCHAR(100) NOT NULL,             -- Gerekli yetki kodu
+    order_index INT NOT NULL DEFAULT 0,                    -- Sıralama indeksi
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
