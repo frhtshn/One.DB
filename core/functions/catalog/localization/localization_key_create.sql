@@ -1,4 +1,6 @@
--- localization_key_create: Yeni key oluştur
+-- ================================================================
+-- LOCALIZATION_KEY_CREATE: Yeni Çeviri Anahtarı Oluşturma
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_key_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR);
 

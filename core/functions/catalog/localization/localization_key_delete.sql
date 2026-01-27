@@ -1,4 +1,7 @@
--- localization_key_delete: Key ve çevirilerini sil
+-- ================================================================
+-- LOCALIZATION_KEY_DELETE: Çeviri Anahtarı Silme
+-- Anahtarı ve bağlı tüm çevirilerini siler.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_key_delete(BIGINT);
 

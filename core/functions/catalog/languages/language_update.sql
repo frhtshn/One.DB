@@ -1,6 +1,9 @@
+-- ================================================================
+-- LANGUAGE_UPDATE: Dil bilgilerini günceller
+-- ================================================================
+
 DROP FUNCTION IF EXISTS catalog.language_update(CHAR(2), VARCHAR, BOOLEAN);
 
--- Dil bilgilerini gunceller
 CREATE OR REPLACE FUNCTION catalog.language_update(
     p_code CHAR(2),
     p_name VARCHAR(50),

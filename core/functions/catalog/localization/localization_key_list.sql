@@ -1,10 +1,10 @@
--- ============================================================================
--- LOCALIZATION KEY FUNCTIONS
--- ============================================================================
+-- ================================================================
+-- LOCALIZATION_KEY_LIST: Çeviri Anahtarı Listesi
+-- Sayfalı ve filtreli liste döner.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_key_list(INT, INT, VARCHAR, VARCHAR, VARCHAR);
 
--- localization_key_list: Sayfalı key listesi
 CREATE OR REPLACE FUNCTION catalog.localization_key_list(
     p_page INT DEFAULT 1,
     p_page_size INT DEFAULT 20,

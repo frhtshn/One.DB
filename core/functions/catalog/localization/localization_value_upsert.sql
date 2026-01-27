@@ -1,10 +1,9 @@
--- ============================================================================
--- LOCALIZATION VALUE FUNCTIONS
--- ============================================================================
+-- ================================================================
+-- LOCALIZATION_VALUE_UPSERT: Çeviri Değeri Ekle/Güncelle
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_value_upsert(BIGINT, CHAR(2), TEXT);
 
--- localization_value_upsert: Çeviri ekle/güncelle
 CREATE OR REPLACE FUNCTION catalog.localization_value_upsert(
     p_key_id BIGINT,
     p_lang CHAR(2),

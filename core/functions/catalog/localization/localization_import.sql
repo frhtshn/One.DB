@@ -1,4 +1,7 @@
--- localization_import: Bulk import
+-- ================================================================
+-- LOCALIZATION_IMPORT: Çeviri İçe Aktarma (Bulk Import)
+-- JSON formatındaki çevirileri belirtilen dile aktarır.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_import(CHAR(2), JSONB);
 

@@ -1,4 +1,6 @@
--- localization_key_update: Key güncelle
+-- ================================================================
+-- LOCALIZATION_KEY_UPDATE: Çeviri Anahtarı Güncelleme
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_key_update(BIGINT, VARCHAR, VARCHAR, VARCHAR);
 

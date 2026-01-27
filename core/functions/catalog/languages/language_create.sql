@@ -1,6 +1,10 @@
+-- ================================================================
+-- LANGUAGE_CREATE: Yeni dil oluşturur
+-- Code: 2 karakter, Name: en az 2 karakter olmalı.
+-- ================================================================
+
 DROP FUNCTION IF EXISTS catalog.language_create(CHAR(2), VARCHAR);
 
--- Yeni dil olusturur
 CREATE OR REPLACE FUNCTION catalog.language_create(
     p_code CHAR(2),
     p_name VARCHAR(50)

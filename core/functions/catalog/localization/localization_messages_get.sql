@@ -1,10 +1,10 @@
--- ============================================================================
--- LOCALIZATION FUNCTIONS (Ceviri mesajlari)
--- ============================================================================
+-- ================================================================
+-- LOCALIZATION_MESSAGES_GET: Çeviri Mesajlarını Getir
+-- Frontend için toplu yükleme amacıyla tüm mesajları döner.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_messages_get(CHAR(2));
 
--- Tum mesajlari getirir (bulk load icin)
 CREATE OR REPLACE FUNCTION catalog.localization_messages_get(p_lang CHAR(2))
 RETURNS TABLE(key VARCHAR(150), value TEXT)
 LANGUAGE sql

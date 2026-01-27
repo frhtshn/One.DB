@@ -1,6 +1,10 @@
+-- ================================================================
+-- LANGUAGE_DELETE: Dili siler (Soft Delete)
+-- Aktif durumunu false yapar. Çeviri varsa silmez.
+-- ================================================================
+
 DROP FUNCTION IF EXISTS catalog.language_delete(CHAR(2));
 
--- Dili siler (soft delete - is_active = false)
 CREATE OR REPLACE FUNCTION catalog.language_delete(p_code CHAR(2))
 RETURNS VOID
 LANGUAGE plpgsql

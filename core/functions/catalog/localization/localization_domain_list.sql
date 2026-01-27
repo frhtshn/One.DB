@@ -1,10 +1,10 @@
--- ============================================================================
--- HELPER FUNCTIONS
--- ============================================================================
+-- ================================================================
+-- LOCALIZATION_DOMAIN_LIST: Domain Listesi
+-- Aktif domain'leri listeler.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_domain_list();
 
--- localization_domain_list: Aktif domain'ler
 CREATE OR REPLACE FUNCTION catalog.localization_domain_list()
 RETURNS TABLE(domain VARCHAR, count BIGINT)
 LANGUAGE sql STABLE

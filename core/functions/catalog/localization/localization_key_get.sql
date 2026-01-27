@@ -1,4 +1,7 @@
--- localization_key_get: Key detayı + tüm çeviriler
+-- ================================================================
+-- LOCALIZATION_KEY_GET: Çeviri Anahtarı Detayı
+-- Anahtar detayını ve tüm dillerdeki çevirilerini getirir.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_key_get(VARCHAR);
 

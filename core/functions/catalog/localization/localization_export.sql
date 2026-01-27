@@ -1,4 +1,7 @@
--- localization_export: Bir dilin tüm çevirilerini export
+-- ================================================================
+-- LOCALIZATION_EXPORT: Çeviri Dışa Aktarma
+-- Bir dilin tüm çevirilerini JSON formatında dışa aktarır.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_export(CHAR(2));
 

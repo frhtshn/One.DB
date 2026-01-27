@@ -1,10 +1,10 @@
--- ============================================================================
--- LANGUAGE FUNCTIONS (Dil CRUD)
--- ============================================================================
+-- ================================================================
+-- LANGUAGE_LIST_ACTIVE: Aktif dilleri listeler
+-- Public API kullanımı içindir.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.language_list_active();
 
--- Aktif dilleri listeler (public API icin)
 CREATE OR REPLACE FUNCTION catalog.language_list_active()
 RETURNS TABLE(language_code CHAR(2), language_name VARCHAR(50))
 LANGUAGE sql

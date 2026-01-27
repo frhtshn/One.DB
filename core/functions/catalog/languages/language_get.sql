@@ -1,6 +1,9 @@
+-- ================================================================
+-- LANGUAGE_GET: Tek dil detayı getirir
+-- ================================================================
+
 DROP FUNCTION IF EXISTS catalog.language_get(CHAR(2));
 
--- Tek dil detayi getirir
 CREATE OR REPLACE FUNCTION catalog.language_get(p_code CHAR(2))
 RETURNS TABLE(language_code CHAR(2), language_name VARCHAR(50), is_active BOOLEAN)
 LANGUAGE plpgsql

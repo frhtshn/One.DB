@@ -1,6 +1,10 @@
+-- ================================================================
+-- LANGUAGE_LIST: Tüm dilleri listeler
+-- Admin paneli kullanımı içindir, pasifleri de içerir.
+-- ================================================================
+
 DROP FUNCTION IF EXISTS catalog.language_list();
 
--- Tum dilleri listeler (admin icin, pasifler dahil)
 CREATE OR REPLACE FUNCTION catalog.language_list()
 RETURNS TABLE(language_code CHAR(2), language_name VARCHAR(50), is_active BOOLEAN)
 LANGUAGE sql

@@ -1,4 +1,7 @@
--- localization_category_list: Domain içindeki kategoriler
+-- ================================================================
+-- LOCALIZATION_CATEGORY_LIST: Kategori Listesi
+-- Domain içindeki kategorileri listeler.
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_category_list(VARCHAR);
 

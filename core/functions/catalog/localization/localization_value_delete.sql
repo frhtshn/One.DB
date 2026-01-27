@@ -1,4 +1,7 @@
--- localization_value_delete: Tek çeviri sil
+-- ================================================================
+-- LOCALIZATION_VALUE_DELETE: Çeviri Değeri Silme
+-- Belirtilen dil için tekil çeviriyi siler (Reset to default).
+-- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.localization_value_delete(BIGINT, CHAR(2));
 
