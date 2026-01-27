@@ -22,6 +22,11 @@ ALTER TABLE commission.commissions
     ADD CONSTRAINT fk_commissions_player_affiliate
     FOREIGN KEY (player_affiliate_id) REFERENCES affiliate.affiliates(id);
 
+-- commissions -> commission_plans
+ALTER TABLE commission.commissions
+    ADD CONSTRAINT fk_commissions_plan
+    FOREIGN KEY (commission_plan_id) REFERENCES commission.commission_plans(id);
+
 -- network_commission_splits -> commission_plans
 ALTER TABLE commission.network_commission_splits
     ADD CONSTRAINT fk_network_splits_plan
