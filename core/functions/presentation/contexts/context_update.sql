@@ -21,7 +21,7 @@ AS $$
 BEGIN
     -- Check existence
     IF NOT EXISTS (SELECT 1 FROM presentation.contexts WHERE id = p_id) THEN
-        RAISE EXCEPTION 'error.context.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.context.not-found';
     END IF;
 
     -- Partial update with soft status change

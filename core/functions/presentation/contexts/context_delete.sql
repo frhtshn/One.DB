@@ -13,7 +13,7 @@ AS $$
 BEGIN
     -- Check existence and active status
     IF NOT EXISTS (SELECT 1 FROM presentation.contexts WHERE id = p_id AND is_active) THEN
-        RAISE EXCEPTION 'error.context.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.context.not-found';
     END IF;
 
     -- Soft delete: set is_active to FALSE
