@@ -36,10 +36,6 @@ CREATE INDEX idx_secrets_provider_provider_id ON security.secrets_provider USING
 
 -- secrets_tenant.tenant_id -> tenants.id
 CREATE INDEX idx_secrets_tenant_tenant_id ON security.secrets_tenant USING btree(tenant_id);
-
--- tenant_roles.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_roles_tenant_id ON security.tenant_roles USING btree(tenant_id);
-
 -- user_roles.user_id (FK index + frequent JOIN)
 CREATE INDEX idx_user_roles_user_id ON security.user_roles USING btree(user_id);
 
