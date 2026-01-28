@@ -217,11 +217,14 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- Company Exceptions
 ('error.company.not-found', 'error', 'company', 'Sirket bulunamadi veya pasif'),
 
--- Menu Group Exceptions
-('error.menu-group.not-found', 'error', 'menu-group', 'Menu grubu bulunamadi'),
-('error.menu-group.code-exists', 'error', 'menu-group', 'Menu grup kodu zaten mevcut'),
-('error.menu-group.delete.already-deleted', 'error', 'menu-group', 'Menu grubu zaten silinmis'),
-('error.menu-group.restore.not-deleted', 'error', 'menu-group', 'Menu grubu silinmis degil'),
+-- Company CRUD & Validation Exceptions
+('error.company.create.code-exists', 'error', 'company', 'Sirket kodu zaten kayitli'),
+('error.company.create.name-exists', 'error', 'company', 'Sirket adi zaten kayitli'),
+('error.company.update.code-exists', 'error', 'company', 'Sirket kodu baska sirkette kayitli'),
+('error.company.update.name-exists', 'error', 'company', 'Sirket adi baska sirkette kayitli'),
+('error.company.delete.already-deleted', 'error', 'company', 'Sirket zaten silinmis'),
+('error.country.not-found', 'error', 'country', 'Ulke kodu bulunamadi'),
+('error.pagination.invalid', 'error', 'pagination', 'Gecersiz sayfa veya sayfa boyutu'),
 
 -- Localization Exceptions
 ('error.localization.language-code-invalid', 'error', 'localization', 'Gecersiz dil kodu. Args: {0}=langCode'),

@@ -233,6 +233,15 @@ JOIN (VALUES
     ('error.sql.identifier-too-long', 'Identifier ''{0}'' is too long: {1} characters (max {2})'),
     ('error.sql.command-not-allowed', 'SQL command not allowed. Allowed prefixes: {0}'),
     ('error.sql.stacked-query', 'Multiple SQL commands (stacked queries) are not allowed'),
-    ('error.sql.system-table-access', 'Access to system tables is not allowed')
+    ('error.sql.system-table-access', 'Access to system tables is not allowed'),
+
+    -- Error Messages - Company CRUD
+    ('error.company.create.code-exists', 'Company code already exists'),
+    ('error.company.create.name-exists', 'Company name already exists'),
+    ('error.company.update.code-exists', 'Company code is used by another company'),
+    ('error.company.update.name-exists', 'Company name is used by another company'),
+    ('error.company.delete.already-deleted', 'Company is already deleted'),
+    ('error.country.not-found', 'Country code not found'),
+    ('error.pagination.invalid', 'Invalid page or page size')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;
