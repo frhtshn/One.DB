@@ -108,6 +108,14 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 --\i core/data/bo_ui.sql
 
 -- FUNCTIONS
+-- Core Functions
+-- Companies
+\i core/functions/core/companies/company_list.sql
+\i core/functions/core/companies/company_get.sql
+\i core/functions/core/companies/company_create.sql
+\i core/functions/core/companies/company_update.sql
+\i core/functions/core/companies/company_delete.sql
+
 -- Language Functions
 \i core/functions/catalog/languages/language_list_active.sql
 \i core/functions/catalog/languages/language_list.sql
