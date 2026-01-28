@@ -35,6 +35,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/provider_settings.sql
 \i core/tables/catalog/provider_types.sql
 \i core/tables/catalog/providers.sql
+\i core/tables/catalog/providers.sql
+\i core/tables/catalog/timezones.sql
 \i core/tables/catalog/transaction_types.sql
 
 -- CORE TABLES
@@ -97,6 +99,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- DATA SEEDING
 \i core/data/companies.sql
+\i core/data/timezones.sql
 \i core/data/countries.sql
 \i core/data/currencies.sql
 \i core/data/languages.sql
@@ -105,7 +108,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/data/localization_keys.sql
 \i core/data/localization_values_en.sql
 \i core/data/localization_values_tr.sql
---\i core/data/bo_ui.sql
 
 -- FUNCTIONS
 -- Core Functions
@@ -116,6 +118,25 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/companies/company_update.sql
 \i core/functions/core/companies/company_delete.sql
 
+-- Tenants
+\i core/functions/core/tenants/tenant_list.sql
+\i core/functions/core/tenants/tenant_get.sql
+\i core/functions/core/tenants/tenant_create.sql
+\i core/functions/core/tenants/tenant_update.sql
+\i core/functions/core/tenants/tenant_delete.sql
+
+-- Tenant Settings
+\i core/functions/core/tenant_settings/tenant_setting_upsert.sql
+\i core/functions/core/tenant_settings/tenant_setting_get.sql
+\i core/functions/core/tenant_settings/tenant_setting_list.sql
+\i core/functions/core/tenant_settings/tenant_setting_delete.sql
+
+-- Country Functions
+\i core/functions/catalog/countries/country_list.sql
+
+-- Currency Functions
+\i core/functions/catalog/currencies/currency_list.sql
+
 -- Language Functions
 \i core/functions/catalog/languages/language_list_active.sql
 \i core/functions/catalog/languages/language_list.sql
@@ -123,6 +144,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/languages/language_create.sql
 \i core/functions/catalog/languages/language_update.sql
 \i core/functions/catalog/languages/language_delete.sql
+
+-- Timezone Functions
+\i core/functions/catalog/timezones/timezone_list.sql
 
 -- Localization Functions
 -- Localization Functions

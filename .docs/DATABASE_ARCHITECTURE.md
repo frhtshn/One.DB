@@ -105,6 +105,7 @@ Referans dataları içerir. **Read-only** karakterlidir.
 | `provider_settings`   | Provider yapılandırma şablonları           |
 | `provider_types`      | Provider tip kategorileri (GAME/FINANCE)   |
 | `providers`           | Provider (oyun/ödeme) tanımları            |
+| `timezones`           | Saat dilimi referans kataloğu              |
 | `transaction_types`   | İşlem tipi tanımları (BET, WIN, BONUS vb.) |
 
 ---

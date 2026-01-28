@@ -233,6 +233,20 @@ JOIN (VALUES
     ('error.sql.identifier-too-long', '''{0}'' tanımlayıcısı çok uzun: {1} karakter (maksimum {2})'),
     ('error.sql.command-not-allowed', 'SQL komutu izin verilmiyor. İzin verilen: {0}'),
     ('error.sql.stacked-query', 'Birden fazla SQL komutu (stacked query) kullanılması yasaktır'),
-    ('error.sql.system-table-access', 'Sistem tablolarına erişim yasaktır')
+        ('error.sql.system-table-access', 'Sistem tablolarına erişim yasaktır'),
+
+    -- Error Messages - Company CRUD
+    ('error.company.create.code-exists', 'Şirket kodu zaten mevcut'),
+    ('error.company.create.name-exists', 'Şirket adı zaten mevcut'),
+    ('error.company.update.code-exists', 'Şirket kodu başka bir şirkette kullanılıyor'),
+    ('error.company.update.name-exists', 'Şirket adı başka bir şirkette kullanılıyor'),
+    ('error.company.delete.already-deleted', 'Şirket zaten silinmiş'),
+    ('error.country.not-found', 'Ülke kodu bulunamadı'),
+    ('error.pagination.invalid', 'Geçersiz sayfa veya sayfa boyutu'),
+
+    -- Error Messages - Tenant
+    ('error.tenant.code-exists', 'Tenant kodu zaten mevcut'),
+    ('error.tenant.not-found', 'Tenant bulunamadı'),
+    ('error.tenant.already-deleted', 'Tenant zaten silinmiş')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

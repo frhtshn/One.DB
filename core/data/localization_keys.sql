@@ -104,6 +104,9 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- Tenant Exceptions
 ('error.tenant.not-active', 'error', 'tenant', 'Tenant aktif degil. Args: {0}=tenantId'),
 ('error.tenant.configuration-invalid', 'error', 'tenant', 'Tenant konfigurasyon hatasi. Args: {0}=tenantId, {1}=reason'),
+('error.tenant.code-exists', 'error', 'tenant', 'Tenant kodu zaten mevcut'),
+('error.tenant.not-found', 'error', 'tenant', 'Tenant bulunamadi'),
+('error.tenant.already-deleted', 'error', 'tenant', 'Tenant zaten silinmis'),
 
 -- Resource Not Found Exceptions
 ('error.resource.not-found', 'error', 'notfound', 'Kaynak bulunamadi. Args: {0}=resourceType, {1}=resourceId'),

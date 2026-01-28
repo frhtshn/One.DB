@@ -6,6 +6,9 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 
 ### Catalog Şeması
 
+- **`country_list`**: Returns list of countries for comboboxes (Value: country_code, Label: country_name).
+- **`currency_list`**: Returns list of active currencies for comboboxes (Value: currency_code, Label: currency_name).
+- **`language_create`**: Creates a new language
 - **`language_delete`**: Soft deletes a language by setting is_active to false (checks for translations first)
 - **`language_get`**: Gets details of a specific language by code
 - **`language_list`**: Lists all languages including inactive ones (for admin usage)
@@ -23,6 +26,7 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`localization_messages_get`**: Retrieves all localization messages for a specific language (for bulk loading)
 - **`localization_value_delete`**: Deletes a specific localization value.
 - **`localization_value_upsert`**: Inserts or updates a localization value (translation).
+- **`timezone_list`**: Returns list of active timezones from catalog table.
 
 ### Core Şeması
 
@@ -31,6 +35,15 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`company_get`**: Returns details of a company by id for management UI.
 - **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_update`**: Updates company information for management UI.
+- **`tenant_create`**: No description info.
+- **`tenant_delete`**: Soft deletes a tenant by setting status to 0.
+- **`tenant_get`**: Returns detailed tenant information including supported configuration.
+- **`tenant_list`**: Lists tenants with pagination, filter, and configuration details.
+- **`tenant_setting_delete`**: Deletes a tenant configuration setting.
+- **`tenant_setting_get`**: Returns a specific tenant setting as JSON object. Returns NULL if not found.
+- **`tenant_setting_list`**: Lists all configuration settings for a tenant.
+- **`tenant_setting_upsert`**: Inserts or updates a tenant configuration setting.
+- **`tenant_update`**: No description info.
 - **`update_updated_at_column`**: Generic trigger function to auto-update updated_at timestamp.
 
 ### Presentation Şeması

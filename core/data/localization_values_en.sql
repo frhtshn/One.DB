@@ -92,7 +92,10 @@ JOIN (VALUES
 
     -- Error Messages - Tenant
     ('error.tenant.not-active', 'Tenant {0} is not active'),
-    ('error.tenant.configuration-invalid', 'Tenant {0} configuration is invalid: {1}'),
+        ('error.tenant.configuration-invalid', 'Tenant {0} configuration is invalid: {1}'),
+    ('error.tenant.code-exists', 'Tenant code already exists'),
+    ('error.tenant.not-found', 'Tenant not found'),
+    ('error.tenant.already-deleted', 'Tenant already deleted'),
 
     -- Error Messages - Resource
     ('error.resource.not-found', '{0} not found: {1}'),
