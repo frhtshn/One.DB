@@ -3,26 +3,63 @@
 -- Tüm dünyadaki timezone'ları veritabanı kataloğundan çeker.
 -- ============================================================================
 
+
 TRUNCATE TABLE catalog.timezones CASCADE;
 
-INSERT INTO catalog.timezones (name, utc_offset, display_name)
-SELECT
-    name,
-    -- Format: +03:00 or -05:00
-    (CASE WHEN extract(epoch from utc_offset) >= 0 THEN '+' ELSE '-' END) ||
-    LPAD(ABS(extract(hour from utc_offset))::text, 2, '0') || ':' ||
-    LPAD(ABS(extract(minute from utc_offset))::text, 2, '0'),
-
-    -- Format: (UTC+03:00) Europe/Istanbul
-    '(UTC' ||
-    (CASE WHEN extract(epoch from utc_offset) >= 0 THEN '+' ELSE '-' END) ||
-    LPAD(ABS(extract(hour from utc_offset))::text, 2, '0') || ':' ||
-    LPAD(ABS(extract(minute from utc_offset))::text, 2, '0') || ') ' || name
-
-FROM pg_timezone_names
-WHERE name NOT LIKE 'posix/%'
-  AND name NOT LIKE 'SystemV/%'
-  AND name NOT LIKE 'Etc/%'
-  AND name NOT LIKE 'Mideast/%'
-ORDER BY name
+-- En çok kullanılan global timezone'lar için sade seed
+INSERT INTO catalog.timezones (name, utc_offset, display_name) VALUES
+  ('Pacific/Honolulu', '-10:00', '(UTC-10:00) Pacific/Honolulu'),
+  ('America/Anchorage', '-09:00', '(UTC-09:00) America/Anchorage'),
+  ('America/Los_Angeles', '-08:00', '(UTC-08:00) America/Los_Angeles'),
+  ('America/Vancouver', '-08:00', '(UTC-08:00) America/Vancouver'),
+  ('America/Denver', '-07:00', '(UTC-07:00) America/Denver'),
+  ('America/Phoenix', '-07:00', '(UTC-07:00) America/Phoenix'),
+  ('America/Chicago', '-06:00', '(UTC-06:00) America/Chicago'),
+  ('America/Mexico_City', '-06:00', '(UTC-06:00) America/Mexico_City'),
+  ('America/New_York', '-05:00', '(UTC-05:00) America/New_York'),
+  ('America/Toronto', '-05:00', '(UTC-05:00) America/Toronto'),
+  ('America/Santiago', '-04:00', '(UTC-04:00) America/Santiago'),
+  ('America/Sao_Paulo', '-03:00', '(UTC-03:00) America/Sao_Paulo'),
+  ('America/Argentina/Buenos_Aires', '-03:00', '(UTC-03:00) America/Argentina/Buenos_Aires'),
+  ('America/St_Johns', '-03:30', '(UTC-03:30) America/St_Johns'),
+  ('UTC', '+00:00', '(UTC+00:00) UTC'),
+  ('Europe/London', '+00:00', '(UTC+00:00) Europe/London'),
+  ('Africa/Lagos', '+01:00', '(UTC+01:00) Africa/Lagos'),
+  ('Europe/Paris', '+01:00', '(UTC+01:00) Europe/Paris'),
+  ('Europe/Berlin', '+01:00', '(UTC+01:00) Europe/Berlin'),
+  ('Europe/Madrid', '+01:00', '(UTC+01:00) Europe/Madrid'),
+  ('Europe/Amsterdam', '+01:00', '(UTC+01:00) Europe/Amsterdam'),
+  ('Europe/Zurich', '+01:00', '(UTC+01:00) Europe/Zurich'),
+  ('Europe/Athens', '+02:00', '(UTC+02:00) Europe/Athens'),
+  ('Europe/Helsinki', '+02:00', '(UTC+02:00) Europe/Helsinki'),
+  ('Europe/Bucharest', '+02:00', '(UTC+02:00) Europe/Bucharest'),
+  ('Europe/Sofia', '+02:00', '(UTC+02:00) Europe/Sofia'),
+  ('Europe/Kiev', '+02:00', '(UTC+02:00) Europe/Kiev'),
+  ('Europe/Chisinau', '+02:00', '(UTC+02:00) Europe/Chisinau'),
+  ('Europe/Vilnius', '+02:00', '(UTC+02:00) Europe/Vilnius'),
+  ('Europe/Riga', '+02:00', '(UTC+02:00) Europe/Riga'),
+  ('Europe/Tallinn', '+02:00', '(UTC+02:00) Europe/Tallinn'),
+  ('Asia/Nicosia', '+02:00', '(UTC+02:00) Asia/Nicosia'),
+  ('Europe/Kaliningrad', '+02:00', '(UTC+02:00) Europe/Kaliningrad'),
+  ('Asia/Jerusalem', '+02:00', '(UTC+02:00) Asia/Jerusalem'),
+  ('Africa/Cairo', '+02:00', '(UTC+02:00) Africa/Cairo'),
+  ('Africa/Johannesburg', '+02:00', '(UTC+02:00) Africa/Johannesburg'),
+  ('Europe/Istanbul', '+03:00', '(UTC+03:00) Europe/Istanbul'),
+  ('Asia/Riyadh', '+03:00', '(UTC+03:00) Asia/Riyadh'),
+  ('Europe/Moscow', '+03:00', '(UTC+03:00) Europe/Moscow'),
+  ('Asia/Dubai', '+04:00', '(UTC+04:00) Asia/Dubai'),
+  ('Europe/Samara', '+04:00', '(UTC+04:00) Europe/Samara'),
+  ('Asia/Karachi', '+05:00', '(UTC+05:00) Asia/Karachi'),
+  ('Asia/Kolkata', '+05:30', '(UTC+05:30) Asia/Kolkata'),
+  ('Asia/Bangkok', '+07:00', '(UTC+07:00) Asia/Bangkok'),
+  ('Asia/Singapore', '+08:00', '(UTC+08:00) Asia/Singapore'),
+  ('Asia/Hong_Kong', '+08:00', '(UTC+08:00) Asia/Hong_Kong'),
+  ('Asia/Shanghai', '+08:00', '(UTC+08:00) Asia/Shanghai'),
+  ('Asia/Taipei', '+08:00', '(UTC+08:00) Asia/Taipei'),
+  ('Australia/Perth', '+08:00', '(UTC+08:00) Australia/Perth'),
+  ('Asia/Seoul', '+09:00', '(UTC+09:00) Asia/Seoul'),
+  ('Asia/Tokyo', '+09:00', '(UTC+09:00) Asia/Tokyo'),
+  ('Asia/Vladivostok', '+10:00', '(UTC+10:00) Asia/Vladivostok'),
+  ('Australia/Sydney', '+10:00', '(UTC+10:00) Australia/Sydney'),
+  ('Pacific/Auckland', '+12:00', '(UTC+12:00) Pacific/Auckland')
 ON CONFLICT (name) DO NOTHING;
