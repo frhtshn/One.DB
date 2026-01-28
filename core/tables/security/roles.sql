@@ -14,7 +14,11 @@ CREATE TABLE security.roles (
     status SMALLINT NOT NULL DEFAULT 1,                    -- Durum
     is_platform_role BOOLEAN NOT NULL DEFAULT FALSE,       -- Platform rolü mü? (True ise tenant bağımsız)
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
+    created_by BIGINT,                                     -- Oluşturan kullanıcı ID
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+    updated_by BIGINT,                                     -- Güncelleyen kullanıcı ID
+    deleted_at TIMESTAMPTZ,                                -- Silinme zamanı (Soft delete)
+    deleted_by BIGINT,                                     -- Silen kullanıcı ID
 
     CONSTRAINT uq_roles_code UNIQUE (code)
 );

@@ -50,7 +50,7 @@ BEGIN
                LOWER(r.name) LIKE v_search_pattern)
         GROUP BY r.id
     )
-    SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY t.createdAt DESC), '[]'::jsonb)
+    SELECT COALESCE(jsonb_agg(to_jsonb(t) ORDER BY t."createdAt" DESC), '[]'::jsonb)
     INTO v_items
     FROM (
         SELECT

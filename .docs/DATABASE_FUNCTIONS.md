@@ -36,12 +36,14 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_update`**: Updates company information for management UI.
 - **`tenant_create`**: No description info.
+- **`tenant_currency_list`**: Lists all assigned currencies for a tenant.
+- **`tenant_currency_upsert`**: Assigns or updates a currency for a tenant.
 - **`tenant_delete`**: Soft deletes a tenant by setting status to 0.
 - **`tenant_get`**: Returns detailed tenant information including supported configuration.
 - **`tenant_list`**: Lists tenants with pagination, filter, and configuration details.
 - **`tenant_setting_delete`**: Deletes a tenant configuration setting.
 - **`tenant_setting_get`**: Returns a specific tenant setting as JSON object. Returns NULL if not found.
-- **`tenant_setting_list`**: Lists all configuration settings for a tenant.
+- **`tenant_setting_list`**: Lists all configuration settings for a tenant, optionally filtered by category.
 - **`tenant_setting_upsert`**: Inserts or updates a tenant configuration setting.
 - **`tenant_update`**: No description info.
 - **`update_updated_at_column`**: Generic trigger function to auto-update updated_at timestamp.
