@@ -37,7 +37,9 @@ BEGIN
         is_locked,
         locked_until,
         last_login_at,
-        language
+        language,
+        timezone,
+        currency
     INTO v_user
     FROM security.users
     WHERE email = p_email;
@@ -257,7 +259,9 @@ BEGIN
             'lastName', v_user.last_name,
             'failedLoginCount', v_user.failed_login_count,
             'lastLoginAt', v_user.last_login_at,
-            'language', v_user.language
+            'language', v_user.language,
+            'timezone', v_user.timezone,
+            'currency', v_user.currency
         ),
         'globalRoles', COALESCE(to_jsonb(v_platform_roles), '[]'::jsonb),
         'globalPermissions', v_global_permissions,

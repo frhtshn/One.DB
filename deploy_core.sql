@@ -178,6 +178,14 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/session/session_cleanup_expired.sql
 
 -- User Functions
+\i core/functions/security/users/user_check_email_exists.sql
+\i core/functions/security/users/user_check_username_exists.sql
+\i core/functions/security/users/user_create.sql
+\i core/functions/security/users/user_update.sql
+\i core/functions/security/users/user_delete.sql
+\i core/functions/security/users/user_get.sql
+\i core/functions/security/users/user_list.sql
+\i core/functions/security/users/user_reset_password.sql
 \i core/functions/security/users/user_login_failed_increment.sql
 \i core/functions/security/users/user_login_failed_reset.sql
 \i core/functions/security/users/user_unlock.sql

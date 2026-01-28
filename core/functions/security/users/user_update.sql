@@ -13,6 +13,8 @@ CREATE OR REPLACE FUNCTION security.user_update(
     p_username TEXT DEFAULT NULL,
     p_status SMALLINT DEFAULT NULL,
     p_language CHAR(2) DEFAULT NULL,
+    p_timezone VARCHAR(50) DEFAULT NULL,
+    p_currency CHAR(3) DEFAULT NULL,
     p_two_factor_enabled BOOLEAN DEFAULT NULL,
     p_updated_by BIGINT DEFAULT NULL
 )
@@ -60,6 +62,8 @@ BEGIN
         username = COALESCE(LOWER(TRIM(p_username)), username),
         status = COALESCE(p_status, status),
         language = COALESCE(p_language, language),
+        timezone = COALESCE(p_timezone, timezone),
+        currency = COALESCE(p_currency, currency),
         two_factor_enabled = COALESCE(p_two_factor_enabled, two_factor_enabled),
         updated_at = NOW(),
         updated_by = p_updated_by

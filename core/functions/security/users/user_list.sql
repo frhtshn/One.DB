@@ -74,6 +74,8 @@ BEGIN
                      ''isLocked'', u.is_locked,
                      ''twoFactorEnabled'', u.two_factor_enabled,
                      ''language'', u.language,
+                     ''timezone'', u.timezone,
+                     ''currency'', u.currency,
                      ''lastLoginAt'', u.last_login_at,
                      ''createdAt'', u.created_at,
                      ''roles'', COALESCE((

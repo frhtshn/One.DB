@@ -12,6 +12,8 @@ CREATE OR REPLACE FUNCTION security.user_create(
     p_last_name TEXT,
     p_company_id BIGINT,
     p_language CHAR(2) DEFAULT NULL,
+    p_timezone VARCHAR(50) DEFAULT NULL,
+    p_currency CHAR(3) DEFAULT NULL,
     p_created_by BIGINT DEFAULT NULL
 )
 RETURNS BIGINT
@@ -44,6 +46,8 @@ BEGIN
         last_name,
         company_id,
         language,
+        timezone,
+        currency,
         status,
         created_by,
         created_at,
@@ -57,6 +61,8 @@ BEGIN
         TRIM(p_last_name),
         p_company_id,
         p_language,
+        p_timezone,
+        p_currency,
         1,  -- Aktif
         p_created_by,
         NOW(),

@@ -23,6 +23,8 @@ CREATE TABLE security.users (
     two_factor_enabled BOOLEAN NOT NULL DEFAULT FALSE,     -- 2FA aktif mi?
     two_factor_secret VARCHAR(255),                        -- 2FA gizli anahtarı
     language CHAR(2),                                      -- Tercih edilen dil
+    timezone VARCHAR(50),                                  -- Zaman dilimi (örn: Europe/Istanbul)
+    currency CHAR(3),                                      -- Tercih edilen para birimi (ISO 4217)
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Kayıt oluşturma zamanı
     created_by BIGINT,                                     -- Oluşturan kullanıcı
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Son güncelleme zamanı

@@ -27,6 +27,8 @@ BEGIN
         'failedLoginCount', u.failed_login_count,
         'twoFactorEnabled', u.two_factor_enabled,
         'language', u.language,
+        'timezone', u.timezone,
+        'currency', u.currency,
         'lastLoginAt', u.last_login_at,
         'createdAt', u.created_at,
         'updatedAt', u.updated_at,
