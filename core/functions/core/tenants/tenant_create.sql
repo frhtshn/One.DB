@@ -18,7 +18,7 @@ CREATE OR REPLACE FUNCTION core.tenant_create(
     p_supported_currencies VARCHAR[] DEFAULT NULL, -- Array of currency codes
     p_supported_languages VARCHAR[] DEFAULT NULL   -- Array of language codes
 )
-RETURNS TABLE(id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -77,10 +77,7 @@ BEGIN
             IF v_curr IS NOT NULL AND v_curr <> p_base_currency THEN
                 INSERT INTO core.tenant_currencies (tenant_id, currency_code, is_enabled)
                 VALUES (v_id, v_curr, TRUE)
-                ON CONFLICT (id) DO NOTHING; -- Conflict logic needs constraint or unique index on (tenant_id, currency_code)
-                -- Standard approach: INSERT ON CONFLICT DO NOTHING relies on unique constraint.
-                -- Assuming we have unique constraint on (tenant_id, currency_code).
-                -- If not, duplicating might happen if not careful, but this is create so it is clean.
+                ON CONFLICT (id) DO NOTHING;
             END IF;
         END LOOP;
     END IF;
@@ -104,7 +101,7 @@ BEGIN
         END LOOP;
     END IF;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
