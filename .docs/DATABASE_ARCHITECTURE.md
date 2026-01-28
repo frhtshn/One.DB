@@ -19,17 +19,17 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            CORE & PLUGIN (SHARED)                           │
-│         (Merkezi: Şirketler, Tenantlar, Katalog, Bonus, Routing)            │
+│                                CORE (SHARED)                                │
+│           (Merkezi: Şirketler, Tenantlar, Katalog, Routing)                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  core   │  core_log  │  core_audit  │  bonus (Plugin)                       │
+│  core   │  core_log  │  core_audit                                          │
 └────────────────────────────────┬────────────────────────────────────────────┘
                                  │
 ┌────────────────────────────────┼────────────────────────────────────────────┐
-│                        GATEWAY VERİTABANLARI                                │
-│                  (Game & Finance Provider Entegrasyonu)                     │
+│                    GATEWAY VE PLUGIN VERİTABANLARI                          │
+│             (Game, Finance & Bonus Provider Entegrasyonu)                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  game   │  game_log  │  finance  │  finance_log                             │
+│  game   │  game_log  │  finance  │  finance_log  │  bonus (Plugin)          │
 └────────────────────────────────┬────────────────────────────────────────────┘
                                  │
                  ┌───────────────┼───────────────┐
@@ -198,9 +198,9 @@ Komisyon ve faturalandırma.
 
 ---
 
-## 5. Gateway Veritabanları
+## 5. Gateway ve Plugin Veritabanları
 
-Gateway katmanı, oyun ve finans provider'ları ile entegrasyonu yönetir.
+Gateway katmanı, oyun, finans ve bonus provider'ları ile entegrasyonu yönetir.
 
 ### 5.1 Game DB
 
@@ -239,6 +239,41 @@ Gateway katmanı, oyun ve finans provider'ları ile entegrasyonu yönetir.
 | **Partition**    | Daily                                       |
 | **Retention**    | 14–30 gün                                   |
 | **Yüksek Hacim** | ✅ (DROP partition zorunlu)                 |
+
+### 5.5 Bonus Veritabanı (Global Plugin)
+
+Bonus ve promosyon sistemi **konfigürasyon** katmanıdır.
+
+#### 5.5.1 Şema Listesi
+
+| Şema        | Amaç                              |
+| ----------- | --------------------------------- |
+| `bonus`     | Bonus kuralları ve tetikleyiciler |
+| `promotion` | Promosyon kodları                 |
+| `campaign`  | Kampanya yönetimi                 |
+| `infra`     | PostgreSQL extension'ları         |
+
+#### 5.5.2 bonus Şeması
+
+Bonus kural motoru tanımları.
+
+| Tablo            | Açıklama                          | Kritik Alanlar                                           |
+| ---------------- | --------------------------------- | -------------------------------------------------------- |
+| `bonus_types`    | Bonus tipleri (Deposit, FreeSpin) | `type_code`, `category`, `value_type`                    |
+| `bonus_rules`    | Kazanım ve çevrim kuralları       | `wagering_requirement`, `min_deposit`, `expires_in_days` |
+| `bonus_triggers` | Otomatik bonus tetikleyicileri    | `trigger_type` (Registration, Deposit), `schedule_cron`  |
+
+#### 5.5.3 promotion Şeması
+
+| Tablo         | Açıklama          | Kritik Alanlar                           |
+| ------------- | ----------------- | ---------------------------------------- |
+| `promo_codes` | Promosyon kodları | `code`, `max_redemptions`, `valid_until` |
+
+#### 5.5.4 campaign Şeması
+
+| Tablo       | Açıklama                  | Kritik Alanlar                                     |
+| ----------- | ------------------------- | -------------------------------------------------- |
+| `campaigns` | Global kampanya tanımları | `campaign_type`, `total_budget`, `target_segments` |
 
 ---
 
@@ -392,6 +427,24 @@ CMS ve dinamik içerik yönetimi.
 
 ---
 
+### 6.10 bonus Şeması
+
+Bonus uygulama ve takip katmanı.
+
+| Tablo               | Açıklama                     | Kritik Alanlar                                                    |
+| ------------------- | ---------------------------- | ----------------------------------------------------------------- |
+| `bonus_awards`      | Oyuncuya tanımlanan bonuslar | `bonus_amount`, `wagering_progress`, `status` (Active, Completed) |
+| `promo_redemptions` | Kod kullanım logları         | `promo_code`, `status` (Success, Failed)                          |
+
+> 💡 **Denormalizasyon**: `bonus_awards` tablosu player_id alanını kopyalar.
+
+> 🏢 **Tenant Sahipliği**: Konfigürasyon tabloları (`rules`, `triggers`, `campaigns`) `tenant_id` alanı içerir.
+>
+> - `tenant_id IS NULL`: Platform seviyesi (tüm tenant'lara açık)
+> - `tenant_id = X`: Sadece Tenant X'e özel (özelleştirilmiş)
+
+---
+
 ## 7. Log, Audit ve Report Veritabanları
 
 ### 7.1 Log Veritabanları
@@ -508,59 +561,6 @@ Oyuncu takip sistemi ve istatistikler.
 > 📊 **İstatistikler**: `_stats` tabloları realtime raporlama için önceden hesaplanmış (pre-aggregated) verileri tutar.
 
 ---
-
-### 9.1 Bonus Veritabanı (Global)
-
-Bonus ve promosyon sistemi **konfigürasyon** katmanıdır.
-
-#### 9.1.1 Şema Listesi
-
-| Şema        | Amaç                              |
-| ----------- | --------------------------------- |
-| `bonus`     | Bonus kuralları ve tetikleyiciler |
-| `promotion` | Promosyon kodları                 |
-| `campaign`  | Kampanya yönetimi                 |
-| `infra`     | PostgreSQL extension'ları         |
-
-#### 9.1.2 bonus Şeması
-
-Bonus kural motoru tanımları.
-
-| Tablo            | Açıklama                          | Kritik Alanlar                                           |
-| ---------------- | --------------------------------- | -------------------------------------------------------- |
-| `bonus_types`    | Bonus tipleri (Deposit, FreeSpin) | `type_code`, `category`, `value_type`                    |
-| `bonus_rules`    | Kazanım ve çevrim kuralları       | `wagering_requirement`, `min_deposit`, `expires_in_days` |
-| `bonus_triggers` | Otomatik bonus tetikleyicileri    | `trigger_type` (Registration, Deposit), `schedule_cron`  |
-
-#### 9.1.3 promotion Şeması
-
-| Tablo         | Açıklama          | Kritik Alanlar                           |
-| ------------- | ----------------- | ---------------------------------------- |
-| `promo_codes` | Promosyon kodları | `code`, `max_redemptions`, `valid_until` |
-
-#### 9.1.4 campaign Şeması
-
-| Tablo       | Açıklama                  | Kritik Alanlar                                     |
-| ----------- | ------------------------- | -------------------------------------------------- |
-| `campaigns` | Global kampanya tanımları | `campaign_type`, `total_budget`, `target_segments` |
-
-### 9.2 Tenant Bonus Şeması (Tenant-Specific)
-
-Bonus uygulama ve takip katmanı. Ana **tenant veritabanı** altında `bonus` şeması olarak yer alır.
-
-#### 9.2.1 Tablo Listesi
-
-| Tablo               | Açıklama                     | Kritik Alanlar                                                    |
-| ------------------- | ---------------------------- | ----------------------------------------------------------------- |
-| `bonus_awards`      | Oyuncuya tanımlanan bonuslar | `bonus_amount`, `wagering_progress`, `status` (Active, Completed) |
-| `promo_redemptions` | Kod kullanım logları         | `promo_code`, `status` (Success, Failed)                          |
-
-> 💡 **Denormalizasyon**: `bonus_awards` tablosu player_id alanını kopyalar.
-
-> 🏢 **Tenant Sahipliği**: Konfigürasyon tabloları (`rules`, `triggers`, `campaigns`) `tenant_id` alanı içerir.
->
-> - `tenant_id IS NULL`: Platform seviyesi (tüm tenant'lara açık)
-> - `tenant_id = X`: Sadece Tenant X'e özel (özelleştirilmiş)
 
 ---
 
