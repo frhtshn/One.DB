@@ -3,8 +3,12 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS core.tenant_setting_list(BIGINT);
+DROP FUNCTION IF EXISTS core.tenant_setting_list(BIGINT, VARCHAR);
 
-CREATE OR REPLACE FUNCTION core.tenant_setting_list(p_tenant_id BIGINT)
+CREATE OR REPLACE FUNCTION core.tenant_setting_list(
+    p_tenant_id BIGINT,
+    p_category VARCHAR DEFAULT NULL -- Optional filter
+)
 RETURNS JSONB
 LANGUAGE plpgsql
 STABLE
@@ -15,16 +19,18 @@ BEGIN
             jsonb_build_object(
                 'id', id,
                 'tenantId', tenant_id,
+                'category', category,
                 'key', setting_key,
                 'value', setting_value,
                 'description', description,
                 'updatedAt', updated_at
-            ) ORDER BY setting_key
+            ) ORDER BY category, setting_key
         )
         FROM core.tenant_settings
         WHERE tenant_id = p_tenant_id
+        AND (p_category IS NULL OR category = p_category)
     ), '[]'::jsonb);
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_setting_list(BIGINT) IS 'Lists all configuration settings for a tenant.';
+COMMENT ON FUNCTION core.tenant_setting_list(BIGINT, VARCHAR) IS 'Lists all configuration settings for a tenant, optionally filtered by category.';

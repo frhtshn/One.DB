@@ -3,13 +3,16 @@
 -- Key-Value yapısında çalışır. Key unique'dir (tenant bazında).
 -- ================================================================
 
+DROP FUNCTION IF EXISTS core.tenant_setting_upsert(BIGINT, VARCHAR, JSONB, VARCHAR, VARCHAR);
+-- Drop old signature just in case
 DROP FUNCTION IF EXISTS core.tenant_setting_upsert(BIGINT, VARCHAR, JSONB, VARCHAR);
 
 CREATE OR REPLACE FUNCTION core.tenant_setting_upsert(
     p_tenant_id BIGINT,
     p_key VARCHAR,
     p_value JSONB,
-    p_description VARCHAR DEFAULT NULL
+    p_description VARCHAR DEFAULT NULL,
+    p_category VARCHAR DEFAULT 'General'
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -26,20 +29,23 @@ BEGIN
         setting_key,
         setting_value,
         description,
+        category,
         updated_at
     ) VALUES (
         p_tenant_id,
         p_key,
         p_value,
         p_description,
+        p_category,
         NOW()
     )
     ON CONFLICT (tenant_id, setting_key)
     DO UPDATE SET
         setting_value = EXCLUDED.setting_value,
         description = COALESCE(EXCLUDED.description, core.tenant_settings.description),
+        category = COALESCE(EXCLUDED.category, core.tenant_settings.category),
         updated_at = NOW();
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_setting_upsert(BIGINT, VARCHAR, JSONB, VARCHAR) IS 'Inserts or updates a tenant configuration setting.';
+COMMENT ON FUNCTION core.tenant_setting_upsert(BIGINT, VARCHAR, JSONB, VARCHAR, VARCHAR) IS 'Inserts or updates a tenant configuration setting.';

@@ -19,6 +19,7 @@ BEGIN
     SELECT jsonb_build_object(
         'id', id,
         'tenantId', tenant_id,
+        'category', category,
         'key', setting_key,
         'value', setting_value,
         'description', description,
