@@ -29,26 +29,25 @@ BEGIN
     FROM core.companies c
     WHERE (p_search IS NULL OR c.company_name ILIKE '%' || p_search || '%' OR c.company_code ILIKE '%' || p_search || '%');
 
-    SELECT jsonb_agg(row_to_json(t)) INTO v_items
-    FROM (
-        SELECT
-            c.id,
-            c.company_code,
-            c.company_name,
-            c.status,
-            c.country_code,
-            co.country_name,
-            c.timezone,
-            c.created_at,
-            c.updated_at
-        FROM core.companies c
-        LEFT JOIN catalog.countries co ON co.country_code = c.country_code
-        WHERE (p_search IS NULL OR c.company_name ILIKE '%' || p_search || '%' OR c.company_code ILIKE '%' || p_search || '%')
-        ORDER BY c.id DESC
-        OFFSET v_offset LIMIT p_page_size
-    ) t;
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'id', c.id,
+            'companyCode', c.company_code,
+            'companyName', c.company_name,
+            'status', c.status,
+            'countryCode', c.country_code,
+            'countryName', co.country_name,
+            'timezone', c.timezone,
+            'createdAt', c.created_at,
+            'updatedAt', c.updated_at
+        ) ORDER BY c.id DESC
+    ), '[]'::jsonb) INTO v_items
+    FROM core.companies c
+    LEFT JOIN catalog.countries co ON co.country_code = c.country_code
+    WHERE (p_search IS NULL OR c.company_name ILIKE '%' || p_search || '%' OR c.company_code ILIKE '%' || p_search || '%')
+    OFFSET v_offset LIMIT p_page_size;
 
-    RETURN jsonb_build_object('items', COALESCE(v_items, '[]'), 'totalCount', v_total);
+    RETURN jsonb_build_object('items', v_items, 'totalCount', v_total);
 END;
 $$;
 

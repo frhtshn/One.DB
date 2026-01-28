@@ -10,37 +10,33 @@ DROP FUNCTION IF EXISTS core.company_get(BIGINT);
 CREATE OR REPLACE FUNCTION core.company_get(
     p_id BIGINT
 )
-RETURNS TABLE (
-    id BIGINT,
-    company_code VARCHAR,
-    company_name VARCHAR,
-    status SMALLINT,
-    country_code CHARACTER(2),
-    country_name VARCHAR,
-    timezone VARCHAR,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-)
+RETURNS JSONB
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_result JSONB;
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM core.companies WHERE id = p_id) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.company.not-found';
-    END IF;
-    RETURN QUERY
-    SELECT
-        c.id,
-        c.company_code,
-        c.company_name,
-        c.status,
-        c.country_code,
-        co.country_name,
-        c.timezone,
-        c.created_at,
-        c.updated_at
+    SELECT jsonb_build_object(
+        'id', c.id,
+        'companyCode', c.company_code,
+        'companyName', c.company_name,
+        'status', c.status,
+        'countryCode', c.country_code,
+        'countryName', co.country_name,
+        'timezone', c.timezone,
+        'createdAt', c.created_at,
+        'updatedAt', c.updated_at
+    )
+    INTO v_result
     FROM core.companies c
     LEFT JOIN catalog.countries co ON co.country_code = c.country_code
     WHERE c.id = p_id;
+
+    IF v_result IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.company.not-found';
+    END IF;
+
+    RETURN v_result;
 END;
 $$;
 

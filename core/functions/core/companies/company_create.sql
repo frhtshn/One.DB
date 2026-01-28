@@ -13,7 +13,7 @@ CREATE OR REPLACE FUNCTION core.company_create(
     p_country_code CHARACTER(2),
     p_timezone VARCHAR DEFAULT NULL
 )
-RETURNS TABLE (id BIGINT)
+RETURNS BIGINT
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -38,7 +38,7 @@ BEGIN
     VALUES (p_company_code, p_company_name, p_country_code, p_timezone)
     RETURNING id INTO v_id;
 
-    RETURN QUERY SELECT v_id;
+    RETURN v_id;
 END;
 $$;
 
