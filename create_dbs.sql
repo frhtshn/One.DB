@@ -50,11 +50,27 @@ WHERE NOT EXISTS (
 -- )
 -- \gexec
 
--- Game veritabanı: Oyun katalogları, provider entegrasyonları ve oyun verileri
+-- -- Finans Log veritabanı: Finansal işlem logları ve tarihçesi
+-- SELECT
+--   'CREATE DATABASE finance_log'
+-- WHERE NOT EXISTS (
+--   SELECT 1 FROM pg_database WHERE datname = 'finance_log'
+-- )
+-- \gexec
+
+-- -- Game veritabanı: Oyun katalogları, provider entegrasyonları ve oyun verileri
 -- SELECT
 --   'CREATE DATABASE game'
 -- WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'game'
+-- )
+-- \gexec
+
+-- -- Game Log veritabanı: Oyun tur logları ve detaylı oyun geçmişi
+-- SELECT
+--   'CREATE DATABASE game_log'
+-- WHERE NOT EXISTS (
+--   SELECT 1 FROM pg_database WHERE datname = 'game_log'
 -- )
 -- \gexec
 

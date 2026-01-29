@@ -1,0 +1,24 @@
+SET client_encoding = 'UTF8';
+BEGIN;
+
+-- CREATE SCHEMAS
+CREATE SCHEMA IF NOT EXISTS game;
+CREATE SCHEMA IF NOT EXISTS infra;
+
+-- DROP UNUSED SCHEMAS
+
+-- ENABLE EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA infra;
+
+-- TABLES
+-- \i game/tables/...
+
+-- FUNCTIONS
+-- \i game/functions/...
+
+-- INDEXES
+-- \i game/indexes/...
+
+COMMIT;
