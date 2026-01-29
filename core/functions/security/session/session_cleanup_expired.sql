@@ -1,57 +1,101 @@
 -- ================================================================
--- SESSION_CLEANUP_EXPIRED: Suresi dolmus veya revoked session'lari temizler
--- Batch processing ile buyuk tablolarda lock sorunlarini onler
+-- SESSION_CLEANUP_EXPIRED - Expire/Revoked/Inactive Session Cleanup
+-- Called by SessionCleanupService
+-- PostgreSQL compatible, batch-safe version
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.session_cleanup_expired(INT, INT);
+DROP FUNCTION IF EXISTS security.session_cleanup_expired(INT, INT, INT);
 
 CREATE OR REPLACE FUNCTION security.session_cleanup_expired(
     p_batch_size INT DEFAULT 1000,
-    p_revoked_retention_days INT DEFAULT 7
+    p_revoked_retention_days INT DEFAULT 7,
+    p_inactivity_days INT DEFAULT 5
 )
 RETURNS JSONB
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_expired_deleted INT := 0;
-    v_revoked_deleted INT := 0;
-    v_total_deleted INT := 0;
+    v_now TIMESTAMPTZ := NOW();
+    v_expired_deleted  INT := 0;
+    v_revoked_deleted  INT := 0;
+    v_inactive_deleted INT := 0;
+    v_has_more BOOLEAN := FALSE;
 BEGIN
-    -- 1. Suresi dolmus session'lari sil (batch ile)
-    WITH deleted_expired AS (
+    -- 1. Expired sessions
+    WITH to_delete AS (
+        SELECT ctid
+        FROM security.user_sessions
+        WHERE is_revoked = FALSE
+          AND expires_at < v_now
+        ORDER BY expires_at
+        LIMIT p_batch_size
+    ),
+    deleted AS (
         DELETE FROM security.user_sessions
-        WHERE id IN (
-            SELECT id FROM security.user_sessions
-            WHERE expires_at < NOW()
-            LIMIT p_batch_size
-        )
+        WHERE ctid IN (SELECT ctid FROM to_delete)
         RETURNING 1
     )
-    SELECT COUNT(*) INTO v_expired_deleted FROM deleted_expired;
+    SELECT COUNT(*) INTO v_expired_deleted FROM deleted;
 
-    -- 2. Eski revoked session'lari sil (audit icin belirli sure tutulur)
-    WITH deleted_revoked AS (
+    -- 2. Old revoked sessions
+    WITH to_delete AS (
+        SELECT ctid
+        FROM security.user_sessions
+        WHERE is_revoked = TRUE
+          AND revoked_at < v_now - (p_revoked_retention_days || ' days')::INTERVAL
+        ORDER BY revoked_at
+        LIMIT p_batch_size
+    ),
+    deleted AS (
         DELETE FROM security.user_sessions
-        WHERE id IN (
-            SELECT id FROM security.user_sessions
-            WHERE is_revoked = TRUE
-              AND revoked_at < NOW() - (p_revoked_retention_days || ' days')::INTERVAL
-            LIMIT p_batch_size
-        )
+        WHERE ctid IN (SELECT ctid FROM to_delete)
         RETURNING 1
     )
-    SELECT COUNT(*) INTO v_revoked_deleted FROM deleted_revoked;
+    SELECT COUNT(*) INTO v_revoked_deleted FROM deleted;
 
-    v_total_deleted := v_expired_deleted + v_revoked_deleted;
+    -- 3. Inactive sessions (not expired yet)
+    IF p_inactivity_days > 0 THEN
+        WITH to_delete AS (
+            SELECT ctid
+            FROM security.user_sessions
+            WHERE is_revoked = FALSE
+              AND last_activity_at < v_now - (p_inactivity_days || ' days')::INTERVAL
+              AND expires_at > v_now
+            ORDER BY last_activity_at
+            LIMIT p_batch_size
+        ),
+        deleted AS (
+            DELETE FROM security.user_sessions
+            WHERE ctid IN (SELECT ctid FROM to_delete)
+            RETURNING 1
+        )
+        SELECT COUNT(*) INTO v_inactive_deleted FROM deleted;
+    END IF;
+
+    -- Has more check (EXISTS, no COUNT)
+    SELECT EXISTS (
+        SELECT 1
+        FROM security.user_sessions
+        WHERE (is_revoked = FALSE AND expires_at < v_now)
+           OR (is_revoked = TRUE AND revoked_at < v_now - (p_revoked_retention_days || ' days')::INTERVAL)
+           OR (
+                p_inactivity_days > 0
+                AND is_revoked = FALSE
+                AND last_activity_at < v_now - (p_inactivity_days || ' days')::INTERVAL
+                AND expires_at > v_now
+           )
+    ) INTO v_has_more;
 
     RETURN jsonb_build_object(
-        'success', true,
+        'success', TRUE,
         'expiredDeleted', v_expired_deleted,
         'revokedDeleted', v_revoked_deleted,
-        'totalDeleted', v_total_deleted,
-        'hasMore', v_total_deleted >= p_batch_size
+        'inactiveDeleted', v_inactive_deleted,
+        'totalDeleted', v_expired_deleted + v_revoked_deleted + v_inactive_deleted,
+        'hasMore', v_has_more
     );
 END;
 $$;
 
-COMMENT ON FUNCTION security.session_cleanup_expired IS 'Cleans up expired and old revoked sessions securely using batches to avoid table locks.';
+COMMENT ON FUNCTION security.session_cleanup_expired
+IS 'Cleans up expired, old revoked, and inactive session records in batches (PostgreSQL compatible).';
