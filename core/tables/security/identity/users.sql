@@ -12,8 +12,8 @@ CREATE TABLE security.users (
     company_id BIGINT NOT NULL,                            -- Bağlı şirket ID (FK: core.companies)
     first_name VARCHAR(50) NOT NULL,                       -- Kullanıcı adı
     last_name VARCHAR(50) NOT NULL,                        -- Kullanıcı soyadı
-    email VARCHAR(255) NOT NULL,                           -- E-posta adresi
-    username VARCHAR(50) NOT NULL,                         -- Kullanıcı adı (giriş için)
+    email infra.citext NOT NULL,                           -- E-posta adresi (Case-Insensitive)
+    username infra.citext NOT NULL,                        -- Kullanıcı adı (Case-Insensitive)
     password VARCHAR(255) NOT NULL,                        -- Hash'lenmiş şifre
     status SMALLINT NOT NULL DEFAULT 1,                    -- Durum: 0=Pasif, 1=Aktif, 2=Askıda
     is_locked BOOLEAN NOT NULL DEFAULT FALSE,              -- Hesap kilitli mi?
