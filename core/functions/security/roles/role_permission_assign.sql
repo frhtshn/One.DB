@@ -15,13 +15,12 @@ SECURITY DEFINER
 AS $$
 DECLARE
     v_role_status SMALLINT;
-    v_role_code VARCHAR;
     v_permission_id BIGINT;
     v_permission_status SMALLINT;
     v_already_assigned BOOLEAN;
 BEGIN
     -- Check role
-    SELECT status, code INTO v_role_status, v_role_code
+    SELECT status INTO v_role_status
     FROM security.roles
     WHERE id = p_role_id;
 
@@ -33,10 +32,6 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.role.deleted';
     END IF;
 
-    -- Protect system roles
-    IF security.is_system_role(v_role_code) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.role.system-protected';
-    END IF;
 
     -- Check permission
     SELECT id, status INTO v_permission_id, v_permission_status
