@@ -204,9 +204,11 @@ Backoffice kullanıcı ve yetki yönetimi.
 
 ### 4.5 presentation Şeması
 
-Backoffice UI ve **Tenant Frontend** yapılandırması.
+Mantıksal olarak ikiye ayrılmıştır: **Backoffice** (Yönetim Paneli) ve **Frontend** (Tenant Sitesi).
 
-#### Backoffice UI
+#### Backoffice UI (Klasör: `backoffice/`)
+
+Yönetim paneli menü ve sayfa yapısı.
 
 | Tablo         | Açıklama             |
 | ------------- | -------------------- |
@@ -217,13 +219,17 @@ Backoffice UI ve **Tenant Frontend** yapılandırması.
 | `pages`       | Sayfa tanımları      |
 | `tabs`        | Tab yapılandırması   |
 
-#### Tenant Frontend (Theme Engine)
+#### Tenant Frontend / Theme Engine (Klasör: `frontend/`)
 
-| Tablo               | Açıklama                                              |
-| ------------------- | ----------------------------------------------------- |
-| `tenant_themes`     | Tenant'ın seçtiği tema ve konfigürasyonu (renk, logo) |
-| `tenant_layouts`    | Sayfa bazlı widget yerleşimleri (JSON)                |
-| `tenant_navigation` | Dinamik site menüleri (Header, Footer, Sidebar)       |
+Tenant'ın son kullanıcıya gösterdiği yüzün yönetimi.
+
+| Tablo               | Açıklama                                                          |
+| ------------------- | ----------------------------------------------------------------- |
+| `tenant_themes`     | Tenant'ın seçtiği tema ve konfigürasyonu (renk, logo)             |
+| `tenant_layouts`    | Sayfa bazlı widget yerleşimleri (JSON yapısı)                     |
+| `tenant_navigation` | Dinamik site menüleri (`translation_key` veya `custom_label` ile) |
+
+> 📋 **Not**: `tenant_navigation` tablosu "Hybrid Localization" destekler. Menü başlıkları sistemdeki bir çeviri anahtarından (`translation_key`) veya doğrudan tenant'ın girdiği özel metinden (`custom_label`) gelebilir.
 
 ---
 
@@ -238,9 +244,5 @@ Provider endpoint yönetimi.
 | `provider_endpoints` | Provider API endpoint'leri     |
 
 ---
-
-### 4.7 billing Şeması
-
-Komisyon ve faturalandırma. (Değişiklik yok, önceki tablodan referans alınır)
 
 ... (Dokümanın geri kalanı aynı) ...
