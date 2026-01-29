@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS logs.dead_letter_messages (
     updated_at TIMESTAMPTZ DEFAULT NOW(),                  -- Son güncellenme zamanı
     resolved_at TIMESTAMPTZ,                               -- Çözülme zamanı
     resolved_by VARCHAR(255),                              -- Çözümleyen kişi/sistem
-    resolution_notes TEXT,                                 -- Çözüm notları
-    CONSTRAINT chk_dead_letter_status CHECK (status IN ('pending', 'retrying', 'resolved', 'failed'))
+    resolution_notes TEXT                                  -- Çözüm notları
+
 );
 
 COMMENT ON TABLE logs.dead_letter_messages IS 'Stores failed messages for retry or manual resolution. Used by DeadLetterDataService, DeadLetterGrain.';
