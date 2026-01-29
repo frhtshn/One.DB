@@ -72,12 +72,12 @@ Partition kullanılan veritabanlarında (`*_log` DB'leri), retention süresi dol
 Gece çalışan maintenance job şu mantığı izler:
 
 ```mermaid
-graph TD
+flowchart TD
     A[Cron Job Başlar] --> B{Tenant ID Loop}
     B --> C[core.tenant_data_policies Oku]
     C --> D{Veri Tipi: SYSTEM_LOGS?}
     D -- Evet --> E[Partition Tarihine Bak]
-    E --> F{Tarih < (Bugün - Policy.retention_days)?}
+    E --> F{Tarih < Bugün - Policy.retention_days?}
     F -- Evet --> G[DROP PARTITION]
     F -- Hayır --> H[Skip]
     D -- Hayır (Audit/KYC) --> I{Data Type: AUDIT?}
