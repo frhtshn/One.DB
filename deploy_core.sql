@@ -56,6 +56,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/compliance/kyc_document_requirements.sql
 \i core/tables/catalog/compliance/responsible_gaming_policies.sql
 
+-- UI Kit (Front-end Themes & Widgets)
+\i core/tables/catalog/uikit/themes.sql
+\i core/tables/catalog/uikit/widgets.sql
+\i core/tables/catalog/uikit/ui_positions.sql
+
 -- CORE TABLES
 
 -- Organization (Şirket ve Tenant yapısı)
@@ -75,12 +80,18 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/integration/tenant_payment_methods.sql
 
 -- PRESENTATION TABLES
-\i core/tables/presentation/contexts.sql
-\i core/tables/presentation/menu_groups.sql
-\i core/tables/presentation/menus.sql
-\i core/tables/presentation/submenus.sql
-\i core/tables/presentation/pages.sql
-\i core/tables/presentation/tabs.sql
+-- Backoffice UI
+\i core/tables/presentation/backoffice/contexts.sql
+\i core/tables/presentation/backoffice/menu_groups.sql
+\i core/tables/presentation/backoffice/menus.sql
+\i core/tables/presentation/backoffice/submenus.sql
+\i core/tables/presentation/backoffice/pages.sql
+\i core/tables/presentation/backoffice/tabs.sql
+
+-- Frontend (Theme Engine)
+\i core/tables/presentation/frontend/tenant_themes.sql
+\i core/tables/presentation/frontend/tenant_layouts.sql
+\i core/tables/presentation/frontend/tenant_navigation.sql
 
 -- ROUTING TABLES
 \i core/tables/routing/callback_routes.sql
