@@ -24,36 +24,55 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- CATALOG TABLES
-\i core/tables/catalog/countries.sql
-\i core/tables/catalog/currencies.sql
-\i core/tables/catalog/games.sql
-\i core/tables/catalog/languages.sql
-\i core/tables/catalog/localization_keys.sql
-\i core/tables/catalog/localization_values.sql
-\i core/tables/catalog/operation_types.sql
-\i core/tables/catalog/payment_methods.sql
-\i core/tables/catalog/provider_settings.sql
-\i core/tables/catalog/provider_types.sql
-\i core/tables/catalog/providers.sql
-\i core/tables/catalog/providers.sql
-\i core/tables/catalog/timezones.sql
-\i core/tables/catalog/transaction_types.sql
-\i core/tables/catalog/jurisdictions.sql
-\i core/tables/catalog/kyc_policies.sql
-\i core/tables/catalog/kyc_document_requirements.sql
-\i core/tables/catalog/responsible_gaming_policies.sql
+
+-- Reference (Temel referans verileri)
+\i core/tables/catalog/reference/countries.sql
+\i core/tables/catalog/reference/currencies.sql
+\i core/tables/catalog/reference/languages.sql
+\i core/tables/catalog/reference/timezones.sql
+
+-- Provider (Sağlayıcı yönetimi)
+\i core/tables/catalog/provider/provider_types.sql
+\i core/tables/catalog/provider/providers.sql
+\i core/tables/catalog/provider/provider_settings.sql
+
+-- Game (Oyun kataloğu)
+\i core/tables/catalog/game/games.sql
+
+-- Localization (Dil/çeviri yönetimi)
+\i core/tables/catalog/localization/localization_keys.sql
+\i core/tables/catalog/localization/localization_values.sql
+
+-- Payment (Ödeme yönetimi)
+\i core/tables/catalog/payment/payment_methods.sql
+
+-- Transaction (İşlem tipleri)
+\i core/tables/catalog/transaction/operation_types.sql
+\i core/tables/catalog/transaction/transaction_types.sql
+
+-- Compliance (Regulatory/KYC/RG)
+\i core/tables/catalog/compliance/jurisdictions.sql
+\i core/tables/catalog/compliance/kyc_policies.sql
+\i core/tables/catalog/compliance/kyc_document_requirements.sql
+\i core/tables/catalog/compliance/responsible_gaming_policies.sql
 
 -- CORE TABLES
-\i core/tables/core/companies.sql
-\i core/tables/core/tenants.sql
-\i core/tables/core/tenant_currencies.sql
-\i core/tables/core/tenant_games.sql
-\i core/tables/core/tenant_languages.sql
-\i core/tables/core/tenant_payment_methods.sql
-\i core/tables/core/tenant_providers.sql
-\i core/tables/core/tenant_provider_limits.sql
-\i core/tables/core/tenant_settings.sql
-\i core/tables/core/tenant_jurisdictions.sql
+
+-- Organization (Şirket ve Tenant yapısı)
+\i core/tables/core/organization/companies.sql
+\i core/tables/core/organization/tenants.sql
+
+-- Configuration (Tenant ayarları)
+\i core/tables/core/configuration/tenant_settings.sql
+\i core/tables/core/configuration/tenant_currencies.sql
+\i core/tables/core/configuration/tenant_languages.sql
+\i core/tables/core/configuration/tenant_jurisdictions.sql
+
+-- Integration (Oyun, Provider, Ödeme entegrasyonları)
+\i core/tables/core/integration/tenant_games.sql
+\i core/tables/core/integration/tenant_providers.sql
+\i core/tables/core/integration/tenant_provider_limits.sql
+\i core/tables/core/integration/tenant_payment_methods.sql
 
 -- PRESENTATION TABLES
 \i core/tables/presentation/contexts.sql
@@ -69,17 +88,23 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/routing/provider_endpoints.sql
 
 -- SECURITY TABLES
-\i core/tables/security/permissions.sql
-\i core/tables/security/roles.sql
-\i core/tables/security/role_permissions.sql
-\i core/tables/security/secrets_provider.sql
-\i core/tables/security/secrets_tenant.sql
-\i core/tables/security/users.sql
-\i core/tables/security/user_roles.sql
-\i core/tables/security/user_tenant_roles.sql
-\i core/tables/security/user_sessions.sql
-\i core/tables/security/user_permission_overrides.sql
-\i core/tables/security/user_allowed_tenants.sql
+
+-- Identity (Kullanıcı kimliği)
+\i core/tables/security/identity/users.sql
+\i core/tables/security/identity/user_sessions.sql
+
+-- RBAC (Rol ve Yetki Yönetimi)
+\i core/tables/security/rbac/roles.sql
+\i core/tables/security/rbac/permissions.sql
+\i core/tables/security/rbac/role_permissions.sql
+\i core/tables/security/rbac/user_roles.sql
+\i core/tables/security/rbac/user_tenant_roles.sql
+\i core/tables/security/rbac/user_allowed_tenants.sql
+\i core/tables/security/rbac/user_permission_overrides.sql
+
+-- Secrets (Hassas veriler)
+\i core/tables/security/secrets/secrets_provider.sql
+\i core/tables/security/secrets/secrets_tenant.sql
 
 -- BILLING TABLES (Tenant Faturalama - Nucleo'nun Alacakları)
 \i core/tables/billing/tenant/tenant_billing_periods.sql
