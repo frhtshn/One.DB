@@ -12,7 +12,11 @@ CREATE INDEX IF NOT EXISTS idx_submenus_menu_id ON presentation.submenus USING b
 CREATE INDEX IF NOT EXISTS idx_pages_menu_id ON presentation.pages USING btree(menu_id);
 
 -- pages.submenu_id -> submenus.id
+-- pages.submenu_id -> submenus.id
 CREATE INDEX IF NOT EXISTS idx_pages_submenu_id ON presentation.pages USING btree(submenu_id);
+
+-- pages (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_pages_code ON presentation.pages USING btree(code);
 
 -- tabs.page_id -> pages.id
 CREATE INDEX IF NOT EXISTS idx_tabs_page_id ON presentation.tabs USING btree(page_id);
@@ -42,6 +46,9 @@ CREATE INDEX IF NOT EXISTS idx_tabs_page_active_order ON presentation.tabs USING
 -- contexts: Filter by Page AND Active (Order is not primary, but lookup is)
 -- Contexts are usually fetched by page_id and filtered by permissions, but active check is first.
 CREATE INDEX IF NOT EXISTS idx_contexts_page_active ON presentation.contexts USING btree(page_id, is_active);
+
+-- contexts (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_contexts_page_code ON presentation.contexts USING btree(page_id, code);
 
 -- =========================================================================================
 -- Theme & Navigation Indexes

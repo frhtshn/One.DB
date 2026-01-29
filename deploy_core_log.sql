@@ -16,6 +16,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
 \i core_log/tables/logs/dead_letter_messages.sql
 \i core_log/tables/logs/audit_logs.sql
 
+-- CONSTRAINTS
+\i core_log/constraints/logs.sql
+
 -- FUNCTIONS
 \i core_log/functions/backoffice/audit_create.sql
 \i core_log/functions/backoffice/audit_list.sql

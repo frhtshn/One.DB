@@ -17,12 +17,9 @@ CREATE TABLE presentation.pages (
     order_index INT NOT NULL DEFAULT 0,                    -- Sıralama indeksi
     is_active BOOLEAN NOT NULL DEFAULT true,               -- Aktif/pasif durumu
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()          -- Güncellenme zamanı
 
-    CONSTRAINT chk_pages_parent CHECK (
-        (menu_id IS NOT NULL AND submenu_id IS NULL) OR
-        (menu_id IS NULL AND submenu_id IS NOT NULL)
-    )
+
 );
 
 COMMENT ON TABLE presentation.pages IS 'Page definitions with routes';

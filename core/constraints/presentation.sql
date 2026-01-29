@@ -49,10 +49,22 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- Unique Constraints
+
+
+-- Check Constraints
+-- pages parent check
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_pages_code') THEN
-        ALTER TABLE presentation.pages ADD CONSTRAINT uq_pages_code UNIQUE (code);
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_pages_parent') THEN
+        ALTER TABLE presentation.pages ADD CONSTRAINT chk_pages_parent
+            CHECK ((menu_id IS NOT NULL AND submenu_id IS NULL) OR (menu_id IS NULL AND submenu_id IS NOT NULL));
+    END IF;
+END $$;
+
+-- contexts type check
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_contexts_type') THEN
+        ALTER TABLE presentation.contexts ADD CONSTRAINT chk_contexts_type
+            CHECK (context_type IN ('field', 'action', 'section', 'button'));
     END IF;
 END $$;
 
