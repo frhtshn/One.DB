@@ -8,6 +8,11 @@ COMMENT ON SCHEMA finance_log IS 'Finance activity logs';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+-- DROP UNUSED SCHEMAS
+DROP SCHEMA IF EXISTS metric_helpers CASCADE;
+DROP SCHEMA IF EXISTS user_management CASCADE;
+DROP SCHEMA IF EXISTS public CASCADE;
+
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA infra;
 
