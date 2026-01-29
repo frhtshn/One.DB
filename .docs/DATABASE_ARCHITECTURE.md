@@ -92,21 +92,31 @@ Core veritabanı, platformun merkezi konfigürasyon ve yönetim verilerini barı
 
 Referans dataları içerir. **Read-only** karakterlidir.
 
-| Tablo                 | Açıklama                                   |
-| --------------------- | ------------------------------------------ |
-| `countries`           | Ülke listesi ve kodları                    |
-| `currencies`          | Para birimi tanımları (ISO 4217)           |
-| `games`               | Global oyun kataloğu                       |
-| `languages`           | Desteklenen diller                         |
-| `localization_keys`   | Lokalizasyon anahtar tanımları             |
-| `localization_values` | Lokalizasyon çevirileri                    |
-| `operation_types`     | Operasyon tipi tanımları (DEBIT/CREDIT)    |
-| `payment_methods`     | Finance provider ödeme metodları kataloğu  |
-| `provider_settings`   | Provider yapılandırma şablonları           |
-| `provider_types`      | Provider tip kategorileri (GAME/FINANCE)   |
-| `providers`           | Provider (oyun/ödeme) tanımları            |
-| `timezones`           | Saat dilimi referans kataloğu              |
-| `transaction_types`   | İşlem tipi tanımları (BET, WIN, BONUS vb.) |
+| Tablo                         | Açıklama                                   |
+| ----------------------------- | ------------------------------------------ |
+| `countries`                   | Ülke listesi ve kodları                    |
+| `currencies`                  | Para birimi tanımları (ISO 4217)           |
+| `games`                       | Global oyun kataloğu                       |
+| `languages`                   | Desteklenen diller                         |
+| `localization_keys`           | Lokalizasyon anahtar tanımları             |
+| `localization_values`         | Lokalizasyon çevirileri                    |
+| `operation_types`             | Operasyon tipi tanımları (DEBIT/CREDIT)    |
+| `payment_methods`             | Finance provider ödeme metodları kataloğu  |
+| `provider_settings`           | Provider yapılandırma şablonları           |
+| `provider_types`              | Provider tip kategorileri (GAME/FINANCE)   |
+| `providers`                   | Provider (oyun/ödeme) tanımları            |
+| `timezones`                   | Saat dilimi referans kataloğu              |
+| `transaction_types`           | İşlem tipi tanımları (BET, WIN, BONUS vb.) |
+| `jurisdictions`               | Lisans otoriteleri (MGA, UKGC, GGL vb.)    |
+| `kyc_policies`                | Jurisdiction bazlı KYC kuralları           |
+| `kyc_document_requirements`   | Gerekli KYC belgeleri                      |
+| `responsible_gaming_policies` | Sorumlu oyun politikaları                  |
+
+> 🌍 **Jurisdiction Yapılandırması**: KYC ve Responsible Gaming kuralları ülke/lisans otoritesine göre yapılandırılır:
+>
+> - **MGA (Malta)**: Kayıttan sonra 72 saat içinde doğrulama
+> - **UKGC (UK)**: Kayıt öncesi doğrulama, GAMSTOP entegrasyonu
+> - **GGL (Almanya)**: Hemen doğrulama, OASIS entegrasyonu, aylık limit zorunlu
 
 ---
 

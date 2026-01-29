@@ -38,6 +38,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/providers.sql
 \i core/tables/catalog/timezones.sql
 \i core/tables/catalog/transaction_types.sql
+\i core/tables/catalog/jurisdictions.sql
+\i core/tables/catalog/kyc_policies.sql
+\i core/tables/catalog/kyc_document_requirements.sql
+\i core/tables/catalog/responsible_gaming_policies.sql
 
 -- CORE TABLES
 \i core/tables/core/companies.sql
