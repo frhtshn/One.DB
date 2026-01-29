@@ -332,6 +332,7 @@ Tenant-specific oyun konfigürasyonu.
 | Tablo           | Açıklama                                        |
 | --------------- | ----------------------------------------------- |
 | `game_settings` | Oyun görünüm, sıralama ve özelleştirme ayarları |
+| `game_limits`   | Oyun + Currency bazlı bahis limitleri           |
 
 > ⚠️ **Denormalizasyon**: Bu tablo core DB'den `game_id`, `game_code`, `provider_id`, `provider_code` alanlarını kopyalar. Cross-DB join yapılamadığı için gereklidir.
 
@@ -393,14 +394,26 @@ Finansal referans verileri.
 
 ### 6.8 kyc Şeması
 
-KYC (Know Your Customer) doğrulama süreçleri.
+KYC (Know Your Customer) doğrulama ve Responsible Gaming süreçleri.
 
-| Tablo                      | Açıklama                         |
-| -------------------------- | -------------------------------- |
-| `player_kyc_cases`         | KYC vaka kayıtları               |
-| `player_kyc_workflows`     | KYC süreç adımları               |
-| `player_documents`         | Oyuncu belge yüklemeleri         |
-| `player_kyc_provider_logs` | KYC provider entegrasyon logları |
+| Tablo                      | Açıklama                                    |
+| -------------------------- | ------------------------------------------- |
+| `player_kyc_cases`         | KYC vaka kayıtları                          |
+| `player_kyc_workflows`     | KYC süreç adımları                          |
+| `player_documents`         | Oyuncu belge yüklemeleri                    |
+| `player_kyc_provider_logs` | KYC provider entegrasyon logları            |
+| `player_limits`            | Oyuncu kendi limitleri (Responsible Gaming) |
+| `player_restrictions`      | Cooling Off ve Self Exclusion kısıtlamaları |
+| `player_limit_history`     | Limit değişiklik audit logu                 |
+
+> 💡 **Responsible Gaming**: Oyuncular kendilerine aşağıdaki limitleri belirleyebilir:
+>
+> - **Deposit Limit**: Para yatırma limiti (günlük/haftalık/aylık)
+> - **Loss Limit**: Kayıp limiti
+> - **Wager Limit**: Bahis limiti
+> - **Session Limit**: Oturum süresi limiti
+> - **Cooling Off**: Geçici oyun yasağı
+> - **Self Exclusion**: Kalıcı kendini dışlama
 
 ---
 
