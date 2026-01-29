@@ -19,14 +19,9 @@ CREATE TABLE finance.currency_rates (
     rate_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL, -- Kurun geçerli olduğu zaman (provider)
     fetched_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,     -- API'den çekilme zamanı
 
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now()
 
-    UNIQUE (
-        provider,
-        provider_base_currency,
-        target_currency,
-        rate_timestamp
-    )
+
 );
 
 COMMENT ON TABLE finance.currency_rates IS 'Historical currency exchange rates from external APIs for audit and reporting purposes';

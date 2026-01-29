@@ -18,7 +18,9 @@ CREATE INDEX idx_transaction_workflows_status ON transaction.transaction_workflo
 CREATE INDEX idx_transaction_workflows_type ON transaction.transaction_workflows USING btree(workflow_type);
 CREATE INDEX idx_transaction_workflows_pending ON transaction.transaction_workflows USING btree(status, created_at) WHERE status = 'PENDING';
 CREATE INDEX idx_transaction_workflows_assigned ON transaction.transaction_workflows USING btree(assigned_to_id) WHERE assigned_to_id IS NOT NULL;
+CREATE INDEX idx_transaction_workflows_creator ON transaction.transaction_workflows USING btree(created_by_id) WHERE created_by_id IS NOT NULL;
 
 -- transaction_workflow_actions
 CREATE INDEX idx_workflow_actions_workflow ON transaction.transaction_workflow_actions USING btree(workflow_id);
 CREATE INDEX idx_workflow_actions_created ON transaction.transaction_workflow_actions USING btree(created_at DESC);
+CREATE INDEX idx_workflow_actions_actor ON transaction.transaction_workflow_actions USING btree(performed_by_id) WHERE performed_by_id IS NOT NULL;

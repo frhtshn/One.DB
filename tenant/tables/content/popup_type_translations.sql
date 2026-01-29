@@ -11,9 +11,9 @@ CREATE TABLE content.popup_type_translations (
     name VARCHAR(100) NOT NULL,                   -- Tür adı
     description VARCHAR(500),                     -- Açıklama
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
-    created_by INTEGER,
+    created_by INTEGER
 
-    CONSTRAINT uq_popup_type_trans_lang UNIQUE (popup_type_id, language_code)
+
 );
 
 COMMENT ON TABLE content.popup_type_translations IS 'Multilingual translations for popup types';

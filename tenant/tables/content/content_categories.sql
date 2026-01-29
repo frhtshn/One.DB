@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS content.content_categories CASCADE;
 
 CREATE TABLE content.content_categories (
     id SERIAL PRIMARY KEY,
-    code VARCHAR(50) NOT NULL UNIQUE,
+    code VARCHAR(50) NOT NULL,
     icon VARCHAR(100),
     sort_order INTEGER NOT NULL DEFAULT 0,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,

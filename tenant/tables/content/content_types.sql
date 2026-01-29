@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS content.content_types CASCADE;
 CREATE TABLE content.content_types (
     id SERIAL PRIMARY KEY,
     category_id INTEGER,
-    code VARCHAR(50) NOT NULL UNIQUE,
+    code VARCHAR(50) NOT NULL,
     template_key VARCHAR(100),
     icon VARCHAR(100),
     requires_acceptance BOOLEAN NOT NULL DEFAULT FALSE,

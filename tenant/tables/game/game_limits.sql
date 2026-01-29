@@ -21,10 +21,9 @@ CREATE TABLE game.game_limits (
     max_win decimal(18,2),                        -- Maksimum kazanç limiti (opsiyonel)
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone NOT NULL DEFAULT now(),
+    updated_at timestamp without time zone NOT NULL DEFAULT now()
 
-    -- Her oyun-currency kombinasyonu unique olmalı
-    UNIQUE(game_id, currency_code)
+
 );
 
 COMMENT ON TABLE game.game_limits IS 'Currency-specific bet limits for each game. Linked to game_settings via game_id.';

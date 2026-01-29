@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS finance.transaction_types CASCADE;
 
 CREATE TABLE finance.transaction_types (
     id              smallserial PRIMARY KEY,
-    code            varchar(50) NOT NULL UNIQUE,   -- Tip kodu: DEPOSIT, WITHDRAW, BET, WIN
+    code            varchar(50) NOT NULL,          -- Tip kodu: DEPOSIT, WITHDRAW, BET, WIN
     category        varchar(30) NOT NULL,          -- Kategori: PAYMENT, GAME, BONUS, ADMIN
     product         varchar(30),                   -- Ürün: CASINO, SPORTS, POKER (opsiyonel)
     is_bonus        boolean NOT NULL,              -- Bonus işlemi mi?

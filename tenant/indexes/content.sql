@@ -1,6 +1,7 @@
 -- content_categories
 CREATE INDEX idx_content_categories_active ON content.content_categories(is_active);
 CREATE INDEX idx_content_categories_sort ON content.content_categories(sort_order);
+CREATE UNIQUE INDEX idx_content_categories_code ON content.content_categories USING btree(code);
 
 -- content_category_translations
 CREATE INDEX idx_content_category_trans_category ON content.content_category_translations(category_id);
@@ -11,6 +12,7 @@ CREATE INDEX idx_content_types_category ON content.content_types(category_id);
 CREATE INDEX idx_content_types_active ON content.content_types(is_active);
 CREATE INDEX idx_content_types_footer ON content.content_types(show_in_footer) WHERE show_in_footer = TRUE;
 CREATE INDEX idx_content_types_menu ON content.content_types(show_in_menu) WHERE show_in_menu = TRUE;
+CREATE UNIQUE INDEX idx_content_types_code ON content.content_types USING btree(code);
 
 -- content_type_translations
 CREATE INDEX idx_content_type_trans_type ON content.content_type_translations(content_type_id);
@@ -18,6 +20,7 @@ CREATE INDEX idx_content_type_trans_language ON content.content_type_translation
 
 -- contents
 CREATE INDEX idx_contents_type ON content.contents(content_type_id);
+CREATE UNIQUE INDEX idx_contents_slug_unique ON content.contents USING btree(slug);
 CREATE INDEX idx_contents_slug ON content.contents(slug);
 CREATE INDEX idx_contents_status ON content.contents(status);
 CREATE INDEX idx_contents_published ON content.contents(status, published_at) WHERE status = 'published';
@@ -38,6 +41,7 @@ CREATE INDEX idx_content_attachments_featured ON content.content_attachments(con
 -- faq_categories
 CREATE INDEX idx_faq_categories_active ON content.faq_categories(is_active);
 CREATE INDEX idx_faq_categories_sort ON content.faq_categories(sort_order);
+CREATE UNIQUE INDEX idx_faq_categories_code ON content.faq_categories USING btree(code);
 
 -- faq_category_translations
 CREATE INDEX idx_faq_category_trans_category ON content.faq_category_translations(category_id);
@@ -59,6 +63,7 @@ CREATE INDEX idx_promotions_dates ON content.promotions(start_date, end_date);
 CREATE INDEX idx_promotions_type ON content.promotions(promo_type);
 CREATE INDEX idx_promotions_featured ON content.promotions(is_featured) WHERE is_featured = TRUE;
 CREATE INDEX idx_promotions_bonus ON content.promotions(bonus_id) WHERE bonus_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_promotions_code ON content.promotions USING btree(code);
 
 -- promotion_translations
 CREATE INDEX idx_promotion_trans_promotion ON content.promotion_translations(promotion_id);
@@ -96,6 +101,7 @@ CREATE INDEX idx_slide_categories_sort ON content.slide_categories(sort_order);
 -- slide_category_translations
 CREATE INDEX idx_slide_category_trans_category ON content.slide_category_translations(category_id);
 CREATE INDEX idx_slide_category_trans_language ON content.slide_category_translations(language_code);
+CREATE UNIQUE INDEX idx_slide_category_trans_unique ON content.slide_category_translations USING btree(category_id, language_code);
 
 -- slides
 CREATE UNIQUE INDEX idx_slides_code ON content.slides(code) WHERE code IS NOT NULL;
@@ -110,6 +116,7 @@ CREATE INDEX idx_slides_countries ON content.slides USING GIN(country_codes) WHE
 -- slide_translations
 CREATE INDEX idx_slide_trans_slide ON content.slide_translations(slide_id);
 CREATE INDEX idx_slide_trans_language ON content.slide_translations(language_code);
+CREATE UNIQUE INDEX idx_slide_trans_unique ON content.slide_translations USING btree(slide_id, language_code);
 
 -- slide_images
 CREATE INDEX idx_slide_images_slide ON content.slide_images(slide_id);
@@ -131,6 +138,7 @@ CREATE INDEX idx_popup_types_active ON content.popup_types(is_active);
 -- popup_type_translations
 CREATE INDEX idx_popup_type_trans_type ON content.popup_type_translations(popup_type_id);
 CREATE INDEX idx_popup_type_trans_language ON content.popup_type_translations(language_code);
+CREATE UNIQUE INDEX idx_popup_type_trans_unique ON content.popup_type_translations USING btree(popup_type_id, language_code);
 
 -- popups
 CREATE UNIQUE INDEX idx_popups_code ON content.popups(code) WHERE code IS NOT NULL;
@@ -146,6 +154,7 @@ CREATE INDEX idx_popups_pages ON content.popups USING GIN(page_urls) WHERE page_
 -- popup_translations
 CREATE INDEX idx_popup_trans_popup ON content.popup_translations(popup_id);
 CREATE INDEX idx_popup_trans_language ON content.popup_translations(language_code);
+CREATE UNIQUE INDEX idx_popup_trans_unique ON content.popup_translations USING btree(popup_id, language_code);
 
 -- popup_images
 CREATE INDEX idx_popup_images_popup ON content.popup_images(popup_id);

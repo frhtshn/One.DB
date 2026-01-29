@@ -24,9 +24,9 @@ CREATE TABLE content.popup_translations (
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     created_by INTEGER,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
-    updated_by INTEGER,
+    updated_by INTEGER
 
-    CONSTRAINT uq_popup_trans_lang UNIQUE (popup_id, language_code)
+
 );
 
 COMMENT ON TABLE content.popup_translations IS 'Multilingual text content for popups including titles, body, and CTAs';

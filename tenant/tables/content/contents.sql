@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS content.contents CASCADE;
 CREATE TABLE content.contents (
     id SERIAL PRIMARY KEY,
     content_type_id INTEGER NOT NULL,
-    slug VARCHAR(255) NOT NULL UNIQUE,
+    slug VARCHAR(255) NOT NULL,
     featured_image_url VARCHAR(500),
     version INTEGER NOT NULL DEFAULT 1,
     published_at TIMESTAMP WITHOUT TIME ZONE,

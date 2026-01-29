@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS transaction.transaction_workflows CASCADE;
 
 CREATE TABLE transaction.transaction_workflows (
     id bigserial PRIMARY KEY,
-    transaction_id bigint NOT NULL UNIQUE,        -- Bağlı işlem ID
+    transaction_id bigint NOT NULL,               -- Bağlı işlem ID
     workflow_type varchar(30) NOT NULL,           -- Akış tipi: WITHDRAWAL, HIGH_VALUE, SUSPICIOUS
     status varchar(30) NOT NULL,                  -- Durum: PENDING, APPROVED, REJECTED, CANCELLED
     reason varchar(255),                          -- Durum açıklaması

@@ -27,9 +27,9 @@ CREATE TABLE content.slide_translations (
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     created_by INTEGER,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
-    updated_by INTEGER,
+    updated_by INTEGER
 
-    CONSTRAINT uq_slide_translation_lang UNIQUE (slide_id, language_code)
+
 );
 
 COMMENT ON TABLE content.slide_translations IS 'Multilingual text content for slides including titles, descriptions, and CTAs';
