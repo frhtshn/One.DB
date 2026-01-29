@@ -247,4 +247,57 @@ Provider endpoint yönetimi.
 
 ---
 
-... (Dokümanın geri kalanı aynı) ...
+## 5. Gateway Veritabanları (Game & Finance)
+
+Nucleo, entegrasyon karmaşasını önlemek için **"Registry vs Implementation" (Kayıt vs Uygulama)** desenini kullanır.
+
+### 5.1 Mimari Yaklaşım
+
+- **Registry (Core DB):** Sağlayıcının kim olduğu, genel ayarları ve aktiflik durumu `core.catalog` şemasında tutulur.
+- **Implementation (Gateway DBs):** Sağlayıcının kendine özel tabloları, transaction detayları ve iş mantığı `game` veya `finance` veritabanlarında, **her sağlayıcı için ayrı bir şema** altında tutulur.
+
+### 5.2 Game Veritabanı (`game`)
+
+Oyun sağlayıcılarının entegrasyon detaylarını barındırır. Her provider için izole bir şema açılır.
+
+| Şema (Örnek) | İçerik                                            |
+| ------------ | ------------------------------------------------- |
+| `pragmatic`  | Pragmatic Play özel bahis, tur ve sonuç tabloları |
+| `evolution`  | Evolution Gaming özel tabloları                   |
+| `sportradar` | Spor bahisleri kupon ve oran tabloları            |
+
+**Avantajı:** `DROP SCHEMA pragmatic CASCADE` komutuyla bir entegrasyon sistemden tamamen temizlenebilir (Garbage Collection).
+
+### 5.3 Finance Veritabanı (`finance`)
+
+Ödeme sistemlerinin entegrasyon detaylarını barındırır.
+
+| Şema (Örnek) | İçerik                                     |
+| ------------ | ------------------------------------------ |
+| `stripe`     | Stripe müşteri tokenları ve charge logları |
+| `papara`     | Papara cüzdan ve işlem kayıtları           |
+| `crypto`     | Blockchain işlem takibi                    |
+
+---
+
+## 6. Log Veritabanları (Operational Store)
+
+Yüksek hacimli "Write-Heavy" operasyonel veriler, ana işlem veritabanlarını yormamak için ayrıştırılmıştır.
+
+### 6.1 Game Log (`game_log`)
+
+- **Kapsam:** Oyun turları, spin detayları, provider API call/response logları.
+- **Yapı:** Günlük (Daily) partition.
+- **Retention:** Kısa vadeli (7-14 gün).
+- **Amaç:** Hata ayıklama ve son kullanıcı desteği.
+
+### 6.2 Finance Log (`finance_log`)
+
+- **Kapsam:** Ödeme denemeleri, webhook bildirimleri, 3D secure logları.
+- **Yapı:** Günlük (Daily) partition.
+- **Retention:** Orta vadeli (14-30 gün).
+- **Amaç:** İşlem doğrulama ve fraud analizi.
+
+### 6.3 Log Stratejisi
+
+Tüm log veritabanları **`DROP PARTITION`** stratejisi ile temizlenir. Detaylar için bkz: `LOGSTRATEGY.md`.
