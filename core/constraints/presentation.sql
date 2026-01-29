@@ -98,3 +98,11 @@ DO $$ BEGIN
             FOREIGN KEY (parent_id) REFERENCES presentation.tenant_navigation(id) ON DELETE CASCADE;
     END IF;
 END $$;
+
+-- tenant_navigation -> template_item (Link to Master Data)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_navigation_template_item') THEN
+        ALTER TABLE presentation.tenant_navigation ADD CONSTRAINT fk_tenant_navigation_template_item
+            FOREIGN KEY (template_item_id) REFERENCES catalog.navigation_template_items(id) ON DELETE SET NULL;
+    END IF;
+END $$;

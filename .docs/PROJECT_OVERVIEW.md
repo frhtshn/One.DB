@@ -135,7 +135,7 @@ CORE DATABASE
 │   ├── provider         → Provider ve ayarlar
 │   ├── compliance       → Jurisdiction ve KYC kuralları
 │   ├── game             → Oyun kataloğu
-│   ├── uikit            → Tema ve Widget marketi
+│   ├── uikit            → Tema marketi ve Navigasyon şablonları
 │   └── ...              → Diğer kataloglar
 │
 ├── core (Tenant Yönetimi)

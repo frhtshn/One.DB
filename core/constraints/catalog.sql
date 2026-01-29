@@ -79,3 +79,20 @@ DO $$ BEGIN
             FOREIGN KEY (jurisdiction_id) REFERENCES catalog.jurisdictions(id);
     END IF;
 END $$;
+
+-- Navigation Templates Constraints
+-- navigation_template_items -> navigation_templates
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_navigation_template_items_template') THEN
+        ALTER TABLE catalog.navigation_template_items ADD CONSTRAINT fk_navigation_template_items_template
+            FOREIGN KEY (template_id) REFERENCES catalog.navigation_templates(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- navigation_template_items -> parent (Self Referencing)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_navigation_template_items_parent') THEN
+        ALTER TABLE catalog.navigation_template_items ADD CONSTRAINT fk_navigation_template_items_parent
+            FOREIGN KEY (parent_id) REFERENCES catalog.navigation_template_items(id) ON DELETE CASCADE;
+    END IF;
+END $$;

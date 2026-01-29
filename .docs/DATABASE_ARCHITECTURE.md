@@ -124,11 +124,13 @@ Referans dataları içerir. **Read-only** karakterlidir. Mantıksal gruplara ayr
 
 #### UI Kit (Theme Market)
 
-| Tablo          | Açıklama                                       |
-| -------------- | ---------------------------------------------- |
-| `themes`       | Global tema tanımları ve varsayılan configleri |
-| `widgets`      | Kullanılabilir frontend widget'ları            |
-| `ui_positions` | Sayfa üzerindeki slot alanları (header vs.)    |
+| Tablo                       | Açıklama                                       |
+| --------------------------- | ---------------------------------------------- |
+| `themes`                    | Global tema tanımları ve varsayılan configleri |
+| `widgets`                   | Kullanılabilir frontend widget'ları            |
+| `ui_positions`              | Sayfa üzerindeki slot alanları (header vs.)    |
+| `navigation_templates`      | Hazır navigasyon şablonları (Casino/Spor vb.)  |
+| `navigation_template_items` | Şablon içeriğindeki menü öğeleri (Master Data) |
 
 #### Transaction Definitions
 

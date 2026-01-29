@@ -10,6 +10,9 @@ CREATE TABLE presentation.tenant_navigation (
     id bigserial PRIMARY KEY,
     tenant_id bigint NOT NULL,                            -- Hangi tenant
 
+    -- Master Data Bağlantısı (Opsiyonel)
+    template_item_id bigint,                              -- Catalog'daki master öğe ID'si (catalog.navigation_template_items)
+
     menu_location varchar(50) NOT NULL,                   -- Menü konumu: main_header, footer_col_1, sidebar, mobile_bottom
 
     -- Menü Metni (Hibrit Lokalizasyon)
@@ -38,9 +41,9 @@ CREATE TABLE presentation.tenant_navigation (
 
     device_visibility varchar(20) DEFAULT 'ALL',          -- ALL, MOBILE_ONLY, DESKTOP_ONLY
 
-    -- Sistem Koruması
-    is_system boolean DEFAULT false,                      -- Sistem menüsü mü? (Değiştirilemez/Silinemez)
-    is_editable boolean DEFAULT true,                     -- Düzenlenebilir mi?
+    -- Korumalar (Master Data Yönetimi)
+    is_locked boolean DEFAULT false,                      -- True = Tenant bu kaydı SİLEMEZ (Master'dan geldi)
+    is_readonly boolean DEFAULT false,                    -- True = Tenant target/type/action değiştiremez (Sadece label/order/visibility değiştirebilir)
 
     custom_css_class varchar(100),                        -- Özel CSS sınıfı
 
@@ -48,4 +51,4 @@ CREATE TABLE presentation.tenant_navigation (
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE presentation.tenant_navigation IS 'Dynamic frontend navigation management for tenants (Header, Footer, Mobile, etc.)';
+COMMENT ON TABLE presentation.tenant_navigation IS 'Dynamic frontend navigation management. Can be derived from catalog templates.';

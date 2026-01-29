@@ -60,6 +60,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/uikit/themes.sql
 \i core/tables/catalog/uikit/widgets.sql
 \i core/tables/catalog/uikit/ui_positions.sql
+\i core/tables/catalog/uikit/navigation_templates.sql
+\i core/tables/catalog/uikit/navigation_template_items.sql
 
 -- CORE TABLES
 
