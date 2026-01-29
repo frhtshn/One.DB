@@ -4,11 +4,22 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS affiliate;
+COMMENT ON SCHEMA affiliate IS 'Affiliate structure';
+
 CREATE SCHEMA IF NOT EXISTS campaign;
+COMMENT ON SCHEMA campaign IS 'Affiliate campaigns';
+
 CREATE SCHEMA IF NOT EXISTS commission;
+COMMENT ON SCHEMA commission IS 'Commission rules and calculations';
+
 CREATE SCHEMA IF NOT EXISTS payout;
+COMMENT ON SCHEMA payout IS 'Affiliate payouts';
+
 CREATE SCHEMA IF NOT EXISTS tracking;
+COMMENT ON SCHEMA tracking IS 'Affiliate tracking and stats';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;

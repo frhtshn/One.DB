@@ -25,111 +25,88 @@ Detaylı mimari ve yapı dokümantasyonu için:
 
 ---
 
-## Local Server (Localhost)
-
-```bash
-set PGPASSWORD=sizin_şifre
-```
-
-### Create Database local
-
-```bash
-psql -h localhost -U postgres -d postgres -f create_dbs.sql
-```
-
-### Deploy Core
-
-```bash
-psql -h localhost -U postgres -d core -f deploy_core.sql
-```
-
-### Deploy Tenant
-
-```bash
-psql -h localhost -U postgres -d tenant -f deploy_tenant.sql
-```
-
-### Deploy Core Log
-
-```bash
-psql -h localhost -U postgres -d core_log -f deploy_core_log.sql
-```
-
-### Deploy Core Audit
-
-```bash
-psql -h localhost -U postgres -d core_audit -f deploy_core_audit.sql
-```
-
-### Deploy Bonus
-
-```bash
-psql -h localhost -U postgres -d bonus -f deploy_bonus.sql
-```
-
-### Deploy Tenant Affiliate
-
-```bash
-psql -h localhost -U postgres -d tenant_affiliate -f deploy_tenant_affiliate.sql
-```
-
----
-
-## Deploy Core - Beta Server
-
-```bash
-set PGPASSWORD=StrongPass123!
-psql -h 155.133.22.97 -U admin -d core -f deploy_core.sql
-```
-
----
-
-## New Beta Server
+## Beta Server Deployment
 
 ```bash
 set PGPASSWORD=NucleoPostgres2026
 ```
 
-### Create Database beta
+### 0. Create Databases
 
 ```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d postgres -f create_dbs.sql
 ```
 
-### Deploy Core
+### 1. Deploy Core
 
 ```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core.sql
 ```
 
-### Deploy Tenant
-
-```bash
-psql -h 207.180.241.230 -p 5433 -U postgres -d tenant -f deploy_tenant.sql
-```
-
-### Deploy Core Log
-
-```bash
-psql -h 207.180.241.230 -p 5433 -U postgres -d core_log -f deploy_core_log.sql
-```
-
-### Deploy Core Audit
+### 2. Deploy Core Audit
 
 ```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d core_audit -f deploy_core_audit.sql
 ```
 
-### Deploy Bonus
+### 3. Deploy Core Log
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d core_log -f deploy_core_log.sql
+```
+
+### 5. Deploy Tenant
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d tenant -f deploy_tenant.sql
+```
+
+### 6. Deploy Tenant Affiliate
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_affiliate -f deploy_tenant_affiliate.sql
+```
+
+### 7. Deploy Tenant Audit
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_audit -f deploy_tenant_audit.sql
+```
+
+### 8. Deploy Tenant Log
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_log -f deploy_tenant_log.sql
+```
+
+### 10. Deploy Bonus
 
 ```bash
 psql -h 207.180.241.230 -p 5433 -U postgres -d bonus -f deploy_bonus.sql
 ```
 
-### Deploy Tenant Affiliate
+### 11. Deploy Finance
 
 ```bash
-psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_affiliate -f deploy_tenant_affiliate.sql
+psql -h 207.180.241.230 -p 5433 -U postgres -d finance -f deploy_finance.sql
+```
+
+### 12. Deploy Finance Log
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d finance_log -f deploy_finance_log.sql
+```
+
+### 13. Deploy Game
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d game -f deploy_game.sql
+```
+
+### 14. Deploy Game Log
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d game_log -f deploy_game_log.sql
 ```
 
 ---

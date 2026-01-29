@@ -3,7 +3,10 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS finance;
+COMMENT ON SCHEMA finance IS 'Finance gateway integration';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;

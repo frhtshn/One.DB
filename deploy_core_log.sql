@@ -3,8 +3,13 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS backoffice;
+COMMENT ON SCHEMA backoffice IS 'Backoffice activity logs';
+
 CREATE SCHEMA IF NOT EXISTS logs;
+COMMENT ON SCHEMA logs IS 'System and error logs';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;

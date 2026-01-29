@@ -17,6 +17,8 @@ WHERE NOT EXISTS (
 )
 \gexec
 
+COMMENT ON DATABASE core IS 'Main core database: Companies, users and central configuration';
+
 -- Core log veritabanı: Sistem genelinde merkezi log kayıtları
 SELECT
   'CREATE DATABASE core_log'
@@ -24,6 +26,8 @@ WHERE NOT EXISTS (
   SELECT 1 FROM pg_database WHERE datname = 'core_log'
 )
 \gexec
+
+COMMENT ON DATABASE core_log IS 'Core log database: System-wide central log records';
 
 -- Core audit veritabanı: Merkezi denetim ve uyumluluk kayıtları
 SELECT
@@ -33,6 +37,8 @@ WHERE NOT EXISTS (
 )
 \gexec
 
+COMMENT ON DATABASE core_audit IS 'Core audit database: Central audit and compliance records';
+
 
 -- Core rapor veritabanı: Merkezi raporlama ve analitik verileri
 -- SELECT
@@ -41,6 +47,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'core_report'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE core_report IS 'Central reporting and analytics data';
 
 -- Finans veritabanı: Ödeme işlemleri, para transferleri ve finansal veriler
 -- SELECT
@@ -49,6 +56,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'finance'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE finance IS 'Financial operations, money transfers and financial data';
 
 -- -- Finans Log veritabanı: Finansal işlem logları ve tarihçesi
 -- SELECT
@@ -57,6 +65,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'finance_log'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE finance_log IS 'Financial transaction logs and history';
 
 -- -- Game veritabanı: Oyun katalogları, provider entegrasyonları ve oyun verileri
 -- SELECT
@@ -65,6 +74,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'game'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE game IS 'Game catalogs, provider integrations and game data';
 
 -- -- Game Log veritabanı: Oyun tur logları ve detaylı oyun geçmişi
 -- SELECT
@@ -73,6 +83,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'game_log'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE game_log IS 'Game round logs and detailed game history';
 
 -- Bonus veritabanı: Bonus, promosyon ve kampanya yönetimi (Plugin)
 -- SELECT
@@ -81,6 +92,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'bonus'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE bonus IS 'Bonus, promotion and campaign management (Plugin)';
 
 
 -- ============================================================
@@ -96,6 +108,8 @@ WHERE NOT EXISTS (
 )
 \gexec
 
+COMMENT ON DATABASE tenant IS 'Base tenant database template: Players, wallets and tenant-specific data';
+
 -- Tenant log veritabanı: Kiracıya özel aktivite ve işlem logları
 -- SELECT
 --   'CREATE DATABASE tenant_log'
@@ -103,6 +117,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'tenant_log'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE tenant_log IS 'Tenant-specific activity and transaction logs';
 
 -- Tenant rapor veritabanı: Kiracıya özel raporlar ve istatistikler
 -- SELECT
@@ -111,6 +126,7 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'tenant_report'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE tenant_report IS 'Tenant-specific reports and statistics';
 
 -- Tenant Affiliate veritabanı: Kiracıya özel affiliate plugin veritabanı
 -- Her yeni tenant için 'tenant_affiliate_<CODE>' formatında oluşturulur
@@ -120,3 +136,4 @@ WHERE NOT EXISTS (
 --   SELECT 1 FROM pg_database WHERE datname = 'tenant_affiliate'
 -- )
 -- \gexec
+-- COMMENT ON DATABASE tenant_affiliate IS 'Tenant-specific affiliate plugin database';

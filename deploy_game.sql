@@ -3,7 +3,10 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS game;
+COMMENT ON SCHEMA game IS 'Game gateway integration';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- DROP UNUSED SCHEMAS
 

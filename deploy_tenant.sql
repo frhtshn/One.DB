@@ -4,15 +4,34 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS auth;
+COMMENT ON SCHEMA auth IS 'Player authentication and authorization';
+
 CREATE SCHEMA IF NOT EXISTS profile;
+COMMENT ON SCHEMA profile IS 'Player profile and identity management';
+
 CREATE SCHEMA IF NOT EXISTS transaction;
+COMMENT ON SCHEMA transaction IS 'Financial transactions and workflows';
+
 CREATE SCHEMA IF NOT EXISTS finance;
+COMMENT ON SCHEMA finance IS 'Finance operations and currency rates';
+
 CREATE SCHEMA IF NOT EXISTS wallet;
+COMMENT ON SCHEMA wallet IS 'Player wallets and balances';
+
 CREATE SCHEMA IF NOT EXISTS game;
+COMMENT ON SCHEMA game IS 'Game specifications and limits';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
+
 CREATE SCHEMA IF NOT EXISTS kyc;
+COMMENT ON SCHEMA kyc IS 'Know Your Customer (KYC) processes';
+
 CREATE SCHEMA IF NOT EXISTS bonus;
+COMMENT ON SCHEMA bonus IS 'Bonus and promotion management';
+
 CREATE SCHEMA IF NOT EXISTS content;
+COMMENT ON SCHEMA content IS 'Content management system (CMS)';
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;

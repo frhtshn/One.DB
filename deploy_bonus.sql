@@ -4,9 +4,16 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS bonus;
+COMMENT ON SCHEMA bonus IS 'Bonus definitions and rules';
+
 CREATE SCHEMA IF NOT EXISTS promotion;
+COMMENT ON SCHEMA promotion IS 'Promotion configurations';
+
 CREATE SCHEMA IF NOT EXISTS campaign;
+COMMENT ON SCHEMA campaign IS 'Campaign management';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;

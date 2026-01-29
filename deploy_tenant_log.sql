@@ -4,8 +4,13 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS affiliate_log;
+COMMENT ON SCHEMA affiliate_log IS 'Affiliate system logs';
+
 CREATE SCHEMA IF NOT EXISTS bonus_log;
+COMMENT ON SCHEMA bonus_log IS 'Bonus system logs';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA infra;

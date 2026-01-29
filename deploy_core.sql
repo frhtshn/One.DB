@@ -3,12 +3,25 @@ BEGIN;
 
 -- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS catalog;
+COMMENT ON SCHEMA catalog IS 'Reference and master data';
+
 CREATE SCHEMA IF NOT EXISTS core;
+COMMENT ON SCHEMA core IS 'Tenant and company information';
+
 CREATE SCHEMA IF NOT EXISTS presentation;
+COMMENT ON SCHEMA presentation IS 'Backoffice and Tenant Frontend configuration';
+
 CREATE SCHEMA IF NOT EXISTS routing;
+COMMENT ON SCHEMA routing IS 'Provider endpoint and callback routing';
+
 CREATE SCHEMA IF NOT EXISTS security;
+COMMENT ON SCHEMA security IS 'User, role and permission management';
+
 CREATE SCHEMA IF NOT EXISTS billing;
+COMMENT ON SCHEMA billing IS 'Commission and billing';
+
 CREATE SCHEMA IF NOT EXISTS infra;
+COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
