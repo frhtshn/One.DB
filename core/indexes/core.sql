@@ -1,59 +1,72 @@
 -- Core Schema Indexes
 -- FK indexes for optimal JOIN performance
+-- Using IF NOT EXISTS for idempotent deploys
 
 -- tenants.company_id -> companies.id
-CREATE INDEX idx_tenants_company_id ON core.tenants USING btree(company_id);
+CREATE INDEX IF NOT EXISTS idx_tenants_company_id ON core.tenants USING btree(company_id);
 
 -- tenant_currencies.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_currencies_tenant_id ON core.tenant_currencies USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_currencies_tenant_id ON core.tenant_currencies USING btree(tenant_id);
 
 -- tenant_currencies (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_currencies_tenant_currency ON core.tenant_currencies USING btree(tenant_id, currency_code);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_currencies_tenant_currency ON core.tenant_currencies USING btree(tenant_id, currency_code);
 
 -- tenant_games.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_games_tenant_id ON core.tenant_games USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_games_tenant_id ON core.tenant_games USING btree(tenant_id);
 
 -- tenant_games.game_id -> games.id
-CREATE INDEX idx_tenant_games_game_id ON core.tenant_games USING btree(game_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_games_game_id ON core.tenant_games USING btree(game_id);
 
 -- tenant_games (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_games_tenant_game ON core.tenant_games USING btree(tenant_id, game_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_games_tenant_game ON core.tenant_games USING btree(tenant_id, game_id);
 
 -- tenant_languages.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_languages_tenant_id ON core.tenant_languages USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_languages_tenant_id ON core.tenant_languages USING btree(tenant_id);
 
 -- tenant_languages (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_languages_tenant_lang ON core.tenant_languages USING btree(tenant_id, language_code);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_languages_tenant_lang ON core.tenant_languages USING btree(tenant_id, language_code);
 
 -- tenant_providers.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_providers_tenant_id ON core.tenant_providers USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_providers_tenant_id ON core.tenant_providers USING btree(tenant_id);
 
 -- tenant_providers.provider_id -> providers.id
-CREATE INDEX idx_tenant_providers_provider_id ON core.tenant_providers USING btree(provider_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_providers_provider_id ON core.tenant_providers USING btree(provider_id);
 
 -- tenant_providers (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_providers_tenant_provider ON core.tenant_providers USING btree(tenant_id, provider_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_providers_tenant_provider ON core.tenant_providers USING btree(tenant_id, provider_id);
 
 -- tenant_settings.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_settings_tenant_id ON core.tenant_settings USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_settings_tenant_id ON core.tenant_settings USING btree(tenant_id);
 
 -- tenant_settings (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_settings_tenant_key ON core.tenant_settings USING btree(tenant_id, setting_key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_settings_tenant_key ON core.tenant_settings USING btree(tenant_id, setting_key);
 
 -- tenant_payment_methods.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_payment_methods_tenant_id ON core.tenant_payment_methods USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_tenant_id ON core.tenant_payment_methods USING btree(tenant_id);
 
 -- tenant_payment_methods.payment_method_id -> payment_methods.id
-CREATE INDEX idx_tenant_payment_methods_payment_method_id ON core.tenant_payment_methods USING btree(payment_method_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_payment_method_id ON core.tenant_payment_methods USING btree(payment_method_id);
 
 -- tenant_payment_methods (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_payment_methods_tenant_method ON core.tenant_payment_methods USING btree(tenant_id, payment_method_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_payment_methods_tenant_method ON core.tenant_payment_methods USING btree(tenant_id, payment_method_id);
 
 -- tenant_provider_limits.tenant_id -> tenants.id
-CREATE INDEX idx_tenant_provider_limits_tenant_id ON core.tenant_provider_limits USING btree(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_tenant_id ON core.tenant_provider_limits USING btree(tenant_id);
 
 -- tenant_provider_limits.provider_id -> providers.id
-CREATE INDEX idx_tenant_provider_limits_provider_id ON core.tenant_provider_limits USING btree(provider_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_provider_id ON core.tenant_provider_limits USING btree(provider_id);
 
 -- tenant_provider_limits (unique lookup)
-CREATE UNIQUE INDEX idx_tenant_provider_limits_lookup ON core.tenant_provider_limits USING btree(tenant_id, provider_id, payment_method_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_provider_limits_lookup ON core.tenant_provider_limits USING btree(tenant_id, provider_id, payment_method_id);
+
+-- tenant_jurisdictions.tenant_id -> tenants.id
+CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_tenant_id ON core.tenant_jurisdictions USING btree(tenant_id);
+
+-- tenant_jurisdictions.jurisdiction_id -> jurisdictions.id
+CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_jurisdiction_id ON core.tenant_jurisdictions USING btree(jurisdiction_id);
+
+-- tenant_jurisdictions (primary jurisdiction lookup)
+CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_primary ON core.tenant_jurisdictions USING btree(tenant_id) WHERE is_primary = true;
+
+-- tenant_jurisdictions (active licenses)
+CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_active ON core.tenant_jurisdictions USING btree(status) WHERE status = 'ACTIVE';

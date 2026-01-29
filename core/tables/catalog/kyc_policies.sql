@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS catalog.kyc_policies CASCADE;
 CREATE TABLE catalog.kyc_policies (
     id serial PRIMARY KEY,
 
-    jurisdiction_id int NOT NULL,                 -- Hangi otorite için
+    jurisdiction_id int NOT NULL UNIQUE,           -- Hangi otorite için (1:1)
 
     -- Doğrulama zamanlaması
     verification_timing varchar(30) NOT NULL,     -- Ne zaman doğrulama yapılmalı

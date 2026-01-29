@@ -135,6 +135,13 @@ Tenant ve şirket yönetimi.
 | `tenant_providers`       | Tenant-provider eşleştirmeleri                     |
 | `tenant_provider_limits` | Provider'ın tenant için belirlediği limitler       |
 | `tenant_settings`        | Tenant özel konfigürasyonları                      |
+| `tenant_jurisdictions`   | Tenant lisans/jurisdiction eşleştirmeleri          |
+
+> 📋 **Çoklu Lisans Desteği**: Bir tenant birden fazla jurisdiction altında çalışabilir. `tenant_jurisdictions` tablosu ile:
+>
+> - MGA ve UKGC lisansına sahip operatör yönetilebilir
+> - Her jurisdiction için farklı KYC/RG kuralları uygulanır
+> - `is_primary` ile varsayılan lisans belirlenir
 
 ---
 

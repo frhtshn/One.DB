@@ -53,6 +53,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/tenant_providers.sql
 \i core/tables/core/tenant_provider_limits.sql
 \i core/tables/core/tenant_settings.sql
+\i core/tables/core/tenant_jurisdictions.sql
 
 -- PRESENTATION TABLES
 \i core/tables/presentation/contexts.sql
