@@ -44,7 +44,7 @@
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "beta_tenant",
+            "name": "core_log",
             "database": "core_log",
             "username": "postgres",
             "password": "NucleoPostgres2026",
@@ -60,8 +60,24 @@
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "beta_tenant",
+            "name": "core_audit",
             "database": "core_audit",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "beta_tenant",
+            "database": "tenant",
             "username": "postgres",
             "password": "NucleoPostgres2026",
             "pgOptions": {
