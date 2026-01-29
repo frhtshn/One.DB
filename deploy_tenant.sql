@@ -70,41 +70,46 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/bonus/promo_redemptions.sql
 
 -- CONTENT MANAGEMENT TABLES
-\i tenant/tables/content/content_categories.sql
-\i tenant/tables/content/content_category_translations.sql
-\i tenant/tables/content/content_types.sql
-\i tenant/tables/content/content_type_translations.sql
-\i tenant/tables/content/contents.sql
-\i tenant/tables/content/content_translations.sql
-\i tenant/tables/content/content_versions.sql
-\i tenant/tables/content/content_attachments.sql
-\i tenant/tables/content/faq_categories.sql
-\i tenant/tables/content/faq_category_translations.sql
-\i tenant/tables/content/faq_items.sql
-\i tenant/tables/content/faq_item_translations.sql
-\i tenant/tables/content/promotions.sql
-\i tenant/tables/content/promotion_translations.sql
-\i tenant/tables/content/promotion_banners.sql
-\i tenant/tables/content/promotion_display_locations.sql
-\i tenant/tables/content/promotion_segments.sql
-\i tenant/tables/content/promotion_games.sql
+-- CMS
+\i tenant/tables/content/cms/content_categories.sql
+\i tenant/tables/content/cms/content_category_translations.sql
+\i tenant/tables/content/cms/content_types.sql
+\i tenant/tables/content/cms/content_type_translations.sql
+\i tenant/tables/content/cms/contents.sql
+\i tenant/tables/content/cms/content_translations.sql
+\i tenant/tables/content/cms/content_versions.sql
+\i tenant/tables/content/cms/content_attachments.sql
+
+-- FAQ
+\i tenant/tables/content/faq/faq_categories.sql
+\i tenant/tables/content/faq/faq_category_translations.sql
+\i tenant/tables/content/faq/faq_items.sql
+\i tenant/tables/content/faq/faq_item_translations.sql
+
+-- Promotions
+\i tenant/tables/content/promotion/promotions.sql
+\i tenant/tables/content/promotion/promotion_translations.sql
+\i tenant/tables/content/promotion/promotion_banners.sql
+\i tenant/tables/content/promotion/promotion_display_locations.sql
+\i tenant/tables/content/promotion/promotion_segments.sql
+\i tenant/tables/content/promotion/promotion_games.sql
 
 -- Slide Management
-\i tenant/tables/content/slide_placements.sql
-\i tenant/tables/content/slide_categories.sql
-\i tenant/tables/content/slide_category_translations.sql
-\i tenant/tables/content/slides.sql
-\i tenant/tables/content/slide_translations.sql
-\i tenant/tables/content/slide_images.sql
-\i tenant/tables/content/slide_schedules.sql
+\i tenant/tables/content/slide/slide_placements.sql
+\i tenant/tables/content/slide/slide_categories.sql
+\i tenant/tables/content/slide/slide_category_translations.sql
+\i tenant/tables/content/slide/slides.sql
+\i tenant/tables/content/slide/slide_translations.sql
+\i tenant/tables/content/slide/slide_images.sql
+\i tenant/tables/content/slide/slide_schedules.sql
 
 -- Popup Management
-\i tenant/tables/content/popup_types.sql
-\i tenant/tables/content/popup_type_translations.sql
-\i tenant/tables/content/popups.sql
-\i tenant/tables/content/popup_translations.sql
-\i tenant/tables/content/popup_images.sql
-\i tenant/tables/content/popup_schedules.sql
+\i tenant/tables/content/popup/popup_types.sql
+\i tenant/tables/content/popup/popup_type_translations.sql
+\i tenant/tables/content/popup/popups.sql
+\i tenant/tables/content/popup/popup_translations.sql
+\i tenant/tables/content/popup/popup_images.sql
+\i tenant/tables/content/popup/popup_schedules.sql
 
 -- VIEWS
 \i tenant/views/v_daily_base_rates.sql

@@ -1,4 +1,10 @@
--- Get failed login attempts for a user (brute-force detection)
+-- ================================================================
+-- AUTH_AUDIT_FAILED_LOGINS: Kullanıcı için başarısız giriş denemelerini getirir
+-- Bu fonksiyon, kaba kuvvet saldırılarını tespit etmek için kullanılır
+-- ================================================================
+
+DROP FUNCTION IF EXISTS backoffice.auth_audit_failed_logins(BIGINT,INT);
+
 CREATE OR REPLACE FUNCTION backoffice.auth_audit_failed_logins(
     p_user_id BIGINT,
     p_hours INT DEFAULT 1

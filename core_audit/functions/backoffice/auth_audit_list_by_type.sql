@@ -1,4 +1,10 @@
--- Get auth audit logs by event type
+-- ================================================================
+-- AUTH_AUDIT_LIST_BY_TYPE: Olay türüne göre kimlik denetim loglarını getirir
+-- Bu fonksiyon, belirli bir olay türüne ait kimlik denetim loglarını JSONB formatında döndürür
+-- ================================================================
+
+DROP FUNCTION IF EXISTS backoffice.auth_audit_list_by_type(VARCHAR(50),TIMESTAMPTZ,TIMESTAMPTZ,INT);
+
 CREATE OR REPLACE FUNCTION backoffice.auth_audit_list_by_type(
     p_event_type VARCHAR(50),
     p_from_date TIMESTAMPTZ DEFAULT NULL,

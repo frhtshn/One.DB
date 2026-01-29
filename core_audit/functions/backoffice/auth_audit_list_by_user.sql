@@ -1,4 +1,10 @@
--- Get auth audit logs by user
+-- ================================================================
+-- AUTH_AUDIT_LIST_BY_USER: Kullanıcıya göre kimlik denetim loglarını getirir
+-- Bu fonksiyon, belirli bir kullanıcıya ait kimlik denetim loglarını JSONB formatında döndürür
+-- ================================================================
+
+DROP FUNCTION IF EXISTS backoffice.auth_audit_list_by_user(BIGINT,INT);
+
 CREATE OR REPLACE FUNCTION backoffice.auth_audit_list_by_user(
     p_user_id BIGINT,
     p_limit INT DEFAULT 50
