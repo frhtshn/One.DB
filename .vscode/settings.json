@@ -6,7 +6,7 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "core",
+            "name": "core_local",
             "database": "core",
             "username": "postgres",
             "password": "12tamam90"
@@ -17,7 +17,7 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "tenant",
+            "name": "tenant_local",
             "database": "tenant_",
             "username": "postgres",
             "password": "12tamam90"
@@ -44,7 +44,7 @@
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "core_log",
+            "name": "beta_core_log",
             "database": "core_log",
             "username": "postgres",
             "password": "NucleoPostgres2026",
@@ -60,7 +60,7 @@
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "core_audit",
+            "name": "beta_core_audit",
             "database": "core_audit",
             "username": "postgres",
             "password": "NucleoPostgres2026",
@@ -87,6 +87,7 @@
             }
         }
     ],
+    "sqltools.autoOpenSessionFiles": false,
     "sqltools.highlightQuery": false,
     "[sql]": {
         "editor.formatOnSave": false,
