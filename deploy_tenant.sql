@@ -24,11 +24,11 @@ CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- AUTH TABLES
-\i tenant/tables/auth/players.sql
-\i tenant/tables/auth/player_categories.sql
-\i tenant/tables/auth/player_classification.sql
-\i tenant/tables/auth/player_credentials.sql
-\i tenant/tables/auth/player_groups.sql
+\i tenant/tables/player_auth/players.sql
+\i tenant/tables/player_auth/player_categories.sql
+\i tenant/tables/player_auth/player_classification.sql
+\i tenant/tables/player_auth/player_credentials.sql
+\i tenant/tables/player_auth/player_groups.sql
 
 -- FINANCE TABLES
 \i tenant/tables/finance/operation_types.sql
@@ -40,10 +40,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- GAME TABLES
 \i tenant/tables/game/game_settings.sql
+\i tenant/tables/game/game_limits.sql
 
 -- PROFILE TABLES
-\i tenant/tables/profile/player_identity.sql
-\i tenant/tables/profile/player_profile.sql
+\i tenant/tables/player_profile/player_identity.sql
+\i tenant/tables/player_profile/player_profile.sql
 
 -- TRANSACTION TABLES
 \i tenant/tables/transaction/transactions.sql
@@ -103,8 +104,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/content/popup_schedules.sql
 
 -- VIEWS
-\i tenant/views/finance/v_daily_base_rates.sql
-\i tenant/views/finance/v_cross_rates.sql
+\i tenant/views/v_daily_base_rates.sql
+\i tenant/views/v_cross_rates.sql
 
 -- FUNCTIONS
 -- \i tenant/functions/your_function.sql

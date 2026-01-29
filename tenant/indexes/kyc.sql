@@ -11,8 +11,8 @@ CREATE INDEX idx_kyc_cases_reviewer ON kyc.player_kyc_cases USING btree(assigned
 CREATE INDEX idx_kyc_cases_pending ON kyc.player_kyc_cases USING btree(current_status, created_at) WHERE current_status = 'IN_REVIEW';
 
 -- player_kyc_workflows
-CREATE INDEX idx_kyc_workflows_case ON kyc.player_kyc_workflows USING btree(case_id);
-CREATE INDEX idx_kyc_workflows_status ON kyc.player_kyc_workflows USING btree(status);
+CREATE INDEX idx_kyc_workflows_case ON kyc.player_kyc_workflows USING btree(kyc_case_id);
+CREATE INDEX idx_kyc_workflows_status ON kyc.player_kyc_workflows USING btree(current_status);
 
 -- player_documents
 CREATE INDEX idx_player_documents_player ON kyc.player_documents USING btree(player_id);
@@ -21,5 +21,5 @@ CREATE INDEX idx_player_documents_type ON kyc.player_documents USING btree(docum
 CREATE INDEX idx_player_documents_status ON kyc.player_documents USING btree(status);
 
 -- player_kyc_provider_logs
-CREATE INDEX idx_kyc_provider_logs_case ON kyc.player_kyc_provider_logs USING btree(case_id);
+CREATE INDEX idx_kyc_provider_logs_case ON kyc.player_kyc_provider_logs USING btree(kyc_case_id);
 CREATE INDEX idx_kyc_provider_logs_provider ON kyc.player_kyc_provider_logs USING btree(provider_code);

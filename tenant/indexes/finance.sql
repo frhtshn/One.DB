@@ -10,11 +10,10 @@ CREATE INDEX idx_currency_rates_lookup ON finance.currency_rates USING btree(pro
 
 -- payment_method_settings
 CREATE INDEX idx_payment_method_settings_method ON finance.payment_method_settings USING btree(payment_method_id);
-CREATE INDEX idx_payment_method_settings_active ON finance.payment_method_settings USING btree(is_active) WHERE is_active = true;
+CREATE INDEX idx_payment_method_settings_visible ON finance.payment_method_settings USING btree(is_visible) WHERE is_visible = true;
 
 -- payment_method_limits
 CREATE INDEX idx_payment_method_limits_method ON finance.payment_method_limits USING btree(payment_method_id);
-CREATE INDEX idx_payment_method_limits_currency ON finance.payment_method_limits USING btree(currency_code);
 
 -- payment_player_limits
 CREATE INDEX idx_payment_player_limits_player ON finance.payment_player_limits USING btree(player_id);

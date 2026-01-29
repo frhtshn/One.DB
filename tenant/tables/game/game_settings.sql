@@ -18,16 +18,13 @@ CREATE TABLE game.game_settings (
 
     -- Tenant'a özel görünüm ayarları
     display_order int,                            -- Sıralama
-    is_visible boolean NOT NULL DEFAULT true,     -- Görünür mü?
+    is_visible boolean NOT NULL DEFAULT true,     -- Lobide görünsün mü?
+    is_active boolean NOT NULL DEFAULT true,      -- Oynanabilir mi?
     is_featured boolean NOT NULL DEFAULT false,   -- Öne çıkarılsın mı?
 
     -- Tenant'a özel özelleştirmeler
     custom_name varchar(255),                     -- Özel oyun adı
     custom_thumbnail_url varchar(500),            -- Özel küçük resim URL
-
-    -- Tenant'a özel oyun limitleri
-    min_bet decimal(18,2),                        -- Minimum bahis tutarı
-    max_bet decimal(18,2),                        -- Maksimum bahis tutarı
 
     -- Ek metadata
     tags jsonb,                                   -- Etiketler: ["new", "popular", "jackpot"]
