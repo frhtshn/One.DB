@@ -3,32 +3,10 @@
         {
             "ssh": "Disabled",
             "previewLimit": 50,
-            "server": "localhost",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "core_local",
-            "database": "core",
-            "username": "postgres",
-            "password": "12tamam90"
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "tenant_local",
-            "database": "tenant_",
-            "username": "postgres",
-            "password": "12tamam90"
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "beta_core",
+            "name": "01 core",
             "database": "core",
             "username": "postgres",
             "password": "NucleoPostgres2026",
@@ -44,23 +22,7 @@
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "beta_core_log",
-            "database": "core_log",
-            "username": "postgres",
-            "password": "NucleoPostgres2026",
-            "pgOptions": {
-                "ssl": {
-                    "rejectUnauthorized": false
-                }
-            }
-        },
-        {
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "207.180.241.230",
-            "port": 5433,
-            "driver": "PostgreSQL",
-            "name": "beta_core_audit",
+            "name": "02 core audit",
             "database": "core_audit",
             "username": "postgres",
             "password": "NucleoPostgres2026",
@@ -76,8 +38,184 @@
             "server": "207.180.241.230",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "beta_tenant",
+            "name": "03 core log",
+            "database": "core_log",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "04 core report",
+            "database": "core_report",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "05 tenant",
             "database": "tenant",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "06 tenant affiliate",
+            "database": "tenant_affiliate",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "07 tenant audit",
+            "database": "tenant_audit",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "08 tenant log",
+            "database": "tenant_log",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "09 tenant report",
+            "database": "tenant_report",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "10 bonus",
+            "database": "bonus",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "11 finance",
+            "database": "finance",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "12 finance log",
+            "database": "finance_log",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "13 game",
+            "database": "game",
+            "username": "postgres",
+            "password": "NucleoPostgres2026",
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            }
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "207.180.241.230",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "14 game log",
+            "database": "game_log",
             "username": "postgres",
             "password": "NucleoPostgres2026",
             "pgOptions": {
