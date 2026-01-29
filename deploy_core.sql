@@ -74,6 +74,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/configuration/tenant_currencies.sql
 \i core/tables/core/configuration/tenant_languages.sql
 \i core/tables/core/configuration/tenant_jurisdictions.sql
+\i core/tables/core/configuration/tenant_data_policies.sql
 
 -- Integration (Oyun, Provider, Ödeme entegrasyonları)
 \i core/tables/core/integration/tenant_games.sql

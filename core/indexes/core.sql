@@ -70,3 +70,9 @@ CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_primary ON core.tenant_juris
 
 -- tenant_jurisdictions (active licenses)
 CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_active ON core.tenant_jurisdictions USING btree(status) WHERE status = 'ACTIVE';
+
+-- tenant_data_policies.tenant_id -> tenants.id
+CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_tenant_id ON core.tenant_data_policies USING btree(tenant_id);
+
+-- tenant_data_policies.data_category (Job performance)
+CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_category ON core.tenant_data_policies USING btree(data_category);

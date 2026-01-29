@@ -6,198 +6,118 @@ Bu doküman, **Nucleo platformu** içinde üretilen **log, audit ve business (hi
 hangi veritabanında tutulacağını, ne kadar süre saklanacağını ve retention süresi sonunda  
 nasıl temizleneceğini tanımlar.
 
+**ÖNEMLİ:** Retention politikaları **statik değildir**. Tenant bazında, jurisdiction kurallarına (KYC/AML) göre  
+**Dinamik Retention** uygulanır. Bu kurallar `core.tenant_data_policies` tablosunda saklanır.
+
 ---
 
 ## 1. Genel Özet Tablosu
 
-| DB / Kategori           | Ne Tutulur                                              | Partition       | Retention           | Süre Sonu Aksiyon |
-| ----------------------- | ------------------------------------------------------- | --------------- | ------------------- | ----------------- |
-| **core**                | Platform domain (tenant, company, currency)             | ❌              | Sınırsız            | ❌                |
-| **core_log**            | Core + gateway teknik log (ERROR / WARN / INFO)         | Daily           | 30–90 gün           | DROP partition    |
-| **core_audit**          | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl            | ❌                |
-| **core_report**         | Aggregated / BI data                                    | Opsiyonel       | İş ihtiyacına bağlı | Rebuild           |
-| **game**                | Game gateway integration state                          | Daily           | 14–30 gün           | DROP partition    |
-| **game_log**            | Tüm tenant’lara ait game gateway logları                | Daily           | 7–14 gün            | DROP partition    |
-| **finance**             | Finance gateway integration state                       | Daily           | 14–30 gün           | DROP partition    |
-| **finance_log**         | Tüm tenant’lara ait finance gateway logları             | Daily           | 14–30 gün           | DROP partition    |
-| **tenant**              | Business & history (transactions, game rounds, wallets) | Monthly / Daily | Sınırsız            | ❌                |
-| **tenant*log*<code>**   | Tenant teknik & operasyonel log                         | Daily           | 30–90 gün           | DROP partition    |
-| **tenant*audit*<code>** | Tenant karar & yetkili aksiyon                          | ❌ / Yearly     | 5–10 yıl            | ❌                |
-| **tenant_report**       | Tenant raporlama / BI                                   | Opsiyonel       | İş ihtiyacına bağlı | Rebuild           |
+| DB / Kategori    | Ne Tutulur                                              | Partition       | Varsayılan Süre | Olası Politikalar |
+| ---------------- | ------------------------------------------------------- | --------------- | --------------- | ----------------- |
+| **core**         | Platform domain (tenant, company, currency)             | ❌              | Sınırsız        | -                 |
+| **core_log**     | Core + gateway teknik log (ERROR / WARN / INFO)         | Daily           | 30–90 gün       | DROP partition    |
+| **core_audit**   | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl        | ❌ / ARCHIVE      |
+| **game_log**     | Tüm tenant’lara ait game gateway logları                | Daily           | 7–14 gün        | DROP partition    |
+| **finance_log**  | Tüm tenant’lara ait finance gateway logları             | Daily           | 14–30 gün       | DROP partition    |
+| **tenant**       | Business & history (transactions, game rounds, wallets) | Monthly / Daily | Sınırsız        | -                 |
+| **tenant_log**   | Tenant teknik & operasyonel log                         | Daily           | 30–90 gün       | DROP partition    |
+| **tenant_audit** | Tenant karar & yetkili aksiyon                          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
 
 ---
 
-## 2. Temel Prensipler
+## 2. Dinamik Retention Yapısı (`tenant_data_policies`)
 
-- **Log ≠ Audit ≠ Business**
-- Gateway logları **merkezi** ama **kısa ömürlüdür**
-- Tenant DB yalnızca **iş gerçeğini (business)** tutar
-- Retention = **fiziksel partition DROP**
-- Audit verileri **silinmez**
-- Partition yoksa retention uygulanamaz
+Sistemde her tenant'ın maruz kaldığı regülasyonlar (MGA, Curaçao, UKGC vb.) farklıdır.  
+Bu nedenle log ve audit verilerinin saklanma süresi **Configurable Job** mantığıyla yönetilir.
 
----
+### 2.1 Konfigürasyon Tablosu
 
-## 3. Retention ve DROP Stratejisi
+`core.tenant_data_policies` tablosu, temizlik job'ları için kaynak görevi görür.
 
-Partition kullanılan veritabanlarında retention süresi dolduğunda:
-
-- `DELETE` **kullanılmaz**
-- Doğrudan **partition DROP edilir**
-
-Bu yaklaşım:
-
-- IO spike oluşturmaz
-- VACUUM / bloat yaratmaz
-- Lock riskini ortadan kaldırır
-
-### Örnek
-
-```text
-DB          : game_log
-Partition   : daily
-Retention  : 14 gün
+```sql
+SELECT * FROM core.tenant_data_policies WHERE tenant_id = 123;
 ```
 
-## 4. DROP Zorunluluğu Olan DB’ler (Yüksek Hacim)
+**Örnek Kayıtlar:**
 
-Aşağıdaki veritabanlarında üretilen veri hacmi çok yüksektir.  
-Bu nedenle retention süresi dolduğunda **veri satır bazında silinmez**,  
-ilgili **partition doğrudan DROP edilir**.
+| Tenant ID | Veri Tipi   | Saklama (Gün) | Süre Sonu Aksiyon | Açıklama                |
+| --------- | ----------- | ------------- | ----------------- | ----------------------- |
+| 1 (Demo)  | SYSTEM_LOGS | 30            | `DROP_PARTITION`  | Demo site teknik loglar |
+| 1 (Demo)  | AUDIT_LOGS  | 365           | `ARCHIVE_COLD`    | Demo site audit         |
+| 2 (MGA)   | SYSTEM_LOGS | 90            | `DROP_PARTITION`  | Production loglar       |
+| 2 (MGA)   | KYC_DATA    | 1825 (5 yıl)  | `ANONYMIZE`       | GDPR/KYC uyumluluğu     |
+| 2 (MGA)   | AUDIT_LOGS  | 3650 (10 yıl) | `ARCHIVE_COLD`    | Finansal denetim        |
 
-### Zorunlu DROP Gerektiren DB’ler
+### 2.2 Aksiyon Türleri
 
-| DB                  | Sebep                                                     |
-| ------------------- | --------------------------------------------------------- |
-| `game_log`          | Yüksek hacimli event flood (game launch, callback, retry) |
-| `finance_log`       | Yoğun callback ve provider response trafiği               |
-| `core_log`          | Platform genelinde üretilen teknik loglar                 |
-| `tenant_log_<code>` | Tenant bazlı operasyonel ve teknik hatalar                |
-
-> Bu DB’lerde **retention = fiziksel silme** anlamına gelir.
-
----
-
-## 5. DROP Opsiyonel / Uzun Süreli Tutulan DB’ler
-
-Aşağıdaki veritabanları **yüksek hacimli log DB’leri değildir**.  
-Retention süresi, **iş ihtiyacı veya regülasyon gereksinimine göre** belirlenir.
-
-### Opsiyonel DROP veya Uzun Süreli Saklama
-
-| DB                       | Not                                              |
-| ------------------------ | ------------------------------------------------ |
-| `gateway integration db` | Dispute veya provider incelemesi ihtiyacına göre |
-| `core_audit`             | Regülasyon ve platform governance                |
-| `tenant_audit_<code>`    | Regülasyon, güvenlik ve izlenebilirlik           |
-
-> Audit verileri genellikle **silinmez** veya **çok uzun süre** tutulur.
+| Aksiyon          | Açıklama                                                   | Kullanım Yeri                         |
+| ---------------- | ---------------------------------------------------------- | ------------------------------------- |
+| `DROP_PARTITION` | Veriyi fiziksel olarak ve hızla siler. Geri dönüşü yoktur. | Teknik Loglar (Log DBs)               |
+| `DELETE_ROWS`    | Satır bazlı silme yapar (Vacuum maliyeti yüksektir).       | Partition olmayan tablolar            |
+| `ARCHIVE_COLD`   | Veriyi S3/Blob storage'a taşır ve DB'den siler.            | Transaction/Audit History             |
+| `ANONYMIZE`      | Veriyi silmez ama PII (Kişisel Veri) alanlarını maskeler.  | KYC/User Data (Right to be forgotten) |
 
 ---
 
-## 6. Retention Süresi Nasıl Uygulanır?
+## 3. Partition ve DROP Stratejisi
 
-Retention, **partition seviyesinde** uygulanır.
+Partition kullanılan veritabanlarında (`*_log` DB'leri), retention süresi dolduğunda:
 
-### Örnek Senaryo – `game_log`
+- `DELETE` komutu yerine **`DROP TABLE partition_name`** kullanılır.
+- Bu işlem IO spike yaratmaz ve anında yer açar.
 
-- Partition tipi: **Daily**
-- Retention süresi: **14 gün**
-- Bugünün tarihi: **2026-02-10**
+### 3.1 Job Akışı
 
-#### Saklanacak partition’lar
+Gece çalışan maintenance job şu mantığı izler:
 
-## 7. Archive Gerekir mi?
-
-Retention stratejisinde **archive**, log ve audit verileri için **farklı ele alınmalıdır**.
-
-### 7.1 Log Verileri İçin
-
-- ❌ Archive **gerekmez**
-- Log verileri **operasyonel pencere** içindir
-- Incident, debugging ve kısa vadeli analiz amaçlı tutulur
-- Retention süresi dolduğunda **tamamen silinir**
-
-> Log verileri için arşivleme yapmak,  
-> hem maliyet hem de operasyonel karmaşa yaratır.
-
----
-
-### 7.2 Audit Verileri İçin
-
-- 🟡 Archive **opsiyoneldir**
-- Regülasyon veya hukuki gereksinimler varsa değerlendirilir
-- Uzun vadeli saklama için uygun yaklaşımlar:
-    - Cold storage (örn. S3, object storage)
-    - Yedekleme sistemleri
-    - Harici arşiv servisleri
-
-> Audit verileri için **DB içinde archive table** oluşturulması **önerilmez**.
+```mermaid
+graph TD
+    A[Cron Job Başlar] --> B{Tenant ID Loop}
+    B --> C[core.tenant_data_policies Oku]
+    C --> D{Veri Tipi: SYSTEM_LOGS?}
+    D -- Evet --> E[Partition Tarihine Bak]
+    E --> F{Tarih < (Bugün - Policy.retention_days)?}
+    F -- Evet --> G[DROP PARTITION]
+    F -- Hayır --> H[Skip]
+    D -- Hayır (Audit/KYC) --> I{Data Type: AUDIT?}
+    I --> J{Tarih < Retention?}
+    J -- Evet --> K[ARCHIVE and DELETE]
+```
 
 ---
 
-## 8. Operasyonel Sorumluluk
+## 4. Archive ve Cold Storage
 
-Retention ve partition DROP işlemleri **uygulama kodunun sorumluluğu değildir**.
+Retention stratejisinde **archive**, log ve audit verileri için farklı ele alınmalıdır.
 
-### 8.1 Sorumlu Bileşenler
+### 4.1 Log Verileri (Teknik Borç)
 
-- ✅ DBA
-- ✅ Altyapı / DevOps ekipleri
+- ❌ Archive **gerekmez**.
+- Loglar operasyonel pencere (window) içindir.
+- Süre dolunca silinir.
 
-Uygulama sadece:
+### 4.2 Audit ve Finansal Veriler (Yasal Zorunluluk)
 
-- Log üretir
-- Partition yapısını kullanır
-
----
-
-### 8.2 Uygulanabilecek Yöntemler
-
-Partition lifecycle yönetimi aşağıdaki yöntemlerle otomatikleştirilmelidir:
-
-- Daily cron job
-- CI/CD pipeline maintenance adımı
-- Flyway / Liquibase scheduled task
-- Altyapı otomasyon script’leri
-
-> DROP işlemleri **manuel** yapılmamalıdır.
+- 🟡 Archive **önemlidir**.
+- Veritabanında (hot storage) tutmak pahalıdır.
+- Süresi dolan (örn: 2 yıldan eski) veriler **JSON/Parquet** formatında S3'e taşınır.
+- Veritabanından silinir (`core.tenant_data_policies.action_type = 'ARCHIVE_COLD'`).
 
 ---
 
-## 9. Güvenlik Önlemleri
+## 5. Operasyonel Sorumluluk
 
-Retention ve DROP süreçleri **yüksek riskli operasyonlardır**.  
-Bu nedenle aşağıdaki güvenlik önlemleri zorunludur.
+Retention ve DROP işlemleri **otomasyonun sorumluluğundadır**.
 
-### 9.1 Minimum Retention
+1.  **Config**: Ürün/Compliance ekibi tenant açılırken politikaları girer.
+2.  **Execution**: DevOps/DBA tarafından kurulan cron job'lar bu politikaları uygular.
+3.  **Monitoring**: Silinen veya taşınan veriler `ops_log` tablosuna yazılır.
 
-- Minimum retention süresi tanımlanmalıdır
-- Örnek:
-    - ERROR log’lar → **en az 7 gün**
-    - WARN / INFO → iş ihtiyacına göre
+> **Güvenlik Notu**: Aktif (`CURRENT`) partition asla silinmemelidir. Job'lar her zaman `partition_date < today` kontrolü yapmalıdır.
 
 ---
 
-### 9.2 Incident Durumu
+## 6. Altın Kural
 
-- Aktif bir incident varsa:
-    - DROP işlemleri **geçici olarak durdurulabilir**
-    - İlgili partition’lar korunur
-
----
-
-### 9.3 Doğrulama ve Kontrol
-
-- Silinecek partition listesi önceden **validate edilir**
-- Aktif (current) partition **asla DROP edilmez**
-- Tarih aralıkları otomatik kontrol edilir
-
-> Yanlış partition DROP edilmesi **geri dönüşü olmayan veri kaybı**na yol açar.
-
----
-
-## 10. Altın Kural
-
-> **“Log retention süresi dolduysa, partition silinir;  
-> silinmeyen log teknik borçtur.”**
+> **"Loglar çabuk silinir, Auditler arşivlenir, KYC verileri anonimleşir."**

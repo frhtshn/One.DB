@@ -160,3 +160,19 @@ DO $$ BEGIN
             FOREIGN KEY (jurisdiction_id) REFERENCES catalog.jurisdictions(id);
     END IF;
 END $$;
+
+-- tenant_data_policies -> tenants
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_data_policies_tenant') THEN
+        ALTER TABLE core.tenant_data_policies ADD CONSTRAINT fk_tenant_data_policies_tenant
+            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    END IF;
+END $$;
+
+-- tenant_data_policies -> UNIQUE(tenant_id, data_category)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_data_policies_category') THEN
+        ALTER TABLE core.tenant_data_policies ADD CONSTRAINT uq_tenant_data_policies_category
+            UNIQUE (tenant_id, data_category);
+    END IF;
+END $$;
