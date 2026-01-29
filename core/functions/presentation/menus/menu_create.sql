@@ -22,7 +22,7 @@ DECLARE
 BEGIN
     -- Kod benzersizliği kontrolü
     IF EXISTS (
-        SELECT 1 FROM presentation.menus WHERE code = UPPER(TRIM(p_code)) AND menu_group_id = p_menu_group_id AND is_active
+        SELECT 1 FROM presentation.menus WHERE code = LOWER(TRIM(p_code)) AND menu_group_id = p_menu_group_id AND is_active
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.menu.code-exists';
     END IF;
@@ -39,7 +39,7 @@ BEGIN
         updated_at
     ) VALUES (
         p_menu_group_id,
-        UPPER(TRIM(p_code)),
+        LOWER(TRIM(p_code)),
         p_title_localization_key,
         p_order_index,
         NULLIF(TRIM(p_icon), ''),

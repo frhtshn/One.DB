@@ -19,7 +19,7 @@ DECLARE
 BEGIN
     -- Kod benzersizliği kontrolü (aynı page_id altında)
     IF EXISTS (
-        SELECT 1 FROM presentation.tabs WHERE code = UPPER(TRIM(p_code)) AND page_id = p_page_id AND is_active
+        SELECT 1 FROM presentation.tabs WHERE code = LOWER(TRIM(p_code)) AND page_id = p_page_id AND is_active
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.tab.code-exists';
     END IF;
@@ -35,7 +35,7 @@ BEGIN
         updated_at
     ) VALUES (
         p_page_id,
-        UPPER(TRIM(p_code)),
+        LOWER(TRIM(p_code)),
         p_title_localization_key,
         p_order_index,
         NULLIF(TRIM(p_required_permission), ''),

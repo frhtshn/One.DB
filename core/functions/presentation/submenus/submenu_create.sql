@@ -19,7 +19,7 @@ DECLARE
 BEGIN
     -- Kod benzersizliği kontrolü (aynı menu_id altında)
     IF EXISTS (
-        SELECT 1 FROM presentation.submenus WHERE code = UPPER(TRIM(p_code)) AND menu_id = p_menu_id AND is_active
+        SELECT 1 FROM presentation.submenus WHERE code = LOWER(TRIM(p_code)) AND menu_id = p_menu_id AND is_active
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.submenu.code-exists';
     END IF;
@@ -36,7 +36,7 @@ BEGIN
         updated_at
     ) VALUES (
         p_menu_id,
-        UPPER(TRIM(p_code)),
+        LOWER(TRIM(p_code)),
         p_title_localization_key,
         NULLIF(TRIM(p_route), ''),
         p_order_index,

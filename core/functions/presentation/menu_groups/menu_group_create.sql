@@ -19,7 +19,7 @@ DECLARE
     v_new_id BIGINT;
 BEGIN
     -- Code benzersizlik kontrolü
-    IF EXISTS (SELECT 1 FROM presentation.menu_groups WHERE code = UPPER(TRIM(p_code))) THEN
+    IF EXISTS (SELECT 1 FROM presentation.menu_groups WHERE code = LOWER(TRIM(p_code))) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.menu-group.code-exists';
     END IF;
 
@@ -34,7 +34,7 @@ BEGIN
         updated_at
     )
     VALUES (
-        UPPER(TRIM(p_code)),
+        LOWER(TRIM(p_code)),
         TRIM(p_title),
         p_order,
         NULLIF(TRIM(p_permission), ''),
