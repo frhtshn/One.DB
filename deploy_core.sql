@@ -220,6 +220,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/session/session_revoke.sql
 \i core/functions/security/session/session_revoke_all.sql
 \i core/functions/security/session/session_cleanup_expired.sql
+\i core/functions/security/session/session_belongs_to_user.sql
+\i core/functions/security/session/session_update_activity.sql
 
 -- User Functions
 \i core/functions/security/users/user_check_email_exists.sql

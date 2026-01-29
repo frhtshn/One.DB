@@ -101,11 +101,13 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`role_permission_list`**: Bir role atanmış izinleri listeler.
 - **`role_permission_remove`**: Bir rolden izni kaldırır. Kaldırma durumunu döner.
 - **`role_update`**: Rol detaylarını günceller. Sistem rolleri güncellenemez.
+- **`session_belongs_to_user`**: Bir oturumun belirli bir kullanıcıya ait ve aktif olup olmadığını kontrol eder. Boolean döner.
 - **`session_cleanup_expired`**: Süresi dolmuş ve eski iptal edilmiş oturumları toplu olarak güvenli şekilde temizler.
 - **`session_list`**: Bir kullanıcı için aktif oturumları listeler.
 - **`session_revoke`**: Belirli bir oturumu iptal eder.
 - **`session_revoke_all`**: Bir kullanıcının tüm oturumlarını iptal eder (isteğe bağlı mevcut olan hariç).
 - **`session_save`**: Yeni bir oturumu kaydeder veya mevcut olanı günceller.
+- **`session_update_activity`**: Refresh token kullanımında, oturumun son aktivite zamanını geçerli zamana günceller.
 - **`user_authenticate`**: Kullanıcıyı e-posta ile doğrular. Rol tipine göre (Platform vs Şirket/Tenant) yapılandırılmış kullanıcı, rol ve izin verisi döner.
 - **`user_check_email_exists`**: E-posta var mı kontrol eder. Güncelleme senaryoları için excludeUserId kullanılabilir.
 - **`user_check_username_exists`**: Kullanıcı adı şirket içinde var mı kontrol eder. Güncelleme için excludeUserId kullanılabilir.
