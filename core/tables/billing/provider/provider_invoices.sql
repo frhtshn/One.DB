@@ -63,10 +63,9 @@ CREATE TABLE billing.provider_invoices (
     approved_at timestamp without time zone,               -- Onay zamanı
 
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
-    updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
+    updated_at timestamp without time zone NOT NULL DEFAULT now() -- Son güncelleme zamanı
 
-    -- Provider + invoice_number benzersiz
-    UNIQUE (provider_id, invoice_number)
+
 );
 
 COMMENT ON TABLE billing.provider_invoices IS 'Invoices received from providers for game, payment, and other services with payment tracking and reconciliation status';

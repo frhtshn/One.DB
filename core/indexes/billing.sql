@@ -23,6 +23,7 @@ CREATE INDEX idx_tenant_commission_plans_tenant ON billing.tenant_commission_pla
 CREATE INDEX idx_tenant_commission_plans_provider ON billing.tenant_commission_plans USING btree(provider_id);
 CREATE INDEX idx_tenant_commission_plans_active ON billing.tenant_commission_plans USING btree(tenant_id, provider_id, is_active) WHERE is_active = true;
 CREATE INDEX idx_tenant_commission_plans_lookup ON billing.tenant_commission_plans USING btree(tenant_id, provider_id, product_code, commission_type, is_active) WHERE is_active = true;
+CREATE UNIQUE INDEX idx_tenant_commission_plans_unique ON billing.tenant_commission_plans USING btree(tenant_id, provider_id, product_code, commission_type, valid_from);
 
 -- tenant_commission_plan_tiers
 CREATE INDEX idx_tenant_commission_plan_tiers_plan ON billing.tenant_commission_plan_tiers USING btree(tenant_commission_plan_id);
@@ -33,6 +34,7 @@ CREATE INDEX idx_tenant_commission_aggregates_tenant ON billing.tenant_commissio
 CREATE INDEX idx_tenant_commission_aggregates_provider ON billing.tenant_commission_aggregates USING btree(provider_id);
 CREATE INDEX idx_tenant_commission_aggregates_period ON billing.tenant_commission_aggregates USING btree(period_key);
 CREATE INDEX idx_tenant_commission_aggregates_lookup ON billing.tenant_commission_aggregates USING btree(tenant_id, provider_id, product_code, period_key);
+CREATE UNIQUE INDEX idx_tenant_commission_aggregates_unique ON billing.tenant_commission_aggregates USING btree(tenant_id, provider_id, product_code, period_key, currency);
 
 -- tenant_commissions
 CREATE INDEX idx_tenant_commissions_tenant ON billing.tenant_commissions USING btree(tenant_id);
@@ -41,6 +43,7 @@ CREATE INDEX idx_tenant_commissions_period ON billing.tenant_commissions USING b
 CREATE INDEX idx_tenant_commissions_status ON billing.tenant_commissions USING btree(status);
 CREATE INDEX idx_tenant_commissions_invoice ON billing.tenant_commissions USING btree(invoice_id) WHERE invoice_id IS NOT NULL;
 CREATE INDEX idx_tenant_commissions_lookup ON billing.tenant_commissions USING btree(tenant_id, provider_id, period_key);
+CREATE UNIQUE INDEX idx_tenant_commissions_unique ON billing.tenant_commissions USING btree(tenant_id, provider_id, product_code, commission_type, period_key, tier_order, currency);
 
 -- tenant_invoices
 CREATE INDEX idx_tenant_invoices_tenant ON billing.tenant_invoices USING btree(tenant_id);
@@ -73,10 +76,12 @@ CREATE INDEX idx_provider_commission_tiers_order ON billing.provider_commission_
 CREATE INDEX idx_provider_settlements_provider ON billing.provider_settlements USING btree(provider_id);
 CREATE INDEX idx_provider_settlements_period ON billing.provider_settlements USING btree(period_key);
 CREATE INDEX idx_provider_settlements_status ON billing.provider_settlements USING btree(status);
+CREATE UNIQUE INDEX idx_provider_settlements_unique ON billing.provider_settlements USING btree(provider_id, period_key);
 
 -- provider_settlement_tenants
 CREATE INDEX idx_provider_settlement_tenants_settlement ON billing.provider_settlement_tenants USING btree(provider_settlement_id);
 CREATE INDEX idx_provider_settlement_tenants_tenant ON billing.provider_settlement_tenants USING btree(tenant_id);
+CREATE UNIQUE INDEX idx_provider_settlement_tenants_unique ON billing.provider_settlement_tenants USING btree(provider_settlement_id, tenant_id);
 
 -- provider_invoices
 CREATE INDEX idx_provider_invoices_provider ON billing.provider_invoices USING btree(provider_id);
@@ -84,6 +89,7 @@ CREATE INDEX idx_provider_invoices_status ON billing.provider_invoices USING btr
 CREATE INDEX idx_provider_invoices_date ON billing.provider_invoices USING btree(invoice_date);
 CREATE INDEX idx_provider_invoices_due ON billing.provider_invoices USING btree(due_date);
 CREATE INDEX idx_provider_invoices_settlement ON billing.provider_invoices USING btree(settlement_id) WHERE settlement_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_provider_invoices_unique ON billing.provider_invoices USING btree(provider_id, invoice_number);
 
 -- provider_invoice_items
 CREATE INDEX idx_provider_invoice_items_invoice ON billing.provider_invoice_items USING btree(provider_invoice_id);

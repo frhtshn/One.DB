@@ -35,9 +35,9 @@ CREATE TABLE presentation.tenant_layouts (
     is_active boolean NOT NULL DEFAULT true,
 
     created_at timestamp NOT NULL DEFAULT now(),
-    updated_at timestamp NOT NULL DEFAULT now(),
+    updated_at timestamp NOT NULL DEFAULT now()
 
-    UNIQUE(tenant_id, page_id, layout_name)
+
 );
 
 COMMENT ON TABLE presentation.tenant_layouts IS 'Defines widget placements for tenant pages or global layouts';

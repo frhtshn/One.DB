@@ -60,3 +60,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_layouts_page ON presentation.tenant
 CREATE INDEX IF NOT EXISTS idx_tenant_navigation_tenant ON presentation.tenant_navigation USING btree(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_tenant_navigation_parent ON presentation.tenant_navigation USING btree(parent_id);
 CREATE INDEX IF NOT EXISTS idx_tenant_navigation_ordering ON presentation.tenant_navigation USING btree(tenant_id, menu_location, display_order);
+
+-- tenant_themes (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_themes_tenant_theme ON presentation.tenant_themes USING btree(tenant_id, theme_id);
+
+-- tenant_layouts (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_layouts_unique_layout ON presentation.tenant_layouts USING btree(tenant_id, page_id, layout_name);

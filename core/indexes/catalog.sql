@@ -45,6 +45,7 @@ CREATE INDEX IF NOT EXISTS idx_kyc_policies_active ON catalog.kyc_policies USING
 
 -- kyc_document_requirements
 CREATE INDEX IF NOT EXISTS idx_kyc_doc_req_jurisdiction ON catalog.kyc_document_requirements USING btree(jurisdiction_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_kyc_doc_req_lookup ON catalog.kyc_document_requirements USING btree(jurisdiction_id, document_type);
 
 -- responsible_gaming_policies
 CREATE INDEX IF NOT EXISTS idx_rg_policies_jurisdiction ON catalog.responsible_gaming_policies USING btree(jurisdiction_id);

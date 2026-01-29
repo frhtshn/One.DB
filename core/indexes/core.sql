@@ -2,6 +2,12 @@
 -- FK indexes for optimal JOIN performance
 -- Using IF NOT EXISTS for idempotent deploys
 
+-- companies.company_code (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_companies_code ON core.companies USING btree(company_code);
+
+-- tenants.tenant_code (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenants_code ON core.tenants USING btree(tenant_code);
+
 -- tenants.company_id -> companies.id
 CREATE INDEX IF NOT EXISTS idx_tenants_company_id ON core.tenants USING btree(company_id);
 
@@ -56,6 +62,9 @@ CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_tenant_id ON core.tenant_p
 -- tenant_provider_limits.provider_id -> providers.id
 CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_provider_id ON core.tenant_provider_limits USING btree(provider_id);
 
+-- tenant_provider_limits.payment_method_id -> payment_methods.id
+CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_payment_method_id ON core.tenant_provider_limits USING btree(payment_method_id);
+
 -- tenant_provider_limits (unique lookup)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_provider_limits_lookup ON core.tenant_provider_limits USING btree(tenant_id, provider_id, payment_method_id);
 
@@ -70,6 +79,9 @@ CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_primary ON core.tenant_juris
 
 -- tenant_jurisdictions (active licenses)
 CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_active ON core.tenant_jurisdictions USING btree(status) WHERE status = 'ACTIVE';
+
+-- tenant_jurisdictions (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_jurisdictions_tenant_jurisdiction ON core.tenant_jurisdictions USING btree(tenant_id, jurisdiction_id);
 
 -- tenant_data_policies.tenant_id -> tenants.id
 CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_tenant_id ON core.tenant_data_policies USING btree(tenant_id);

@@ -24,9 +24,9 @@ CREATE TABLE presentation.tenant_themes (
     is_active boolean NOT NULL DEFAULT true,      -- Aktif tema mı? (Sadece 1 tane aktif olabilir)
 
     created_at timestamp NOT NULL DEFAULT now(),
-    updated_at timestamp NOT NULL DEFAULT now(),
+    updated_at timestamp NOT NULL DEFAULT now()
 
-    UNIQUE(tenant_id, theme_id)
+
 );
 
 COMMENT ON TABLE presentation.tenant_themes IS 'Tenant-specific theme configuration and customizations';

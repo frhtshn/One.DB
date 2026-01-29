@@ -46,10 +46,9 @@ CREATE TABLE billing.tenant_commission_aggregates (
     calculation_version int NOT NULL DEFAULT 1,            -- Hesaplama versiyonu (tutarsızlık kontrolü)
 
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
-    updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
+    updated_at timestamp without time zone NOT NULL DEFAULT now() -- Son güncelleme zamanı
 
-    -- Upsert için unique constraint
-    UNIQUE (tenant_id, provider_id, product_code, period_key, currency)
+
 );
 
 COMMENT ON TABLE billing.tenant_commission_aggregates IS 'Cumulative GGR/NGR totals within billing periods updated by workers for tiered commission calculations';

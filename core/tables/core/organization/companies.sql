@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS core.companies CASCADE;
 
 CREATE TABLE core.companies (
     id bigserial PRIMARY KEY,                              -- Benzersiz şirket kimliği
-    company_code varchar(50) NOT NULL UNIQUE,              -- Şirket sistem kodu: ACME, GLOBEX
+    company_code varchar(50) NOT NULL,                     -- Şirket sistem kodu: ACME, GLOBEX
     company_name varchar(255) NOT NULL,                    -- Şirket yasal unvanı
     status smallint NOT NULL DEFAULT 1,                    -- Durum: 0=Pasif, 1=Aktif, 2=Askıda
     country_code character(2),                             -- Merkezin bulunduğu ülke (FK: catalog.countries)

@@ -15,9 +15,9 @@ CREATE TABLE core.tenant_settings (
     setting_value jsonb NOT NULL,                          -- Ayar değeri (JSON formatında)
     description varchar(255),                              -- Ayar açıklaması
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
-    updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
+    updated_at timestamp without time zone NOT NULL DEFAULT now() -- Son güncelleme zamanı
 
-    UNIQUE(tenant_id, setting_key)                         -- Tenant bazında key unique olmalı
+
 );
 
 COMMENT ON TABLE core.tenant_settings IS 'Tenant-specific configuration settings stored as key-value pairs such as withdrawal limits and KYC requirements';

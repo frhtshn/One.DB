@@ -56,10 +56,9 @@ CREATE TABLE billing.tenant_commissions (
     calculation_version int NOT NULL DEFAULT 1,            -- Hesaplama versiyonu
 
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
-    updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
+    updated_at timestamp without time zone NOT NULL DEFAULT now() -- Son güncelleme zamanı
 
-    -- Upsert için unique constraint
-    UNIQUE (tenant_id, provider_id, product_code, commission_type, period_key, tier_order, currency)
+
 );
 
 COMMENT ON TABLE billing.tenant_commissions IS 'Calculated tenant commissions with tier-based breakdowns updated by workers for real-time or periodic billing';

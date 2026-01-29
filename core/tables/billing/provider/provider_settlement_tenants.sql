@@ -33,10 +33,9 @@ CREATE TABLE billing.provider_settlement_tenants (
     -- Doğrulama
     verified boolean NOT NULL DEFAULT false,               -- Doğrulandı mı?
 
-    created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
+    created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 
-    -- Settlement + Tenant benzersiz
-    UNIQUE (provider_settlement_id, tenant_id)
+
 );
 
 COMMENT ON TABLE billing.provider_settlement_tenants IS 'Per-tenant breakdown within provider settlements for detailed reconciliation and variance analysis';

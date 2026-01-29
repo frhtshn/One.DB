@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS core.tenants CASCADE;
 CREATE TABLE core.tenants (
     id bigserial PRIMARY KEY,                              -- Benzersiz tenant kimliği
     company_id bigint NOT NULL,                            -- Bağlı şirket ID (FK: core.companies)
-    tenant_code varchar(50) NOT NULL UNIQUE,               -- Tenant sistem kodu: acme_tr, acme_eu
+    tenant_code varchar(50) NOT NULL,                      -- Tenant sistem kodu: acme_tr, acme_eu
     tenant_name varchar(255) NOT NULL,                     -- Tenant görünen adı
     environment varchar(20) NOT NULL DEFAULT 'prod',       -- Ortam: prod, staging, dev, shadow
     status smallint NOT NULL DEFAULT 1,                    -- Durum: 0=Pasif, 1=Aktif, 2=Askıda

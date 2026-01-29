@@ -44,9 +44,9 @@ CREATE TABLE catalog.kyc_document_requirements (
     display_order int DEFAULT 0,
 
     created_at timestamp NOT NULL DEFAULT now(),
-    updated_at timestamp NOT NULL DEFAULT now(),
+    updated_at timestamp NOT NULL DEFAULT now()
 
-    UNIQUE(jurisdiction_id, document_type)
+
 );
 
 COMMENT ON TABLE catalog.kyc_document_requirements IS 'Required KYC documents per jurisdiction with validation rules';

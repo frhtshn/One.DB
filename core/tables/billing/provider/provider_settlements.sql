@@ -64,10 +64,9 @@ CREATE TABLE billing.provider_settlements (
     reconciled_at timestamp without time zone,             -- Mutabakat zamanı
 
     created_at timestamp without time zone NOT NULL DEFAULT now(), -- Kayıt oluşturma zamanı
-    updated_at timestamp without time zone NOT NULL DEFAULT now(), -- Son güncelleme zamanı
+    updated_at timestamp without time zone NOT NULL DEFAULT now() -- Son güncelleme zamanı
 
-    -- Provider + period benzersiz
-    UNIQUE (provider_id, period_key)
+
 );
 
 COMMENT ON TABLE billing.provider_settlements IS 'Provider settlement and reconciliation records comparing internal calculations with provider statements for dispute resolution';

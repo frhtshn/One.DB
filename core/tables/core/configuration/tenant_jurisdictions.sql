@@ -30,10 +30,9 @@ CREATE TABLE core.tenant_jurisdictions (
     custom_settings jsonb,                        -- Tenant-specific jurisdiction ayarları
 
     created_at timestamp NOT NULL DEFAULT now(),
-    updated_at timestamp NOT NULL DEFAULT now(),
+    updated_at timestamp NOT NULL DEFAULT now()
 
-    -- Aynı tenant-jurisdiction çifti bir kez olabilir
-    UNIQUE(tenant_id, jurisdiction_id)
+
 );
 
 COMMENT ON TABLE core.tenant_jurisdictions IS 'Links tenants to their operating jurisdictions/licenses. Enables multi-license operations and jurisdiction-specific configurations.';
