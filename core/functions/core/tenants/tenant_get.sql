@@ -41,7 +41,12 @@ BEGIN
     INTO v_result
     FROM core.tenants t
     JOIN core.companies c ON t.company_id = c.id
-    WHERE t.id = p_id AND t.status <> 0; -- Assuming 0 is deleted
+    WHERE t.id = p_id;
+
+    -- Tenant bulunamadıysa exception fırlat
+    IF v_result IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    END IF;
 
     RETURN v_result;
 END;

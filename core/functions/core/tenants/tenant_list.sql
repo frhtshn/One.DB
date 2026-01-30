@@ -5,12 +5,14 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS core.tenant_list(INTEGER, INTEGER, BIGINT, TEXT);
+DROP FUNCTION IF EXISTS core.tenant_list(INTEGER, INTEGER, BIGINT, TEXT, INTEGER);
 
 CREATE OR REPLACE FUNCTION core.tenant_list(
     p_page INTEGER DEFAULT 1,
     p_page_size INTEGER DEFAULT 20,
     p_company_id BIGINT DEFAULT NULL,
-    p_search TEXT DEFAULT NULL
+    p_search TEXT DEFAULT NULL,
+    p_status INTEGER DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -27,8 +29,8 @@ BEGIN
     SELECT COUNT(*) INTO v_total_count
     FROM core.tenants t
     JOIN core.companies c ON t.company_id = c.id
-    WHERE t.status <> 0
-    AND (p_company_id IS NULL OR t.company_id = p_company_id)
+    WHERE (p_company_id IS NULL OR t.company_id = p_company_id)
+    AND (p_status IS NULL OR t.status = p_status)
     AND (p_search IS NULL OR
          t.tenant_name ILIKE '%' || p_search || '%' OR
          t.tenant_code ILIKE '%' || p_search || '%');
@@ -62,8 +64,8 @@ BEGIN
     INTO v_items
     FROM (
         SELECT * FROM core.tenants t
-        WHERE t.status <> 0
-        AND (p_company_id IS NULL OR t.company_id = p_company_id)
+        WHERE (p_company_id IS NULL OR t.company_id = p_company_id)
+        AND (p_status IS NULL OR t.status = p_status)
         AND (p_search IS NULL OR
              t.tenant_name ILIKE '%' || p_search || '%' OR
              t.tenant_code ILIKE '%' || p_search || '%')
@@ -81,4 +83,5 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_list(INTEGER, INTEGER, BIGINT, TEXT) IS 'Lists tenants with pagination, filter, and configuration details.';
+COMMENT ON FUNCTION core.tenant_list(INTEGER, INTEGER, BIGINT, TEXT, INTEGER) IS 'Lists tenants with pagination, filter (company, search, status), and configuration details.';
+
