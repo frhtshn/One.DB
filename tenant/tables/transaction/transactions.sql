@@ -18,14 +18,23 @@ CREATE TABLE transaction.transactions (
     amount numeric(18,8) NOT NULL,                -- İşlem tutarı
     balance_after numeric(18,8) NOT NULL,         -- İşlem sonrası bakiye
 
+    -- İlişki ve Takip
     related_transaction_id bigint,                -- İlişkili işlem (rollback, bonus için)
     idempotency_key varchar(100),                 -- Tekrar eden işlemleri önlemek için
+    external_reference_id varchar(100),           -- Dış sistem referans ID (Provider ID vb.)
 
+    -- Kaynak ve Detay
     source varchar(30) NOT NULL,                  -- Kaynak: GAME, PAYMENT, BONUS, ADMIN, MIGRATION
-
+    description varchar(255),                     -- İnsan tarafından okunabilir açıklama
     metadata jsonb,                               -- Ek bilgiler (oyun ID, provider vb.)
 
-    created_at timestamptz NOT NULL DEFAULT now() -- İşlem zamanı
+    -- Zamanlama
+    requested_at timestamptz,                     -- İşlemin talep edildiği zaman (ilk başlama)
+    processed_at timestamptz,                     -- İşlemin işlendiği zaman (gateway vs.)
+    confirmed_at timestamptz,                     -- İşlemin onaylandığı zaman (tamamlanma)
+
+    -- Kayıt Zamanı
+    created_at timestamptz NOT NULL DEFAULT now() -- DB kayıt zamanı
 );
 
 COMMENT ON TABLE transaction.transactions IS 'Append-only financial transaction ledger recording all money movements with full audit trail';
