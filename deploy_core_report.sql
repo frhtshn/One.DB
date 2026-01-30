@@ -31,6 +31,8 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA infra;
 
 -- PERFORMANCE TABLES
 \i core_report/tables/performance/provider_global_daily.sql
+\i core_report/tables/performance/payment_global_daily.sql
+\i core_report/tables/performance/tenant_traffic_hourly.sql
 
 -- CONSTRAINTS
 \i core_report/constraints/finance.sql

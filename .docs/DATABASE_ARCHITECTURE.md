@@ -310,6 +310,8 @@ Merkezi yönetim (NucleoAdmin) raporları.
     - `monthly_invoices`: Ay sonu tenant fatura ve komisyon hesaplamaları.
 - **`performance`**: Global metrikler.
     - `provider_global_daily`: Tüm tenantlar genelinde provider hacim analizi.
+    - `payment_global_daily`: Tüm tenantlar genelinde ödeme metodu başarı ve hacim analizi.
+    - `tenant_traffic_hourly`: Tenant bazlı saatlik trafik ve sistem sağlık monitörü.
 
 ---
 
