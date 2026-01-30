@@ -121,6 +121,14 @@ psql -h 207.180.241.230 -p 5433 -U postgres -d game -f deploy_game.sql
 psql -h 207.180.241.230 -p 5433 -U postgres -d game_log -f deploy_game_log.sql
 ```
 
+### 15. Master Deploy (Tüm DB'ler İçin)
+
+Eğer tüm veritabanları tek seferde deploy edilecekse `master_deploy.sql` kullanılabilir. Not: Bu script içinde hangi DB'leri bağlandığını ve credential'ları kontrol ediniz.
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d postgres -f master_deploy.sql
+```
+
 ---
 
 ## Tenant Template Example
