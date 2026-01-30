@@ -1,11 +1,17 @@
 -- Catalog Schema Indexes
 -- FK indexes for optimal JOIN performance
 
--- games.provider_id -> providers.id
+-- games indexes
 CREATE INDEX IF NOT EXISTS idx_games_provider_id ON catalog.games USING btree(provider_id);
-
--- games.game_code (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_games_provider_game_code ON catalog.games USING btree(provider_id, game_code);
+CREATE INDEX IF NOT EXISTS idx_games_game_type ON catalog.games USING btree(game_type);
+CREATE INDEX IF NOT EXISTS idx_games_is_active ON catalog.games USING btree(is_active);
+CREATE INDEX IF NOT EXISTS idx_games_categories ON catalog.games USING GIN(categories);
+CREATE INDEX IF NOT EXISTS idx_games_tags ON catalog.games USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_games_features ON catalog.games USING GIN(features);
+CREATE INDEX IF NOT EXISTS idx_games_popularity ON catalog.games USING btree(popularity_score DESC) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_games_release_date ON catalog.games USING btree(release_date DESC);
+CREATE INDEX IF NOT EXISTS idx_games_rtp ON catalog.games USING btree(rtp) WHERE rtp IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_games_has_jackpot ON catalog.games USING btree(has_jackpot) WHERE has_jackpot = true;
 
 -- providers.provider_type_id -> provider_types.id
 CREATE INDEX IF NOT EXISTS idx_providers_provider_type_id ON catalog.providers USING btree(provider_type_id);

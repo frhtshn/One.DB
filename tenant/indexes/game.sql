@@ -2,10 +2,30 @@
 -- Tenant Game Schema Indexes
 -- =============================================
 
--- game_settings
+-- game_settings - Temel indexler
 CREATE INDEX idx_game_settings_game ON game.game_settings USING btree(game_id);
 CREATE INDEX idx_game_settings_provider ON game.game_settings USING btree(provider_id);
-CREATE INDEX idx_game_settings_active ON game.game_settings USING btree(is_active) WHERE is_active = true;
+CREATE UNIQUE INDEX idx_game_settings_game_unique ON game.game_settings USING btree(game_id);
+
+-- game_settings - Görünürlük ve durum indexleri
+CREATE INDEX idx_game_settings_enabled ON game.game_settings USING btree(is_enabled) WHERE is_enabled = true;
+CREATE INDEX idx_game_settings_visible ON game.game_settings USING btree(is_visible) WHERE is_visible = true;
+CREATE INDEX idx_game_settings_featured ON game.game_settings USING btree(is_featured) WHERE is_featured = true;
+
+-- game_settings - Kategorilendirme (GIN indexler)
+CREATE INDEX idx_game_settings_categories ON game.game_settings USING GIN(categories);
+CREATE INDEX idx_game_settings_tags ON game.game_settings USING GIN(tags);
+CREATE INDEX idx_game_settings_features ON game.game_settings USING GIN(features);
+CREATE INDEX idx_game_settings_custom_categories ON game.game_settings USING GIN(custom_categories);
+CREATE INDEX idx_game_settings_custom_tags ON game.game_settings USING GIN(custom_tags);
+
+-- game_settings - Oyun tipi ve popülerlik
+CREATE INDEX idx_game_settings_game_type ON game.game_settings USING btree(game_type);
+CREATE INDEX idx_game_settings_popularity ON game.game_settings USING btree(popularity_score DESC) WHERE is_enabled = true;
+CREATE INDEX idx_game_settings_has_jackpot ON game.game_settings USING btree(has_jackpot) WHERE has_jackpot = true;
+
+-- game_settings - Sıralama
+CREATE INDEX idx_game_settings_display_order ON game.game_settings USING btree(display_order);
 
 -- game_limits
 CREATE INDEX idx_game_limits_game ON game.game_limits USING btree(game_id);

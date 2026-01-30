@@ -26,6 +26,15 @@ CREATE INDEX IF NOT EXISTS idx_tenant_games_game_id ON core.tenant_games USING b
 -- tenant_games (unique lookup)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_games_tenant_game ON core.tenant_games USING btree(tenant_id, game_id);
 
+-- tenant_games (enabled games for lobby)
+CREATE INDEX IF NOT EXISTS idx_tenant_games_enabled ON core.tenant_games USING btree(tenant_id, is_enabled) WHERE is_enabled = true;
+
+-- tenant_games (featured games)
+CREATE INDEX IF NOT EXISTS idx_tenant_games_featured ON core.tenant_games USING btree(tenant_id, is_featured) WHERE is_featured = true;
+
+-- tenant_games (sync status for background jobs)
+CREATE INDEX IF NOT EXISTS idx_tenant_games_sync_status ON core.tenant_games USING btree(sync_status) WHERE sync_status != 'SYNCED';
+
 -- tenant_languages.tenant_id -> tenants.id
 CREATE INDEX IF NOT EXISTS idx_tenant_languages_tenant_id ON core.tenant_languages USING btree(tenant_id);
 

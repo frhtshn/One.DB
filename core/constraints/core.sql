@@ -65,6 +65,13 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- tenant_games unique constraint
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_tenant_games') THEN
+        ALTER TABLE core.tenant_games ADD CONSTRAINT uq_tenant_games UNIQUE (tenant_id, game_id);
+    END IF;
+END $$;
+
 -- tenant_languages -> tenants
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_languages_tenant') THEN

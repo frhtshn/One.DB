@@ -9,6 +9,19 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- games unique constraints
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_games_provider_external') THEN
+        ALTER TABLE catalog.games ADD CONSTRAINT uq_games_provider_external UNIQUE (provider_id, external_game_id);
+    END IF;
+END $$;
+
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_games_provider_code') THEN
+        ALTER TABLE catalog.games ADD CONSTRAINT uq_games_provider_code UNIQUE (provider_id, game_code);
+    END IF;
+END $$;
+
 -- providers -> provider_types
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_providers_provider_type') THEN
