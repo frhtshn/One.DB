@@ -11,8 +11,8 @@ CREATE TABLE billing.monthly_invoices (
     period_year int NOT NULL,                              -- Yıl (Örn: 2026)
     period_month int NOT NULL,                             -- Ay (Örn: 1)
 
-    tenant_id bigint NOT NULL,
     company_id bigint NOT NULL,
+    tenant_id bigint NOT NULL,
     currency char(3) NOT NULL,
 
     -- Gelir Kalemleri

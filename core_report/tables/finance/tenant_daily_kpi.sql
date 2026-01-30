@@ -9,8 +9,8 @@ DROP TABLE IF EXISTS finance.tenant_daily_kpi CASCADE;
 CREATE TABLE finance.tenant_daily_kpi (
     id bigserial PRIMARY KEY,                              -- Benzersiz ID
     report_date date NOT NULL,                             -- Rapor tarihi
-    tenant_id bigint NOT NULL,                             -- Tenant ID
     company_id bigint NOT NULL,                            -- Company ID (Hızlı filtreleme için)
+    tenant_id bigint NOT NULL,                             -- Tenant ID
     currency char(3) NOT NULL,                             -- Para birimi
 
     -- Oyun Performansı
