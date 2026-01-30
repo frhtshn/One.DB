@@ -245,6 +245,14 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.language.name-invalid', 'error', 'language', 'Gecersiz dil adi (min 2 karakter)'),
 ('error.language.delete.has-translations', 'error', 'language', 'Dil silinemez, cevirileri mevcut'),
 
+-- Currency Management Exceptions
+('error.currency.not-found', 'error', 'currency', 'Para birimi bulunamadi'),
+('error.currency.create.code-exists', 'error', 'currency', 'Para birimi kodu zaten mevcut'),
+('error.currency.code-invalid', 'error', 'currency', 'Gecersiz para birimi kodu (3 karakter olmali)'),
+('error.currency.name-invalid', 'error', 'currency', 'Gecersiz para birimi adi (min 2 karakter)'),
+('error.currency.delete.in-use', 'error', 'currency', 'Para birimi silinemez, tenant tarafindan kullaniliyor'),
+('error.currency.delete.is-base-currency', 'error', 'currency', 'Para birimi silinemez, tenant base currency olarak kullaniyor'),
+
 -- SQL Validation Exceptions
 ('error.sql.function-name-invalid', 'error', 'sql', 'Gecersiz function adi. Args: {0}=functionName'),
 ('error.sql.identifier-too-long', 'error', 'sql', 'Identifier cok uzun. Args: {0}=identifier, {1}=length, {2}=maxLength'),

@@ -1,23 +1,18 @@
 -- ================================================================
--- CURRENCY_LIST: Aktif Para Birimi Listesi (Combobox için)
--- core.tenants tablosunda base_currency (char 3) kullanılıyor.
--- Dönüş: code (value), name (label), symbol
+-- CURRENCY_LIST: Tüm para birimlerini listeler
+-- Admin paneli kullanımı içindir, pasifleri de içerir.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.currency_list();
 
 CREATE OR REPLACE FUNCTION catalog.currency_list()
-RETURNS TABLE(code CHAR(3), name VARCHAR(100), symbol VARCHAR(10))
+RETURNS TABLE(currency_code CHAR(3), currency_name VARCHAR(100), symbol VARCHAR(10), numeric_code SMALLINT, is_active BOOLEAN)
 LANGUAGE sql
 STABLE
 AS $$
-    SELECT
-        currency_code AS code,
-        currency_name AS name,
-        symbol
-    FROM catalog.currencies
-    WHERE is_active = TRUE
-    ORDER BY currency_name;
+    SELECT c.currency_code, c.currency_name, c.symbol, c.numeric_code, c.is_active
+    FROM catalog.currencies c
+    ORDER BY c.currency_code;
 $$;
 
-COMMENT ON FUNCTION catalog.currency_list() IS 'Returns list of active currencies for comboboxes (Value: currency_code, Label: currency_name).';
+COMMENT ON FUNCTION catalog.currency_list IS 'Lists all currencies including inactive ones (for admin usage)';

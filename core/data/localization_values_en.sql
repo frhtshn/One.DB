@@ -231,6 +231,14 @@ JOIN (VALUES
     ('error.language.name-invalid', 'Invalid language name. Must be at least 2 characters'),
     ('error.language.delete.has-translations', 'Cannot delete language. It has existing translations'),
 
+    -- Error Messages - Currency
+    ('error.currency.not-found', 'Currency not found'),
+    ('error.currency.create.code-exists', 'This currency code already exists'),
+    ('error.currency.code-invalid', 'Invalid currency code. Must be 3 characters'),
+    ('error.currency.name-invalid', 'Invalid currency name. Must be at least 2 characters'),
+    ('error.currency.delete.in-use', 'Cannot delete currency. It is in use by tenants'),
+    ('error.currency.delete.is-base-currency', 'Cannot delete currency. It is used as base currency by tenants'),
+
     -- Error Messages - SQL
     ('error.sql.function-name-invalid', 'Invalid function name: {0}'),
     ('error.sql.identifier-too-long', 'Identifier ''{0}'' is too long: {1} characters (max {2})'),

@@ -228,6 +228,14 @@ JOIN (VALUES
     ('error.language.name-invalid', 'Geçersiz dil adı. En az 2 karakter olmalı'),
     ('error.language.delete.has-translations', 'Dil silinemez. Mevcut çevirileri var'),
 
+    -- Error Messages - Currency
+    ('error.currency.not-found', 'Para birimi bulunamadı'),
+    ('error.currency.create.code-exists', 'Bu para birimi kodu zaten mevcut'),
+    ('error.currency.code-invalid', 'Geçersiz para birimi kodu. 3 karakter olmalı'),
+    ('error.currency.name-invalid', 'Geçersiz para birimi adı. En az 2 karakter olmalı'),
+    ('error.currency.delete.in-use', 'Para birimi silinemez. Tenant tarafından kullanılıyor'),
+    ('error.currency.delete.is-base-currency', 'Para birimi silinemez. Tenant tarafından base currency olarak kullanılıyor'),
+
     -- Error Messages - SQL
     ('error.sql.function-name-invalid', 'Geçersiz function adı: {0}'),
     ('error.sql.identifier-too-long', '''{0}'' tanımlayıcısı çok uzun: {1} karakter (maksimum {2})'),

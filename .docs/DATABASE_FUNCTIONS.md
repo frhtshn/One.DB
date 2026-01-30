@@ -7,7 +7,12 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 ### Catalog Şeması
 
 - **`country_list`**: Comboboxlar için ülke listesini döner (Değer: country_code, Etiket: country_name).
-- **`currency_list`**: Comboboxlar için aktif para birimi listesini döner (Değer: currency_code, Etiket: currency_name).
+- **`currency_create`**: Yeni bir para birimi oluşturur (ISO 4217, 3 karakter kod).
+- **`currency_delete`**: Bir para birimini yumuşak siler (is_active=false yapar, önce kullanıldığını kontrol eder).
+- **`currency_get`**: Koda göre belirli bir para biriminin detaylarını getirir.
+- **`currency_list`**: Tüm para birimlerini (pasifler dahil) listeler (yönetici kullanımı için).
+- **`currency_list_active`**: Comboboxlar için aktif para birimi listesini döner (Değer: currency_code, Etiket: currency_name).
+- **`currency_update`**: Para birimi detaylarını günceller (isim, sembol, numerik kod, aktiflik durumu).
 - **`language_create`**: Yeni bir dil oluşturur.
 - **`language_delete`**: Bir dili yumuşak siler (is_active=false yapar, önce çevirileri kontrol eder).
 - **`language_get`**: Koda göre belirli bir dilin detaylarını getirir.
