@@ -29,9 +29,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- FINANCE TABLES
 \i tenant_report/tables/finance/player_hourly_stats.sql
 \i tenant_report/tables/finance/transaction_hourly_stats.sql
+\i tenant_report/tables/finance/system_hourly_kpi.sql
 
 -- GAME TABLES
 \i tenant_report/tables/game/game_hourly_stats.sql
+\i tenant_report/tables/game/game_performance_daily.sql
 
 -- CONSTRAINTS
 \i tenant_report/constraints/finance.sql
