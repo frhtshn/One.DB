@@ -18,5 +18,5 @@ CREATE TABLE transaction.transaction_workflows (
     updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE transaction.transaction_workflows IS 'Transaction approval workflows for withdrawals, high-value transactions, and suspicious activity';
+COMMENT ON TABLE transaction.transaction_workflows IS 'Transaction approval workflows for withdrawals, high-value transactions, and suspicious activity. Detailed history is tracked in transaction_workflow_actions.';
 
