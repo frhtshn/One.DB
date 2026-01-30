@@ -151,6 +151,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/constraints/transaction.sql
 \i tenant/constraints/kyc.sql
 \i tenant/constraints/bonus.sql
+\i tenant/constraints/game.sql
 \i tenant/constraints/content.sql
 
 -- =============================================================================
