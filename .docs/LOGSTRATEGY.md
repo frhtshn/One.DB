@@ -13,16 +13,22 @@ nasıl temizleneceğini tanımlar.
 
 ## 1. Genel Özet Tablosu
 
-| DB / Kategori    | Ne Tutulur                                              | Partition       | Varsayılan Süre | Olası Politikalar |
-| ---------------- | ------------------------------------------------------- | --------------- | --------------- | ----------------- |
-| **core**         | Platform domain (tenant, company, currency)             | ❌              | Sınırsız        | -                 |
-| **core_log**     | Core + gateway teknik log (ERROR / WARN / INFO)         | Daily           | 30–90 gün       | DROP partition    |
-| **core_audit**   | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl        | ❌ / ARCHIVE      |
-| **game_log**     | Tüm tenant’lara ait game gateway logları                | Daily           | 7–14 gün        | DROP partition    |
-| **finance_log**  | Tüm tenant’lara ait finance gateway logları             | Daily           | 14–30 gün       | DROP partition    |
-| **tenant**       | Business & history (transactions, game rounds, wallets) | Monthly / Daily | Sınırsız        | -                 |
-| **tenant_log**   | Tenant teknik & operasyonel log                         | Daily           | 30–90 gün       | DROP partition    |
-| **tenant_audit** | Tenant karar & yetkili aksiyon                          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
+| DB / Kategori      | Ne Tutulur                                              | Partition       | Varsayılan Süre | Olası Politikalar |
+| ------------------ | ------------------------------------------------------- | --------------- | --------------- | ----------------- |
+| **core**           | Platform domain (tenant, company, currency)             | ❌              | Sınırsız        | -                 |
+| **core_log**       | Core + gateway teknik log (ERROR / WARN / INFO)         | Daily           | 30–90 gün       | DROP partition    |
+| **core_audit**     | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl        | ❌ / ARCHIVE      |
+| **core_report**    | Merkezi raporlama ve BI verileri                        | Opsiyonel       | İş ihtiyacı     | -                 |
+| **game**           | Oyun gateway entegrasyon durumu                         | Daily           | 14–30 gün       | DROP partition    |
+| **game_log**       | Tüm tenant’lara ait game gateway logları                | Daily           | 7–14 gün        | DROP partition    |
+| **finance**        | Finans gateway entegrasyon durumu                       | Daily           | 14–30 gün       | DROP partition    |
+| **finance_log**    | Tüm tenant’lara ait finance gateway logları             | Daily           | 14–30 gün       | DROP partition    |
+| **bonus**          | Bonus ve promosyon yapılandırması                       | ❌              | Sınırsız        | -                 |
+| **tenant**         | Business & history (transactions, game rounds, wallets) | Monthly / Daily | Sınırsız        | -                 |
+| **tenant_log**     | Tenant teknik & operasyonel log                         | Daily           | 30–90 gün       | DROP partition    |
+| **tenant_audit**   | Tenant karar & yetkili aksiyon                          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
+| **tenant_report**  | Kiracıya özel raporlar ve istatistikler                 | Opsiyonel       | İş ihtiyacı     | -                 |
+| **tenant_affiliate**| Affiliate tracking ve komisyon yönetimi                 | Monthly         | Sınırsız        | -                 |
 
 ---
 

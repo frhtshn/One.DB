@@ -51,22 +51,22 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ## 3. Veritabanı Özet Matrisi
 
-| #   | Veritabanı         | Amaç                                                      | Tenant Bağımsız | Partition | Retention   |
-| --- | ------------------ | --------------------------------------------------------- | --------------- | --------- | ----------- |
-| 1   | `core`             | Platform yapılandırması ve merkezi veriler                | ✅              | ❌        | Sınırsız    |
-| 2   | `core_log`         | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
-| 3   | `core_audit`       | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
-| 4   | `core_report`      | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
-| 5   | `game`             | Oyun gateway entegrasyon durumu                           | ✅              | Daily     | 14–30 gün   |
-| 6   | `game_log`         | Oyun gateway teknik logları                               | ✅              | Daily     | 7–14 gün    |
-| 7   | `finance`          | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
-| 8   | `finance_log`      | Finans gateway teknik logları                             | ✅              | Daily     | 14–30 gün   |
-| 9   | `bonus`            | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
-| 10  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
-| 11  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
-| 12  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
-| 13  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
-| 14  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
+| #   | Veritabanı           | Amaç                                                      | Tenant Bağımsız | Partition | Retention   |
+| --- | -------------------- | --------------------------------------------------------- | --------------- | --------- | ----------- |
+| 1   | `core`               | Platform yapılandırması ve merkezi veriler                | ✅              | ❌        | Sınırsız    |
+| 2   | `core_log`           | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
+| 3   | `core_audit`         | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
+| 4   | `core_report`        | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
+| 5   | `game`               | Oyun gateway entegrasyon durumu                           | ✅              | Daily     | 14–30 gün   |
+| 6   | `game_log`           | Oyun gateway teknik logları                               | ✅              | Daily     | 7–14 gün    |
+| 7   | `finance`            | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
+| 8   | `finance_log`        | Finans gateway teknik logları                             | ✅              | Daily     | 14–30 gün   |
+| 9   | `bonus`              | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
+| 10  | `tenant`             | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
+| 11  | `tenant_log`         | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
+| 12  | `tenant_audit`       | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
+| 13  | `tenant_report`      | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
+| 14  | `tenant_affiliate`   | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
 
 ---
 
