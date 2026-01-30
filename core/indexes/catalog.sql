@@ -66,3 +66,26 @@ CREATE INDEX IF NOT EXISTS idx_payment_methods_withdrawal ON catalog.payment_met
 CREATE INDEX IF NOT EXISTS idx_payment_methods_currencies ON catalog.payment_methods USING GIN(supported_currencies);
 CREATE INDEX IF NOT EXISTS idx_payment_methods_features ON catalog.payment_methods USING GIN(features);
 CREATE INDEX IF NOT EXISTS idx_payment_methods_popularity ON catalog.payment_methods USING btree(popularity_score DESC) WHERE is_active = true;
+
+-- =========================================================================================
+-- GIN Indexes for JSONB Columns
+-- =========================================================================================
+
+-- catalog.widgets (default_props)
+CREATE INDEX IF NOT EXISTS idx_widgets_props_gin ON catalog.widgets USING gin(default_props);
+
+-- catalog.themes (default_config)
+CREATE INDEX IF NOT EXISTS idx_themes_config_gin ON catalog.themes USING gin(default_config);
+
+-- catalog.navigation_template_items (default_label)
+CREATE INDEX IF NOT EXISTS idx_nav_template_items_label_gin ON catalog.navigation_template_items USING gin(default_label);
+
+-- catalog.provider_settings (setting_value)
+CREATE INDEX IF NOT EXISTS idx_provider_settings_value_gin ON catalog.provider_settings USING gin(setting_value);
+
+-- catalog.responsible_gaming_policies (deposit_limit_options, loss_limit_options)
+CREATE INDEX IF NOT EXISTS idx_rg_policies_deposit_limits_gin ON catalog.responsible_gaming_policies USING gin(deposit_limit_options);
+CREATE INDEX IF NOT EXISTS idx_rg_policies_loss_limits_gin ON catalog.responsible_gaming_policies USING gin(loss_limit_options);
+
+-- catalog.kyc_document_requirements (accepted_subtypes)
+CREATE INDEX IF NOT EXISTS idx_kyc_req_subtypes_gin ON catalog.kyc_document_requirements USING gin(accepted_subtypes);

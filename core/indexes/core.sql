@@ -114,36 +114,8 @@ CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_category ON core.tenant_data
 -- GIN Indexes for JSONB Columns
 -- =============================================================================
 
--- presentation.tenant_themes (config)
-CREATE INDEX IF NOT EXISTS idx_tenant_themes_config_gin ON presentation.tenant_themes USING gin(config);
-
--- presentation.tenant_navigation (custom_label)
-CREATE INDEX IF NOT EXISTS idx_tenant_navigation_label_gin ON presentation.tenant_navigation USING gin(custom_label);
-
--- presentation.tenant_layouts (structure)
-CREATE INDEX IF NOT EXISTS idx_tenant_layouts_structure_gin ON presentation.tenant_layouts USING gin(structure);
-
 -- core.tenant_jurisdictions (custom_settings)
 CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_settings_gin ON core.tenant_jurisdictions USING gin(custom_settings);
 
--- catalog.widgets (default_props)
-CREATE INDEX IF NOT EXISTS idx_widgets_props_gin ON catalog.widgets USING gin(default_props);
-
--- catalog.themes (default_config)
-CREATE INDEX IF NOT EXISTS idx_themes_config_gin ON catalog.themes USING gin(default_config);
-
--- catalog.navigation_template_items (default_label)
-CREATE INDEX IF NOT EXISTS idx_nav_template_items_label_gin ON catalog.navigation_template_items USING gin(default_label);
-
--- catalog.provider_settings (setting_value)
-CREATE INDEX IF NOT EXISTS idx_provider_settings_value_gin ON catalog.provider_settings USING gin(setting_value);
-
--- catalog.responsible_gaming_policies (deposit_limit_options, loss_limit_options)
-CREATE INDEX IF NOT EXISTS idx_rg_policies_deposit_limits_gin ON catalog.responsible_gaming_policies USING gin(deposit_limit_options);
-CREATE INDEX IF NOT EXISTS idx_rg_policies_loss_limits_gin ON catalog.responsible_gaming_policies USING gin(loss_limit_options);
-
--- catalog.kyc_document_requirements (accepted_subtypes)
-CREATE INDEX IF NOT EXISTS idx_kyc_req_subtypes_gin ON catalog.kyc_document_requirements USING gin(accepted_subtypes);
-
--- billing.provider_payments (netting_details)
-CREATE INDEX IF NOT EXISTS idx_provider_payments_netting_gin ON billing.provider_payments USING gin(netting_details);
+-- core.tenant_settings (setting_value) - note: already defined above but grouped here for clarity
+-- CREATE INDEX IF NOT EXISTS idx_tenant_settings_value_gin ON core.tenant_settings USING gin(setting_value);

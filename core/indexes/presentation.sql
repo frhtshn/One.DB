@@ -73,3 +73,16 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_themes_tenant_theme ON presentation
 
 -- tenant_layouts (unique lookup)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_layouts_unique_layout ON presentation.tenant_layouts USING btree(tenant_id, page_id, layout_name);
+
+-- =========================================================================================
+-- GIN Indexes for JSONB Columns
+-- =========================================================================================
+
+-- presentation.tenant_themes (config)
+CREATE INDEX IF NOT EXISTS idx_tenant_themes_config_gin ON presentation.tenant_themes USING gin(config);
+
+-- presentation.tenant_navigation (custom_label)
+CREATE INDEX IF NOT EXISTS idx_tenant_navigation_label_gin ON presentation.tenant_navigation USING gin(custom_label);
+
+-- presentation.tenant_layouts (structure)
+CREATE INDEX IF NOT EXISTS idx_tenant_layouts_structure_gin ON presentation.tenant_layouts USING gin(structure);

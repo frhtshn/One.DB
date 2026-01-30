@@ -39,3 +39,15 @@ CREATE INDEX IF NOT EXISTS idx_player_restrictions_active ON kyc.player_restrict
 -- player_limit_history
 CREATE INDEX IF NOT EXISTS idx_player_limit_history_player ON kyc.player_limit_history(player_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_player_limit_history_entity ON kyc.player_limit_history(entity_type, entity_id);
+
+-- =============================================
+-- GIN Indexes for JSONB Columns
+-- =============================================
+
+-- player_limit_history (old_value, new_value)
+CREATE INDEX IF NOT EXISTS idx_player_limit_history_old_gin ON kyc.player_limit_history USING gin(old_value);
+CREATE INDEX IF NOT EXISTS idx_player_limit_history_new_gin ON kyc.player_limit_history USING gin(new_value);
+
+-- player_kyc_provider_logs (request_payload, response_payload)
+CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_req_gin ON kyc.player_kyc_provider_logs USING gin(request_payload);
+CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_res_gin ON kyc.player_kyc_provider_logs USING gin(response_payload);

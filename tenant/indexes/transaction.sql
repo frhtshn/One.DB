@@ -16,6 +16,9 @@ CREATE INDEX IF NOT EXISTS idx_transactions_related ON transaction.transactions 
 CREATE INDEX IF NOT EXISTS idx_transactions_external_ref ON transaction.transactions USING btree(external_reference_id) WHERE external_reference_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_transactions_confirmed_at ON transaction.transactions USING btree(confirmed_at DESC);
 
+-- GIN Index (metadata)
+CREATE INDEX IF NOT EXISTS idx_transactions_metadata_gin ON transaction.transactions USING gin(metadata);
+
 -- transaction_workflows
 CREATE UNIQUE INDEX IF NOT EXISTS idx_transaction_workflows_transaction ON transaction.transaction_workflows USING btree(transaction_id);
 CREATE INDEX IF NOT EXISTS idx_transaction_workflows_status ON transaction.transaction_workflows USING btree(status);
