@@ -18,14 +18,14 @@ CREATE INDEX idx_affiliate_users_status ON affiliate.affiliate_users USING btree
 CREATE INDEX idx_affiliate_users_role ON affiliate.affiliate_users USING btree(affiliate_id, role);
 CREATE INDEX idx_affiliate_users_last_login ON affiliate.affiliate_users USING btree(last_login_at DESC) WHERE last_login_at IS NOT NULL;
 CREATE INDEX idx_affiliate_users_created_by ON affiliate.affiliate_users USING btree(created_by_affiliate_id) WHERE created_by_affiliate_id IS NOT NULL;
-CREATE INDEX idx_affiliate_users_locked ON affiliate.affiliate_users USING btree(locked_until) WHERE locked_until IS NOT NULL AND locked_until > now();
+CREATE INDEX idx_affiliate_users_locked ON affiliate.affiliate_users USING btree(locked_until) WHERE locked_until IS NOT NULL;
 CREATE INDEX idx_affiliate_users_active ON affiliate.affiliate_users USING btree(affiliate_id) WHERE status = 1;
 
 -- affiliate_campaigns
 CREATE INDEX idx_affiliate_campaigns_affiliate ON affiliate.affiliate_campaigns USING btree(affiliate_id);
 CREATE INDEX idx_affiliate_campaigns_campaign ON affiliate.affiliate_campaigns USING btree(campaign_id);
 CREATE INDEX idx_affiliate_campaigns_plan ON affiliate.affiliate_campaigns USING btree(commission_plan_id);
-CREATE INDEX idx_affiliate_campaigns_active ON affiliate.affiliate_campaigns USING btree(affiliate_id, start_date, end_date) WHERE end_date IS NULL OR end_date >= CURRENT_DATE;
+CREATE INDEX idx_affiliate_campaigns_active ON affiliate.affiliate_campaigns USING btree(affiliate_id, start_date, end_date);
 
 -- network_commission_rules
 CREATE UNIQUE INDEX idx_network_commission_rules_level ON affiliate.network_commission_rules USING btree(parent_level);

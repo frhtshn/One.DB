@@ -26,6 +26,7 @@ CREATE TABLE tracking.player_registrations (
 
     -- Promo Code (attribution_source = PROMO_CODE ise)
     promo_code varchar(50),                                -- Kullanılan promo kodu
+    promo_code_id bigint,                                  -- Promo code ID reference
     promo_affiliate_id bigint,                             -- Promo kodunun bağlı olduğu affiliate
 
     -- Kayıt Detayları
