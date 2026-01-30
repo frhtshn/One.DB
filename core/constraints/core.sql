@@ -128,6 +128,13 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- tenant_payment_methods unique constraint
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_tenant_payment_methods') THEN
+        ALTER TABLE core.tenant_payment_methods ADD CONSTRAINT uq_tenant_payment_methods UNIQUE (tenant_id, payment_method_id);
+    END IF;
+END $$;
+
 -- tenant_provider_limits -> tenants
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_provider_limits_tenant') THEN

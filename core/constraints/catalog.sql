@@ -109,3 +109,18 @@ DO $$ BEGIN
             FOREIGN KEY (parent_id) REFERENCES catalog.navigation_template_items(id) ON DELETE CASCADE;
     END IF;
 END $$;
+
+-- payment_methods -> providers
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_payment_methods_provider') THEN
+        ALTER TABLE catalog.payment_methods ADD CONSTRAINT fk_payment_methods_provider
+            FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
+    END IF;
+END $$;
+
+-- payment_methods unique constraint
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_payment_methods_provider_code') THEN
+        ALTER TABLE catalog.payment_methods ADD CONSTRAINT uq_payment_methods_provider_code UNIQUE (provider_id, payment_method_code);
+    END IF;
+END $$;

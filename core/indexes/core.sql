@@ -68,6 +68,15 @@ CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_payment_method_id ON core.
 -- tenant_payment_methods (unique lookup)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_payment_methods_tenant_method ON core.tenant_payment_methods USING btree(tenant_id, payment_method_id);
 
+-- tenant_payment_methods (enabled methods)
+CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_enabled ON core.tenant_payment_methods USING btree(tenant_id, is_enabled) WHERE is_enabled = true;
+
+-- tenant_payment_methods (featured methods)
+CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_featured ON core.tenant_payment_methods USING btree(tenant_id, is_featured) WHERE is_featured = true;
+
+-- tenant_payment_methods (sync status)
+CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_sync_status ON core.tenant_payment_methods USING btree(sync_status) WHERE sync_status != 'SYNCED';
+
 -- tenant_provider_limits.tenant_id -> tenants.id
 CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_tenant_id ON core.tenant_provider_limits USING btree(tenant_id);
 
