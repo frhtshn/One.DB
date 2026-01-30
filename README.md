@@ -55,6 +55,12 @@ psql -h 207.180.241.230 -p 5433 -U postgres -d core_audit -f deploy_core_audit.s
 psql -h 207.180.241.230 -p 5433 -U postgres -d core_log -f deploy_core_log.sql
 ```
 
+### 4. Deploy Core Report
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d core_report -f deploy_core_report.sql
+```
+
 ### 5. Deploy Tenant
 
 ```bash

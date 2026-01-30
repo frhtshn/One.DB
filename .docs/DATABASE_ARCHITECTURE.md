@@ -51,22 +51,22 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ## 3. Veritabanı Özet Matrisi
 
-| #   | Veritabanı           | Amaç                                                      | Tenant Bağımsız | Partition | Retention   |
-| --- | -------------------- | --------------------------------------------------------- | --------------- | --------- | ----------- |
-| 1   | `core`               | Platform yapılandırması ve merkezi veriler                | ✅              | ❌        | Sınırsız    |
-| 2   | `core_log`           | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
-| 3   | `core_audit`         | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
-| 4   | `core_report`        | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
-| 5   | `game`               | Oyun gateway entegrasyon durumu                           | ✅              | Daily     | 14–30 gün   |
-| 6   | `game_log`           | Oyun gateway teknik logları                               | ✅              | Daily     | 7–14 gün    |
-| 7   | `finance`            | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
-| 8   | `finance_log`        | Finans gateway teknik logları                             | ✅              | Daily     | 14–30 gün   |
-| 9   | `bonus`              | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
-| 10  | `tenant`             | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
-| 11  | `tenant_log`         | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
-| 12  | `tenant_audit`       | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
-| 13  | `tenant_report`      | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
-| 14  | `tenant_affiliate`   | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
+| #   | Veritabanı         | Amaç                                                      | Tenant Bağımsız | Partition | Retention   |
+| --- | ------------------ | --------------------------------------------------------- | --------------- | --------- | ----------- |
+| 1   | `core`             | Platform yapılandırması ve merkezi veriler                | ✅              | ❌        | Sınırsız    |
+| 2   | `core_log`         | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
+| 3   | `core_audit`       | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
+| 4   | `core_report`      | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
+| 5   | `game`             | Oyun gateway entegrasyon durumu                           | ✅              | Daily     | 14–30 gün   |
+| 6   | `game_log`         | Oyun gateway teknik logları                               | ✅              | Daily     | 7–14 gün    |
+| 7   | `finance`          | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
+| 8   | `finance_log`      | Finans gateway teknik logları                             | ✅              | Daily     | 14–30 gün   |
+| 9   | `bonus`            | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
+| 10  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
+| 11  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
+| 12  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
+| 13  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
+| 14  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
 
 ---
 
@@ -280,24 +280,57 @@ Oyun sağlayıcılarının entegrasyon detaylarını barındırır. Her provider
 
 ---
 
-## 6. Log Veritabanları (Operational Store)
+## 7. Reporting Veritabanları (Analytics Store)
+
+Analitik ve raporlama işlemleri için optimize edilmiş, column-based veya aggregate-based tablolardan oluşur. "Read-Heavy" yükü buraya yönlendirilir.
+
+### 7.1 Tenant Report (`tenant_report`)
+
+Tenant'a özel mikro ve makro raporlar.
+
+**Şemalar:**
+
+- **`finance`**: Finansal özetler ve KPI'lar.
+    - `player_hourly_stats`: Oyuncu bazlı saatlik net durum (Hybrid JSONB).
+    - `transaction_hourly_stats`: İşlem tipi ve metod bazlı saatlik özet (JSONB).
+    - `system_hourly_kpi`: Sistem geneli saatlik operasyonel metrikler.
+- **`game`**: Oyun performans raporları.
+    - `game_hourly_stats`: Oyuncu bazlı oyun aktivite özeti (JSONB Consolidated).
+    - `game_performance_daily`: Oyun ve Provider bazlı günlük performans/RTP analizi.
+
+### 7.2 Core Report (`core_report`)
+
+Merkezi yönetim (NucleoAdmin) raporları.
+
+**Şemalar:**
+
+- **`finance`**: Genel finansal görünüm.
+    - `tenant_daily_kpi`: Tenant bazlı günlük performans karnesi.
+- **`billing`**: Faturalandırma.
+    - `monthly_invoices`: Ay sonu tenant fatura ve komisyon hesaplamaları.
+- **`performance`**: Global metrikler.
+    - `provider_global_daily`: Tüm tenantlar genelinde provider hacim analizi.
+
+---
+
+## 8. Log Veritabanları (Operational Store)
 
 Yüksek hacimli "Write-Heavy" operasyonel veriler, ana işlem veritabanlarını yormamak için ayrıştırılmıştır.
 
-### 6.1 Game Log (`game_log`)
+### 8.1 Game Log (`game_log`)
 
 - **Kapsam:** Oyun turları, spin detayları, provider API call/response logları.
 - **Yapı:** Günlük (Daily) partition.
 - **Retention:** Kısa vadeli (7-14 gün).
 - **Amaç:** Hata ayıklama ve son kullanıcı desteği.
 
-### 6.2 Finance Log (`finance_log`)
+### 8.2 Finance Log (`finance_log`)
 
 - **Kapsam:** Ödeme denemeleri, webhook bildirimleri, 3D secure logları.
 - **Yapı:** Günlük (Daily) partition.
 - **Retention:** Orta vadeli (14-30 gün).
 - **Amaç:** İşlem doğrulama ve fraud analizi.
 
-### 6.3 Log Stratejisi
+### 8.3 Log Stratejisi
 
 Tüm log veritabanları **`DROP PARTITION`** stratejisi ile temizlenir. Detaylar için bkz: `LOGSTRATEGY.md`.
