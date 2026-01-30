@@ -79,6 +79,12 @@ psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_audit -f deploy_tenant_aud
 psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_log -f deploy_tenant_log.sql
 ```
 
+### 9. Deploy Tenant Report
+
+```bash
+psql -h 207.180.241.230 -p 5433 -U postgres -d tenant_report -f deploy_tenant_report.sql
+```
+
 ### 10. Deploy Bonus
 
 ```bash

@@ -1,0 +1,58 @@
+-- =============================================
+-- Tablo: finance.player_hourly_stats
+-- Açıklama: Oyuncu bazlı saatlik finansal özet tablosu
+-- Eski sistemdeki [TransactionHourlyTotals] tablosunun optimize edilmiş halidir.
+-- JSONB kullanılarak dikey (vertical) bazlı kırılımlar esnek hale getirilmiştir.
+-- =============================================
+
+DROP TABLE IF EXISTS finance.player_hourly_stats CASCADE;
+
+CREATE TABLE finance.player_hourly_stats (
+    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt ID
+    period_hour timestamp with time zone NOT NULL,         -- İlgili saat (Örn: 2026-01-30 14:00:00+00)
+
+    -- Temel Bilgiler
+    player_id bigint NOT NULL,                             -- Oyuncu ID
+    wallet_id bigint NOT NULL,                             -- Cüzdan ID
+    currency char(3) NOT NULL,                             -- Para birimi (Performans için denormalize)
+
+    -- Bakiyeler
+    balance_start numeric(18, 8) NOT NULL DEFAULT 0,       -- Dönem başı bakiye
+    balance_end numeric(18, 8) NOT NULL DEFAULT 0,         -- Dönem sonu bakiye
+
+    -- Ana Kategoriler (Hızlı erişim ve indeksleme için)
+    total_transaction_count int DEFAULT 0,                 -- Toplam işlem adedi
+    total_volume_in numeric(18, 8) DEFAULT 0,              -- Toplam Giren (Win + Deposit + Bonus)
+    total_volume_out numeric(18, 8) DEFAULT 0,             -- Toplam Çıkan (Bet + Withdraw)
+
+    -- Detaylı Kırılımlar (JSONB)
+    -- Örn:
+    -- {
+    --   "sports": {"bet": 100, "win": 50, "count": 10},
+    --   "casino": {"bet": 200, "win": 180, "count": 55},
+    --   "poker":  {"rake": 5, "win": 10, "count": 2}
+    -- }
+    game_stats jsonb DEFAULT '{}'::jsonb,
+
+    -- Ödeme Kırılımları (JSONB)
+    -- Örn:
+    -- {
+    --   "deposit": {"amount": 500, "count": 1},
+    --   "withdraw": {"amount": 0, "count": 0},
+    --   "bonus": {"assigned": 50, "released": 20, "cancelled": 0},
+    --   "adjustment": {"amount": 10, "count": 1}
+    -- }
+    payment_stats jsonb DEFAULT '{}'::jsonb,
+
+    -- Meta
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    updated_at timestamp without time zone
+
+    -- Constraint moved to constraints/finance.sql
+);
+
+COMMENT ON TABLE finance.player_hourly_stats IS 'Hourly financial summary per player/wallet using JSONB for flexible vertical reporting';
+
+-- Partitioning önerisi:
+-- Bu tablo çok hızlı büyüyeceği için aylık partition yapılması önerilir.
+-- Nucleo altyapısında otomatik partition mekanizması varsa uygulanmalıdır.

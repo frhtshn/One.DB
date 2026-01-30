@@ -202,7 +202,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/countries/country_list.sql
 
 -- Currency Functions
-\i core/functions/catalog/currencies/currency_list_active.sql
 \i core/functions/catalog/currencies/currency_list.sql
 \i core/functions/catalog/currencies/currency_get.sql
 \i core/functions/catalog/currencies/currency_create.sql
