@@ -166,6 +166,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/data/localization_keys.sql
 \i core/data/localization_values_en.sql
 \i core/data/localization_values_tr.sql
+\i core/data/security_seed.sql
 
 -- FUNCTIONS
 -- Core Functions
