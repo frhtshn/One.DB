@@ -10,7 +10,7 @@ LANGUAGE plpgsql
 IMMUTABLE
 AS $$
 BEGIN
-    RETURN LOWER(p_role_code) IN ('superadmin', 'company_admin');
+    RETURN LOWER(p_role_code) IN ('superadmin');
 END;
 $$;
 

@@ -49,6 +49,14 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- tenant_currencies unique constraint
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_currencies') THEN
+        ALTER TABLE core.tenant_currencies ADD CONSTRAINT uq_tenant_currencies
+            UNIQUE (tenant_id, currency_code);
+    END IF;
+END $$;
+
 -- tenant_games -> tenants
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_games_tenant') THEN
@@ -85,6 +93,14 @@ DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_languages_language') THEN
         ALTER TABLE core.tenant_languages ADD CONSTRAINT fk_tenant_languages_language
             FOREIGN KEY (language_code) REFERENCES catalog.languages(language_code);
+    END IF;
+END $$;
+
+-- tenant_languages unique constraint
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_languages') THEN
+        ALTER TABLE core.tenant_languages ADD CONSTRAINT uq_tenant_languages
+            UNIQUE (tenant_id, language_code);
     END IF;
 END $$;
 
