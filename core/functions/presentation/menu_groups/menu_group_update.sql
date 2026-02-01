@@ -9,7 +9,6 @@ CREATE OR REPLACE FUNCTION presentation.menu_group_update(
     p_menu_group_id BIGINT,
     p_title TEXT DEFAULT NULL,
     p_order INT DEFAULT NULL,
-    p_permission TEXT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
 RETURNS VOID
@@ -25,11 +24,7 @@ BEGIN
     UPDATE presentation.menu_groups
     SET title_localization_key = COALESCE(TRIM(p_title), title_localization_key),
         order_index = COALESCE(p_order, order_index),
-        required_permission = CASE
-            WHEN p_permission IS NULL THEN required_permission
-            WHEN TRIM(p_permission) = '' THEN NULL
-            ELSE TRIM(p_permission)
-        END,
+
         is_active = COALESCE(p_is_active, is_active),
         updated_at = NOW()
     WHERE id = p_menu_group_id;

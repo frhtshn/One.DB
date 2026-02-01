@@ -1,12 +1,12 @@
 -- ================================================================
--- GET_STRUCTURE: Presentation Yapısını Getir
+-- MENU_STRUCTURE: Presentation Yapısını Getir
 -- Tüm menü yapısını (Groups > Menus > Submenus > Pages > Tabs/Contexts)
 -- JSON formatında ve versiyon hash bilgisi ile döner.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.get_structure();
+DROP FUNCTION IF EXISTS presentation.menu_structure();
 
-CREATE OR REPLACE FUNCTION presentation.get_structure()
+CREATE OR REPLACE FUNCTION presentation.menu_structure()
 RETURNS JSONB
 LANGUAGE plpgsql
 STABLE
@@ -44,7 +44,6 @@ BEGIN
                     'code', mg.code,
                     'title', mg.title_localization_key,
                     'order', mg.order_index,
-                    'permission', mg.required_permission,
                     'menus', (
                         SELECT COALESCE(jsonb_agg(
                             jsonb_build_object(
@@ -107,4 +106,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.get_structure() IS 'Returns entire presentation structure as nested JSON. Uses MD5 version hash for cache invalidation.';
+COMMENT ON FUNCTION presentation.menu_structure() IS 'Returns entire presentation structure as nested JSON. Uses MD5 version hash for cache invalidation.';

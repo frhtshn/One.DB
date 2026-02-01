@@ -19,7 +19,6 @@ BEGIN
         'code', mg.code,
         'title', mg.title_localization_key,
         'order', mg.order_index,
-        'permission', mg.required_permission,
         'isActive', mg.is_active,
         'createdAt', mg.created_at,
         'updatedAt', mg.updated_at,

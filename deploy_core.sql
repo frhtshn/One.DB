@@ -334,7 +334,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/presentation/contexts/context_delete.sql
 
 \i core/functions/presentation/pages/build_page_json.sql
-\i core/functions/presentation/structure/get_structure.sql
+\i core/functions/presentation/structure/menu_structure.sql
 
 -- TRIGGERS
 \i core/triggers/update_updated_at_column.sql

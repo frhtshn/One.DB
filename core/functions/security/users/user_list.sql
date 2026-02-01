@@ -2,14 +2,15 @@
 -- USER_LIST: Kullanıcı listesi (paginated, filtrelenebilir)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_list(INT, INT, TEXT, SMALLINT, BIGINT, TEXT, TEXT);
+DROP FUNCTION IF EXISTS security.user_list(INT, INT, TEXT, SMALLINT, BIGINT, BIGINT, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION security.user_list(
+    p_company_id BIGINT,
+    p_tenant_id BIGINT,
     p_page INT DEFAULT 1,
     p_page_size INT DEFAULT 10,
     p_search TEXT DEFAULT NULL,
     p_status SMALLINT DEFAULT NULL,
-    p_company_id BIGINT DEFAULT NULL,
     p_sort_by TEXT DEFAULT 'id',
     p_sort_order TEXT DEFAULT 'ASC'
 )
@@ -49,8 +50,11 @@ BEGIN
     SELECT COUNT(*)
     INTO v_total_count
     FROM security.users u
-    WHERE (p_company_id IS NULL OR u.company_id = p_company_id)
+    WHERE u.company_id = p_company_id
       AND (p_status IS NULL OR u.status = p_status)
+      AND EXISTS (
+          SELECT 1 FROM security.user_tenant_roles utr WHERE utr.user_id = u.id AND utr.tenant_id = p_tenant_id
+      )
       AND (p_search IS NULL OR p_search = '' OR (
           u.email ILIKE '%' || p_search || '%' OR
           u.username ILIKE '%' || p_search || '%' OR
@@ -87,12 +91,25 @@ BEGIN
                          FROM security.user_roles ur
                          JOIN security.roles r ON r.id = ur.role_id
                          WHERE ur.user_id = u.id
+                     ), ''[]''::jsonb),
+                     ''tenantRoles'', COALESCE((
+                        SELECT jsonb_agg(jsonb_build_object(
+                             ''roleId'', r.id,
+                             ''roleCode'', r.code,
+                             ''roleName'', r.name
+                        ))
+                        FROM security.user_tenant_roles utr
+                        JOIN security.roles r ON r.id = utr.role_id
+                        WHERE utr.user_id = u.id AND utr.tenant_id = $6
                      ), ''[]''::jsonb)
                  ) AS row_data,
                  %s AS sort_key
              FROM security.users u
-             WHERE ($1 IS NULL OR u.company_id = $1)
+             WHERE u.company_id = $1
                AND ($2 IS NULL OR u.status = $2)
+               AND EXISTS (
+                   SELECT 1 FROM security.user_tenant_roles utr WHERE utr.user_id = u.id AND utr.tenant_id = $6
+               )
                AND ($3 IS NULL OR $3 = '''' OR (
                    u.email ILIKE ''%%'' || $3 || ''%%'' OR
                    u.username ILIKE ''%%'' || $3 || ''%%'' OR
@@ -108,7 +125,7 @@ BEGIN
         v_sort_dir
     )
     INTO v_items
-    USING p_company_id, p_status, p_search, p_page_size, v_offset;
+    USING p_company_id, p_status, p_search, p_page_size, v_offset, p_tenant_id;
 
     -- Sonuç döndür
     RETURN jsonb_build_object(
@@ -121,4 +138,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_list IS 'Returns paginated user list with filters (search, status, company) and sorting';
+COMMENT ON FUNCTION security.user_list IS 'Returns paginated user list with strict company and tenant filtering.';

@@ -63,7 +63,7 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`context_delete`**: Deletes a context (hard delete). Returns VOID.
 - **`context_list`**: Lists contexts for a given page, returns items and totalCount.
 - **`context_update`**: Updates a context. Partial update supported. Returns VOID.
-- **`get_structure`**: Returns entire presentation structure as nested JSON. Uses MD5 version hash for cache invalidation.
+- **`menu_structure`**: Returns entire presentation structure as nested JSON. Uses MD5 version hash for cache invalidation.
 - **`menu_create`**: Creates a new menu with unique code validation
 - **`menu_delete`**: Soft deletes a menu by setting is_active to FALSE and updating deleted_at.
 - **`menu_get`**: Returns details of a menu including group, submenus, pages, and audit info
@@ -116,16 +116,16 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`session_revoke_all`**: Revokes all sessions for a user (optionally keeping current one)
 - **`session_save`**: Saves a new session or updates existing one
 - **`session_update_activity`**: Updates session last activity timestamp
-- **`user_authenticate`**: Authenticates user via email. Returns structured user data, roles, and permissions based on role type (Platform vs Company/Tenant).
+- **`user_authenticate`**: Email ile kullanici dogrulama. Scope: Platform (is_platform_role=TRUE), Company (is_platform_role=FALSE), Tenant (user_tenant_roles).
 - **`user_check_email_exists`**: Checks if email exists. Use excludeUserId for update scenarios.
 - **`user_check_username_exists`**: Checks if username exists in company. Use excludeUserId for update scenarios.
 - **`user_create`**: Creates a new user with email/username uniqueness validation
 - **`user_delete`**: Soft deletes a user by setting status to -1
 - **`user_get`**: Returns user details including company info, global roles, tenant roles, and allowed tenants
-- **`user_list`**: Returns paginated user list with filters (search, status, company) and sorting
+- **`user_list`**: Returns paginated user list with strict company and tenant filtering.
 - **`user_login_failed_increment`**: Increments failed login count, locks account if threshold exceeded
 - **`user_login_failed_reset`**: Resets failed login count after successful login
-- **`user_permission_list`**: Hybrid Permission: Returns user roles and user-level override permissions. Formula: (Role + Granted) - Denied
+- **`user_permission_list`**: Hybrid Permission: Returns user roles, permissions and tenant access info. Formula: (Role + Granted) - Denied
 - **`user_permission_override_list`**: Lists active permission overrides for a user
 - **`user_permission_remove`**: Removes a permission override rule from a user. Does not affect role-based permissions.
 - **`user_permission_set`**: Grants or Denies a specific permission to a user. Creates or updates an override.

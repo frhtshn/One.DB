@@ -9,7 +9,6 @@ CREATE OR REPLACE FUNCTION presentation.menu_group_create(
     p_code TEXT,
     p_title TEXT,
     p_order INT,
-    p_permission TEXT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT TRUE
 )
 RETURNS BIGINT
@@ -28,7 +27,7 @@ BEGIN
         code,
         title_localization_key,
         order_index,
-        required_permission,
+
         is_active,
         created_at,
         updated_at
@@ -37,7 +36,7 @@ BEGIN
         LOWER(TRIM(p_code)),
         TRIM(p_title),
         p_order,
-        NULLIF(TRIM(p_permission), ''),
+
         p_is_active,
         NOW(),
         NOW()
