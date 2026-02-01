@@ -76,6 +76,7 @@ JOIN (VALUES
     -- Error Messages - Forbidden
     ('error.forbidden.resource', '{0} kaynağına erişim için yetkiniz yok. Gerekli yetki: {1}'),
     ('error.tenant.access-denied', 'Tenant {0} için erişim izniniz yok'),
+    ('error.access.company-scope-denied', 'Şirket kapsamı dışında işlem yapılamaz'),
 
     -- Error Messages - System Grain
     ('error.system.grain.activation-failed', 'Grain aktifleştirilemedi: {0} (key: {1})'),

@@ -41,19 +41,19 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_update`**: Updates company information for management UI.
-- **`tenant_create`**: Creates a new tenant and assigns supported currencies/languages.
+- **`tenant_create`**: Creates a new tenant and assigns supported currencies/languages. Checks caller permissions.
 - **`tenant_currency_list`**: Lists all assigned currencies for a tenant.
 - **`tenant_currency_upsert`**: Assigns or updates a currency for a tenant.
-- **`tenant_delete`**: Soft deletes a tenant by setting status to 0.
-- **`tenant_get`**: Returns detailed tenant information including supported configuration.
+- **`tenant_delete`**: Soft deletes a tenant by setting status to 0. Checks caller permissions.
+- **`tenant_get`**: Returns detailed tenant information including supported configuration. Checks caller permissions.
 - **`tenant_language_list`**: Lists all assigned languages for a tenant.
 - **`tenant_language_upsert`**: Assigns or updates a supported language for a tenant.
-- **`tenant_list`**: Lists tenants with pagination, filter, and configuration details.
-- **`tenant_setting_delete`**: Deletes a tenant configuration setting.
-- **`tenant_setting_get`**: Returns a specific tenant setting as JSON object. Returns NULL if not found.
-- **`tenant_setting_list`**: Lists all configuration settings for a tenant, optionally filtered by category.
-- **`tenant_setting_upsert`**: Inserts or updates a tenant configuration setting.
-- **`tenant_update`**: Updates tenant details and syncs supported currencies/languages.
+- **`tenant_list`**: Lists tenants with pagination, filter, and configuration details. Checks caller's permissions (Platform vs Company scope).
+- **`tenant_setting_delete`**: Deletes a tenant configuration setting. Checks caller permissions.
+- **`tenant_setting_get`**: Returns a specific tenant setting as JSON object. Returns NULL if not found. Checks caller permissions.
+- **`tenant_setting_list`**: Lists all configuration settings for a tenant, optionally filtered by category. Checks caller permissions.
+- **`tenant_setting_upsert`**: Inserts or updates a tenant configuration setting. Checks caller permissions.
+- **`tenant_update`**: Updates tenant details and syncs supported currencies/languages. Checks caller permissions.
 - **`update_updated_at_column`**: Generic trigger function to auto-update updated_at timestamp.
 
 ### Presentation Şeması

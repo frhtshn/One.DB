@@ -1,12 +1,14 @@
 -- ================================================================
 -- TENANT_UPDATE: Tenant bilgilerini günceller
 -- Partial update destekler.
--- Supported Currencies/Languages listesi verilirse (NULL değilse) senkronize eder (Full Sync).
+-- Supported Currencies/Languages listesi verilirse (NULL değilse) senkronize eder.
+-- GÜNCELLENDİ: Caller ID ile yetki kontrolü
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_update(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[]);
+DROP FUNCTION IF EXISTS core.tenant_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[]);
 
 CREATE OR REPLACE FUNCTION core.tenant_update(
+    p_caller_id BIGINT,
     p_id BIGINT,
     p_company_id BIGINT DEFAULT NULL,
     p_tenant_code VARCHAR DEFAULT NULL,
@@ -28,13 +30,45 @@ DECLARE
     v_lang VARCHAR;
     v_current_base_currency CHAR(3);
     v_current_default_language CHAR(2);
+    v_caller_company_id BIGINT;
+    v_has_platform_role BOOLEAN;
+    v_tenant_company_id BIGINT;
 BEGIN
-    -- Existence Check
-    IF NOT EXISTS (SELECT 1 FROM core.tenants WHERE id = p_id) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    -- 1. Yetki ve Kullanıcı Kontrolü
+    SELECT
+        u.company_id,
+        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND r.is_platform_role = TRUE)
+    INTO v_caller_company_id, v_has_platform_role
+    FROM security.users u
+    WHERE u.id = p_caller_id AND u.status = 1;
+
+    IF v_caller_company_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
     END IF;
 
-    -- Company Check
+    -- 2. Tenant Varlık Kontrolü
+    SELECT company_id INTO v_tenant_company_id
+    FROM core.tenants
+    WHERE id = p_id;
+
+    IF NOT FOUND THEN
+         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    END IF;
+
+    -- 3. Scope Kontrolü
+    IF NOT v_has_platform_role THEN
+        -- Kendi şirketinin tenancy dışına çıkamaz
+        IF v_tenant_company_id != v_caller_company_id THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
+        END IF;
+
+        -- Company ID'yi değiştirmeye (başka şirkete taşımaya) çalışıyorsa engelle
+        IF p_company_id IS NOT NULL AND p_company_id != v_caller_company_id THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
+        END IF;
+    END IF;
+
+    -- Company Check (Target Company Exists)
     IF p_company_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM core.companies WHERE id = p_company_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.company.not-found';
     END IF;
@@ -64,17 +98,8 @@ BEGIN
 
     -- Sync Currencies
     IF p_supported_currencies IS NOT NULL THEN
-        -- Disable all first (Soft remove from list) or Delete?
-        -- Strategy: Delete those not in list, Insert new ones, Update existing to enabled.
-        -- Simpler: Delete all unique mapping for this tenant and insert new.
-        -- But data integrity? tenant_currencies might be referenced?
-        -- tenant_currencies table usually has ID. References might exist.
-        -- Safer: Update is_enabled.
-
-        -- 1. Disable all
         UPDATE core.tenant_currencies SET is_enabled = FALSE WHERE tenant_id = p_id;
 
-        -- 2. Upsert list
         FOREACH v_curr IN ARRAY p_supported_currencies
         LOOP
              IF EXISTS (SELECT 1 FROM core.tenant_currencies WHERE tenant_id = p_id AND currency_code = v_curr) THEN
@@ -85,7 +110,6 @@ BEGIN
              END IF;
         END LOOP;
 
-        -- 3. Ensure Base Currency is enabled
         IF v_current_base_currency IS NOT NULL THEN
              IF EXISTS (SELECT 1 FROM core.tenant_currencies WHERE tenant_id = p_id AND currency_code = v_current_base_currency) THEN
                  UPDATE core.tenant_currencies SET is_enabled = TRUE WHERE tenant_id = p_id AND currency_code = v_current_base_currency;
@@ -98,10 +122,8 @@ BEGIN
 
     -- Sync Languages
     IF p_supported_languages IS NOT NULL THEN
-        -- 1. Disable all
         UPDATE core.tenant_languages SET is_enabled = FALSE WHERE tenant_id = p_id;
 
-        -- 2. Upsert list
         FOREACH v_lang IN ARRAY p_supported_languages
         LOOP
              IF EXISTS (SELECT 1 FROM core.tenant_languages WHERE tenant_id = p_id AND language_code = v_lang) THEN
@@ -112,7 +134,6 @@ BEGIN
              END IF;
         END LOOP;
 
-        -- 3. Ensure Default Language is enabled
         IF v_current_default_language IS NOT NULL THEN
              IF EXISTS (SELECT 1 FROM core.tenant_languages WHERE tenant_id = p_id AND language_code = v_current_default_language) THEN
                  UPDATE core.tenant_languages SET is_enabled = TRUE WHERE tenant_id = p_id AND language_code = v_current_default_language;
@@ -126,4 +147,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_update(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[]) IS 'Updates tenant details and syncs supported currencies/languages.';
+COMMENT ON FUNCTION core.tenant_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[]) IS 'Updates tenant details. Checks caller permissions.';

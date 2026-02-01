@@ -76,6 +76,7 @@ JOIN (VALUES
     -- Error Messages - Forbidden
     ('error.forbidden.resource', 'You do not have permission to access {0}. Required permission: {1}'),
     ('error.tenant.access-denied', 'Access denied for tenant {0}'),
+    ('error.access.company-scope-denied', 'Operation not allowed outside company scope'),
 
     -- Error Messages - System Grain
     ('error.system.grain.activation-failed', 'Grain activation failed: {0} (key: {1})'),

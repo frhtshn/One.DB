@@ -2,11 +2,13 @@
 -- TENANT_CREATE: Yeni tenant oluşturur
 -- Code benzersiz olmalı, Company ID geçerli olmalı.
 -- Desteklenen para birimleri ve dilleri de otomatik ekler.
+-- GÜNCELLENDİ: Caller ID ile yetki kontrolü
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_create(BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[]);
+DROP FUNCTION IF EXISTS core.tenant_create(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[]);
 
 CREATE OR REPLACE FUNCTION core.tenant_create(
+    p_caller_id BIGINT,
     p_company_id BIGINT,
     p_tenant_code VARCHAR,
     p_tenant_name VARCHAR,
@@ -25,7 +27,27 @@ DECLARE
     v_id BIGINT;
     v_curr VARCHAR;
     v_lang VARCHAR;
+    v_caller_company_id BIGINT;
+    v_has_platform_role BOOLEAN;
 BEGIN
+    -- 1. Yetki Kontrolü
+    SELECT
+        u.company_id,
+        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND r.is_platform_role = TRUE)
+    INTO v_caller_company_id, v_has_platform_role
+    FROM security.users u
+    WHERE u.id = p_caller_id AND u.status = 1;
+
+    IF v_caller_company_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
+    END IF;
+
+    IF NOT v_has_platform_role THEN
+        IF p_company_id != v_caller_company_id THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
+        END IF;
+    END IF;
+
     -- Company Exists Check
     IF NOT EXISTS (SELECT 1 FROM core.companies WHERE id = p_company_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.company.not-found';
@@ -64,7 +86,6 @@ BEGIN
     ) RETURNING core.tenants.id INTO v_id;
 
     -- Process Supported Currencies
-    -- Ensure base_currency is included
     IF p_base_currency IS NOT NULL THEN
         INSERT INTO core.tenant_currencies (tenant_id, currency_code, is_enabled)
         VALUES (v_id, p_base_currency, TRUE)
@@ -83,7 +104,6 @@ BEGIN
     END IF;
 
     -- Process Supported Languages
-    -- Ensure default_language is included
     IF p_default_language IS NOT NULL THEN
         INSERT INTO core.tenant_languages (tenant_id, language_code, is_enabled)
         VALUES (v_id, p_default_language, TRUE)
@@ -105,4 +125,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_create(BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[]) IS 'Creates a new tenant and assigns supported currencies/languages.';
+COMMENT ON FUNCTION core.tenant_create(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[]) IS 'Creates a new tenant. Checks caller permissions.';
