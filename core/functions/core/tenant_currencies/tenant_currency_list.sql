@@ -1,11 +1,15 @@
 -- ================================================================
 -- TENANT_CURRENCY_LIST: Tenant para birimlerini listeler
 -- Base currency bilgisini isBase olarak işaretler.
+-- GÜNCELLENDİ: Caller ID ile yetki kontrolü
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_currency_list(BIGINT);
+DROP FUNCTION IF EXISTS core.tenant_currency_list(BIGINT, BIGINT);
 
-CREATE OR REPLACE FUNCTION core.tenant_currency_list(p_tenant_id BIGINT)
+CREATE OR REPLACE FUNCTION core.tenant_currency_list(
+    p_caller_id BIGINT,
+    p_tenant_id BIGINT
+)
 RETURNS JSONB
 LANGUAGE plpgsql
 STABLE
@@ -13,10 +17,39 @@ AS $$
 DECLARE
     v_base_currency CHAR(3);
     v_result JSONB;
+    v_caller_company_id BIGINT;
+    v_has_platform_role BOOLEAN;
+    v_tenant_company_id BIGINT;
 BEGIN
-    -- Get base currency
-    SELECT base_currency INTO v_base_currency FROM core.tenants WHERE id = p_tenant_id;
+    -- 1. Yetki ve Kullanıcı Kontrolü
+    SELECT
+        u.company_id,
+        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND r.is_platform_role = TRUE)
+    INTO v_caller_company_id, v_has_platform_role
+    FROM security.users u
+    WHERE u.id = p_caller_id AND u.status = 1;
 
+    IF v_caller_company_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
+    END IF;
+
+    -- 2. Tenant Varlık Kontrolü ve Base Currency Alımı
+    SELECT company_id, base_currency INTO v_tenant_company_id, v_base_currency
+    FROM core.tenants
+    WHERE id = p_tenant_id;
+
+    IF NOT FOUND THEN
+         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    END IF;
+
+    -- 3. Scope Kontrolü
+    IF NOT v_has_platform_role THEN
+        IF v_tenant_company_id != v_caller_company_id THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
+        END IF;
+    END IF;
+
+    -- 4. List Data
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'id', tc.id,
@@ -39,4 +72,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_currency_list(BIGINT) IS 'Lists all assigned currencies for a tenant.';
+COMMENT ON FUNCTION core.tenant_currency_list(BIGINT, BIGINT) IS 'Lists all assigned currencies for a tenant. Checks caller permissions.';
