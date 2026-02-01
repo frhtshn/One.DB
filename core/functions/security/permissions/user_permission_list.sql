@@ -21,6 +21,8 @@ DECLARE
     v_denied_overrides TEXT[];
     v_final_permissions TEXT[];
     v_user_record RECORD;
+    v_accessible_tenant_ids BIGINT[];
+    v_has_platform_role BOOLEAN := FALSE;
 BEGIN
     -- Kullanıcı bilgilerini al
     SELECT id, company_id
@@ -39,24 +41,30 @@ BEGIN
     JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
     WHERE ur.user_id = p_user_id;
 
-    -- Tenant bazlı rolleri al (tüm tenant'lar için)
-    SELECT COALESCE(
-        jsonb_object_agg(
-            tenant_id::text,
-            roles
-        ),
-        '{}'::jsonb
+    -- Platform role kontrolü: Global rollerden herhangi birinin is_platform_role = true olup olmadığı
+    SELECT EXISTS (
+        SELECT 1
+        FROM security.user_roles ur
+        JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
+        WHERE ur.user_id = p_user_id AND r.is_platform_role = TRUE
     )
-    INTO v_tenant_roles
-    FROM (
+    INTO v_has_platform_role;
+
+    -- Tenant bazlı rolleri ve accessible tenant ID'lerini tek sorguda al
+    WITH tenant_role_data AS (
         SELECT
             utr.tenant_id,
-            jsonb_agg(DISTINCT r.code) as roles
+            ARRAY_AGG(DISTINCT r.code) as roles
         FROM security.user_tenant_roles utr
         JOIN security.roles r ON utr.role_id = r.id AND r.status = 1
         WHERE utr.user_id = p_user_id
         GROUP BY utr.tenant_id
-    ) t;
+    )
+    SELECT
+        COALESCE(jsonb_object_agg(tenant_id::text, to_jsonb(roles)), '{}'::jsonb),
+        COALESCE(ARRAY_AGG(tenant_id), '{}')
+    INTO v_tenant_roles, v_accessible_tenant_ids
+    FROM tenant_role_data;
 
     -- Role-based permission'ları al (global roller + belirtilen tenant rolleri)
     SELECT ARRAY_AGG(DISTINCT p.code)
@@ -86,9 +94,9 @@ BEGIN
     FROM security.user_permission_overrides up
     JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
     WHERE up.user_id = p_user_id
-      AND up.is_granted = TRUE
-      AND (up.tenant_id IS NULL OR up.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
-      AND (up.expires_at IS NULL OR up.expires_at > NOW());
+        AND up.is_granted = TRUE
+        AND (up.tenant_id IS NULL OR up.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
+        AND (up.expires_at IS NULL OR up.expires_at > NOW());
 
     -- User-level DENIED overrides (is_granted=false)
     SELECT ARRAY_AGG(DISTINCT p.code)
@@ -96,9 +104,9 @@ BEGIN
     FROM security.user_permission_overrides up
     JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
     WHERE up.user_id = p_user_id
-      AND up.is_granted = FALSE
-      AND (up.tenant_id IS NULL OR up.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
-      AND (up.expires_at IS NULL OR up.expires_at > NOW());
+        AND up.is_granted = FALSE
+        AND (up.tenant_id IS NULL OR up.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
+        AND (up.expires_at IS NULL OR up.expires_at > NOW());
 
     -- Final permissions = (Role Permissions + Granted) - Denied
     SELECT ARRAY_AGG(DISTINCT perm)
@@ -120,11 +128,13 @@ BEGIN
         'tenantRoles', v_tenant_roles,
         'permissions', COALESCE(to_jsonb(v_final_permissions), '[]'::jsonb),
         'grantedOverrides', COALESCE(to_jsonb(v_granted_overrides), '[]'::jsonb),
-        'deniedOverrides', COALESCE(to_jsonb(v_denied_overrides), '[]'::jsonb)
+        'deniedOverrides', COALESCE(to_jsonb(v_denied_overrides), '[]'::jsonb),
+        'accessibleTenantIds', COALESCE(to_jsonb(v_accessible_tenant_ids), '[]'::jsonb),
+        'hasPlatformRole', v_has_platform_role
     );
 
     RETURN v_result;
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_permission_list IS 'Hybrid Permission: Returns user roles and user-level override permissions. Formula: (Role + Granted) - Denied';
+COMMENT ON FUNCTION security.user_permission_list IS 'Hybrid Permission: Returns user roles, permissions and tenant access info. Formula: (Role + Granted) - Denied';
