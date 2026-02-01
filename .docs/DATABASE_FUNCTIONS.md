@@ -37,8 +37,6 @@ Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir
 - **`company_create`**: Creates a new company record for management UI.
 - **`company_delete`**: Soft deletes a company record for management UI.
 - **`company_get`**: Returns details of a company by id for management UI.
-- **`company_get`**: Returns details of a company by id for management UI.
-- **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_update`**: Updates company information for management UI.
 - **`tenant_create`**: Creates a new tenant and assigns supported currencies/languages. Checks caller permissions.
