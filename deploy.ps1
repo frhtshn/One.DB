@@ -9,7 +9,7 @@
 #>
 
 param(
-    [Parameter(Position=0)]
+    [Parameter(Position = 0)]
     [string]$SqlFile = "deploy_core.sql",
     [switch]$Reset,
     [switch]$Dry
@@ -68,7 +68,8 @@ if ($Dry) {
         }
         Write-Host ""
         Write-Host "[!!] Gercek deploy icin -Dry olmadan calistir" -ForegroundColor Yellow
-    } else {
+    }
+    else {
         Write-Host "[XX] Baglanti basarisiz!" -ForegroundColor Red
         Write-Host $testResult -ForegroundColor Red
     }
@@ -83,7 +84,7 @@ if ($Reset) {
     if ($confirm -ne "DELETE") { Write-Host "Iptal"; exit 0 }
 
     Write-Host "[..] Schema'lar siliniyor..." -ForegroundColor Cyan
-    $drop = "DROP SCHEMA IF EXISTS catalog CASCADE; DROP SCHEMA IF EXISTS core CASCADE; DROP SCHEMA IF EXISTS security CASCADE; DROP SCHEMA IF EXISTS presentation CASCADE; DROP SCHEMA IF EXISTS routing CASCADE; DROP SCHEMA IF EXISTS billing CASCADE; DROP SCHEMA IF EXISTS infra CASCADE;"
+    $drop = "DROP SCHEMA IF EXISTS affiliate, affiliate_audit, affiliate_log, auth, backoffice, billing, bonus, bonus_log, campaign, catalog, commission, content, core, finance, finance_log, game, game_log, infra, kyc, kyc_audit, kyc_log, logs, metric_helpers, payout, performance, presentation, profile, promotion, public, routing, security, tracking, transaction, user_management, wallet CASCADE;"
 
     psql -h $HOST_IP -p $PORT -U $USER -d $DB -c $drop
     Write-Host "[OK] Silindi" -ForegroundColor Green
@@ -104,7 +105,8 @@ Pop-Location
 if ($exitCode -eq 0) {
     Write-Host ""
     Write-Host "[OK] DEPLOY BASARILI" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host ""
     Write-Host "[XX] DEPLOY BASARISIZ" -ForegroundColor Red
     Write-Host ""
@@ -115,7 +117,8 @@ if ($exitCode -eq 0) {
     $errorLines = $output | Select-String -Pattern "ERROR|HATA|error|psql:"
     if ($errorLines) {
         $errorLines | ForEach-Object { Write-Host $_.Line -ForegroundColor Yellow }
-    } else {
+    }
+    else {
         $output | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
     }
 
