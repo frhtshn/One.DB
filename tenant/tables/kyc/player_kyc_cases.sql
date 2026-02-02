@@ -12,21 +12,21 @@ CREATE TABLE kyc.player_kyc_cases (
     player_id BIGINT NOT NULL,                    -- Oyuncu ID
 
     current_status VARCHAR(30) NOT NULL,          -- Mevcut durum
-    -- NOT_STARTED: Başlamadı
-    -- IN_REVIEW: İncelemede
-    -- APPROVED: Onaylandı
-    -- REJECTED: Reddedildi
-    -- SUSPENDED: Askıya alındı
+    -- not_started: Başlamadı
+    -- in_review: İncelemede
+    -- approved: Onaylandı
+    -- rejected: Reddedildi
+    -- suspended: Askıya alındı
 
     kyc_level VARCHAR(20),                        -- KYC seviyesi
-    -- BASIC: Temel doğrulama
-    -- STANDARD: Standart doğrulama
-    -- ENHANCED: Gelişmiş doğrulama (yüksek limitler için)
+    -- basic: Temel doğrulama
+    -- standard: Standart doğrulama
+    -- enhanced: Gelişmiş doğrulama (yüksek limitler için)
 
     risk_level VARCHAR(20),                       -- Risk seviyesi
-    -- LOW: Düşük risk
-    -- MEDIUM: Orta risk
-    -- HIGH: Yüksek risk
+    -- low: Düşük risk
+    -- medium: Orta risk
+    -- high: Yüksek risk
 
     assigned_reviewer_id BIGINT,                  -- Atanan inceleyici (BO kullanıcısı)
 

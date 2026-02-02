@@ -1,4 +1,7 @@
-INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES 
+-- Truncate and reseed countries
+TRUNCATE TABLE catalog.countries RESTART IDENTITY CASCADE;
+
+INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALUES
 ('AF', 'AFG', 'Afghanistan'),
 ('DZ', 'DZA', 'Algeria'),
 ('AD', 'AND', 'Andorra'),
@@ -23,6 +26,7 @@ INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALU
 ('BW', 'BWA', 'Botswana'),
 ('BR', 'BRA', 'Brazil'),
 ('BN', 'BRN', 'Brunei'),
+('BG', 'BGR', 'Bulgaria'),
 ('BI', 'BDI', 'Burundi'),
 ('CM', 'CMR', 'Cameroon'),
 ('CA', 'CAN', 'Canada'),
@@ -36,6 +40,7 @@ INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALU
 ('CR', 'CRI', 'Costa Rica'),
 ('HR', 'HRV', 'Croatia'),
 ('CU', 'CUB', 'Cuba'),
+('CW', 'CUW', 'Curacao'),
 ('CY', 'CYP', 'Cyprus'),
 ('CZ', 'CZE', 'Czechia'),
 ('CD', 'COD', 'Democratic Republic of Congo'),
@@ -59,6 +64,7 @@ INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALU
 ('GE', 'GEO', 'Georgia'),
 ('DE', 'DEU', 'Germany'),
 ('GH', 'GHA', 'Ghana'),
+('GI', 'GIB', 'Gibraltar'),
 ('GR', 'GRC', 'Greece'),
 ('GL', 'GRL', 'Greenland'),
 ('GD', 'GRD', 'Grenada'),
@@ -77,6 +83,7 @@ INSERT INTO catalog.countries (country_code, country_code_a3, country_name) VALU
 ('IQ', 'IRQ', 'Iraq'),
 ('IE', 'IRL', 'Ireland'),
 ('IL', 'ISR', 'Israel'),
+('IM', 'IMN', 'Isle of Man'),
 ('IT', 'ITA', 'Italy'),
 ('CI', 'CIV', 'Ivory Coast'),
 ('JM', 'JAM', 'Jamaica'),

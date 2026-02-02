@@ -19,9 +19,9 @@ CREATE TABLE catalog.jurisdictions (
 
     -- Düzenleyici detayları
     authority_type varchar(30) NOT NULL,          -- Otorite tipi
-    -- NATIONAL: Ulusal düzenleyici
-    -- REGIONAL: Bölgesel düzenleyici
-    -- OFFSHORE: Offshore lisans
+    -- national: Ulusal düzenleyici
+    -- regional: Bölgesel düzenleyici
+    -- offshore: Offshore lisans
 
     website_url varchar(255),                     -- Resmi web sitesi
     license_prefix varchar(20),                   -- Lisans numarası öneki

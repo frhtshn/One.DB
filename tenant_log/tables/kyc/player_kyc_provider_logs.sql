@@ -15,9 +15,9 @@ CREATE TABLE kyc_log.player_kyc_provider_logs (
 
     -- Sağlayıcı bilgileri
     provider_code varchar(50) NOT NULL,           -- Sağlayıcı kodu
-    -- SUMSUB: Sumsub entegrasyonu
-    -- ONFIDO: Onfido entegrasyonu
-    -- INTERNAL: Dahili doğrulama
+    -- sumsub: Sumsub entegrasyonu
+    -- onfido: Onfido entegrasyonu
+    -- internal: Dahili doğrulama
 
     provider_reference varchar(100),              -- Sağlayıcı referans ID
 
@@ -31,9 +31,9 @@ CREATE TABLE kyc_log.player_kyc_provider_logs (
 
     -- Durum
     status varchar(30),                           -- İşlem durumu
-    -- SUCCESS: Başarılı
-    -- FAILED: Başarısız
-    -- TIMEOUT: Zaman aşımı
+    -- success: Başarılı
+    -- failed: Başarısız
+    -- timeout: Zaman aşımı
 
     http_status_code int,                         -- HTTP durum kodu
     error_message text,                           -- Hata mesajı (varsa)

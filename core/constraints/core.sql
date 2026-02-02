@@ -191,6 +191,14 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- tenant_jurisdictions unique constraint (tenant + jurisdiction combination)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_jurisdictions') THEN
+        ALTER TABLE core.tenant_jurisdictions ADD CONSTRAINT uq_tenant_jurisdictions
+            UNIQUE (tenant_id, jurisdiction_id);
+    END IF;
+END $$;
+
 -- tenant_data_policies -> tenants
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_data_policies_tenant') THEN

@@ -13,18 +13,18 @@ CREATE TABLE kyc.player_documents (
     kyc_case_id BIGINT,                           -- Bağlı KYC vakası (opsiyonel)
 
     document_type VARCHAR(30) NOT NULL,           -- Belge tipi
-    -- IDENTITY: Kimlik kartı
-    -- PASSPORT: Pasaport
-    -- DRIVER_LICENSE: Ehliyet
-    -- PROOF_OF_ADDRESS: Adres kanıtı (fatura vb.)
-    -- SELFIE: Yüz fotoğrafı
+    -- identity: Kimlik kartı
+    -- passport: Pasaport
+    -- driver_license: Ehliyet
+    -- proof_of_address: Adres kanıtı (fatura vb.)
+    -- selfie: Yüz fotoğrafı
 
     file_name VARCHAR(255),                       -- Dosya adı
     mime_type VARCHAR(50),                        -- Dosya tipi: image/jpeg, application/pdf
 
     storage_type VARCHAR(20) NOT NULL,            -- Depolama tipi
-    -- DB: Veritabanında BYTEA olarak
-    -- OBJECT_STORAGE: S3/MinIO/Azure Blob
+    -- db: Veritabanında BYTEA olarak
+    -- object_storage: S3/MinIO/Azure Blob
 
     file_data BYTEA,                              -- Dosya verisi (DB storage için)
     storage_path VARCHAR(500),                    -- Depolama yolu (object storage için)
@@ -35,11 +35,11 @@ CREATE TABLE kyc.player_documents (
     file_size BIGINT NOT NULL,                    -- Dosya boyutu (byte)
 
     status VARCHAR(30) NOT NULL,                  -- Belge durumu
-    -- UPLOADED: Yüklendi
-    -- PENDING_REVIEW: İnceleme bekliyor
-    -- APPROVED: Onaylandı
-    -- REJECTED: Reddedildi
-    -- EXPIRED: Süresi doldu
+    -- uploaded: Yüklendi
+    -- pending_review: İnceleme bekliyor
+    -- approved: Onaylandı
+    -- rejected: Reddedildi
+    -- expired: Süresi doldu
 
     rejection_reason VARCHAR(255),                -- Red sebebi
 

@@ -13,10 +13,10 @@ CREATE TABLE catalog.kyc_policies (
 
     -- Doğrulama zamanlaması
     verification_timing varchar(30) NOT NULL,     -- Ne zaman doğrulama yapılmalı
-    -- BEFORE_REGISTRATION: Kayıt öncesi (UK, Almanya)
-    -- BEFORE_DEPOSIT: Para yatırmadan önce
-    -- AFTER_REGISTRATION: Kayıttan sonra (Malta - 72 saat)
-    -- BEFORE_WITHDRAWAL: Para çekmeden önce
+    -- before_registration: Kayıt öncesi (UK, Almanya)
+    -- before_deposit: Para yatırmadan önce
+    -- after_registration: Kayıttan sonra (Malta - 72 saat)
+    -- before_withdrawal: Para çekmeden önce
 
     -- Doğrulama süreleri (saat)
     verification_deadline_hours int,              -- Doğrulama tamamlanma süresi (NULL = hemen)

@@ -19,12 +19,12 @@ CREATE TABLE core.tenant_jurisdictions (
 
     -- Öncelik ve durum
     is_primary boolean NOT NULL DEFAULT false,    -- Ana/varsayılan jurisdiction mu?
-    status varchar(20) NOT NULL DEFAULT 'ACTIVE', -- Durumu
-    -- ACTIVE: Aktif lisans
-    -- PENDING: Başvuru sürecinde
-    -- SUSPENDED: Askıya alınmış
-    -- EXPIRED: Süresi dolmuş
-    -- REVOKED: İptal edilmiş
+    status varchar(20) NOT NULL DEFAULT 'active', -- Durumu
+    -- active: Aktif lisans
+    -- pending: Başvuru sürecinde
+    -- suspended: Askıya alınmış
+    -- expired: Süresi dolmuş
+    -- revoked: İptal edilmiş
 
     -- Özelleştirme (junction bazlı override'lar için)
     custom_settings jsonb,                        -- Tenant-specific jurisdiction ayarları

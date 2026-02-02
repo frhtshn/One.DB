@@ -14,24 +14,24 @@ CREATE TABLE kyc_audit.player_risk_assessments (
 
     -- Değerlendirme tipi
     assessment_type varchar(30) NOT NULL,         -- Değerlendirme türü
-    -- INITIAL: Kayıt anında ilk değerlendirme
-    -- PERIODIC: Periyodik yeniden değerlendirme
-    -- TRIGGERED: Olay bazlı (büyük işlem, şüpheli aktivite vb.)
-    -- MANUAL: Manuel admin değerlendirmesi
+    -- initial: Kayıt anında ilk değerlendirme
+    -- periodic: Periyodik yeniden değerlendirme
+    -- triggered: Olay bazlı (büyük işlem, şüpheli aktivite vb.)
+    -- manual: Manuel admin değerlendirmesi
 
     -- Risk skoru
     risk_score int NOT NULL,                      -- Toplam risk skoru (0-100)
     risk_level varchar(20) NOT NULL,              -- Risk seviyesi
-    -- LOW: Düşük risk (0-30)
-    -- MEDIUM: Orta risk (31-60)
-    -- HIGH: Yüksek risk (61-85)
-    -- CRITICAL: Kritik risk (86-100)
+    -- low: Düşük risk (0-30)
+    -- medium: Orta risk (31-60)
+    -- high: Yüksek risk (61-85)
+    -- critical: Kritik risk (86-100)
 
     previous_risk_level varchar(20),              -- Önceki risk seviyesi
     risk_change varchar(20),                      -- Değişim yönü
-    -- INCREASED: Arttı
-    -- DECREASED: Azaldı
-    -- UNCHANGED: Değişmedi
+    -- increased: Arttı
+    -- decreased: Azaldı
+    -- unchanged: Değişmedi
 
     -- Risk faktörleri (JSON detay)
     risk_factors jsonb NOT NULL,                  -- Risk faktör detayları
@@ -53,14 +53,14 @@ CREATE TABLE kyc_audit.player_risk_assessments (
     sof_risk_score int DEFAULT 0,                 -- Kaynak riski
     behavioral_risk_score int DEFAULT 0,          -- Davranışsal risk
 
-    -- Tetikleyici olay (TRIGGERED tipi için)
+    -- Tetikleyici olay (triggered tipi için)
     trigger_event varchar(50),                    -- Tetikleyen olay
-    -- LARGE_DEPOSIT: Büyük para yatırma
-    -- LARGE_WITHDRAWAL: Büyük para çekme
-    -- UNUSUAL_PATTERN: Olağandışı işlem paterni
-    -- SCREENING_MATCH: Tarama eşleşmesi
-    -- JURISDICTION_CHANGE: Ülke değişikliği
-    -- DOCUMENT_EXPIRY: Belge süresi dolması
+    -- large_deposit: Büyük para yatırma
+    -- large_withdrawal: Büyük para çekme
+    -- unusual_pattern: Olağandışı işlem paterni
+    -- screening_match: Tarama eşleşmesi
+    -- jurisdiction_change: Ülke değişikliği
+    -- document_expiry: Belge süresi dolması
 
     trigger_reference_id bigint,                  -- Tetikleyen kayıt ID (transaction, screening vb.)
     trigger_details jsonb,                        -- Tetikleyici detayları
@@ -70,9 +70,9 @@ CREATE TABLE kyc_audit.player_risk_assessments (
     -- ["ENHANCED_MONITORING", "REQUEST_SOF", "MANUAL_REVIEW", "BLOCK_WITHDRAWALS"]
 
     -- Değerlendirmeyi yapan
-    assessed_by varchar(20) NOT NULL DEFAULT 'SYSTEM',
-    -- SYSTEM: Otomatik hesaplama
-    -- ADMIN: Manuel değerlendirme
+    assessed_by varchar(20) NOT NULL DEFAULT 'system',
+    -- system: Otomatik hesaplama
+    -- admin: Manuel değerlendirme
     admin_user_id bigint,                         -- Admin ise kullanıcı ID
 
     -- Onay (yüksek risk için)

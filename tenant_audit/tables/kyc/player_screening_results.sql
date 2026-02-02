@@ -15,11 +15,11 @@ CREATE TABLE kyc_audit.player_screening_results (
 
     -- Tarama tipi
     screening_type varchar(30) NOT NULL,          -- Tarama türü
-    -- PEP: Politically Exposed Person
-    -- SANCTIONS: Yaptırım listesi kontrolü
-    -- ADVERSE_MEDIA: Olumsuz medya taraması
-    -- WATCHLIST: Genel izleme listesi
-    -- FRAUD: Dolandırıcılık veritabanı
+    -- pep: Politically Exposed Person
+    -- sanctions: Yaptırım listesi kontrolü
+    -- adverse_media: Olumsuz medya taraması
+    -- watchlist: Genel izleme listesi
+    -- fraud: Dolandırıcılık veritabanı
 
     -- Tarama sağlayıcısı
     provider_code varchar(50) NOT NULL,           -- Sağlayıcı kodu
@@ -30,11 +30,11 @@ CREATE TABLE kyc_audit.player_screening_results (
 
     -- Tarama sonucu
     result_status varchar(30) NOT NULL,           -- Sonuç durumu
-    -- CLEAR: Temiz - eşleşme yok
-    -- POTENTIAL_MATCH: Potansiyel eşleşme - inceleme gerekli
-    -- CONFIRMED_MATCH: Doğrulanmış eşleşme
-    -- FALSE_POSITIVE: Yanlış pozitif (inceleme sonrası)
-    -- ERROR: Tarama hatası
+    -- clear: Temiz - eşleşme yok
+    -- potential_match: Potansiyel eşleşme - inceleme gerekli
+    -- confirmed_match: Doğrulanmış eşleşme
+    -- false_positive: Yanlış pozitif (inceleme sonrası)
+    -- error: Tarama hatası
 
     -- Eşleşme detayları
     match_score int,                              -- Eşleşme skoru (0-100)
@@ -48,17 +48,17 @@ CREATE TABLE kyc_audit.player_screening_results (
     raw_response jsonb,                           -- Sağlayıcı raw response
 
     -- İnceleme durumu
-    review_status varchar(20) NOT NULL DEFAULT 'PENDING',
-    -- PENDING: İnceleme bekliyor
-    -- REVIEWED: İncelendi
-    -- ESCALATED: Üst seviyeye iletildi
+    review_status varchar(20) NOT NULL DEFAULT 'pending',
+    -- pending: İnceleme bekliyor
+    -- reviewed: İncelendi
+    -- escalated: Üst seviyeye iletildi
 
     reviewed_by bigint,                           -- İnceleyen admin ID
     reviewed_at timestamp,                        -- İnceleme tarihi
     review_decision varchar(30),                  -- İnceleme kararı
-    -- CLEARED: Temiz kabul edildi
-    -- BLOCKED: Hesap engellendi
-    -- MONITORING: İzlemeye alındı
+    -- cleared: Temiz kabul edildi
+    -- blocked: Hesap engellendi
+    -- monitoring: İzlemeye alındı
     review_notes text,                            -- İnceleme notları
 
     -- Tarihler

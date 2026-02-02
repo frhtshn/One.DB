@@ -23,10 +23,10 @@ CREATE TABLE kyc.player_jurisdiction (
     -- Aktif jurisdiction
     jurisdiction_id int NOT NULL,                 -- Tabi olunan jurisdiction (core.jurisdictions)
     jurisdiction_assigned_at timestamp NOT NULL DEFAULT now(),
-    jurisdiction_assigned_by varchar(20) DEFAULT 'SYSTEM',
-    -- SYSTEM: Otomatik atama
-    -- ADMIN: Manuel atama
-    -- KYC: KYC doğrulaması sonrası
+    jurisdiction_assigned_by varchar(20) DEFAULT 'system',
+    -- system: Otomatik atama
+    -- admin: Manuel atama
+    -- kyc: KYC doğrulaması sonrası
 
     -- Değişiklik geçmişi için önceki jurisdiction
     previous_jurisdiction_id int,
@@ -34,11 +34,11 @@ CREATE TABLE kyc.player_jurisdiction (
     jurisdiction_change_reason varchar(255),
 
     -- Coğrafi kısıtlama durumu
-    geo_status varchar(20) NOT NULL DEFAULT 'ALLOWED',
-    -- ALLOWED: İzin verilen bölge
-    -- BLOCKED: Engelli bölge
-    -- RESTRICTED: Kısıtlı (bazı oyunlar yasak)
-    -- PENDING_REVIEW: İnceleme bekliyor
+    geo_status varchar(20) NOT NULL DEFAULT 'allowed',
+    -- allowed: İzin verilen bölge
+    -- blocked: Engelli bölge
+    -- restricted: Kısıtlı (bazı oyunlar yasak)
+    -- pending_review: İnceleme bekliyor
 
     geo_block_reason varchar(255),                -- Engelleme sebebi
     geo_reviewed_at timestamp,                    -- Son inceleme tarihi

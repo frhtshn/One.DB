@@ -13,9 +13,9 @@ CREATE TABLE catalog.kyc_level_requirements (
 
     -- KYC Seviyesi
     kyc_level varchar(20) NOT NULL,               -- Seviye
-    -- BASIC: Temel doğrulama (email, telefon)
-    -- STANDARD: Standart doğrulama (kimlik, adres)
-    -- ENHANCED: Gelişmiş doğrulama (SOF, EDD)
+    -- basic: Temel doğrulama (email, telefon)
+    -- standard: Standart doğrulama (kimlik, adres)
+    -- enhanced: Gelişmiş doğrulama (SOF, EDD)
 
     -- Bu seviyeye geçiş için gerekli koşullar
     -- (herhangi biri tetikler - OR logic)
@@ -50,11 +50,11 @@ CREATE TABLE catalog.kyc_level_requirements (
     grace_period_hours int DEFAULT 0,             -- Süre dolmadan izin verilen işlemler
 
     -- Süre dolduktan sonra ne yapılacak
-    on_deadline_action varchar(30) DEFAULT 'BLOCK_DEPOSITS',
-    -- BLOCK_DEPOSITS: Para yatırmayı engelle
-    -- BLOCK_WITHDRAWALS: Para çekmeyi engelle
-    -- BLOCK_ALL: Tüm işlemleri engelle
-    -- SUSPEND_ACCOUNT: Hesabı askıya al
+    on_deadline_action varchar(30) DEFAULT 'block_deposits',
+    -- block_deposits: Para yatırmayı engelle
+    -- block_withdrawals: Para çekmeyi engelle
+    -- block_all: Tüm işlemleri engelle
+    -- suspend_account: Hesabı askıya al
 
     -- Sıralama (seviye hiyerarşisi)
     level_order int NOT NULL DEFAULT 0,           -- 0=BASIC, 1=STANDARD, 2=ENHANCED

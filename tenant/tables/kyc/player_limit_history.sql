@@ -13,21 +13,21 @@ CREATE TABLE kyc.player_limit_history (
 
     -- İşlem tipi
     action_type varchar(50) NOT NULL,             -- İşlem türü
-    -- LIMIT_CREATED: Limit oluşturuldu
-    -- LIMIT_DECREASED: Limit azaltıldı (hemen aktif)
-    -- LIMIT_INCREASE_REQUESTED: Limit artışı talep edildi
-    -- LIMIT_INCREASE_ACTIVATED: Limit artışı aktif oldu
-    -- LIMIT_REMOVED: Limit kaldırıldı
-    -- RESTRICTION_STARTED: Kısıtlama başladı
-    -- RESTRICTION_ENDED: Kısıtlama sona erdi
-    -- REINSTATEMENT_REQUESTED: Yeniden açılma talep edildi
-    -- REINSTATEMENT_APPROVED: Yeniden açılma onaylandı
-    -- REINSTATEMENT_REJECTED: Yeniden açılma reddedildi
+    -- limit_created: Limit oluşturuldu
+    -- limit_decreased: Limit azaltıldı (hemen aktif)
+    -- limit_increase_requested: Limit artışı talep edildi
+    -- limit_increase_activated: Limit artışı aktif oldu
+    -- limit_removed: Limit kaldırıldı
+    -- restriction_started: Kısıtlama başladı
+    -- restriction_ended: Kısıtlama sona erdi
+    -- reinstatement_requested: Yeniden açılma talep edildi
+    -- reinstatement_approved: Yeniden açılma onaylandı
+    -- reinstatement_rejected: Yeniden açılma reddedildi
 
     -- Referans
     entity_type varchar(30) NOT NULL,             -- Kaynak tablo
-    -- LIMIT: player_limits
-    -- RESTRICTION: player_restrictions
+    -- limit: player_limits
+    -- restriction: player_restrictions
     entity_id bigint NOT NULL,                    -- Kaynak kayıt ID
 
     -- Değişiklik detayları
@@ -36,9 +36,9 @@ CREATE TABLE kyc.player_limit_history (
 
     -- Kim tarafından yapıldı
     performed_by varchar(20) NOT NULL,            -- İşlemi yapan
-    -- PLAYER: Oyuncu
-    -- ADMIN: Admin
-    -- SYSTEM: Sistem otomatik
+    -- player: Oyuncu
+    -- admin: Admin
+    -- system: Sistem otomatik
     admin_user_id bigint,                         -- Admin ise kullanıcı ID
 
     -- İşlem detayı

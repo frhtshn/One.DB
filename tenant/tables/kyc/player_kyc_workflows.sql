@@ -15,11 +15,11 @@ CREATE TABLE kyc.player_kyc_workflows (
     current_status VARCHAR(30) NOT NULL,          -- Yeni durum
 
     action VARCHAR(50),                           -- Yapılan işlem
-    -- DOCUMENT_UPLOADED: Belge yüklendi
-    -- REVIEW_STARTED: İnceleme başladı
-    -- APPROVED: Onaylandı
-    -- REJECTED: Reddedildi
-    -- EXPIRED: Süresi doldu
+    -- document_uploaded: Belge yüklendi
+    -- review_started: İnceleme başladı
+    -- approved: Onaylandı
+    -- rejected: Reddedildi
+    -- expired: Süresi doldu
 
     performed_by BIGINT,                          -- İşlemi yapan (inceleyici veya sistem)
 

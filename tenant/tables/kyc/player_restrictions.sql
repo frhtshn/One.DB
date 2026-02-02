@@ -13,21 +13,21 @@ CREATE TABLE kyc.player_restrictions (
 
     -- Kısıtlama tipi
     restriction_type varchar(30) NOT NULL,        -- Kısıtlama türü
-    -- COOLING_OFF: Soğuma dönemi (kısa süreli, geri alınamaz)
-    -- SELF_EXCLUSION: Kendini dışlama (uzun süreli, ciddi)
+    -- cooling_off: Soğuma dönemi (kısa süreli, geri alınamaz)
+    -- self_exclusion: Kendini dışlama (uzun süreli, ciddi)
 
     -- Kısıtlama kapsamı
-    scope varchar(30) NOT NULL DEFAULT 'ALL',     -- Kapsam
-    -- ALL: Tüm oyunlar
-    -- CASINO: Sadece casino
-    -- SPORTS: Sadece spor bahisleri
-    -- LIVE: Sadece canlı oyunlar
+    scope varchar(30) NOT NULL DEFAULT 'all',     -- Kapsam
+    -- all: Tüm oyunlar
+    -- casino: Sadece casino
+    -- sports: Sadece spor bahisleri
+    -- live: Sadece canlı oyunlar
 
     -- Durum
-    status varchar(20) NOT NULL DEFAULT 'ACTIVE', -- Durum
-    -- ACTIVE: Aktif kısıtlama
-    -- EXPIRED: Süresi dolmuş
-    -- REVOKED: Admin tarafından kaldırıldı
+    status varchar(20) NOT NULL DEFAULT 'active', -- Durum
+    -- active: Aktif kısıtlama
+    -- expired: Süresi dolmuş
+    -- revoked: Admin tarafından kaldırıldı
 
     -- Tarihler
     starts_at timestamp NOT NULL DEFAULT now(),   -- Başlangıç tarihi
@@ -37,10 +37,10 @@ CREATE TABLE kyc.player_restrictions (
     reason varchar(500),                          -- Kısıtlama sebebi
 
     -- Kim tarafından belirlendi
-    set_by varchar(20) NOT NULL DEFAULT 'PLAYER', -- Belirleyen
-    -- PLAYER: Oyuncu kendisi
-    -- ADMIN: Admin/Destek
-    -- REGULATOR: Düzenleyici kurum
+    set_by varchar(20) NOT NULL DEFAULT 'player', -- Belirleyen
+    -- player: Oyuncu kendisi
+    -- admin: Admin/Destek
+    -- regulator: Düzenleyici kurum
 
     -- Yeniden aktivasyon
     can_be_revoked boolean NOT NULL DEFAULT false,-- İptal edilebilir mi?

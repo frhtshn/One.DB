@@ -13,36 +13,36 @@ CREATE TABLE kyc.player_limits (
 
     -- Limit tipi
     limit_type varchar(30) NOT NULL,              -- Limit türü
-    -- DEPOSIT: Para yatırma limiti
-    -- LOSS: Kayıp limiti
-    -- WAGER: Bahis limiti
-    -- SESSION: Oturum süresi limiti (dakika)
+    -- deposit: Para yatırma limiti
+    -- loss: Kayıp limiti
+    -- wager: Bahis limiti
+    -- session: Oturum süresi limiti (dakika)
 
     -- Limit periyodu
     limit_period varchar(20) NOT NULL,            -- Periyot
-    -- DAILY: Günlük
-    -- WEEKLY: Haftalık
-    -- MONTHLY: Aylık
+    -- daily: Günlük
+    -- weekly: Haftalık
+    -- monthly: Aylık
 
     -- Limit değeri
     limit_value decimal(18,2) NOT NULL,           -- Limit tutarı veya dakika
     currency_code character(3),                   -- Para birimi (SESSION için NULL)
 
     -- Durum ve tarihler
-    status varchar(20) NOT NULL DEFAULT 'ACTIVE', -- Durum
-    -- ACTIVE: Aktif
-    -- PENDING_INCREASE: Artış beklemede
-    -- EXPIRED: Süresi dolmuş
+    status varchar(20) NOT NULL DEFAULT 'active', -- Durum
+    -- active: Aktif
+    -- pending_increase: Artış beklemede
+    -- expired: Süresi dolmuş
 
     -- Limit değişiklik kontrolü
     pending_value decimal(18,2),                  -- Bekleyen yeni değer (artış için)
     pending_activation_at timestamp,              -- Artışın aktif olacağı tarih
 
     -- Kim belirledi
-    set_by varchar(20) NOT NULL DEFAULT 'PLAYER', -- Belirleyen
-    -- PLAYER: Oyuncu
-    -- ADMIN: Admin/Destek
-    -- SYSTEM: Sistem otomatik
+    set_by varchar(20) NOT NULL DEFAULT 'player', -- Belirleyen
+    -- player: Oyuncu
+    -- admin: Admin/Destek
+    -- system: Sistem otomatik
 
     starts_at timestamp NOT NULL DEFAULT now(),   -- Limitin başlangıç tarihi
     expires_at timestamp,                         -- Limitin bitiş tarihi (NULL = süresiz)
