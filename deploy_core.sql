@@ -23,6 +23,9 @@ COMMENT ON SCHEMA billing IS 'Commission and billing';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS outbox;
+COMMENT ON SCHEMA outbox IS 'Transactional outbox pattern for cache invalidation and event publishing';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -154,6 +157,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/billing/provider/provider_invoices.sql
 \i core/tables/billing/provider/provider_invoice_items.sql
 \i core/tables/billing/provider/provider_payments.sql
+
+-- OUTBOX TABLES
+\i core/tables/outbox/outbox_messages.sql
 
 -- DATA SEEDING
 \i core/data/companies.sql
@@ -342,6 +348,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/constraints/routing.sql
 \i core/constraints/security.sql
 \i core/constraints/billing.sql
+\i core/constraints/outbox.sql
 
 -- INDEXES (Performans indexleri - en sonda yükle)
 \i core/indexes/catalog.sql
@@ -350,5 +357,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/indexes/routing.sql
 \i core/indexes/security.sql
 \i core/indexes/billing.sql
+\i core/indexes/outbox.sql
 
 COMMIT;
