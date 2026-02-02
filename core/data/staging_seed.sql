@@ -431,18 +431,58 @@ INSERT INTO core.tenant_languages (tenant_id, language_code, is_enabled)
 SELECT t.id, l.code, true FROM core.tenants t
 CROSS JOIN (VALUES ('en'), ('tr')) AS l(code);
 
--- Tenant Ayarları (varsayılan)
+-- ================================================================
+-- 11. TENANT SETTINGS
+-- ================================================================
+
+-- SMS API Ayarları
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, s.category, s.setting_key, s.setting_value::jsonb, s.description
-FROM core.tenants t
-CROSS JOIN (VALUES
-    ('Withdrawal', 'max_daily_withdrawal', '10000', 'Günlük maksimum çekim limiti'),
-    ('Withdrawal', 'max_monthly_withdrawal', '100000', 'Aylık maksimum çekim limiti'),
-    ('KYC', 'kyc_required_level', '1', 'Minimum KYC seviyesi'),
-    ('KYC', 'kyc_withdrawal_threshold', '2000', 'KYC gerektiren çekim tutarı'),
-    ('General', 'session_timeout_minutes', '30', 'Oturum zaman aşımı (dakika)'),
-    ('General', 'max_failed_logins', '5', 'Maksimum başarısız giriş denemesi')
-) AS s(category, setting_key, setting_value, description);
+SELECT t.id, 'Integration', 'sms_provider',
+    '{"provider": "twilio", "account_sid": "AC_STAGING_SID", "auth_token": "STAGING_AUTH_TOKEN", "from_number": "+15005550006", "enabled": true, "sandbox_mode": true}'::jsonb,
+    'SMS provider configuration (Twilio)'
+FROM core.tenants t;
+
+-- Email Ayarları
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Integration', 'email_provider',
+    '{"provider": "smtp", "host": "smtp.mailtrap.io", "port": 587, "username": "staging_user", "password": "staging_pass", "from_address": "noreply@staging.nucleo.io", "from_name": "Nucleo Platform", "use_ssl": true, "enabled": true}'::jsonb,
+    'Email/SMTP provider configuration'
+FROM core.tenants t;
+
+-- Tenant Ana DB Bağlantısı (tenant)
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Database', 'connection_tenant',
+    '{"host": "207.180.241.230", "port": 5433, "database": "tenant", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 5, "max_pool_size": 50, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 10}'::jsonb,
+    'Tenant main database connection settings'
+FROM core.tenants t;
+
+-- Tenant Audit DB Bağlantısı
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Database', 'connection_tenant_audit',
+    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_audit", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}'::jsonb,
+    'Tenant audit database connection settings'
+FROM core.tenants t;
+
+-- Tenant Log DB Bağlantısı
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Database', 'connection_tenant_log',
+    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_log", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}'::jsonb,
+    'Tenant log database connection settings'
+FROM core.tenants t;
+
+-- Tenant Affiliate DB Bağlantısı
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Database', 'connection_tenant_affiliate',
+    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_affiliate", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}'::jsonb,
+    'Tenant affiliate database connection settings'
+FROM core.tenants t;
+
+-- Tenant Report DB Bağlantısı
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Database', 'connection_tenant_report',
+    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_report", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 120, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 15}'::jsonb,
+    'Tenant report database connection settings (replica enabled for heavy queries)'
+FROM core.tenants t;
 
 -- ================================================================
 -- 12. MENU GROUPS
