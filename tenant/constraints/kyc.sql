@@ -66,3 +66,55 @@ DO $$ BEGIN
             FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
     END IF;
 END $$;
+
+-- =============================================
+-- New KYC Tables Constraints (Jurisdiction, Screening, Risk, AML)
+-- =============================================
+
+-- player_jurisdiction -> players
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_jurisdiction_player') THEN
+        ALTER TABLE kyc.player_jurisdiction ADD CONSTRAINT fk_player_jurisdiction_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- player_screening_results -> players
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_screening_results_player') THEN
+        ALTER TABLE kyc.player_screening_results ADD CONSTRAINT fk_player_screening_results_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- player_screening_results -> player_kyc_cases
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_screening_results_case') THEN
+        ALTER TABLE kyc.player_screening_results ADD CONSTRAINT fk_player_screening_results_case
+            FOREIGN KEY (kyc_case_id) REFERENCES kyc.player_kyc_cases(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
+-- player_risk_assessments -> players
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_risk_assessments_player') THEN
+        ALTER TABLE kyc.player_risk_assessments ADD CONSTRAINT fk_player_risk_assessments_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- player_risk_assessments -> superseded_by (self-reference)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_risk_assessments_superseded') THEN
+        ALTER TABLE kyc.player_risk_assessments ADD CONSTRAINT fk_player_risk_assessments_superseded
+            FOREIGN KEY (superseded_by) REFERENCES kyc.player_risk_assessments(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
+-- player_aml_flags -> players
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_aml_flags_player') THEN
+        ALTER TABLE kyc.player_aml_flags ADD CONSTRAINT fk_player_aml_flags_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;

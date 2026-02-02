@@ -88,6 +88,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/kyc/player_limits.sql
 \i tenant/tables/kyc/player_restrictions.sql
 \i tenant/tables/kyc/player_limit_history.sql
+\i tenant/tables/kyc/player_jurisdiction.sql
+\i tenant/tables/kyc/player_screening_results.sql
+\i tenant/tables/kyc/player_risk_assessments.sql
+\i tenant/tables/kyc/player_aml_flags.sql
 
 -- BONUS TABLES
 \i tenant/tables/bonus/bonus_awards.sql

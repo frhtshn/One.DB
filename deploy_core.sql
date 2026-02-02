@@ -68,6 +68,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/compliance/jurisdictions.sql
 \i core/tables/catalog/compliance/kyc_policies.sql
 \i core/tables/catalog/compliance/kyc_document_requirements.sql
+\i core/tables/catalog/compliance/kyc_level_requirements.sql
 \i core/tables/catalog/compliance/responsible_gaming_policies.sql
 
 -- UI Kit (Front-end Themes & Widgets)

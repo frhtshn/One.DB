@@ -89,3 +89,13 @@ CREATE INDEX IF NOT EXISTS idx_rg_policies_loss_limits_gin ON catalog.responsibl
 
 -- catalog.kyc_document_requirements (accepted_subtypes)
 CREATE INDEX IF NOT EXISTS idx_kyc_req_subtypes_gin ON catalog.kyc_document_requirements USING gin(accepted_subtypes);
+
+-- kyc_level_requirements
+CREATE INDEX IF NOT EXISTS idx_kyc_level_req_jurisdiction ON catalog.kyc_level_requirements USING btree(jurisdiction_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_kyc_level_req_lookup ON catalog.kyc_level_requirements USING btree(jurisdiction_id, kyc_level);
+CREATE INDEX IF NOT EXISTS idx_kyc_level_req_order ON catalog.kyc_level_requirements USING btree(jurisdiction_id, level_order);
+CREATE INDEX IF NOT EXISTS idx_kyc_level_req_active ON catalog.kyc_level_requirements USING btree(is_active) WHERE is_active = true;
+
+-- catalog.kyc_level_requirements JSONB columns
+CREATE INDEX IF NOT EXISTS idx_kyc_level_req_docs_gin ON catalog.kyc_level_requirements USING gin(required_documents) WHERE required_documents IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_kyc_level_req_verif_gin ON catalog.kyc_level_requirements USING gin(required_verifications) WHERE required_verifications IS NOT NULL;

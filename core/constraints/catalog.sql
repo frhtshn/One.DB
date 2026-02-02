@@ -93,6 +93,14 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- kyc_level_requirements -> jurisdictions
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kyc_level_requirements_jurisdiction') THEN
+        ALTER TABLE catalog.kyc_level_requirements ADD CONSTRAINT fk_kyc_level_requirements_jurisdiction
+            FOREIGN KEY (jurisdiction_id) REFERENCES catalog.jurisdictions(id);
+    END IF;
+END $$;
+
 -- Navigation Templates Constraints
 -- navigation_template_items -> navigation_templates
 DO $$ BEGIN

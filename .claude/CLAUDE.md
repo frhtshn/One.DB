@@ -85,7 +85,36 @@ Nucleo.DB/
 - Port: 5433
 - PostgreSQL 16
 
+## KYC/Compliance Yapısı
+
+### Core DB (Paylaşılan Katalog)
+```
+catalog.jurisdictions              - Lisans otoriteleri (MGA, UKGC, GGL...)
+catalog.kyc_policies               - Jurisdiction bazlı KYC kuralları
+catalog.kyc_document_requirements  - Gerekli belge tipleri
+catalog.kyc_level_requirements     - KYC seviye geçiş kuralları (BASIC→STANDARD→ENHANCED)
+catalog.responsible_gaming_policies - Sorumlu oyun politikaları
+core.tenant_jurisdictions          - Tenant-Jurisdiction bağlantısı (M:N)
+```
+
+### Tenant DB (İzole - KYC Schema)
+```
+kyc.player_documents          - Yüklenen belgeler
+kyc.player_kyc_cases          - KYC vakaları
+kyc.player_kyc_workflows      - Workflow geçmişi
+kyc.player_kyc_provider_logs  - External provider logları (Sumsub, Onfido)
+kyc.player_limits             - Oyuncu limitleri (deposit, loss, session)
+kyc.player_restrictions       - Cooling off / Self exclusion
+kyc.player_limit_history      - Limit değişiklik audit
+kyc.player_jurisdiction       - Oyuncunun tabi olduğu jurisdiction
+kyc.player_screening_results  - PEP/Sanctions tarama sonuçları
+kyc.player_risk_assessments   - Risk değerlendirme detayları
+kyc.player_aml_flags          - AML uyarıları ve SAR'lar
+```
+
 ## Notlar
 - Her tenant için ayrı DB klonlanır (tenant template'den)
 - Log tablolarında günlük partitioning kullanılıyor
 - Audit kayıtları uzun süreli saklanır (compliance)
+- KYC seviye geçişleri jurisdiction'a göre belirlenir
+- PEP/Sanctions taramaları periyodik olarak tekrarlanır
