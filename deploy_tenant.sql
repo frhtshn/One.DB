@@ -80,18 +80,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/wallet/wallet_snapshots.sql
 
 
--- KYC TABLES
+-- KYC TABLES (Business Data - tenant DB)
 \i tenant/tables/kyc/player_kyc_cases.sql
 \i tenant/tables/kyc/player_kyc_workflows.sql
 \i tenant/tables/kyc/player_documents.sql
-\i tenant/tables/kyc/player_kyc_provider_logs.sql
 \i tenant/tables/kyc/player_limits.sql
 \i tenant/tables/kyc/player_restrictions.sql
 \i tenant/tables/kyc/player_limit_history.sql
 \i tenant/tables/kyc/player_jurisdiction.sql
-\i tenant/tables/kyc/player_screening_results.sql
-\i tenant/tables/kyc/player_risk_assessments.sql
 \i tenant/tables/kyc/player_aml_flags.sql
+-- NOTE: player_screening_results, player_risk_assessments -> tenant_audit DB
+-- NOTE: player_kyc_provider_logs -> tenant_log DB
 
 -- BONUS TABLES
 \i tenant/tables/bonus/bonus_awards.sql

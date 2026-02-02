@@ -9,6 +9,9 @@ COMMENT ON SCHEMA affiliate_log IS 'Affiliate system logs';
 CREATE SCHEMA IF NOT EXISTS bonus_log;
 COMMENT ON SCHEMA bonus_log IS 'Bonus system logs';
 
+CREATE SCHEMA IF NOT EXISTS kyc_log;
+COMMENT ON SCHEMA kyc_log IS 'KYC provider API logs (90+ day retention)';
+
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
@@ -42,9 +45,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- \i tenant_log/tables/bonus/rule_execution_logs.sql
 
 -- =============================================================================
+-- KYC LOG TABLES
+-- KYC provider API call logları
+-- Retention: 90+ gün (KYC compliance için uzatılmış)
+-- =============================================================================
+\i tenant_log/tables/kyc/player_kyc_provider_logs.sql
+
+-- =============================================================================
 -- INDEXES
 -- =============================================================================
 \i tenant_log/indexes/affiliate.sql
 -- \i tenant_log/indexes/bonus.sql
+\i tenant_log/indexes/kyc.sql
 
 COMMIT;

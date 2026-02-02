@@ -2,14 +2,15 @@
 -- Player Risk Assessments (Risk Değerlendirmeleri)
 -- Oyuncu risk skorlama ve değerlendirme geçmişi
 -- AML/KYC risk bazlı yaklaşım için
+-- TENANT_AUDIT DB - 5-10 yıl retention
 -- =============================================
 
-DROP TABLE IF EXISTS kyc.player_risk_assessments CASCADE;
+DROP TABLE IF EXISTS kyc_audit.player_risk_assessments CASCADE;
 
-CREATE TABLE kyc.player_risk_assessments (
+CREATE TABLE kyc_audit.player_risk_assessments (
     id bigserial PRIMARY KEY,
 
-    player_id bigint NOT NULL,                    -- Oyuncu ID
+    player_id bigint NOT NULL,                    -- Oyuncu ID (tenant DB referans)
 
     -- Değerlendirme tipi
     assessment_type varchar(30) NOT NULL,         -- Değerlendirme türü
@@ -87,11 +88,4 @@ CREATE TABLE kyc.player_risk_assessments (
     created_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE kyc.player_risk_assessments IS 'Player risk scoring and assessment history for AML/KYC risk-based approach';
-
--- Indexes
-CREATE INDEX idx_player_risk_player ON kyc.player_risk_assessments(player_id);
-CREATE INDEX idx_player_risk_level ON kyc.player_risk_assessments(risk_level);
-CREATE INDEX idx_player_risk_type ON kyc.player_risk_assessments(assessment_type);
-CREATE INDEX idx_player_risk_pending ON kyc.player_risk_assessments(requires_approval) WHERE requires_approval = true AND approved_at IS NULL;
-CREATE INDEX idx_player_risk_latest ON kyc.player_risk_assessments(player_id, created_at DESC);
+COMMENT ON TABLE kyc_audit.player_risk_assessments IS 'Player risk scoring and assessment history for AML/KYC risk-based approach. Retention: 5-10 years.';

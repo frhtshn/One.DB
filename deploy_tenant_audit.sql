@@ -6,6 +6,9 @@ BEGIN;
 CREATE SCHEMA IF NOT EXISTS affiliate_audit;
 COMMENT ON SCHEMA affiliate_audit IS 'Affiliate audit logs';
 
+CREATE SCHEMA IF NOT EXISTS kyc_audit;
+COMMENT ON SCHEMA kyc_audit IS 'KYC/AML compliance audit records (5-10 year retention)';
+
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
@@ -32,8 +35,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_audit/tables/affiliate/user_actions.sql
 
 -- =============================================================================
+-- KYC AUDIT TABLES
+-- PEP/Sanctions tarama sonuçları ve risk değerlendirmeleri
+-- Retention: 5-10 yıl (regulatory compliance)
+-- =============================================================================
+\i tenant_audit/tables/kyc/player_screening_results.sql
+\i tenant_audit/tables/kyc/player_risk_assessments.sql
+
+-- =============================================================================
 -- INDEXES
 -- =============================================================================
 \i tenant_audit/indexes/affiliate.sql
+\i tenant_audit/indexes/kyc.sql
 
 COMMIT;

@@ -97,19 +97,27 @@ catalog.responsible_gaming_policies - Sorumlu oyun politikaları
 core.tenant_jurisdictions          - Tenant-Jurisdiction bağlantısı (M:N)
 ```
 
-### Tenant DB (İzole - KYC Schema)
+### Tenant DB (Business - Sınırsız)
 ```
 kyc.player_documents          - Yüklenen belgeler
 kyc.player_kyc_cases          - KYC vakaları
 kyc.player_kyc_workflows      - Workflow geçmişi
-kyc.player_kyc_provider_logs  - External provider logları (Sumsub, Onfido)
 kyc.player_limits             - Oyuncu limitleri (deposit, loss, session)
 kyc.player_restrictions       - Cooling off / Self exclusion
 kyc.player_limit_history      - Limit değişiklik audit
 kyc.player_jurisdiction       - Oyuncunun tabi olduğu jurisdiction
-kyc.player_screening_results  - PEP/Sanctions tarama sonuçları
-kyc.player_risk_assessments   - Risk değerlendirme detayları
-kyc.player_aml_flags          - AML uyarıları ve SAR'lar
+kyc.player_aml_flags          - AML uyarıları ve SAR'lar (aktif alert'ler)
+```
+
+### Tenant Audit DB (Compliance - 5-10 yıl)
+```
+kyc_audit.player_screening_results  - PEP/Sanctions tarama sonuçları
+kyc_audit.player_risk_assessments   - Risk değerlendirme geçmişi
+```
+
+### Tenant Log DB (Operasyonel - 90+ gün)
+```
+kyc_log.player_kyc_provider_logs    - External provider API logları (Sumsub, Onfido)
 ```
 
 ## Notlar

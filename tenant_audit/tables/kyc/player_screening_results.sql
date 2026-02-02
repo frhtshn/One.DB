@@ -2,15 +2,16 @@
 -- Player Screening Results (Tarama Sonuçları)
 -- PEP, Sanctions ve Adverse Media taramaları
 -- Düzenleyici uyumluluk için zorunlu kontroller
+-- TENANT_AUDIT DB - 5-10 yıl retention
 -- =============================================
 
-DROP TABLE IF EXISTS kyc.player_screening_results CASCADE;
+DROP TABLE IF EXISTS kyc_audit.player_screening_results CASCADE;
 
-CREATE TABLE kyc.player_screening_results (
+CREATE TABLE kyc_audit.player_screening_results (
     id bigserial PRIMARY KEY,
 
-    player_id bigint NOT NULL,                    -- Oyuncu ID
-    kyc_case_id bigint,                           -- Bağlı KYC vakası (opsiyonel)
+    player_id bigint NOT NULL,                    -- Oyuncu ID (tenant DB referans)
+    kyc_case_id bigint,                           -- Bağlı KYC vakası (tenant DB referans)
 
     -- Tarama tipi
     screening_type varchar(30) NOT NULL,          -- Tarama türü
@@ -68,11 +69,4 @@ CREATE TABLE kyc.player_screening_results (
     created_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE kyc.player_screening_results IS 'PEP, Sanctions, and Adverse Media screening results for regulatory compliance';
-
--- Indexes
-CREATE INDEX idx_player_screening_player ON kyc.player_screening_results(player_id);
-CREATE INDEX idx_player_screening_type ON kyc.player_screening_results(screening_type);
-CREATE INDEX idx_player_screening_status ON kyc.player_screening_results(result_status);
-CREATE INDEX idx_player_screening_review ON kyc.player_screening_results(review_status) WHERE review_status = 'PENDING';
-CREATE INDEX idx_player_screening_due ON kyc.player_screening_results(next_screening_due) WHERE next_screening_due IS NOT NULL;
+COMMENT ON TABLE kyc_audit.player_screening_results IS 'PEP, Sanctions, and Adverse Media screening results for regulatory compliance. Retention: 5-10 years.';

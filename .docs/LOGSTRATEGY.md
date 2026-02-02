@@ -20,15 +20,17 @@ nasıl temizleneceğini tanımlar.
 | **core_audit**     | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl        | ❌ / ARCHIVE      |
 | **core_report**    | Merkezi raporlama ve BI verileri                        | Opsiyonel       | İş ihtiyacı     | -                 |
 | **game**           | Oyun gateway entegrasyon durumu                         | Daily           | 14–30 gün       | DROP partition    |
-| **game_log**       | Tüm tenant’lara ait game gateway logları                | Daily           | 7–14 gün        | DROP partition    |
+| **game_log**       | Tüm tenant'lara ait game gateway logları                | Daily           | 7–14 gün        | DROP partition    |
 | **finance**        | Finans gateway entegrasyon durumu                       | Daily           | 14–30 gün       | DROP partition    |
-| **finance_log**    | Tüm tenant’lara ait finance gateway logları             | Daily           | 14–30 gün       | DROP partition    |
+| **finance_log**    | Tüm tenant'lara ait finance gateway logları             | Daily           | 14–30 gün       | DROP partition    |
 | **bonus**          | Bonus ve promosyon yapılandırması                       | ❌              | Sınırsız        | -                 |
 | **tenant**         | Business & history (transactions, game rounds, wallets) | Monthly / Daily | Sınırsız        | -                 |
-| **tenant_log**     | Tenant teknik & operasyonel log                         | Daily           | 30–90 gün       | DROP partition    |
-| **tenant_audit**   | Tenant karar & yetkili aksiyon                          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
+| **tenant_log**     | Tenant teknik & operasyonel log + KYC provider logları  | Daily           | 30–90 gün*      | DROP partition    |
+| **tenant_audit**   | Tenant karar & yetkili aksiyon + KYC/AML audit          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
 | **tenant_report**  | Kiracıya özel raporlar ve istatistikler                 | Opsiyonel       | İş ihtiyacı     | -                 |
 | **tenant_affiliate**| Affiliate tracking ve komisyon yönetimi                 | Monthly         | Sınırsız        | -                 |
+
+> *KYC provider logları için retention 90+ güne uzatılabilir (compliance gereksinimleri)
 
 ---
 
@@ -54,6 +56,10 @@ SELECT * FROM core.tenant_data_policies WHERE tenant_id = 123;
 | 2 (MGA)   | SYSTEM_LOGS | 90            | `DROP_PARTITION`  | Production loglar       |
 | 2 (MGA)   | KYC_DATA    | 1825 (5 yıl)  | `ANONYMIZE`       | GDPR/KYC uyumluluğu     |
 | 2 (MGA)   | AUDIT_LOGS  | 3650 (10 yıl) | `ARCHIVE_COLD`    | Finansal denetim        |
+| 2 (MGA)   | KYC_SCREENING | 1825 (5 yıl) | `ARCHIVE_COLD`  | PEP/Sanctions tarama    |
+| 2 (MGA)   | AML_FLAGS   | 3650 (10 yıl) | `ARCHIVE_COLD`    | AML uyarıları ve SAR    |
+| 2 (MGA)   | RISK_ASSESSMENTS | 1825 (5 yıl) | `ARCHIVE_COLD` | Risk değerlendirmeleri |
+| 2 (MGA)   | KYC_PROVIDER_LOGS | 90  | `DROP_PARTITION`   | KYC API logları         |
 
 ### 2.2 Aksiyon Türleri
 
@@ -138,6 +144,47 @@ Retention ve DROP işlemleri **otomasyonun sorumluluğundadır**.
 
 ---
 
-## 6. Altın Kural
+## 6. KYC/AML Veri Dağılımı
+
+KYC ve AML verileri, kullanım senaryosuna göre farklı veritabanlarına dağıtılmıştır:
+
+### 6.1 tenant DB (Business Data - Sınırsız)
+
+Real-time sorgulama gerektiren operasyonel veriler:
+
+| Tablo | Açıklama |
+|-------|----------|
+| `kyc.player_jurisdiction` | Oyuncunun tabi olduğu jurisdiction |
+| `kyc.player_kyc_cases` | Güncel KYC durumu |
+| `kyc.player_documents` | Aktif belgeler |
+| `kyc.player_limits` | Aktif limitler |
+| `kyc.player_restrictions` | Aktif kısıtlamalar |
+| `kyc.player_aml_flags` | Aktif AML alert'leri (işlemleri bloklar) |
+| `kyc.player_kyc_workflows` | KYC workflow geçmişi |
+| `kyc.player_limit_history` | Limit değişiklik geçmişi |
+
+### 6.2 tenant_audit DB (Compliance Audit - 5-10 yıl)
+
+Karar ve değerlendirme kayıtları:
+
+| Tablo | Açıklama | Veri Tipi |
+|-------|----------|-----------|
+| `kyc_audit.player_screening_results` | PEP/Sanctions tarama sonuçları | KYC_SCREENING |
+| `kyc_audit.player_risk_assessments` | Risk değerlendirme geçmişi | RISK_ASSESSMENTS |
+
+### 6.3 tenant_log DB (Operational Logs - 90+ gün)
+
+API call logları:
+
+| Tablo | Açıklama | Veri Tipi |
+|-------|----------|-----------|
+| `kyc_log.player_kyc_provider_logs` | KYC provider API logları | KYC_PROVIDER_LOGS |
+
+> **Not:** KYC provider logları için retention süresi standart 30-90 günden **90+ güne** uzatılmıştır.
+> Bu, KYC dispute'larında geçmiş API yanıtlarına erişim sağlamak içindir.
+
+---
+
+## 7. Altın Kural
 
 > **"Loglar çabuk silinir, Auditler arşivlenir, KYC verileri anonimleşir."**

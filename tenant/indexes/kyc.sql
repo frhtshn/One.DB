@@ -53,7 +53,9 @@ CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_req_gin ON kyc.player_kyc_provi
 CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_res_gin ON kyc.player_kyc_provider_logs USING gin(response_payload);
 
 -- =============================================
--- New KYC Tables Indexes (Jurisdiction, Screening, Risk, AML)
+-- New KYC Tables Indexes (Jurisdiction, AML)
+-- NOTE: player_screening_results, player_risk_assessments -> tenant_audit DB
+-- NOTE: player_kyc_provider_logs -> tenant_log DB
 -- =============================================
 
 -- player_jurisdiction
@@ -62,30 +64,6 @@ CREATE INDEX IF NOT EXISTS idx_player_jurisdiction_country ON kyc.player_jurisdi
 CREATE INDEX IF NOT EXISTS idx_player_jurisdiction_jid ON kyc.player_jurisdiction USING btree(jurisdiction_id);
 CREATE INDEX IF NOT EXISTS idx_player_jurisdiction_geo ON kyc.player_jurisdiction USING btree(geo_status);
 CREATE INDEX IF NOT EXISTS idx_player_jurisdiction_vpn ON kyc.player_jurisdiction(player_id) WHERE vpn_detected = true;
-
--- player_screening_results
-CREATE INDEX IF NOT EXISTS idx_player_screening_player ON kyc.player_screening_results USING btree(player_id);
-CREATE INDEX IF NOT EXISTS idx_player_screening_case ON kyc.player_screening_results USING btree(kyc_case_id) WHERE kyc_case_id IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_player_screening_type ON kyc.player_screening_results USING btree(screening_type);
-CREATE INDEX IF NOT EXISTS idx_player_screening_status ON kyc.player_screening_results USING btree(result_status);
-CREATE INDEX IF NOT EXISTS idx_player_screening_review ON kyc.player_screening_results USING btree(review_status) WHERE review_status = 'PENDING';
-CREATE INDEX IF NOT EXISTS idx_player_screening_due ON kyc.player_screening_results USING btree(next_screening_due) WHERE next_screening_due IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_player_screening_match ON kyc.player_screening_results(player_id, screening_type) WHERE result_status IN ('POTENTIAL_MATCH', 'CONFIRMED_MATCH');
-
--- player_screening_results JSONB
-CREATE INDEX IF NOT EXISTS idx_player_screening_entities_gin ON kyc.player_screening_results USING gin(matched_entities) WHERE matched_entities IS NOT NULL;
-
--- player_risk_assessments
-CREATE INDEX IF NOT EXISTS idx_player_risk_player ON kyc.player_risk_assessments USING btree(player_id);
-CREATE INDEX IF NOT EXISTS idx_player_risk_level ON kyc.player_risk_assessments USING btree(risk_level);
-CREATE INDEX IF NOT EXISTS idx_player_risk_type ON kyc.player_risk_assessments USING btree(assessment_type);
-CREATE INDEX IF NOT EXISTS idx_player_risk_pending ON kyc.player_risk_assessments(requires_approval) WHERE requires_approval = true AND approved_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_player_risk_latest ON kyc.player_risk_assessments(player_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_player_risk_high ON kyc.player_risk_assessments(player_id) WHERE risk_level IN ('HIGH', 'CRITICAL');
-
--- player_risk_assessments JSONB
-CREATE INDEX IF NOT EXISTS idx_player_risk_factors_gin ON kyc.player_risk_assessments USING gin(risk_factors);
-CREATE INDEX IF NOT EXISTS idx_player_risk_actions_gin ON kyc.player_risk_assessments USING gin(recommended_actions) WHERE recommended_actions IS NOT NULL;
 
 -- player_aml_flags
 CREATE INDEX IF NOT EXISTS idx_player_aml_player ON kyc.player_aml_flags USING btree(player_id);
