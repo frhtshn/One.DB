@@ -280,6 +280,40 @@ Oyun sağlayıcılarının entegrasyon detaylarını barındırır. Her provider
 
 ---
 
+---
+
+## 6. Tenant Veritabanı (`tenant`)
+
+Her tenant için klonlanan ana iş veritabanıdır. Oyuncu verileri, finansal işlemler ve site içeriği burada tutulur.
+
+### 6.1 Şema Listesi
+
+| Şema          | Amaç                                          |
+| ------------- | --------------------------------------------- |
+| `auth`        | Oyuncu kimlik ve güvenliği                    |
+| `profile`     | Oyuncu profil bilgileri                       |
+| `wallet`      | Cüzdan ve bakiye                              |
+| `transaction` | Finansal işlemler ve akışlar                  |
+| `finance`     | Ödeme metodları, kur ve limit ayarları        |
+| `game`        | Oyun limitleri ve ayarları                    |
+| `bonus`       | Bonus kazanımları ve çevrim durumu            |
+| `content`     | CMS, FAQ, Promosyon, Banner ve Popup yönetimi |
+| `kyc`         | KYC süreçleri ve belge yönetimi               |
+
+### 6.2 content Şeması (CMS & Marketing)
+
+Dinamik site içeriği ve pazarlama materyalleri yönetimi. Çoklu dil desteği (translation tabloları) ile çalışır.
+
+| Tablo Grubu        | Tablolar                                                                                                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------- |
+| **CMS**            | `content_categories`, `contents`, `content_versions`, `content_attachments`, `content_types`              |
+| **FAQ**            | `faq_categories`, `faq_items`                                                                             |
+| **Promotions**     | `promotions`, `promotion_banners`, `promotion_segments`, `promotion_games`, `promotion_display_locations` |
+| **Slides/Banners** | `slides`, `slide_placements`, `slide_schedules`, `slide_images`, `slide_categories`                       |
+| **Popups**         | `popups`, `popup_types`, `popup_schedules`, `popup_images`                                                |
+
+---
+
 ## 7. Reporting Veritabanları (Analytics Store)
 
 Analitik ve raporlama işlemleri için optimize edilmiş, column-based veya aggregate-based tablolardan oluşur. "Read-Heavy" yükü buraya yönlendirilir.

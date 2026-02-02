@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS content.promotion_translations CASCADE;
 CREATE TABLE content.promotion_translations (
     id SERIAL PRIMARY KEY,
     promotion_id INTEGER NOT NULL,                -- Bağlı promosyon
-    language_id INTEGER NOT NULL,                 -- Dil (TR, EN, DE vb.)
+    language_code CHAR(2) NOT NULL,               -- Dil kodu: en, tr, de
     title VARCHAR(255) NOT NULL,                  -- Promosyon başlığı
     subtitle VARCHAR(500),                        -- Alt başlık
     summary TEXT,                                 -- Kısa özet (liste görünümü için)

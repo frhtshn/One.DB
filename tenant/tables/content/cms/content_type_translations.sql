@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS content.content_type_translations CASCADE;
 CREATE TABLE content.content_type_translations (
     id SERIAL PRIMARY KEY,
     content_type_id INTEGER NOT NULL,             -- İçerik türü ID
-    language_id INTEGER NOT NULL,                 -- Dil ID
+    language_code CHAR(2) NOT NULL,               -- Dil kodu: en, tr, de
     name VARCHAR(100) NOT NULL,                   -- Tür adı
     description TEXT,                             -- Tür açıklaması
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),

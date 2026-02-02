@@ -5,7 +5,7 @@ CREATE UNIQUE INDEX idx_content_categories_code ON content.content_categories US
 
 -- content_category_translations
 CREATE INDEX idx_content_category_trans_category ON content.content_category_translations(category_id);
-CREATE INDEX idx_content_category_trans_language ON content.content_category_translations(language_id);
+CREATE INDEX idx_content_category_trans_language ON content.content_category_translations(language_code);
 
 -- content_types
 CREATE INDEX idx_content_types_category ON content.content_types(category_id);
@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX idx_content_types_code ON content.content_types USING btree(
 
 -- content_type_translations
 CREATE INDEX idx_content_type_trans_type ON content.content_type_translations(content_type_id);
-CREATE INDEX idx_content_type_trans_language ON content.content_type_translations(language_id);
+CREATE INDEX idx_content_type_trans_language ON content.content_type_translations(language_code);
 
 -- contents
 CREATE INDEX idx_contents_type ON content.contents(content_type_id);
@@ -27,12 +27,12 @@ CREATE INDEX idx_contents_published ON content.contents(status, published_at) WH
 
 -- content_translations
 CREATE INDEX idx_content_trans_content ON content.content_translations(content_id);
-CREATE INDEX idx_content_trans_language ON content.content_translations(language_id);
+CREATE INDEX idx_content_trans_language ON content.content_translations(language_code);
 CREATE INDEX idx_content_trans_status ON content.content_translations(content_id, status);
 
 -- content_versions
 CREATE INDEX idx_content_versions_content ON content.content_versions(content_id);
-CREATE INDEX idx_content_versions_lookup ON content.content_versions(content_id, language_id, version DESC);
+CREATE INDEX idx_content_versions_lookup ON content.content_versions(content_id, language_code, version DESC);
 
 -- content_attachments
 CREATE INDEX idx_content_attachments_content ON content.content_attachments(content_id);
@@ -45,7 +45,7 @@ CREATE UNIQUE INDEX idx_faq_categories_code ON content.faq_categories USING btre
 
 -- faq_category_translations
 CREATE INDEX idx_faq_category_trans_category ON content.faq_category_translations(category_id);
-CREATE INDEX idx_faq_category_trans_language ON content.faq_category_translations(language_id);
+CREATE INDEX idx_faq_category_trans_language ON content.faq_category_translations(language_code);
 
 -- faq_items
 CREATE INDEX idx_faq_items_category ON content.faq_items(category_id);
@@ -54,7 +54,7 @@ CREATE INDEX idx_faq_items_active ON content.faq_items(is_active);
 
 -- faq_item_translations
 CREATE INDEX idx_faq_item_trans_item ON content.faq_item_translations(faq_item_id);
-CREATE INDEX idx_faq_item_trans_language ON content.faq_item_translations(language_id);
+CREATE INDEX idx_faq_item_trans_language ON content.faq_item_translations(language_code);
 CREATE INDEX idx_faq_item_trans_status ON content.faq_item_translations(faq_item_id, status);
 
 -- promotions
@@ -67,7 +67,7 @@ CREATE UNIQUE INDEX idx_promotions_code ON content.promotions USING btree(code);
 
 -- promotion_translations
 CREATE INDEX idx_promotion_trans_promotion ON content.promotion_translations(promotion_id);
-CREATE INDEX idx_promotion_trans_language ON content.promotion_translations(language_id);
+CREATE INDEX idx_promotion_trans_language ON content.promotion_translations(language_code);
 
 -- promotion_banners
 CREATE INDEX idx_promotion_banners_promotion ON content.promotion_banners(promotion_id);

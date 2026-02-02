@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS content.faq_item_translations CASCADE;
 CREATE TABLE content.faq_item_translations (
     id SERIAL PRIMARY KEY,
     faq_item_id INTEGER NOT NULL,                 -- Soru ID
-    language_id INTEGER NOT NULL,                 -- Dil ID
+    language_code CHAR(2) NOT NULL,               -- Dil kodu: en, tr, de
     question TEXT NOT NULL,                       -- Soru metni
     answer TEXT NOT NULL,                         -- Cevap metni
     status VARCHAR(20) NOT NULL DEFAULT 'draft',  -- Durum

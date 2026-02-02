@@ -4,7 +4,7 @@ ALTER TABLE content.content_category_translations
     FOREIGN KEY (category_id) REFERENCES content.content_categories(id) ON DELETE CASCADE;
 
 ALTER TABLE content.content_category_translations
-    ADD CONSTRAINT uq_content_category_trans UNIQUE (category_id, language_id);
+    ADD CONSTRAINT uq_content_category_trans UNIQUE (category_id, language_code);
 
 -- content_types
 ALTER TABLE content.content_types
@@ -17,7 +17,7 @@ ALTER TABLE content.content_type_translations
     FOREIGN KEY (content_type_id) REFERENCES content.content_types(id) ON DELETE CASCADE;
 
 ALTER TABLE content.content_type_translations
-    ADD CONSTRAINT uq_content_type_trans UNIQUE (content_type_id, language_id);
+    ADD CONSTRAINT uq_content_type_trans UNIQUE (content_type_id, language_code);
 
 -- contents
 ALTER TABLE content.contents
@@ -33,7 +33,7 @@ ALTER TABLE content.content_translations
     FOREIGN KEY (content_id) REFERENCES content.contents(id) ON DELETE CASCADE;
 
 ALTER TABLE content.content_translations
-    ADD CONSTRAINT uq_content_trans UNIQUE (content_id, language_id);
+    ADD CONSTRAINT uq_content_trans UNIQUE (content_id, language_code);
 
 ALTER TABLE content.content_translations
     ADD CONSTRAINT chk_content_trans_status CHECK (status IN ('draft', 'published', 'needs_review'));
@@ -44,7 +44,7 @@ ALTER TABLE content.content_versions
     FOREIGN KEY (content_id) REFERENCES content.contents(id) ON DELETE CASCADE;
 
 ALTER TABLE content.content_versions
-    ADD CONSTRAINT uq_content_versions UNIQUE (content_id, language_id, version);
+    ADD CONSTRAINT uq_content_versions UNIQUE (content_id, language_code, version);
 
 -- content_attachments
 ALTER TABLE content.content_attachments
@@ -57,7 +57,7 @@ ALTER TABLE content.faq_category_translations
     FOREIGN KEY (category_id) REFERENCES content.faq_categories(id) ON DELETE CASCADE;
 
 ALTER TABLE content.faq_category_translations
-    ADD CONSTRAINT uq_faq_category_trans UNIQUE (category_id, language_id);
+    ADD CONSTRAINT uq_faq_category_trans UNIQUE (category_id, language_code);
 
 -- faq_items
 ALTER TABLE content.faq_items
@@ -70,7 +70,7 @@ ALTER TABLE content.faq_item_translations
     FOREIGN KEY (faq_item_id) REFERENCES content.faq_items(id) ON DELETE CASCADE;
 
 ALTER TABLE content.faq_item_translations
-    ADD CONSTRAINT uq_faq_item_trans UNIQUE (faq_item_id, language_id);
+    ADD CONSTRAINT uq_faq_item_trans UNIQUE (faq_item_id, language_code);
 
 ALTER TABLE content.faq_item_translations
     ADD CONSTRAINT chk_faq_item_trans_status CHECK (status IN ('draft', 'published'));
@@ -85,7 +85,7 @@ ALTER TABLE content.promotion_translations
     FOREIGN KEY (promotion_id) REFERENCES content.promotions(id) ON DELETE CASCADE;
 
 ALTER TABLE content.promotion_translations
-    ADD CONSTRAINT uq_promotion_trans UNIQUE (promotion_id, language_id);
+    ADD CONSTRAINT uq_promotion_trans UNIQUE (promotion_id, language_code);
 
 ALTER TABLE content.promotion_translations
     ADD CONSTRAINT chk_promotion_trans_status CHECK (status IN ('draft', 'published'));

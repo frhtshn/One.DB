@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS content.content_translations CASCADE;
 CREATE TABLE content.content_translations (
     id SERIAL PRIMARY KEY,
     content_id INTEGER NOT NULL,                  -- İçerik ID
-    language_id INTEGER NOT NULL,                 -- Dil ID
+    language_code CHAR(2) NOT NULL,               -- Dil kodu: en, tr, de
     title VARCHAR(255) NOT NULL,                  -- Başlık
     subtitle VARCHAR(500),                        -- Alt başlık
     summary TEXT,                                 -- Özet
