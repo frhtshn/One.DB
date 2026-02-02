@@ -139,14 +139,25 @@ Core veritabanı için 3 farklı deployment senaryosu bulunur:
     - Şema, fonksiyon, trigger ve temel lookup verilerini (ülke, para birimi vb.) içerir.
     - Default geliştirme verileriyle gelir.
 
+    ```bash
+    psql -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core.sql
+    ```
+
 2. **Staging Deployment (`deploy_core_staging.sql`)**:
     - Base deployment üzerine, test amaçlı tenant, kullanıcı ve menü verilerini (`staging_seed`) ekler.
     - `core` veritabanını sıfırlar ve yeniden kurar.
+
+    ```bash
+    psql -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core_staging.sql
+    ```
 
 3. **Production Deployment (`deploy_core_production.sql`)**:
     - Base deployment üzerine, **Production** ortamı için gerekli temiz veriyi (`production_seed`) yazar.
     - Sadece "Nucleo Platform" ana şirketini ve tek bir "Super Admin" kullanıcısını oluşturur.
     - `core` veritabanını sıfırlar ve yeniden kurar.
+    ```bash
+    psql -h 207.180.241.230 -p 5433 -U postgres -d core -f deploy_core_production.sql
+    ```
 
 ---
 
