@@ -1,14 +1,14 @@
 -- ================================================================
--- NUCLEO PLATFORM - UNIFIED SEED FILE
+-- NUCLEO PLATFORM - STAGING/DEV SEED FILE
 -- ================================================================
--- Tüm seed verilerini tek dosyada birleştirir.
--- Çalıştırma: psql -U postgres -d nucleo -f sql/seed.sql
+-- Staging ve development ortamları için test verileri.
+-- Çalıştırma: psql -U postgres -d nucleo -f core/data/staging_seed.sql
 -- ================================================================
 -- İÇERİK:
 -- 1. TRUNCATE (tüm tablolar)
--- 2. Companies (platform + test)
+-- 2. Companies (platform + test companies)
 -- 3. Roles + Permissions + Role-Permission mapping
--- 4. Tenants
+-- 4. Tenants (test tenants)
 -- 5. Users (superadmin + admin + test users)
 -- 6. User roles (global + tenant)
 -- 7. Tenant ayarları (currencies, languages, settings)
@@ -17,7 +17,7 @@
 -- NOT: Menu localization için seed_menu_localization.sql'i ÖNCE çalıştırın!
 -- ================================================================
 -- UYARI: Bu dosya TÜM verileri siler ve yeniden oluşturur!
--- Production'da dikkatli kullanın.
+-- SADECE staging/dev ortamlarında kullanın - PRODUCTION'DA KULLANMAYIN!
 -- ================================================================
 
 -- ================================================================

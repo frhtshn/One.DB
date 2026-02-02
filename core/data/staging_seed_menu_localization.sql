@@ -1,15 +1,18 @@
 -- ============================================================================
--- MENU LOCALIZATION SEED
+-- STAGING - MENU LOCALIZATION SEED
 -- Nucleo.Platform
 -- ============================================================================
--- Bu dosya menü UI çevirilerini içerir.
+-- Bu dosya menü UI çevirilerini içerir (staging/dev ortamları için).
 -- Nucleo.DB'deki localization pattern'ini takip eder.
 -- ============================================================================
--- Çalıştırma: psql -U postgres -d nucleo -f sql/seed_menu_localization.sql
--- NOT: seed.sql'den ÖNCE çalıştırılmalı (menüler localization'a bağlı)
+-- Çalıştırma: psql -U postgres -d nucleo -f core/data/staging_seed_menu_localization.sql
+-- NOT: staging_seed.sql'den ÖNCE çalıştırılmalı (menüler localization'a bağlı)
 -- ============================================================================
 -- Key Pattern: ui.{element-type}.{code}
 -- Element Types: menu-group, menu, submenu, page, tab, context
+-- ============================================================================
+-- Production için: localization_keys.sql ve localization_values_*.sql
+-- dosyalarına eklenecek.
 -- ============================================================================
 
 -- ============================================================================

@@ -209,7 +209,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/currencies/currency_delete.sql
 
 -- Language Functions
-\i core/functions/catalog/languages/language_list_active.sql
 \i core/functions/catalog/languages/language_list.sql
 \i core/functions/catalog/languages/language_get.sql
 \i core/functions/catalog/languages/language_create.sql
@@ -263,7 +262,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/permissions/permission_create.sql
 \i core/functions/security/permissions/permission_update.sql
 \i core/functions/security/permissions/permission_delete.sql
-\i core/functions/security/permissions/permission_restore.sql
 \i core/functions/security/permissions/permission_cleanup_expired.sql
 \i core/functions/security/permissions/permission_check.sql
 \i core/functions/security/permissions/user_permission_list.sql
@@ -278,7 +276,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/roles/role_create.sql
 \i core/functions/security/roles/role_update.sql
 \i core/functions/security/roles/role_delete.sql
-\i core/functions/security/roles/role_restore.sql
 \i core/functions/security/roles/role_permission_list.sql
 \i core/functions/security/roles/role_permission_assign.sql
 \i core/functions/security/roles/role_permission_remove.sql

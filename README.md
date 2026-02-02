@@ -131,6 +131,25 @@ psql -h 207.180.241.230 -p 5433 -U postgres -d postgres -f master_deploy.sql
 
 ---
 
+## Deployment Modes (Core Database)
+
+Core veritabanı için 3 farklı deployment senaryosu bulunur:
+
+1. **Base Deployment (`deploy_core.sql`)**:
+    - Şema, fonksiyon, trigger ve temel lookup verilerini (ülke, para birimi vb.) içerir.
+    - Default geliştirme verileriyle gelir.
+
+2. **Staging Deployment (`deploy_core_staging.sql`)**:
+    - Base deployment üzerine, test amaçlı tenant, kullanıcı ve menü verilerini (`staging_seed`) ekler.
+    - `core` veritabanını sıfırlar ve yeniden kurar.
+
+3. **Production Deployment (`deploy_core_production.sql`)**:
+    - Base deployment üzerine, **Production** ortamı için gerekli temiz veriyi (`production_seed`) yazar.
+    - Sadece "Nucleo Platform" ana şirketini ve tek bir "Super Admin" kullanıcısını oluşturur.
+    - `core` veritabanını sıfırlar ve yeniden kurar.
+
+---
+
 ## Tenant Template Example
 
 ```sql

@@ -1,206 +1,147 @@
-# Veritabanı Fonksiyon ve Trigger Dokümantasyonu
+# Database Functions & Triggers
 
-Bu doküman, projede yer alan stored procedure ve trigger tanımlarını içerir.
+This document lists all stored procedures, functions, and triggers defined in the project, categorized by database and schema.
 
-## Core Veritabanı
+## Core Database
 
-### Catalog Şeması
+### Catalog Schema
 
-- **`country_list`**: Returns list of countries for comboboxes (Value: country_code, Label: country_name).
-- **`currency_create`**: Creates a new currency
-- **`currency_delete`**: Soft deletes a currency by setting is_active to false (checks for usage first)
-- **`currency_get`**: Gets details of a specific currency by code
-- **`currency_list`**: Lists all currencies including inactive ones (for admin usage)
-- **`currency_list_active`**: Returns list of active currencies for comboboxes (Value: currency_code, Label: currency_name)
-- **`currency_update`**: Updates currency details (name, symbol, numeric code, active status)
-- **`language_create`**: Creates a new language
-- **`language_delete`**: Soft deletes a language by setting is_active to false (checks for translations first)
-- **`language_get`**: Gets details of a specific language by code
-- **`language_list`**: Lists all languages including inactive ones (for admin usage)
-- **`language_update`**: Updates language details (name, active status)
-- **`localization_category_list`**: Lists distinct localization categories.
-- **`localization_domain_list`**: Lists distinct localization domains.
-- **`localization_export`**: Exports translations for a specific language as JSON.
-- **`localization_import`**: Imports translations from JSON for a specific language.
-- **`localization_key_create`**: Creates a new localization key.
-- **`localization_key_delete`**: Deletes a localization key and its values.
-- **`localization_key_get`**: Gets a localization key details and all its translations.
-- **`localization_key_list`**: Lists localization keys with pagination and filtering.
-- **`localization_key_update`**: Updates a localization key.
-- **`localization_messages_get`**: Retrieves all localization messages for a specific language (for bulk loading)
-- **`localization_value_delete`**: Deletes a specific localization value.
-- **`localization_value_upsert`**: Inserts or updates a localization value (translation).
-- **`timezone_list`**: Returns list of active timezones from catalog table.
+- **`country_list()`**: Returns list of countries for comboboxes (Value: country_code, Label: country_name).
+- **`currency_create(p_code, p_name, p_symbol, p_numeric_code)`**: Creates a new currency.
+- **`currency_delete(p_code)`**: Soft deletes a currency by setting is_active to false (checks for usage first).
+- **`currency_get(p_code)`**: Gets details of a specific currency by code.
+- **`currency_list()`**: Lists all currencies including inactive ones (for admin usage).
+- **`currency_update(p_code, p_name, p_symbol, p_numeric_code, p_is_active)`**: Updates currency details (name, symbol, numeric code, active status).
+- **`language_create(p_code, p_name)`**: Creates a new language.
+- **`language_delete(p_code)`**: Soft deletes a language by setting is_active to false (checks for translations first).
+- **`language_get(p_code)`**: Gets details of a specific language by code.
+- **`language_list()`**: Lists all languages including inactive ones (for admin usage).
+- **`language_update(p_code, p_name, p_is_active)`**: Updates language details (name, active status).
+- **`localization_category_list(p_domain)`**: Lists distinct localization categories.
+- **`localization_domain_list()`**: Lists distinct localization domains.
+- **`localization_export(p_lang)`**: Exports translations for a specific language as JSON.
+- **`localization_import(p_lang, p_translations)`**: Imports translations from JSON for a specific language.
+- **`localization_key_create(p_key, p_domain, p_category, p_description)`**: Creates a new localization key.
+- **`localization_key_delete(p_id)`**: Deletes a localization key and its values.
+- **`localization_key_get(p_key)`**: Gets a localization key details and all its translations.
+- **`localization_key_list(p_page, p_page_size, p_domain, p_category, p_search)`**: Lists localization keys with pagination and filtering.
+- **`localization_key_update(p_id, p_domain, p_category, p_description)`**: Updates a localization key.
+- **`localization_messages_get(p_lang)`**: Retrieves all localization messages for a specific language (for bulk loading).
+- **`localization_value_delete(p_key_id, p_lang)`**: Deletes a localization value (reset to default).
+- **`localization_value_upsert(p_key_id, p_lang, p_text)`**: Upserts a localization value.
+- **`timezone_list()`**: Returns list of timezones.
 
-### Core Şeması
+### Core Schema
 
-- **`company_create`**: Creates a new company record for management UI.
-- **`company_delete`**: Soft deletes a company record for management UI.
-- **`company_get`**: Returns details of a company by id for management UI.
-- **`company_list`**: Returns a paginated list of companies for management UI. Searchable by name or code.
-- **`company_update`**: Updates company information for management UI.
-- **`tenant_create`**: Creates a new tenant and assigns supported currencies/languages. Checks caller permissions.
-- **`tenant_currency_list`**: Lists all assigned currencies for a tenant. Checks caller permissions.
-- **`tenant_currency_upsert`**: Assigns or updates a currency for a tenant. Checks caller permissions.
-- **`tenant_delete`**: Soft deletes a tenant by setting status to 0. Checks caller permissions.
-- **`tenant_get`**: Returns detailed tenant information including supported configuration. Checks caller permissions.
-- **`tenant_language_list`**: Lists all assigned languages for a tenant. Checks caller permissions.
-- **`tenant_language_upsert`**: Assigns or updates a supported language for a tenant. Checks caller permissions.
-- **`tenant_list`**: Lists tenants with pagination, filter, and configuration details. Checks caller's permissions (Platform vs Company scope).
-- **`tenant_setting_delete`**: Deletes a tenant configuration setting. Checks caller permissions.
-- **`tenant_setting_get`**: Returns a specific tenant setting as JSON object. Returns NULL if not found. Checks caller permissions.
-- **`tenant_setting_list`**: Lists all configuration settings for a tenant, optionally filtered by category. Checks caller permissions.
-- **`tenant_setting_upsert`**: Inserts or updates a tenant configuration setting. Checks caller permissions.
-- **`tenant_update`**: Updates tenant details and syncs supported currencies/languages. Checks caller permissions.
-- **`update_updated_at_column`**: Generic trigger function to auto-update updated_at timestamp.
+- **`company_create(p_company_code, p_company_name, p_country_code, p_timezone)`**: Creates a new company record for management UI.
+- **`company_delete(p_id)`**: Soft deletes a company record for management UI.
+- **`company_get(p_id)`**: Returns details of a company by id for management UI.
+- **`company_list(p_page, p_page_size, p_search)`**: Returns a paginated list of companies for management UI. Searchable by name or code.
+- **`company_update(p_id, p_company_code, p_company_name, p_status, p_country_code, p_timezone)`**: Updates company information for management UI.
+- **`tenant_create(p_caller_id, p_company_id, p_tenant_code, p_tenant_name, ...)`**: Creates a new tenant. Checks caller permissions.
+- **`tenant_delete(p_caller_id, p_id)`**: Soft deletes a tenant. Checks caller permissions.
+- **`tenant_get(p_caller_id, p_id)`**: Returns detailed tenant information. Checks caller permissions.
+- **`tenant_list(p_caller_id, p_page, p_page_size, p_company_id, p_search, p_status)`**: Lists tenants with permission check (Caller ID). Non-platform users are restricted to their company.
+- **`tenant_update(p_caller_id, p_id, ...)`**: Updates tenant information with partial update support. Checks caller permissions.
+- **`tenant_currency_list(p_tenant_id)`**: Lists enabled currencies for a tenant.
+- **`tenant_currency_upsert(p_tenant_id, p_currencies)`**: Upserts tenant currencies (enable/disable).
+- **`tenant_language_list(p_tenant_id)`**: Lists enabled languages for a tenant.
+- **`tenant_language_upsert(p_tenant_id, p_languages)`**: Upserts tenant languages (enable/disable).
+- **`tenant_setting_delete(p_tenant_id, p_key)`**: Deletes a tenant setting.
+- **`tenant_setting_get(p_tenant_id, p_key)`**: Gets a tenant setting value.
+- **`tenant_setting_list(p_tenant_id)`**: Lists all settings for a tenant.
+- **`tenant_setting_upsert(p_tenant_id, p_category, p_key, p_value, p_type, p_description)`**: Upserts a tenant setting.
+- **`update_updated_at_column()`**: Generic trigger function to auto-update updated_at timestamp.
 
-### Presentation Şeması
+### Presentation Schema
 
-- **`build_page_json`**: Builds JSON object for a page (including tabs and contexts). Helper function for get_structure.
-- **`context_create`**: Creates a new context. Returns TABLE(id BIGINT).
-- **`context_delete`**: Deletes a context (hard delete). Returns VOID.
-- **`context_list`**: Lists contexts for a given page, returns items and totalCount.
-- **`context_update`**: Updates a context. Partial update supported. Returns VOID.
-- **`menu_structure`**: Returns entire presentation structure as nested JSON. Uses MD5 version hash for cache invalidation.
-- **`menu_create`**: Creates a new menu with unique code validation
-- **`menu_delete`**: Soft deletes a menu by setting is_active to FALSE and updating deleted_at.
-- **`menu_get`**: Returns details of a menu including group, submenus, pages, and audit info
-- **`menu_group_create`**: Creates a new menu group with unique code validation
-- **`menu_group_delete`**: Soft deletes a menu group by setting is_active to FALSE
-- **`menu_group_get`**: Returns single menu group details by ID
-- **`menu_group_list`**: Returns all menu groups ordered by order_index. Includes menu count per group.
-- **`menu_group_update`**: Updates menu group with partial update support. NULL values keep existing data.
-- **`menu_list`**: Lists menus for a given group, returns items and totalCount
-- **`menu_update`**: Updates menu with partial update support. NULL values keep existing data.
-- **`page_create`**: Creates a new page with unique code validation and parent menu/submenu check.
-- **`page_delete`**: Soft deletes a page by setting is_active to FALSE and updating updated_at.
-- **`page_get`**: Returns details of a page including tabs and contexts.
-- **`page_list`**: Lists pages for a given menu or submenu, returns items and totalCount.
-- **`page_update`**: Updates page with partial update support. NULL values keep existing data.
-- **`submenu_create`**: Creates a new submenu with unique code validation for the given menu.
-- **`submenu_delete`**: Soft deletes a submenu by setting is_active to FALSE and updating updated_at.
-- **`submenu_list`**: Lists submenus for a given menu, returns items and totalCount.
-- **`submenu_update`**: Updates submenu with partial update support. NULL values keep existing data.
-- **`tab_create`**: Creates a new tab with unique code validation for the given page.
-- **`tab_delete`**: Soft deletes a tab by setting is_active to FALSE and updating updated_at.
-- **`tab_list`**: Lists tabs for a given page, returns items and totalCount.
-- **`tab_update`**: Updates tab with partial update support. NULL values keep existing data.
+- **`context_create(...)`**: Creates a new context.
+- **`context_delete(p_id)`**: Deletes a context (hard delete).
+- **`context_list(p_page_id)`**: Lists contexts for a given page.
+- **`context_update(...)`**: Updates a context. Partial update supported.
+- **`menu_create(...)`**: Creates a new menu with unique code validation.
+- **`menu_delete(p_menu_id)`**: Soft deletes a menu.
+- **`menu_get(p_menu_id)`**: Returns details of a menu including group, submenus, pages, and audit info.
+- **`menu_list(p_menu_group_id)`**: Lists menus for a given group.
+- **`menu_update(...)`**: Updates menu with partial update support.
+- **`menu_group_create(...)`**: Creates a new menu group with unique code validation.
+- **`menu_group_delete(p_menu_group_id)`**: Soft deletes a menu group.
+- **`menu_group_get(p_menu_group_id)`**: Returns single menu group details by ID.
+- **`menu_group_list()`**: Returns all menu groups ordered by order_index.
+- **`menu_group_update(...)`**: Updates menu group with partial update support.
+- **`page_create(...)`**: Creates a new page.
+- **`build_page_json(p_page_id)`**: Builds JSON object for a page (including tabs and contexts). Helper function for get_structure.
 
-### Security Şeması
+### Security Schema
 
-- **`is_system_role`**: Checks if a role code is a protected system role (e.g. superadmin).
-- **`permission_category_list`**: Lists active permission categories and count. Returns direct JSON array.
-- **`permission_check`**: Checks if a user has a specific permission (Global or Tenant-level)
-- **`permission_cleanup_expired`**: Cleans up expired permission overrides. Should be run as a scheduled job.
-- **`permission_create`**: Creates a new permission. Returns ID. Code is normalized to lowercase.
-- **`permission_delete`**: Soft deletes a permission and removes role associations. Returns affected role count.
-- **`permission_exists`**: Checks if a permission code exists and is active
-- **`permission_get`**: Get permission details by code, including role count.
-- **`permission_list`**: Paginated permissions list. Returns items + totalCount.
-- **`permission_update`**: Updates permission details. Code is immutable.
-- **`role_create`**: Creates a new role. Protects system roles.
-- **`role_delete`**: Soft deletes a role. System roles cannot be deleted. Returns affected user count.
-- **`role_get`**: Get role details by code, including permissions.
-- **`role_list`**: Paginated role list with user/permission counts. Returns items + totalCount.
-- **`role_permission_assign`**: Assigns a permission to a role. Idempotent. Returns already_assigned status.
-- **`role_permission_bulk_assign`**: Bulk assigns permissions to a role. Returns assigned count and invalid codes.
-- **`role_permission_list`**: Lists permissions for a role.
-- **`role_permission_remove`**: Removes a permission from a role. Returns removal status.
-- **`role_update`**: Updates role details. System roles cannot be updated.
-- **`session_belongs_to_user`**: Checks if session belongs to user
-- **`session_cleanup_expired`**: Cleans up expired, old revoked, and inactive session records in batches (PostgreSQL compatible).
-- **`session_list`**: Lists active sessions for a user
-- **`session_revoke`**: Revokes a specific session
-- **`session_revoke_all`**: Revokes all sessions for a user (optionally keeping current one)
-- **`session_save`**: Saves a new session or updates existing one
-- **`session_update_activity`**: Updates session last activity timestamp
-- **`user_authenticate`**: Email ile kullanici dogrulama. Scope: Platform (is_platform_role=TRUE), Company (is_platform_role=FALSE), Tenant (user_tenant_roles).
-- **`user_check_email_exists`**: Checks if email exists. Use excludeUserId for update scenarios.
-- **`user_check_username_exists`**: Checks if username exists in company. Use excludeUserId for update scenarios.
-- **`user_create`**: Creates a new user with email/username uniqueness validation
-- **`user_delete`**: Soft deletes a user by setting status to -1
-- **`user_get`**: Returns user details including company info, global roles, tenant roles, and allowed tenants
-- **`user_list`**: Returns paginated user list with strict company and tenant filtering.
-- **`user_login_failed_increment`**: Increments failed login count, locks account if threshold exceeded
-- **`user_login_failed_reset`**: Resets failed login count after successful login
-- **`user_permission_list`**: Hybrid Permission: Returns user roles, permissions and tenant access info. Formula: (Role + Granted) - Denied
-- **`user_permission_override_list`**: Lists active permission overrides for a user
-- **`user_permission_remove`**: Removes a permission override rule from a user. Does not affect role-based permissions.
-- **`user_permission_set`**: Grants or Denies a specific permission to a user. Creates or updates an override.
-- **`user_reset_password`**: Resets user password (admin action). Password should be hashed before calling.
-- **`user_role_assign`**: Assigns a global role to a user. Idempotent.
-- **`user_role_list`**: Lists usage roles (global and tenant-specific).
-- **`user_role_remove`**: Removes a global role from a user.
-- **`user_tenant_role_assign`**: Assigns a tenant-specific role to a user. Idempotent.
-- **`user_tenant_role_list`**: Lists tenant-specific roles for a user. Returns direct JSON array.
-- **`user_tenant_role_remove`**: Removes a tenant-specific role from a user.
-- **`user_unlock`**: Unlocks a locked user account (Admin action)
-- **`user_update`**: Updates user with partial update support. NULL values keep existing data. Validates email/username uniqueness.
+- **`user_authenticate(p_email)`**: Authenticates user and returns details, global/tenant roles, and permissions (merged scope).
+- **`permission_category_list()`**: Lists active permission categories and count.
+- **`permission_check(p_user_id, p_permission_code, p_tenant_id)`**: Checks if a user has a specific permission (supports overrides and scope).
+- **`permission_cleanup_expired()`**: Cleans up expired permission overrides.
+- **`permission_create(...)`**: Creates a new permission. Code is normalized to lowercase.
+- **`permission_delete(p_id)`**: Soft deletes a permission and removes role associations.
+- **`permission_exists(p_permission_code)`**: Checks if a permission code exists and is active.
+- **`permission_get(p_code)`**: Get permission details by code, including role count.
+- **`permission_list(...)`**: Paginated permissions list.
+- **`permission_update(...)`**: Updates permission details. Code is immutable.
+- **`user_permission_list(p_user_id, p_tenant_id)`**: Lists user's effective permissions based on roles and overrides.
+- **`user_permission_override_list(p_caller_id, p_user_id, p_tenant_id)`**: Lists active permission overrides for a user.
+- **`user_permission_remove(...)`**: Removes a permission override from a user.
+- **`user_permission_set(...)`**: Grants or Denies a specific permission to a user (override).
+- **`is_system_role(p_role_code)`**: Checks if a role code is a protected system role (e.g. superadmin).
+- **`role_create(...)`**: Creates a new role. Protects system roles.
+- **`role_delete(p_id, p_deleted_by)`**: Soft deletes a role. System roles cannot be deleted.
+- **`role_get(p_code)`**: Get role details by code, including permissions.
+- **`role_list(...)`**: Paginated role list.
+- **`role_permission_list(p_role_id)`**: Lists permissions for a role.
+- **`role_permission_remove(p_role_id, p_permission_code)`**: Removes a permission from a role.
+- **`role_update(...)`**: Updates role details. System roles cannot be updated.
+- **`user_role_assign(...)`**: Assigns a role to a user. Supports global and tenant scopes. Enforces hierarchy.
+- **`user_role_list(p_caller_id, p_user_id, p_tenant_id)`**: Lists user roles. Supports filtering by tenant.
+- **`user_role_remove(...)`**: Removes a role from a user.
+- **`session_belongs_to_user(p_session_id, p_user_id)`**: Checks if session belongs to user.
+- **`session_cleanup_expired(...)`**: Cleans up expired, old revoked, and inactive session records in batches.
+- **`session_list(p_user_id)`**: Lists active sessions for a user.
+- **`session_revoke(p_session_id, p_reason)`**: Revokes a specific session.
+- **`session_revoke_all(p_user_id, p_reason)`**: Revokes all sessions for a user.
 
-## Core Audit Veritabanı
+### Backoffice Schema (Audit)
 
-### Backoffice Şeması
+- **`audit_create(...)`**: Adds an entity audit log entry. Returns UUID.
+- **`audit_get(p_id)`**: Gets an entity audit log entry by ID as JSONB.
+- **`audit_list(...)`**: Retrieves paginated entity audit logs as JSONB.
+- **`auth_audit_create(...)`**: Adds an auth audit log entry. Returns BIGINT.
+- **`auth_audit_failed_logins(p_user_id, p_hours)`**: Gets failed login attempts for brute-force detection.
+- **`auth_audit_list_by_type(p_event_type, ...)`**: Retrieves auth audit logs by event type as JSONB array.
+- **`auth_audit_list_by_user(p_user_id, p_limit)`**: Retrieves auth audit logs for a user as JSONB array.
 
-- **`auth_audit_create`**: Adds an auth audit log entry. Returns BIGINT.
-- **`auth_audit_failed_logins`**: Gets failed login attempts for brute-force detection
-- **`auth_audit_list_by_type`**: Retrieves auth audit logs by event type as JSONB array
-- **`auth_audit_list_by_user`**: Retrieves auth audit logs for a user as JSONB array
+### Logs Schema (Core Log)
 
-## Core Log Veritabanı
+- **`core_audit_create(...)`**: Adds a core audit log entry. Returns UUID.
+- **`core_audit_list(...)`**: Retrieves filtered core audit logs as JSONB array.
+- **`dead_letter_create(...)`**: Adds a dead letter message. Returns UUID.
+- **`dead_letter_get(p_id)`**: Gets dead letter details by ID.
+- **`dead_letter_list_pending(p_limit)`**: Retrieves pending dead letters for processing.
+- **`dead_letter_retry(p_id)`**: Increments retry count and sets status to RETRYING for a message.
+- **`dead_letter_stats()`**: Calculates dead letter message statistics (counts by status, etc.).
+- **`dead_letter_update_status(p_id, p_status, ...)`**: Updates status and resolution details of a dead letter message.
+- **`error_get(p_id)`**: Gets error detail by ID as JSONB.
+- **`error_list(...)`**: Retrieves filtered application errors as JSONB array.
+- **`error_log(...)`**: Adds an application error log entry. Returns ID.
+- **`error_stats(...)`**: Calculates error statistics (counts, top errors, etc.).
 
-### Backoffice Şeması
+## Triggers
 
-- **`audit_create`**: Adds an entity audit log entry. Returns UUID.
-- **`audit_get`**: Gets an entity audit log entry by ID as JSONB
-- **`audit_list`**: Retrieves paginated entity audit logs as JSONB
+### Core Database
 
-### Logs Şeması
+All these triggers use `core.update_updated_at_column()` to automatically update the `updated_at` timestamp.
 
-- **`core_audit_create`**: Adds a core audit log entry. Returns UUID.
-- **`core_audit_list`**: Retrieves filtered core audit logs as JSONB array
-- **`dead_letter_create`**: Adds a dead letter message. Returns UUID.
-- **`dead_letter_get`**: Gets dead letter details by ID
-- **`dead_letter_list_pending`**: Retrieves pending dead letters for processing
-- **`dead_letter_retry`**: Increments retry count and sets status to RETRYING for a message
-- **`dead_letter_stats`**: Calculates dead letter message statistics (counts by status, etc.)
-- **`dead_letter_update_status`**: Updates status and resolution details of a dead letter message
-- **`error_get`**: Gets error detail by ID as JSONB
-- **`error_list`**: Retrieves filtered application errors as JSONB array
-- **`error_log`**: Adds an application error log entry. Returns ID.
-- **`error_stats`**: Calculates error statistics (counts, top errors, etc.)
-
-## Core Report Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Finance Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Finance Log Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Game Log Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Tenant Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Tenant Affiliate Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Tenant Audit Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Tenant Log Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
-
-## Tenant Report Veritabanı
-
-Henüz özel fonksiyon tanımlanmamıştır.
+- **`presentation.trigger_menu_groups_updated_at`**
+- **`presentation.trigger_menus_updated_at`**
+- **`presentation.trigger_submenus_updated_at`**
+- **`presentation.trigger_pages_updated_at`**
+- **`presentation.trigger_tabs_updated_at`**
+- **`presentation.trigger_contexts_updated_at`**
+- **`security.trigger_users_updated_at`**
+- **`security.trigger_roles_updated_at`**
+- **`security.trigger_permissions_updated_at`**
