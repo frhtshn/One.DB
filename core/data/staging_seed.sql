@@ -41,11 +41,19 @@ TRUNCATE TABLE security.permissions RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.roles RESTART IDENTITY CASCADE;
 
 -- Core
+TRUNCATE TABLE core.tenant_jurisdictions RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.tenant_settings RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.tenant_languages RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.tenant_currencies RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.tenants RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.companies RESTART IDENTITY CASCADE;
+
+-- Compliance/Catalog (order matters due to FK)
+TRUNCATE TABLE catalog.responsible_gaming_policies RESTART IDENTITY CASCADE;
+TRUNCATE TABLE catalog.kyc_level_requirements RESTART IDENTITY CASCADE;
+TRUNCATE TABLE catalog.kyc_document_requirements RESTART IDENTITY CASCADE;
+TRUNCATE TABLE catalog.kyc_policies RESTART IDENTITY CASCADE;
+TRUNCATE TABLE catalog.jurisdictions RESTART IDENTITY CASCADE;
 
 -- Sequence reset
 SELECT setval('core.companies_id_seq', 1, false);
@@ -740,13 +748,7 @@ END;
 -- ================================================================
 -- 9. JURISDICTIONS & KYC COMPLIANCE DATA
 -- ================================================================
-
--- Truncate compliance tables (order matters due to FK)
-TRUNCATE TABLE catalog.responsible_gaming_policies RESTART IDENTITY CASCADE;
-TRUNCATE TABLE catalog.kyc_level_requirements RESTART IDENTITY CASCADE;
-TRUNCATE TABLE catalog.kyc_document_requirements RESTART IDENTITY CASCADE;
-TRUNCATE TABLE catalog.kyc_policies RESTART IDENTITY CASCADE;
-TRUNCATE TABLE catalog.jurisdictions RESTART IDENTITY CASCADE;
+-- NOTE: TRUNCATE statements moved to top of file with other truncates
 
 -- ================================================================
 -- 9.1 JURISDICTIONS (Lisans Otoriteleri)
