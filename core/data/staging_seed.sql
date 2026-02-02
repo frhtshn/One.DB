@@ -431,10 +431,7 @@ INSERT INTO core.tenant_languages (tenant_id, language_code, is_enabled)
 SELECT t.id, l.code, true FROM core.tenants t
 CROSS JOIN (VALUES ('en'), ('tr')) AS l(code);
 
--- ================================================================
--- 11. TENANT SETTINGS
--- ================================================================
-
+-- Tenant Ayarları
 -- SMS API Ayarları
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Integration', 'sms_provider',
