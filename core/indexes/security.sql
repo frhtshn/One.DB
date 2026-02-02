@@ -42,20 +42,21 @@ CREATE INDEX idx_user_roles_user_id ON security.user_roles USING btree(user_id);
 -- user_roles.role_id -> roles.id
 CREATE INDEX idx_user_roles_role_id ON security.user_roles USING btree(role_id);
 
--- user_roles (composite for user permission lookup - user_authenticate, user_permission_list)
-CREATE INDEX idx_user_roles_user_role ON security.user_roles USING btree(user_id, role_id);
+-- user_roles.tenant_id (FK index for tenant-specific roles)
+CREATE INDEX idx_user_roles_tenant_id ON security.user_roles USING btree(tenant_id) WHERE tenant_id IS NOT NULL;
 
--- user_tenant_roles.user_id (FK index + frequent JOIN)
-CREATE INDEX idx_user_tenant_roles_user_id ON security.user_tenant_roles USING btree(user_id);
+-- Partial Unique Index: Global roller için (tenant_id NULL)
+CREATE UNIQUE INDEX idx_user_roles_unique_global
+    ON security.user_roles(user_id, role_id)
+    WHERE tenant_id IS NULL;
 
--- user_tenant_roles.tenant_id -> tenants.id
-CREATE INDEX idx_user_tenant_roles_tenant_id ON security.user_tenant_roles USING btree(tenant_id);
+-- Partial Unique Index: Tenant rolleri için (tenant_id NOT NULL)
+CREATE UNIQUE INDEX idx_user_roles_unique_tenant
+    ON security.user_roles(user_id, role_id, tenant_id)
+    WHERE tenant_id IS NOT NULL;
 
--- user_tenant_roles.role_id -> roles.id
-CREATE INDEX idx_user_tenant_roles_role_id ON security.user_tenant_roles USING btree(role_id);
-
--- user_tenant_roles (composite for tenant role lookup - user_authenticate, user_tenant_role_list)
-CREATE INDEX idx_user_tenant_roles_lookup ON security.user_tenant_roles USING btree(user_id, tenant_id);
+-- Lookup index (performans - user_authenticate, user_permission_list)
+CREATE INDEX idx_user_roles_user_lookup ON security.user_roles USING btree(user_id, tenant_id);
 
 -- user_sessions.user_id -> users.id
 CREATE INDEX idx_user_sessions_user_id ON security.user_sessions USING btree(user_id);

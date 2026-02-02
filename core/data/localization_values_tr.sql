@@ -77,6 +77,13 @@ JOIN (VALUES
     ('error.forbidden.resource', '{0} kaynağına erişim için yetkiniz yok. Gerekli yetki: {1}'),
     ('error.tenant.access-denied', 'Tenant {0} için erişim izniniz yok'),
     ('error.access.company-scope-denied', 'Şirket kapsamı dışında işlem yapılamaz'),
+    ('error.access.tenant-scope-denied', 'Tenant kapsamı dışında işlem yapılamaz'),
+    ('error.access.hierarchy-violation', 'Hiyerarşi ihlali - yetkisiz işlem'),
+    ('error.access.denied', 'Erişim engellendi'),
+
+    -- Error Messages - Caller
+    ('error.caller.not-found', 'Çağıran kullanıcı bulunamadı'),
+    ('error.caller.locked', 'Hesabınız kilitli'),
 
     -- Error Messages - System Grain
     ('error.system.grain.activation-failed', 'Grain aktifleştirilemedi: {0} (key: {1})'),

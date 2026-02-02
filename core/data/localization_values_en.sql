@@ -77,6 +77,13 @@ JOIN (VALUES
     ('error.forbidden.resource', 'You do not have permission to access {0}. Required permission: {1}'),
     ('error.tenant.access-denied', 'Access denied for tenant {0}'),
     ('error.access.company-scope-denied', 'Operation not allowed outside company scope'),
+    ('error.access.tenant-scope-denied', 'Operation not allowed outside tenant scope'),
+    ('error.access.hierarchy-violation', 'Hierarchy violation - unauthorized operation'),
+    ('error.access.denied', 'Access denied'),
+
+    -- Error Messages - Caller
+    ('error.caller.not-found', 'Caller user not found'),
+    ('error.caller.locked', 'Your account is locked'),
 
     -- Error Messages - System Grain
     ('error.system.grain.activation-failed', 'Grain activation failed: {0} (key: {1})'),

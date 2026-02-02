@@ -33,7 +33,7 @@ BEGIN
     -- 1. Yetki Kontrolü
     SELECT
         u.company_id,
-        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND r.is_platform_role = TRUE)
+        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE)
     INTO v_caller_company_id, v_has_platform_role
     FROM security.users u
     WHERE u.id = p_caller_id AND u.status = 1;

@@ -1,13 +1,17 @@
 -- =============================================
--- 12. USER_ROLE_REMOVE: Kullanicidan global rol kaldir
+-- 12. USER_ROLE_REMOVE: Kullanicidan rol kaldir (unified)
+-- p_tenant_id = NULL: Global rol
+-- p_tenant_id = değer: Tenant-specific rol
 -- Returns: TABLE(removed) - silme bilgisi
 -- =============================================
 
-DROP FUNCTION IF EXISTS security.user_role_remove(BIGINT, VARCHAR);
+DROP FUNCTION IF EXISTS security.user_role_remove(BIGINT, BIGINT, VARCHAR, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_role_remove(
+    p_caller_id BIGINT,
     p_user_id BIGINT,
-    p_role_code VARCHAR
+    p_role_code VARCHAR,
+    p_tenant_id BIGINT DEFAULT NULL
 )
 RETURNS TABLE(removed BOOLEAN)
 LANGUAGE plpgsql
@@ -15,10 +19,52 @@ SECURITY DEFINER
 AS $$
 DECLARE
     v_role_id BIGINT;
+    v_role_level INT;
     v_deleted_count INT;
+    v_caller_level INT;
+    v_target_level INT;
+    v_caller_company_id BIGINT;
+    v_target_company_id BIGINT;
+    v_has_platform_role BOOLEAN;
 BEGIN
-    -- Get role id
-    SELECT id INTO v_role_id
+    -- 1. Caller bilgilerini al (global + hedef tenant rolleri dikkate alınır)
+    SELECT
+        u.company_id,
+        COALESCE(MAX(r.level), 0),
+        EXISTS(
+            SELECT 1 FROM security.user_roles ur2
+            JOIN security.roles r2 ON ur2.role_id = r2.id
+            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
+        )
+    INTO v_caller_company_id, v_caller_level, v_has_platform_role
+    FROM security.users u
+    LEFT JOIN security.user_roles ur ON ur.user_id = u.id
+        AND (ur.tenant_id IS NULL OR ur.tenant_id = p_tenant_id)
+    LEFT JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
+    WHERE u.id = p_caller_id AND u.status = 1
+    GROUP BY u.id, u.company_id;
+
+    IF v_caller_company_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
+    END IF;
+
+    -- 2. Target user kontrolü
+    SELECT
+        u.company_id,
+        COALESCE(MAX(r.level), 0)
+    INTO v_target_company_id, v_target_level
+    FROM security.users u
+    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.tenant_id IS NULL
+    LEFT JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
+    WHERE u.id = p_user_id AND u.status = 1
+    GROUP BY u.id, u.company_id;
+
+    IF v_target_company_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
+    END IF;
+
+    -- 3. Get role id and level
+    SELECT id, level INTO v_role_id, v_role_level
     FROM security.roles
     WHERE code = LOWER(p_role_code);
 
@@ -26,9 +72,27 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.role.not-found';
     END IF;
 
-    -- Remove
+    -- 4. Hiyerarşi kontrolü: Caller kendi seviyesinden düşük rolleri kaldırabilir
+    IF v_role_level >= v_caller_level THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.role.hierarchy-violation';
+    END IF;
+
+    -- 5. Hedef kullanıcı scope kontrolü (platform rolü yoksa)
+    IF NOT v_has_platform_role THEN
+        IF v_target_company_id != v_caller_company_id THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
+        END IF;
+
+        IF v_target_level >= v_caller_level THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.role.target-level-violation';
+        END IF;
+    END IF;
+
+    -- 6. Remove
     DELETE FROM security.user_roles
-    WHERE user_id = p_user_id AND role_id = v_role_id;
+    WHERE user_id = p_user_id
+      AND role_id = v_role_id
+      AND ((p_tenant_id IS NULL AND tenant_id IS NULL) OR (tenant_id = p_tenant_id));
 
     GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
 
@@ -36,4 +100,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_role_remove IS 'Removes a global role from a user.';
+COMMENT ON FUNCTION security.user_role_remove IS 'Removes a role from a user. tenant_id=NULL for global, tenant_id=value for tenant-specific. Enforces hierarchy rules.';

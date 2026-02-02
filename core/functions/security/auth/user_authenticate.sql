@@ -1,10 +1,13 @@
 -- ================================================================
 -- USER_AUTHENTICATE: Email ile kullanıcı doğrulama
 -- ================================================================
+-- Birleşik user_roles tablosu:
+--   tenant_id IS NULL: Global roller (platform + company)
+--   tenant_id IS NOT NULL: Tenant-specific roller
 -- Scope belirleme (hardcoded rol yok):
---   Platform: user_roles + is_platform_role = TRUE
---   Company:  user_roles + is_platform_role = FALSE
---   Tenant:   user_tenant_roles
+--   Platform: user_roles WHERE tenant_id IS NULL AND is_platform_role = TRUE
+--   Company:  user_roles WHERE tenant_id IS NULL AND is_platform_role = FALSE
+--   Tenant:   user_roles WHERE tenant_id IS NOT NULL
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_authenticate(VARCHAR);
@@ -52,7 +55,7 @@ BEGIN
     END IF;
 
     -- ================================================================
-    -- 2. GLOBAL ROLLER VE SCOPE (tek sorgu)
+    -- 2. GLOBAL ROLLER VE SCOPE (tek sorgu - tenant_id IS NULL)
     -- ================================================================
     SELECT
         COALESCE(ARRAY_AGG(DISTINCT r.code) FILTER (WHERE r.is_platform_role), '{}'),
@@ -60,7 +63,7 @@ BEGIN
     INTO v_platform_roles, v_company_roles
     FROM security.user_roles ur
     JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
-    WHERE ur.user_id = v_user.id;
+    WHERE ur.user_id = v_user.id AND ur.tenant_id IS NULL;
 
     v_is_platform_role := array_length(v_platform_roles, 1) > 0;
     v_is_company_role := array_length(v_company_roles, 1) > 0;
@@ -188,6 +191,7 @@ BEGIN
     ELSE
         -- ============================================================
         -- TENANT (tenantadmin, moderator vb.): Atanmis tenant'lar
+        -- user_roles WHERE tenant_id IS NOT NULL
         -- ============================================================
 
         -- Tenant listesi
@@ -202,9 +206,9 @@ BEGIN
         INTO v_accessible_tenants
         FROM (
             SELECT DISTINCT t.id, t.tenant_code, t.tenant_name, t.environment
-            FROM security.user_tenant_roles utr
-            JOIN core.tenants t ON utr.tenant_id = t.id AND t.status = 1
-            WHERE utr.user_id = v_user.id
+            FROM security.user_roles ur
+            JOIN core.tenants t ON ur.tenant_id = t.id AND t.status = 1
+            WHERE ur.user_id = v_user.id AND ur.tenant_id IS NOT NULL
         ) t;
 
         -- Her tenant icin: roller + base + granted - denied
@@ -215,7 +219,7 @@ BEGIN
         INTO v_tenant_permissions
         FROM (
             SELECT
-                utr.tenant_id,
+                ur.tenant_id,
                 jsonb_agg(DISTINCT r.code) as roles,
                 (
                     SELECT COALESCE(jsonb_agg(DISTINCT perm), '[]'::jsonb)
@@ -225,8 +229,8 @@ BEGIN
                         FROM security.role_permissions rp
                         JOIN security.permissions p ON rp.permission_id = p.id AND p.status = 1
                         WHERE rp.role_id IN (
-                            SELECT role_id FROM security.user_tenant_roles
-                            WHERE user_id = v_user.id AND tenant_id = utr.tenant_id
+                            SELECT role_id FROM security.user_roles
+                            WHERE user_id = v_user.id AND tenant_id = ur.tenant_id
                         )
                         UNION
                         -- Granted override'lar
@@ -235,7 +239,7 @@ BEGIN
                         JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
                         WHERE up.user_id = v_user.id
                           AND up.is_granted = TRUE
-                          AND (up.tenant_id IS NULL OR up.tenant_id = utr.tenant_id)
+                          AND (up.tenant_id IS NULL OR up.tenant_id = ur.tenant_id)
                           AND (up.expires_at IS NULL OR up.expires_at > NOW())
                     ) base_perms
                     WHERE perm NOT IN (
@@ -245,14 +249,14 @@ BEGIN
                         JOIN security.permissions p ON up.permission_id = p.id
                         WHERE up.user_id = v_user.id
                           AND up.is_granted = FALSE
-                          AND (up.tenant_id IS NULL OR up.tenant_id = utr.tenant_id)
+                          AND (up.tenant_id IS NULL OR up.tenant_id = ur.tenant_id)
                           AND (up.expires_at IS NULL OR up.expires_at > NOW())
                     )
                 ) as permissions
-            FROM security.user_tenant_roles utr
-            JOIN security.roles r ON utr.role_id = r.id AND r.status = 1
-            WHERE utr.user_id = v_user.id
-            GROUP BY utr.tenant_id
+            FROM security.user_roles ur
+            JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
+            WHERE ur.user_id = v_user.id AND ur.tenant_id IS NOT NULL
+            GROUP BY ur.tenant_id
         ) t;
 
     END IF;
@@ -284,4 +288,4 @@ END;
 $$;
 
 COMMENT ON FUNCTION security.user_authenticate IS
-'Email ile kullanici dogrulama. Scope: Platform (is_platform_role=TRUE), Company (is_platform_role=FALSE), Tenant (user_tenant_roles).';
+'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific.';

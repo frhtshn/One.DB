@@ -86,6 +86,13 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.forbidden.resource', 'error', 'forbidden', 'Kaynak erisim yetkisi yok. Args: {0}=resource, {1}=permission'),
 ('error.tenant.access-denied', 'error', 'tenant', 'Tenant erisim engellendi. Args: {0}=tenantId'),
 ('error.access.company-scope-denied', 'error', 'access', 'Sirket kapsami disinda islem yapilamaz'),
+('error.access.tenant-scope-denied', 'error', 'access', 'Tenant kapsami disinda islem yapilamaz'),
+('error.access.hierarchy-violation', 'error', 'access', 'Hiyerarsi ihlali - yetkisiz islem'),
+('error.access.denied', 'error', 'access', 'Erisim engellendi'),
+
+-- Caller Exceptions
+('error.caller.not-found', 'error', 'caller', 'Cagiran kullanici bulunamadi'),
+('error.caller.locked', 'error', 'caller', 'Hesabiniz kilitli'),
 
 -- System - Grain Exceptions
 ('error.system.grain.activation-failed', 'error', 'system', 'Grain aktivasyon hatasi. Args: {0}=grainType, {1}=grainKey'),

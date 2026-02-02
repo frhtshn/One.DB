@@ -1,6 +1,7 @@
 -- =============================================
 -- 2. ROLE_GET: Code ile rol detayi
 -- Returns: JSONB - dogrudan rol verisi (success wrapper YOK)
+-- Birleşik user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
 -- =============================================
 
 DROP FUNCTION IF EXISTS security.role_get(VARCHAR);
@@ -23,15 +24,14 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.role.not-found';
     END IF;
 
-    -- Tek sorguda tum bilgileri al
+    -- Tek sorguda tum bilgileri al (birleşik user_roles)
     WITH role_stats AS (
         SELECT
-            COUNT(DISTINCT ur.user_id) AS global_user_count,
-            COUNT(DISTINCT utr.user_id) AS tenant_user_count,
+            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NULL THEN ur.user_id END) AS global_user_count,
+            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NOT NULL THEN ur.user_id END) AS tenant_user_count,
             COUNT(DISTINCT rp.permission_id) AS permission_count
         FROM security.roles r
         LEFT JOIN security.user_roles ur ON ur.role_id = r.id
-        LEFT JOIN security.user_tenant_roles utr ON utr.role_id = r.id
         LEFT JOIN security.role_permissions rp ON rp.role_id = r.id
         WHERE r.id = v_role_id
     ),
@@ -68,4 +68,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.role_get IS 'Get role details by code, including permissions.';
+COMMENT ON FUNCTION security.role_get IS 'Get role details by code, including permissions. Uses unified user_roles table.';

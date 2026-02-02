@@ -1,6 +1,7 @@
 -- =============================================
 -- 1. ROLE_LIST: Sayfalamali rol listesi
 -- Returns: JSONB {items, totalCount} - success wrapper YOK
+-- Birleşik user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
 -- =============================================
 
 DROP FUNCTION IF EXISTS security.role_list(INT, INT, VARCHAR, SMALLINT);
@@ -33,16 +34,15 @@ BEGIN
            LOWER(r.code) LIKE v_search_pattern OR
            LOWER(r.name) LIKE v_search_pattern);
 
-    -- Items with optimized JOIN
+    -- Items with optimized JOIN (birleşik user_roles)
     WITH role_stats AS (
         SELECT
             r.id AS role_id,
-            COUNT(DISTINCT ur.user_id) AS global_user_count,
-            COUNT(DISTINCT utr.user_id) AS tenant_user_count,
+            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NULL THEN ur.user_id END) AS global_user_count,
+            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NOT NULL THEN ur.user_id END) AS tenant_user_count,
             COUNT(DISTINCT rp.permission_id) AS permission_count
         FROM security.roles r
         LEFT JOIN security.user_roles ur ON ur.role_id = r.id
-        LEFT JOIN security.user_tenant_roles utr ON utr.role_id = r.id
         LEFT JOIN security.role_permissions rp ON rp.role_id = r.id
         WHERE (p_status IS NULL OR r.status = p_status)
           AND (v_search_pattern IS NULL OR
@@ -82,4 +82,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.role_list IS 'Paginated role list with user/permission counts. Returns items + totalCount.';
+COMMENT ON FUNCTION security.role_list IS 'Paginated role list with user/permission counts. Returns items + totalCount. Uses unified user_roles table.';

@@ -127,7 +127,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/rbac/permissions.sql
 \i core/tables/security/rbac/role_permissions.sql
 \i core/tables/security/rbac/user_roles.sql
-\i core/tables/security/rbac/user_tenant_roles.sql
 \i core/tables/security/rbac/user_allowed_tenants.sql
 \i core/tables/security/rbac/user_permission_overrides.sql
 
@@ -287,9 +286,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/roles/user_role_list.sql
 \i core/functions/security/roles/user_role_assign.sql
 \i core/functions/security/roles/user_role_remove.sql
-\i core/functions/security/roles/user_tenant_role_list.sql
-\i core/functions/security/roles/user_tenant_role_assign.sql
-\i core/functions/security/roles/user_tenant_role_remove.sql
 
 -- Auth Functions
 \i core/functions/security/auth/user_authenticate.sql

@@ -1,6 +1,7 @@
 -- =============================================
 -- 5. ROLE_DELETE: Soft delete
 -- Returns: TABLE(affected_users) - Permission pattern
+-- Birleşik user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
 -- =============================================
 
 DROP FUNCTION IF EXISTS security.role_delete(BIGINT, BIGINT);
@@ -36,11 +37,11 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.role.system-protected';
     END IF;
 
-    -- Count affected users
-    SELECT
-        (SELECT COUNT(*) FROM security.user_roles WHERE role_id = p_id) +
-        (SELECT COUNT(*) FROM security.user_tenant_roles WHERE role_id = p_id)
-    INTO v_affected_users;
+    -- Count affected users (birleşik user_roles)
+    SELECT COUNT(DISTINCT user_id)
+    INTO v_affected_users
+    FROM security.user_roles
+    WHERE role_id = p_id;
 
     -- Soft delete
     UPDATE security.roles
@@ -55,4 +56,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.role_delete IS 'Soft deletes a role. System roles cannot be deleted. Returns affected user count.';
+COMMENT ON FUNCTION security.role_delete IS 'Soft deletes a role. System roles cannot be deleted. Returns affected user count. Uses unified user_roles table.';

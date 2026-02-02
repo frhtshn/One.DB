@@ -1,6 +1,7 @@
 -- ================================================================
 -- USER_PERMISSION_LIST: Kullanıcının tüm permission'larını döner
 -- Hybrid Permission Formülü: Final = (Role Permissions + Granted) - Denied
+-- Birleşik user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_permission_list(BIGINT, BIGINT);
@@ -34,31 +35,31 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
     END IF;
 
-    -- Global rolleri al
+    -- Global rolleri al (tenant_id IS NULL)
     SELECT ARRAY_AGG(DISTINCT r.code)
     INTO v_global_roles
     FROM security.user_roles ur
     JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
-    WHERE ur.user_id = p_user_id;
+    WHERE ur.user_id = p_user_id AND ur.tenant_id IS NULL;
 
     -- Platform role kontrolü: Global rollerden herhangi birinin is_platform_role = true olup olmadığı
     SELECT EXISTS (
         SELECT 1
         FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
-        WHERE ur.user_id = p_user_id AND r.is_platform_role = TRUE
+        WHERE ur.user_id = p_user_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
     )
     INTO v_has_platform_role;
 
-    -- Tenant bazlı rolleri ve accessible tenant ID'lerini tek sorguda al
+    -- Tenant bazlı rolleri ve accessible tenant ID'lerini tek sorguda al (tenant_id IS NOT NULL)
     WITH tenant_role_data AS (
         SELECT
-            utr.tenant_id,
+            ur.tenant_id,
             ARRAY_AGG(DISTINCT r.code) as roles
-        FROM security.user_tenant_roles utr
-        JOIN security.roles r ON utr.role_id = r.id AND r.status = 1
-        WHERE utr.user_id = p_user_id
-        GROUP BY utr.tenant_id
+        FROM security.user_roles ur
+        JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
+        WHERE ur.user_id = p_user_id AND ur.tenant_id IS NOT NULL
+        GROUP BY ur.tenant_id
     )
     SELECT
         COALESCE(jsonb_object_agg(tenant_id::text, to_jsonb(roles)), '{}'::jsonb),
@@ -72,20 +73,23 @@ BEGIN
     FROM security.permissions p
     WHERE p.status = 1
     AND p.id IN (
-        -- Global rollerden gelen permission'lar
+        -- Global rollerden gelen permission'lar (tenant_id IS NULL)
         SELECT rp.permission_id
         FROM security.role_permissions rp
         JOIN security.user_roles ur ON rp.role_id = ur.role_id
-        WHERE ur.user_id = p_user_id
+        JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
+        WHERE ur.user_id = p_user_id AND ur.tenant_id IS NULL
 
         UNION
 
         -- Tenant rollerinden gelen permission'lar (belirli tenant veya tümü)
         SELECT rp.permission_id
         FROM security.role_permissions rp
-        JOIN security.user_tenant_roles utr ON rp.role_id = utr.role_id
-        WHERE utr.user_id = p_user_id
-        AND (p_tenant_id IS NULL OR utr.tenant_id = p_tenant_id)
+        JOIN security.user_roles ur ON rp.role_id = ur.role_id
+        JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
+        WHERE ur.user_id = p_user_id
+          AND ur.tenant_id IS NOT NULL
+          AND (p_tenant_id IS NULL OR ur.tenant_id = p_tenant_id)
     );
 
     -- User-level GRANTED overrides (is_granted=true)
@@ -137,4 +141,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_permission_list IS 'Hybrid Permission: Returns user roles, permissions and tenant access info. Formula: (Role + Granted) - Denied';
+COMMENT ON FUNCTION security.user_permission_list IS 'Hybrid Permission: Returns user roles, permissions and tenant access info. Formula: (Role + Granted) - Denied. Uses unified user_roles table.';

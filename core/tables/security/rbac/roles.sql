@@ -11,6 +11,7 @@ CREATE TABLE security.roles (
     code VARCHAR(50) NOT NULL,                             -- Rol kodu (admin, support vb.)
     name VARCHAR(100) NOT NULL,                            -- Rol adı
     description VARCHAR(500),                              -- Rol açıklaması
+    level INT NOT NULL DEFAULT 0,                          -- Hiyerarşi seviyesi (yüksek = daha yetkili)
     status SMALLINT NOT NULL DEFAULT 1,                    -- Durum
     is_platform_role BOOLEAN NOT NULL DEFAULT FALSE,       -- Platform rolü mü? (True ise tenant bağımsız)
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı

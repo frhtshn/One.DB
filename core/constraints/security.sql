@@ -35,20 +35,10 @@ ALTER TABLE security.user_roles
     ADD CONSTRAINT fk_user_roles_role
     FOREIGN KEY (role_id) REFERENCES security.roles(id) ON DELETE CASCADE;
 
--- user_tenant_roles -> tenants
-ALTER TABLE security.user_tenant_roles
-    ADD CONSTRAINT fk_user_tenant_roles_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
-
--- user_tenant_roles -> users
-ALTER TABLE security.user_tenant_roles
-    ADD CONSTRAINT fk_user_tenant_roles_user
-    FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE;
-
--- user_tenant_roles -> roles
-ALTER TABLE security.user_tenant_roles
-    ADD CONSTRAINT fk_user_tenant_roles_role
-    FOREIGN KEY (role_id) REFERENCES security.roles(id) ON DELETE CASCADE;
+-- user_roles -> tenants (nullable - global roller için NULL)
+ALTER TABLE security.user_roles
+    ADD CONSTRAINT fk_user_roles_tenant
+    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id) ON DELETE CASCADE;
 
 -- user_sessions -> users
 ALTER TABLE security.user_sessions
