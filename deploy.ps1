@@ -11,7 +11,8 @@
 param(
     [Parameter(Position=0)]
     [string]$SqlFile = "deploy_core.sql",
-    [switch]$Reset
+    [switch]$Reset,
+    [switch]$Dry
 )
 
 # Config
@@ -48,6 +49,31 @@ if (-not (Get-Command psql -ErrorAction SilentlyContinue)) {
     Write-Host "[XX] psql bulunamadi! PostgreSQL client yukleyin." -ForegroundColor Red
     Write-Host "     https://www.postgresql.org/download/windows/" -ForegroundColor Gray
     exit 1
+}
+
+# Dry run?
+if ($Dry) {
+    Write-Host "[..] DRY RUN - Baglanti test ediliyor..." -ForegroundColor Yellow
+
+    $testResult = psql -h $HOST_IP -p $PORT -U $USER -d $DB -c "SELECT 1" 2>&1
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "[OK] Baglanti basarili" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "  Dosya:    $SqlFile" -ForegroundColor Cyan
+        Write-Host "  Database: $DB" -ForegroundColor Cyan
+        Write-Host "  Server:   ${HOST_IP}:${PORT}" -ForegroundColor Cyan
+        if ($Reset) {
+            Write-Host "  Reset:    EVET (schema'lar silinecek)" -ForegroundColor Red
+        }
+        Write-Host ""
+        Write-Host "[!!] Gercek deploy icin -Dry olmadan calistir" -ForegroundColor Yellow
+    } else {
+        Write-Host "[XX] Baglanti basarisiz!" -ForegroundColor Red
+        Write-Host $testResult -ForegroundColor Red
+    }
+    Write-Host ""
+    exit 0
 }
 
 # Reset?
