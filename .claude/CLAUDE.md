@@ -1,8 +1,53 @@
 # Nucleo.DB - Claude Context
 
-## Proje Bilgisi
-**Nucleo**, online gaming/bahis sektörü için multi-tenant (whitelabel) platform.
-Bu repo (`Nucleo.DB`) veritabanı katmanını içerir.
+## Platform Özeti
+
+**Nucleo**, online gaming/betting platformları için tasarlanmış, **core-centric mimariye** sahip, **multi-tenant (whitelabel)** destekli, yatayda ölçeklenebilir bir orchestration platformudur.
+
+> Nucleo ismi, Latince "Nucleus" (çekirdek) kelimesinden gelir ve sistemin değişmeyen merkezini temsil eder.
+
+### Mimari Prensipler
+| Prensip | Açıklama |
+|---------|----------|
+| **Core-Centric Design** | Değişmeyen merkezi çekirdek |
+| **Gateway & Plugin Oriented** | İzole entegrasyon katmanları |
+| **Horizontal Scalability** | Yeni gateway ve plugin'lerle yatay büyüme |
+
+### Platform Bileşenleri
+| Bileşen | Sorumluluk |
+|---------|------------|
+| `Nucleo.Orchestrator` | Routing, servis yaşam döngüsü, orkestrasyon |
+| `Nucleo.Core` | Domain kuralları ve merkezi veri modeli |
+| `Nucleo.Gateway.*` | Game, Finance gibi provider entegrasyonları |
+| `Nucleo.Plugins.*` | Bonus, Affiliate, Fraud gibi genişletilebilir servisler |
+
+### Veritabanı Katmanları
+| Katman | Veritabanları | Paylaşım |
+|--------|---------------|----------|
+| **Core Layer** | core, core_log, core_audit, core_report | Tüm tenantlar (paylaşımlı) |
+| **Gateway Layer** | game, game_log, finance, finance_log | Tüm tenantlar (paylaşımlı) |
+| **Plugin Layer** | bonus | Tüm tenantlar (paylaşımlı) |
+| **Tenant Layer** | tenant_XXX, tenant_log_XXX, tenant_audit_XXX, tenant_report_XXX | İzole (her tenant'a özel) |
+| **Tenant Plugin** | tenant_affiliate_XXX | İzole (her tenant'a özel) |
+
+### Multi-Tenant Strateji
+- Her tenant için **ayrı veritabanı** oluşturulur
+- **Cross-DB join yapılmaz**
+- Tenant verileri **tamamen izole**
+- Paylaşılan veriler **sadece Core DB'de**
+
+### Log – Audit – Business Ayrımı
+| Tip | Amaç | Saklama |
+|-----|------|---------|
+| **Log** | Teknik, operasyonel | Kısa (30-90 gün), partition'lı |
+| **Audit** | Regülasyon, denetim | Uzun (5-10 yıl) |
+| **Business** | Operasyonel veriler | Sınırsız |
+
+---
+
+## Bu Repo (Nucleo.DB)
+
+Bu repo veritabanı katmanını içerir: şemalar, tablolar, fonksiyonlar, triggerlar ve deploy scriptleri.
 
 ## Çalışma Dizini
 ```
