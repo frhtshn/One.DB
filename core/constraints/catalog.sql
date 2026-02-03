@@ -38,6 +38,13 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- provider_settings unique constraint (provider_id, setting_key)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_provider_settings_provider_key') THEN
+        ALTER TABLE catalog.provider_settings ADD CONSTRAINT uq_provider_settings_provider_key UNIQUE (provider_id, setting_key);
+    END IF;
+END $$;
+
 -- localization_values -> localization_keys
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_localization_values_key') THEN

@@ -12,7 +12,6 @@
 --   - Silinmiş/pasif hedef döndürülmez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_get(BIGINT);
 DROP FUNCTION IF EXISTS security.user_get(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_get(
@@ -58,7 +57,7 @@ BEGIN
       AND (u.locked_until IS NULL OR u.locked_until < NOW());
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.caller.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- Caller'ın TenantAdmin olduğu tenant'ları al (aktif roller)

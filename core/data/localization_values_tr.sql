@@ -80,6 +80,7 @@ JOIN (VALUES
     ('error.access.tenant-scope-denied', 'Tenant kapsamı dışında işlem yapılamaz'),
     ('error.access.hierarchy-violation', 'Hiyerarşi ihlali - yetkisiz işlem'),
     ('error.access.denied', 'Erişim engellendi'),
+    ('error.access.unauthorized', 'Yetkisiz erişim'),
 
     -- Error Messages - Caller
     ('error.caller.not-found', 'Çağıran kullanıcı bulunamadı'),
@@ -263,6 +264,132 @@ JOIN (VALUES
     -- Error Messages - Tenant
     ('error.tenant.code-exists', 'Tenant kodu zaten mevcut'),
     ('error.tenant.not-found', 'Tenant bulunamadı'),
-    ('error.tenant.already-deleted', 'Tenant zaten silinmiş')
+    ('error.tenant.already-deleted', 'Tenant zaten silinmiş'),
+
+    -- Error Messages - Access Control
+    ('error.access.superadmin-required', 'Bu işlem için SuperAdmin yetkisi gerekli'),
+    ('error.access.platform-admin-required', 'Bu işlem için Platform Admin (SuperAdmin/Admin) yetkisi gerekli'),
+
+    -- Error Messages - Provider Type
+    ('error.provider-type.not-found', 'Provider tipi bulunamadı'),
+    ('error.provider-type.id-required', 'Provider tip ID zorunlu'),
+    ('error.provider-type.code-invalid', 'Geçersiz provider tip kodu. En az 2 karakter olmalı'),
+    ('error.provider-type.name-invalid', 'Geçersiz provider tip adı. En az 2 karakter olmalı'),
+    ('error.provider-type.code-exists', 'Provider tip kodu zaten mevcut'),
+    ('error.provider-type.has-providers', 'Provider tipi silinemez. Bağlı provider kayıtları mevcut'),
+
+    -- Error Messages - Provider
+    ('error.provider.not-found', 'Provider bulunamadı'),
+    ('error.provider.id-required', 'Provider ID zorunlu'),
+    ('error.provider.type-required', 'Provider tipi zorunlu'),
+    ('error.provider.code-invalid', 'Geçersiz provider kodu. En az 2 karakter olmalı'),
+    ('error.provider.name-invalid', 'Geçersiz provider adı. En az 2 karakter olmalı'),
+    ('error.provider.code-exists', 'Provider kodu zaten mevcut'),
+    ('error.provider.has-games', 'Provider silinemez. Bağlı oyun kayıtları mevcut'),
+    ('error.provider.has-payment-methods', 'Provider silinemez. Bağlı ödeme yöntemi kayıtları mevcut'),
+
+    -- Error Messages - Provider Setting
+    ('error.provider-setting.not-found', 'Provider ayarı bulunamadı'),
+    ('error.provider-setting.provider-required', 'Provider ID zorunlu'),
+    ('error.provider-setting.key-required', 'Ayar anahtarı zorunlu'),
+    ('error.provider-setting.key-invalid', 'Geçersiz ayar anahtarı. En az 2 karakter olmalı'),
+    ('error.provider-setting.value-required', 'Ayar değeri zorunlu'),
+
+    -- Error Messages - Payment Method
+    ('error.payment-method.not-found', 'Ödeme yöntemi bulunamadı'),
+    ('error.payment-method.id-required', 'Ödeme yöntemi ID zorunlu'),
+    ('error.payment-method.provider-required', 'Provider ID zorunlu'),
+    ('error.payment-method.code-invalid', 'Geçersiz ödeme yöntemi kodu. En az 2 karakter olmalı'),
+    ('error.payment-method.name-invalid', 'Geçersiz ödeme yöntemi adı. En az 2 karakter olmalı'),
+    ('error.payment-method.type-invalid', 'Geçersiz ödeme tipi. CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER olmalı'),
+    ('error.payment-method.code-exists', 'Ödeme yöntemi kodu bu provider altında zaten mevcut'),
+    ('error.payment-method.in-use', 'Ödeme yöntemi silinemez. Tenant tarafından kullanılıyor'),
+
+    -- Error Messages - Jurisdiction
+    ('error.jurisdiction.not-found', 'Jurisdiction bulunamadı'),
+    ('error.jurisdiction.id-required', 'Jurisdiction ID zorunlu'),
+    ('error.jurisdiction.code-invalid', 'Geçersiz jurisdiction kodu. En az 2 karakter olmalı'),
+    ('error.jurisdiction.name-invalid', 'Geçersiz jurisdiction adı. En az 2 karakter olmalı'),
+    ('error.jurisdiction.country-code-invalid', 'Geçersiz ülke kodu. 2 karakterli ISO kodu olmalı'),
+    ('error.jurisdiction.authority-type-invalid', 'Geçersiz otorite tipi. national, regional veya offshore olmalı'),
+    ('error.jurisdiction.code-exists', 'Jurisdiction kodu zaten mevcut'),
+    ('error.jurisdiction.has-kyc-policy', 'Jurisdiction silinemez. Bağlı KYC politikası mevcut'),
+    ('error.jurisdiction.has-document-requirements', 'Jurisdiction silinemez. Bağlı belge gereksinimleri mevcut'),
+    ('error.jurisdiction.has-level-requirements', 'Jurisdiction silinemez. Bağlı seviye gereksinimleri mevcut'),
+    ('error.jurisdiction.has-gaming-policy', 'Jurisdiction silinemez. Bağlı sorumlu oyun politikası mevcut'),
+    ('error.jurisdiction.in-use-by-tenants', 'Jurisdiction silinemez. Tenant tarafından kullanılıyor'),
+
+    -- Error Messages - KYC Policy
+    ('error.kyc-policy.not-found', 'KYC politikası bulunamadı'),
+    ('error.kyc-policy.id-required', 'KYC politika ID zorunlu'),
+    ('error.kyc-policy.jurisdiction-required', 'Jurisdiction ID zorunlu'),
+    ('error.kyc-policy.already-exists-for-jurisdiction', 'Bu jurisdiction için KYC politikası zaten mevcut'),
+    ('error.kyc-policy.verification-timing-invalid', 'Geçersiz doğrulama zamanı'),
+    ('error.kyc-policy.min-age-invalid', 'Minimum yaş 18''den küçük olamaz'),
+
+    -- Error Messages - KYC Document Requirement
+    ('error.kyc-document-requirement.not-found', 'Belge gereksinimi bulunamadı'),
+    ('error.kyc-document-requirement.id-required', 'Belge gereksinimi ID zorunlu'),
+    ('error.kyc-document-requirement.jurisdiction-required', 'Jurisdiction ID zorunlu'),
+    ('error.kyc-document-requirement.document-type-invalid', 'Geçersiz belge tipi'),
+    ('error.kyc-document-requirement.required-for-invalid', 'Geçersiz zorunluluk tipi. all, deposit, withdrawal veya edd olmalı'),
+    ('error.kyc-document-requirement.verification-method-invalid', 'Geçersiz doğrulama yöntemi. manual, automated veya hybrid olmalı'),
+    ('error.kyc-document-requirement.already-exists', 'Bu jurisdiction ve belge tipi kombinasyonu zaten mevcut'),
+
+    -- Error Messages - KYC Level Requirement
+    ('error.kyc-level-requirement.not-found', 'Seviye gereksinimi bulunamadı'),
+    ('error.kyc-level-requirement.id-required', 'Seviye gereksinimi ID zorunlu'),
+    ('error.kyc-level-requirement.jurisdiction-required', 'Jurisdiction ID zorunlu'),
+    ('error.kyc-level-requirement.level-invalid', 'Geçersiz KYC seviyesi. basic, standard veya enhanced olmalı'),
+    ('error.kyc-level-requirement.level-order-invalid', 'Geçersiz seviye sırası. 0 veya üstü olmalı'),
+    ('error.kyc-level-requirement.deadline-action-invalid', 'Geçersiz süre dolumu aksiyonu'),
+    ('error.kyc-level-requirement.already-exists', 'Bu jurisdiction ve KYC seviyesi kombinasyonu zaten mevcut'),
+
+    -- Error Messages - Responsible Gaming Policy
+    ('error.responsible-gaming-policy.not-found', 'Sorumlu oyun politikası bulunamadı'),
+    ('error.responsible-gaming-policy.id-required', 'Sorumlu oyun politikası ID zorunlu'),
+    ('error.responsible-gaming-policy.jurisdiction-required', 'Jurisdiction ID zorunlu'),
+    ('error.responsible-gaming-policy.already-exists-for-jurisdiction', 'Bu jurisdiction için sorumlu oyun politikası zaten mevcut'),
+
+    -- Error Messages - Theme
+    ('error.theme.not-found', 'Tema bulunamadı'),
+    ('error.theme.id-required', 'Tema ID zorunlu'),
+    ('error.theme.code-invalid', 'Geçersiz tema kodu. En az 2 karakter olmalı'),
+    ('error.theme.name-invalid', 'Geçersiz tema adı. En az 2 karakter olmalı'),
+    ('error.theme.code-exists', 'Tema kodu zaten mevcut'),
+
+    -- Error Messages - Widget
+    ('error.widget.not-found', 'Widget bulunamadı'),
+    ('error.widget.id-required', 'Widget ID zorunlu'),
+    ('error.widget.code-invalid', 'Geçersiz widget kodu. En az 2 karakter olmalı'),
+    ('error.widget.name-invalid', 'Geçersiz widget adı. En az 2 karakter olmalı'),
+    ('error.widget.category-invalid', 'Geçersiz widget kategorisi. CONTENT, GAME, ACCOUNT veya NAVIGATION olmalı'),
+    ('error.widget.component-name-invalid', 'Geçersiz component adı. En az 2 karakter olmalı'),
+    ('error.widget.code-exists', 'Widget kodu zaten mevcut'),
+
+    -- Error Messages - UI Position
+    ('error.ui-position.not-found', 'UI pozisyonu bulunamadı'),
+    ('error.ui-position.id-required', 'UI pozisyon ID zorunlu'),
+    ('error.ui-position.code-invalid', 'Geçersiz pozisyon kodu. En az 2 karakter olmalı'),
+    ('error.ui-position.name-invalid', 'Geçersiz pozisyon adı. En az 2 karakter olmalı'),
+    ('error.ui-position.code-exists', 'UI pozisyon kodu zaten mevcut'),
+
+    -- Error Messages - Navigation Template
+    ('error.navigation-template.not-found', 'Navigasyon şablonu bulunamadı'),
+    ('error.navigation-template.id-required', 'Navigasyon şablon ID zorunlu'),
+    ('error.navigation-template.code-invalid', 'Geçersiz şablon kodu. En az 2 karakter olmalı'),
+    ('error.navigation-template.name-invalid', 'Geçersiz şablon adı. En az 2 karakter olmalı'),
+    ('error.navigation-template.code-exists', 'Navigasyon şablon kodu zaten mevcut'),
+    ('error.navigation-template.has-items', 'Navigasyon şablonu silinemez. Bağlı öğeleri mevcut'),
+
+    -- Error Messages - Navigation Template Item
+    ('error.navigation-template-item.not-found', 'Şablon öğesi bulunamadı'),
+    ('error.navigation-template-item.id-required', 'Şablon öğesi ID zorunlu'),
+    ('error.navigation-template-item.template-required', 'Şablon ID zorunlu'),
+    ('error.navigation-template-item.menu-location-invalid', 'Geçersiz menü konumu. En az 2 karakter olmalı'),
+    ('error.navigation-template-item.target-type-invalid', 'Geçersiz hedef tipi. INTERNAL, EXTERNAL veya ACTION olmalı'),
+    ('error.navigation-template-item.parent-not-found', 'Üst öğe bulunamadı'),
+    ('error.navigation-template-item.self-parent', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
+    ('error.navigation-template-item.has-children', 'Öğe silinemez. Alt öğeleri mevcut')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

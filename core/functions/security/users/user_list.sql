@@ -12,7 +12,6 @@
 --   - CTE ile roller tek seferde çekilir (N+1 yok)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_list(BIGINT, BIGINT, INT, INT, TEXT, SMALLINT, TEXT, TEXT);
 DROP FUNCTION IF EXISTS security.user_list(BIGINT, BIGINT, BIGINT, INT, INT, TEXT, SMALLINT, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION security.user_list(
@@ -67,7 +66,7 @@ BEGIN
       AND (u.locked_until IS NULL OR u.locked_until < NOW());
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.caller.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- ========================================

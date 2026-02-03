@@ -12,7 +12,6 @@
 --   - Silinmiş hedefin şifresi sıfırlanamaz
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_reset_password(BIGINT, TEXT, BIGINT);
 DROP FUNCTION IF EXISTS security.user_reset_password(BIGINT, BIGINT, TEXT);
 
 CREATE OR REPLACE FUNCTION security.user_reset_password(
@@ -70,7 +69,7 @@ BEGIN
     GROUP BY u.id, u.company_id;
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.caller.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- ========================================

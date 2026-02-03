@@ -80,6 +80,7 @@ JOIN (VALUES
     ('error.access.tenant-scope-denied', 'Operation not allowed outside tenant scope'),
     ('error.access.hierarchy-violation', 'Hierarchy violation - unauthorized operation'),
     ('error.access.denied', 'Access denied'),
+    ('error.access.unauthorized', 'Unauthorized access'),
 
     -- Error Messages - Caller
     ('error.caller.not-found', 'Caller user not found'),
@@ -261,6 +262,132 @@ JOIN (VALUES
     ('error.company.update.name-exists', 'Company name is used by another company'),
     ('error.company.delete.already-deleted', 'Company is already deleted'),
     ('error.country.not-found', 'Country code not found'),
-    ('error.pagination.invalid', 'Invalid page or page size')
+    ('error.pagination.invalid', 'Invalid page or page size'),
+
+    -- Error Messages - Access Control
+    ('error.access.superadmin-required', 'SuperAdmin permission is required for this operation'),
+    ('error.access.platform-admin-required', 'Platform Admin (SuperAdmin/Admin) permission is required for this operation'),
+
+    -- Error Messages - Provider Type
+    ('error.provider-type.not-found', 'Provider type not found'),
+    ('error.provider-type.id-required', 'Provider type ID is required'),
+    ('error.provider-type.code-invalid', 'Invalid provider type code. Must be at least 2 characters'),
+    ('error.provider-type.name-invalid', 'Invalid provider type name. Must be at least 2 characters'),
+    ('error.provider-type.code-exists', 'Provider type code already exists'),
+    ('error.provider-type.has-providers', 'Cannot delete provider type. It has linked providers'),
+
+    -- Error Messages - Provider
+    ('error.provider.not-found', 'Provider not found'),
+    ('error.provider.id-required', 'Provider ID is required'),
+    ('error.provider.type-required', 'Provider type is required'),
+    ('error.provider.code-invalid', 'Invalid provider code. Must be at least 2 characters'),
+    ('error.provider.name-invalid', 'Invalid provider name. Must be at least 2 characters'),
+    ('error.provider.code-exists', 'Provider code already exists'),
+    ('error.provider.has-games', 'Cannot delete provider. It has linked game records'),
+    ('error.provider.has-payment-methods', 'Cannot delete provider. It has linked payment method records'),
+
+    -- Error Messages - Provider Setting
+    ('error.provider-setting.not-found', 'Provider setting not found'),
+    ('error.provider-setting.provider-required', 'Provider ID is required'),
+    ('error.provider-setting.key-required', 'Setting key is required'),
+    ('error.provider-setting.key-invalid', 'Invalid setting key. Must be at least 2 characters'),
+    ('error.provider-setting.value-required', 'Setting value is required'),
+
+    -- Error Messages - Payment Method
+    ('error.payment-method.not-found', 'Payment method not found'),
+    ('error.payment-method.id-required', 'Payment method ID is required'),
+    ('error.payment-method.provider-required', 'Provider ID is required'),
+    ('error.payment-method.code-invalid', 'Invalid payment method code. Must be at least 2 characters'),
+    ('error.payment-method.name-invalid', 'Invalid payment method name. Must be at least 2 characters'),
+    ('error.payment-method.type-invalid', 'Invalid payment type. Must be one of: CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER'),
+    ('error.payment-method.code-exists', 'Payment method code already exists for this provider'),
+    ('error.payment-method.in-use', 'Cannot delete payment method. It is in use by tenants'),
+
+    -- Error Messages - Jurisdiction
+    ('error.jurisdiction.not-found', 'Jurisdiction not found'),
+    ('error.jurisdiction.id-required', 'Jurisdiction ID is required'),
+    ('error.jurisdiction.code-invalid', 'Invalid jurisdiction code. Must be at least 2 characters'),
+    ('error.jurisdiction.name-invalid', 'Invalid jurisdiction name. Must be at least 2 characters'),
+    ('error.jurisdiction.country-code-invalid', 'Invalid country code. Must be 2-character ISO code'),
+    ('error.jurisdiction.authority-type-invalid', 'Invalid authority type. Must be one of: national, regional, offshore'),
+    ('error.jurisdiction.code-exists', 'Jurisdiction code already exists'),
+    ('error.jurisdiction.has-kyc-policy', 'Cannot delete jurisdiction. It has linked KYC policy'),
+    ('error.jurisdiction.has-document-requirements', 'Cannot delete jurisdiction. It has linked document requirements'),
+    ('error.jurisdiction.has-level-requirements', 'Cannot delete jurisdiction. It has linked level requirements'),
+    ('error.jurisdiction.has-gaming-policy', 'Cannot delete jurisdiction. It has linked responsible gaming policy'),
+    ('error.jurisdiction.in-use-by-tenants', 'Cannot delete jurisdiction. It is in use by tenants'),
+
+    -- Error Messages - KYC Policy
+    ('error.kyc-policy.not-found', 'KYC policy not found'),
+    ('error.kyc-policy.id-required', 'KYC policy ID is required'),
+    ('error.kyc-policy.jurisdiction-required', 'Jurisdiction ID is required'),
+    ('error.kyc-policy.already-exists-for-jurisdiction', 'KYC policy already exists for this jurisdiction'),
+    ('error.kyc-policy.verification-timing-invalid', 'Invalid verification timing'),
+    ('error.kyc-policy.min-age-invalid', 'Minimum age cannot be less than 18'),
+
+    -- Error Messages - KYC Document Requirement
+    ('error.kyc-document-requirement.not-found', 'Document requirement not found'),
+    ('error.kyc-document-requirement.id-required', 'Document requirement ID is required'),
+    ('error.kyc-document-requirement.jurisdiction-required', 'Jurisdiction ID is required'),
+    ('error.kyc-document-requirement.document-type-invalid', 'Invalid document type'),
+    ('error.kyc-document-requirement.required-for-invalid', 'Invalid required-for type. Must be one of: all, deposit, withdrawal, edd'),
+    ('error.kyc-document-requirement.verification-method-invalid', 'Invalid verification method. Must be one of: manual, automated, hybrid'),
+    ('error.kyc-document-requirement.already-exists', 'Document requirement already exists for this jurisdiction and document type'),
+
+    -- Error Messages - KYC Level Requirement
+    ('error.kyc-level-requirement.not-found', 'Level requirement not found'),
+    ('error.kyc-level-requirement.id-required', 'Level requirement ID is required'),
+    ('error.kyc-level-requirement.jurisdiction-required', 'Jurisdiction ID is required'),
+    ('error.kyc-level-requirement.level-invalid', 'Invalid KYC level. Must be one of: basic, standard, enhanced'),
+    ('error.kyc-level-requirement.level-order-invalid', 'Invalid level order. Must be 0 or greater'),
+    ('error.kyc-level-requirement.deadline-action-invalid', 'Invalid deadline action'),
+    ('error.kyc-level-requirement.already-exists', 'Level requirement already exists for this jurisdiction and KYC level'),
+
+    -- Error Messages - Responsible Gaming Policy
+    ('error.responsible-gaming-policy.not-found', 'Responsible gaming policy not found'),
+    ('error.responsible-gaming-policy.id-required', 'Responsible gaming policy ID is required'),
+    ('error.responsible-gaming-policy.jurisdiction-required', 'Jurisdiction ID is required'),
+    ('error.responsible-gaming-policy.already-exists-for-jurisdiction', 'Responsible gaming policy already exists for this jurisdiction'),
+
+    -- Error Messages - Theme
+    ('error.theme.not-found', 'Theme not found'),
+    ('error.theme.id-required', 'Theme ID is required'),
+    ('error.theme.code-invalid', 'Invalid theme code. Must be at least 2 characters'),
+    ('error.theme.name-invalid', 'Invalid theme name. Must be at least 2 characters'),
+    ('error.theme.code-exists', 'Theme code already exists'),
+
+    -- Error Messages - Widget
+    ('error.widget.not-found', 'Widget not found'),
+    ('error.widget.id-required', 'Widget ID is required'),
+    ('error.widget.code-invalid', 'Invalid widget code. Must be at least 2 characters'),
+    ('error.widget.name-invalid', 'Invalid widget name. Must be at least 2 characters'),
+    ('error.widget.category-invalid', 'Invalid widget category. Must be one of: CONTENT, GAME, ACCOUNT, NAVIGATION'),
+    ('error.widget.component-name-invalid', 'Invalid component name. Must be at least 2 characters'),
+    ('error.widget.code-exists', 'Widget code already exists'),
+
+    -- Error Messages - UI Position
+    ('error.ui-position.not-found', 'UI position not found'),
+    ('error.ui-position.id-required', 'UI position ID is required'),
+    ('error.ui-position.code-invalid', 'Invalid position code. Must be at least 2 characters'),
+    ('error.ui-position.name-invalid', 'Invalid position name. Must be at least 2 characters'),
+    ('error.ui-position.code-exists', 'UI position code already exists'),
+
+    -- Error Messages - Navigation Template
+    ('error.navigation-template.not-found', 'Navigation template not found'),
+    ('error.navigation-template.id-required', 'Navigation template ID is required'),
+    ('error.navigation-template.code-invalid', 'Invalid template code. Must be at least 2 characters'),
+    ('error.navigation-template.name-invalid', 'Invalid template name. Must be at least 2 characters'),
+    ('error.navigation-template.code-exists', 'Navigation template code already exists'),
+    ('error.navigation-template.has-items', 'Cannot delete navigation template. It has linked items'),
+
+    -- Error Messages - Navigation Template Item
+    ('error.navigation-template-item.not-found', 'Template item not found'),
+    ('error.navigation-template-item.id-required', 'Template item ID is required'),
+    ('error.navigation-template-item.template-required', 'Template ID is required'),
+    ('error.navigation-template-item.menu-location-invalid', 'Invalid menu location. Must be at least 2 characters'),
+    ('error.navigation-template-item.target-type-invalid', 'Invalid target type. Must be one of: INTERNAL, EXTERNAL, ACTION'),
+    ('error.navigation-template-item.parent-not-found', 'Parent item not found'),
+    ('error.navigation-template-item.self-parent', 'An item cannot be its own parent'),
+    ('error.navigation-template-item.has-children', 'Cannot delete item. It has child items')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

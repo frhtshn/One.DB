@@ -6,7 +6,6 @@
 --   - Diğerleri: Sadece kendi şirketine (caller_company_id == p_company_id)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_create(TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), BIGINT);
 DROP FUNCTION IF EXISTS security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3));
 
 CREATE OR REPLACE FUNCTION security.user_create(
@@ -45,7 +44,7 @@ BEGIN
     WHERE u.id = p_caller_id AND u.status = 1;
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.caller.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- ========================================

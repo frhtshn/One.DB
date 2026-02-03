@@ -30,7 +30,7 @@ BEGIN
     WHERE u.id = p_caller_id AND u.status = 1;
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- 2. Tenant Varlık Kontrolü ve Default Language Alımı

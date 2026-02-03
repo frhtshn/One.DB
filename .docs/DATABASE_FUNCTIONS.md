@@ -31,6 +31,87 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`localization_value_upsert(p_key_id, p_lang, p_text)`**: Upserts a localization value.
 - **`timezone_list()`**: Returns list of timezones.
 
+#### Provider Functions (SuperAdmin Only)
+
+- **`provider_type_list(p_caller_id)`**: Lists all provider types.
+- **`provider_type_get(p_caller_id, p_id)`**: Gets provider type details by ID.
+- **`provider_type_create(p_caller_id, p_code, p_name, p_description)`**: Creates a new provider type.
+- **`provider_type_update(p_caller_id, p_id, p_code, p_name, p_description, p_status)`**: Updates a provider type.
+- **`provider_type_delete(p_caller_id, p_id)`**: Soft deletes a provider type (checks for usage first).
+- **`provider_list(p_caller_id, p_type_id)`**: Lists providers, optionally filtered by type.
+- **`provider_get(p_caller_id, p_id)`**: Gets provider details by ID.
+- **`provider_create(p_caller_id, p_type_id, p_code, p_name, p_logo_url, p_description)`**: Creates a new provider.
+- **`provider_update(p_caller_id, p_id, p_type_id, p_code, p_name, p_logo_url, p_description, p_status)`**: Updates a provider.
+- **`provider_delete(p_caller_id, p_id)`**: Soft deletes a provider (checks for usage first).
+- **`provider_setting_list(p_caller_id, p_provider_id)`**: Lists settings for a provider.
+- **`provider_setting_get(p_caller_id, p_provider_id, p_key)`**: Gets a specific provider setting.
+- **`provider_setting_upsert(p_caller_id, p_provider_id, p_key, p_value, p_is_encrypted)`**: Upserts a provider setting.
+- **`provider_setting_delete(p_caller_id, p_provider_id, p_key)`**: Deletes a provider setting.
+
+#### Payment Method Functions (SuperAdmin Only)
+
+- **`payment_method_list(p_caller_id)`**: Lists all payment methods.
+- **`payment_method_get(p_caller_id, p_id)`**: Gets payment method details by ID.
+- **`payment_method_create(p_caller_id, p_code, p_name, p_type, p_icon, p_description)`**: Creates a new payment method.
+- **`payment_method_update(p_caller_id, p_id, p_code, p_name, p_type, p_icon, p_description, p_status)`**: Updates a payment method.
+- **`payment_method_delete(p_caller_id, p_id)`**: Soft deletes a payment method (checks for usage first).
+
+#### Compliance Functions (Platform Admin: SuperAdmin + Admin)
+
+- **`jurisdiction_list(p_caller_id)`**: Lists all jurisdictions (regulatory authorities).
+- **`jurisdiction_get(p_caller_id, p_id)`**: Gets jurisdiction details by ID.
+- **`jurisdiction_create(p_caller_id, p_code, p_name, p_country_code, p_regulatory_body, p_license_url, p_description)`**: Creates a new jurisdiction.
+- **`jurisdiction_update(p_caller_id, p_id, p_code, p_name, p_country_code, p_regulatory_body, p_license_url, p_description, p_status)`**: Updates a jurisdiction.
+- **`jurisdiction_delete(p_caller_id, p_id)`**: Soft deletes a jurisdiction (checks for usage first).
+- **`kyc_policy_list(p_caller_id, p_jurisdiction_id)`**: Lists KYC policies, optionally filtered by jurisdiction.
+- **`kyc_policy_get(p_caller_id, p_id)`**: Gets KYC policy details by ID.
+- **`kyc_policy_create(p_caller_id, p_jurisdiction_id, p_verification_timeout_days, p_document_retention_days, p_re_verification_interval_days, p_max_verification_attempts, p_allow_manual_override, p_require_liveness_check, p_require_address_proof, p_min_age)`**: Creates a new KYC policy.
+- **`kyc_policy_update(p_caller_id, p_id, ...)`**: Updates a KYC policy.
+- **`kyc_policy_delete(p_caller_id, p_id)`**: Deletes a KYC policy.
+- **`kyc_document_requirement_list(p_caller_id, p_jurisdiction_id)`**: Lists KYC document requirements.
+- **`kyc_document_requirement_get(p_caller_id, p_id)`**: Gets KYC document requirement details.
+- **`kyc_document_requirement_create(p_caller_id, p_jurisdiction_id, p_document_type, p_is_mandatory, p_verification_method, p_max_age_days, p_notes)`**: Creates a KYC document requirement.
+- **`kyc_document_requirement_update(p_caller_id, p_id, ...)`**: Updates a KYC document requirement.
+- **`kyc_document_requirement_delete(p_caller_id, p_id)`**: Deletes a KYC document requirement.
+- **`kyc_level_requirement_list(p_caller_id, p_jurisdiction_id)`**: Lists KYC level requirements.
+- **`kyc_level_requirement_get(p_caller_id, p_id)`**: Gets KYC level requirement details.
+- **`kyc_level_requirement_create(p_caller_id, p_jurisdiction_id, p_kyc_level, p_required_documents, p_max_deposit_daily, p_max_deposit_monthly, p_max_withdrawal_daily, p_notes)`**: Creates a KYC level requirement.
+- **`kyc_level_requirement_update(p_caller_id, p_id, ...)`**: Updates a KYC level requirement.
+- **`kyc_level_requirement_delete(p_caller_id, p_id)`**: Deletes a KYC level requirement.
+- **`responsible_gaming_policy_list(p_caller_id, p_jurisdiction_id)`**: Lists responsible gaming policies.
+- **`responsible_gaming_policy_get(p_caller_id, p_id)`**: Gets responsible gaming policy details.
+- **`responsible_gaming_policy_create(p_caller_id, p_jurisdiction_id, p_min_cooling_off_hours, p_max_cooling_off_days, p_min_self_exclusion_months, p_max_self_exclusion_months, p_allow_permanent_exclusion, p_require_deposit_limits, p_require_loss_limits, p_require_session_limits, p_reality_check_interval_minutes, p_notes)`**: Creates a responsible gaming policy.
+- **`responsible_gaming_policy_update(p_caller_id, p_id, ...)`**: Updates a responsible gaming policy.
+- **`responsible_gaming_policy_delete(p_caller_id, p_id)`**: Deletes a responsible gaming policy.
+
+#### UIKit Functions (SuperAdmin Only)
+
+- **`theme_list(p_caller_id)`**: Lists all themes.
+- **`theme_get(p_caller_id, p_id)`**: Gets theme details by ID including variables.
+- **`theme_create(p_caller_id, p_code, p_name, p_description, p_base_theme, p_variables, p_is_default)`**: Creates a new theme.
+- **`theme_update(p_caller_id, p_id, p_code, p_name, p_description, p_base_theme, p_variables, p_is_default, p_status)`**: Updates a theme.
+- **`theme_delete(p_caller_id, p_id)`**: Soft deletes a theme (checks for usage first).
+- **`widget_list(p_caller_id, p_category)`**: Lists widgets, optionally filtered by category.
+- **`widget_get(p_caller_id, p_id)`**: Gets widget details by ID.
+- **`widget_create(p_caller_id, p_code, p_name, p_category, p_description, p_default_config, p_schema)`**: Creates a new widget.
+- **`widget_update(p_caller_id, p_id, p_code, p_name, p_category, p_description, p_default_config, p_schema, p_status)`**: Updates a widget.
+- **`widget_delete(p_caller_id, p_id)`**: Soft deletes a widget (checks for usage first).
+- **`ui_position_list(p_caller_id)`**: Lists all UI positions.
+- **`ui_position_get(p_caller_id, p_id)`**: Gets UI position details by ID.
+- **`ui_position_create(p_caller_id, p_code, p_name, p_page_type, p_description, p_max_widgets)`**: Creates a new UI position.
+- **`ui_position_update(p_caller_id, p_id, p_code, p_name, p_page_type, p_description, p_max_widgets, p_status)`**: Updates a UI position.
+- **`ui_position_delete(p_caller_id, p_id)`**: Soft deletes a UI position (checks for usage first).
+- **`navigation_template_list(p_caller_id)`**: Lists all navigation templates.
+- **`navigation_template_get(p_caller_id, p_id)`**: Gets navigation template details by ID.
+- **`navigation_template_create(p_caller_id, p_code, p_name, p_description, p_platform, p_is_default)`**: Creates a new navigation template.
+- **`navigation_template_update(p_caller_id, p_id, p_code, p_name, p_description, p_platform, p_is_default, p_status)`**: Updates a navigation template.
+- **`navigation_template_delete(p_caller_id, p_id)`**: Soft deletes a navigation template (checks for items first).
+- **`navigation_template_item_list(p_caller_id, p_template_id)`**: Lists items for a navigation template.
+- **`navigation_template_item_get(p_caller_id, p_id)`**: Gets navigation template item details.
+- **`navigation_template_item_create(p_caller_id, p_template_id, p_menu_location, p_translation_key, p_default_label, p_icon, p_target_type, p_target_url, p_target_action, p_parent_id, p_display_order, p_is_locked, p_is_mandatory)`**: Creates a navigation template item.
+- **`navigation_template_item_update(p_caller_id, p_id, ...)`**: Updates a navigation template item.
+- **`navigation_template_item_delete(p_caller_id, p_id)`**: Deletes a navigation template item (checks for children first).
+
 ### Core Schema
 
 - **`company_create(p_company_code, p_company_name, p_country_code, p_timezone)`**: Creates a new company record for management UI.

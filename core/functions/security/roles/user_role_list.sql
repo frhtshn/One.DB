@@ -40,13 +40,13 @@ BEGIN
     WHERE u.id = p_caller_id AND u.status = 1;
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- 2. Hedef Kullanıcı Kontrolü
     SELECT company_id FROM security.users WHERE id = p_user_id AND status = 1 INTO v_user_company_id;
     IF v_user_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.target-user.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
     END IF;
 
     -- 3. Tenant scope kontrolü

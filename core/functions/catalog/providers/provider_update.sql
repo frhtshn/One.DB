@@ -1,0 +1,89 @@
+-- ================================================================
+-- PROVIDER_UPDATE: Provider günceller
+-- Sadece SuperAdmin kullanabilir (IDOR korumalı)
+-- ================================================================
+
+DROP FUNCTION IF EXISTS catalog.provider_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, BOOLEAN);
+
+CREATE OR REPLACE FUNCTION catalog.provider_update(
+    p_caller_id BIGINT,
+    p_id BIGINT,
+    p_type_id BIGINT,
+    p_code VARCHAR(50),
+    p_name VARCHAR(255),
+    p_is_active BOOLEAN
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_code VARCHAR(50);
+    v_name VARCHAR(255);
+    v_existing_id BIGINT;
+BEGIN
+    -- SuperAdmin kontrolü
+    IF NOT EXISTS(
+        SELECT 1 FROM security.user_roles ur
+        JOIN security.roles r ON ur.role_id = r.id
+        WHERE ur.user_id = p_caller_id
+          AND ur.tenant_id IS NULL
+          AND r.code = 'superadmin'
+          AND r.status = 1
+    ) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
+    END IF;
+
+    -- ID kontrolü
+    IF p_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.id-required';
+    END IF;
+
+    -- Mevcut kayıt kontrolü
+    IF NOT EXISTS(SELECT 1 FROM catalog.providers p WHERE p.id = p_id) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider.not-found';
+    END IF;
+
+    -- Type ID kontrolü
+    IF p_type_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.type-required';
+    END IF;
+
+    -- Provider type varlık kontrolü
+    IF NOT EXISTS(SELECT 1 FROM catalog.provider_types pt WHERE pt.id = p_type_id) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider-type.not-found';
+    END IF;
+
+    -- Kod kontrolü
+    IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.code-invalid';
+    END IF;
+
+    -- İsim kontrolü
+    IF p_name IS NULL OR LENGTH(TRIM(p_name)) < 2 THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.name-invalid';
+    END IF;
+
+    v_code := UPPER(TRIM(p_code));
+    v_name := TRIM(p_name);
+
+    -- Kod unique kontrolü (başka kayıtta aynı kod var mı)
+    SELECT p.id INTO v_existing_id
+    FROM catalog.providers p
+    WHERE p.provider_code = v_code AND p.id != p_id;
+
+    IF v_existing_id IS NOT NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.provider.code-exists';
+    END IF;
+
+    -- Güncelle
+    UPDATE catalog.providers
+    SET provider_type_id = p_type_id,
+        provider_code = v_code,
+        provider_name = v_name,
+        is_active = COALESCE(p_is_active, is_active)
+    WHERE id = p_id;
+END;
+$$;
+
+COMMENT ON FUNCTION catalog.provider_update IS 'Updates a provider. SuperAdmin only.';

@@ -1,0 +1,67 @@
+-- ================================================================
+-- WIDGET_GET: Tekil widget getirir
+-- SuperAdmin erişebilir
+-- ================================================================
+
+DROP FUNCTION IF EXISTS catalog.widget_get(BIGINT, INT);
+
+CREATE OR REPLACE FUNCTION catalog.widget_get(
+    p_caller_id BIGINT,
+    p_id INT
+)
+RETURNS TABLE(
+    id INT,
+    code VARCHAR(50),
+    name VARCHAR(100),
+    description TEXT,
+    category VARCHAR(30),
+    component_name VARCHAR(100),
+    default_props JSONB,
+    is_active BOOLEAN,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+)
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+AS $$
+BEGIN
+    -- SuperAdmin kontrolü
+    IF NOT EXISTS(
+        SELECT 1 FROM security.user_roles ur
+        JOIN security.roles r ON ur.role_id = r.id
+        WHERE ur.user_id = p_caller_id
+          AND ur.tenant_id IS NULL
+          AND r.code = 'superadmin'
+          AND r.status = 1
+    ) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
+    END IF;
+
+    -- ID kontrolü
+    IF p_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.widget.id-required';
+    END IF;
+
+    RETURN QUERY
+    SELECT
+        w.id,
+        w.code,
+        w.name,
+        w.description,
+        w.category,
+        w.component_name,
+        w.default_props,
+        w.is_active,
+        w.created_at,
+        w.updated_at
+    FROM catalog.widgets w
+    WHERE w.id = p_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.widget.not-found';
+    END IF;
+END;
+$$;
+
+COMMENT ON FUNCTION catalog.widget_get IS 'Gets a single widget by ID. SuperAdmin only.';

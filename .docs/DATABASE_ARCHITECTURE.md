@@ -120,6 +120,7 @@ Referans dataları içerir. **Read-only** karakterlidir. Mantıksal gruplara ayr
 | `jurisdictions`               | Lisans otoriteleri (MGA, UKGC, GGL vb.) |
 | `kyc_policies`                | Jurisdiction bazlı KYC kuralları        |
 | `kyc_document_requirements`   | Gerekli KYC belgeleri                   |
+| `kyc_level_requirements`      | KYC seviye geçiş kuralları              |
 | `responsible_gaming_policies` | Sorumlu oyun politikaları               |
 
 #### UI Kit (Theme Market)

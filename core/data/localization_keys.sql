@@ -90,8 +90,10 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.access.hierarchy-violation', 'error', 'access', 'Hiyerarsi ihlali - yetkisiz islem'),
 ('error.access.denied', 'error', 'access', 'Erisim engellendi'),
 
+-- Access Control
+('error.access.unauthorized', 'error', 'access', 'Yetkisiz erisim'),
+
 -- Caller Exceptions
-('error.caller.not-found', 'error', 'caller', 'Cagiran kullanici bulunamadi'),
 ('error.caller.locked', 'error', 'caller', 'Hesabiniz kilitli'),
 
 -- System - Grain Exceptions
@@ -266,6 +268,151 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.sql.identifier-too-long', 'error', 'sql', 'Identifier cok uzun. Args: {0}=identifier, {1}=length, {2}=maxLength'),
 ('error.sql.command-not-allowed', 'error', 'sql', 'SQL komutu izin verilmiyor. Args: {0}=allowedPrefixes'),
 ('error.sql.stacked-query', 'error', 'sql', 'Birden fazla SQL komutu yasak'),
-('error.sql.system-table-access', 'error', 'sql', 'Sistem tablosuna erisim yasak')
+('error.sql.system-table-access', 'error', 'sql', 'Sistem tablosuna erisim yasak'),
+
+-- ============================================================================
+-- CATALOG - ACCESS CONTROL EXCEPTIONS
+-- ============================================================================
+
+-- Access Control
+('error.access.superadmin-required', 'error', 'access', 'Bu islem icin SuperAdmin yetkisi gerekli'),
+('error.access.platform-admin-required', 'error', 'access', 'Bu islem icin Platform Admin (SuperAdmin/Admin) yetkisi gerekli'),
+
+-- ============================================================================
+-- CATALOG - PROVIDER EXCEPTIONS
+-- ============================================================================
+
+-- Provider Type Exceptions
+('error.provider-type.not-found', 'error', 'provider-type', 'Provider tipi bulunamadi'),
+('error.provider-type.id-required', 'error', 'provider-type', 'Provider tip ID zorunlu'),
+('error.provider-type.code-invalid', 'error', 'provider-type', 'Gecersiz provider tip kodu (min 2 karakter)'),
+('error.provider-type.name-invalid', 'error', 'provider-type', 'Gecersiz provider tip adi (min 2 karakter)'),
+('error.provider-type.code-exists', 'error', 'provider-type', 'Provider tip kodu zaten mevcut'),
+('error.provider-type.has-providers', 'error', 'provider-type', 'Provider tipi silinemez, bagli provider kayitlari mevcut'),
+
+-- Provider Exceptions
+('error.provider.not-found', 'error', 'provider', 'Provider bulunamadi'),
+('error.provider.id-required', 'error', 'provider', 'Provider ID zorunlu'),
+('error.provider.type-required', 'error', 'provider', 'Provider tipi zorunlu'),
+('error.provider.code-invalid', 'error', 'provider', 'Gecersiz provider kodu (min 2 karakter)'),
+('error.provider.name-invalid', 'error', 'provider', 'Gecersiz provider adi (min 2 karakter)'),
+('error.provider.code-exists', 'error', 'provider', 'Provider kodu zaten mevcut'),
+('error.provider.has-games', 'error', 'provider', 'Provider silinemez, bagli oyun kayitlari mevcut'),
+('error.provider.has-payment-methods', 'error', 'provider', 'Provider silinemez, bagli odeme yontemi kayitlari mevcut'),
+
+-- Provider Setting Exceptions
+('error.provider-setting.not-found', 'error', 'provider-setting', 'Provider ayari bulunamadi'),
+('error.provider-setting.provider-required', 'error', 'provider-setting', 'Provider ID zorunlu'),
+('error.provider-setting.key-required', 'error', 'provider-setting', 'Ayar anahtari zorunlu'),
+('error.provider-setting.key-invalid', 'error', 'provider-setting', 'Gecersiz ayar anahtari (min 2 karakter)'),
+('error.provider-setting.value-required', 'error', 'provider-setting', 'Ayar degeri zorunlu'),
+
+-- ============================================================================
+-- CATALOG - PAYMENT METHOD EXCEPTIONS
+-- ============================================================================
+
+('error.payment-method.not-found', 'error', 'payment-method', 'Odeme yontemi bulunamadi'),
+('error.payment-method.id-required', 'error', 'payment-method', 'Odeme yontemi ID zorunlu'),
+('error.payment-method.provider-required', 'error', 'payment-method', 'Provider ID zorunlu'),
+('error.payment-method.code-invalid', 'error', 'payment-method', 'Gecersiz odeme yontemi kodu (min 2 karakter)'),
+('error.payment-method.name-invalid', 'error', 'payment-method', 'Gecersiz odeme yontemi adi (min 2 karakter)'),
+('error.payment-method.type-invalid', 'error', 'payment-method', 'Gecersiz odeme tipi (CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER)'),
+('error.payment-method.code-exists', 'error', 'payment-method', 'Odeme yontemi kodu bu provider altinda zaten mevcut'),
+('error.payment-method.in-use', 'error', 'payment-method', 'Odeme yontemi silinemez, tenant tarafindan kullaniliyor'),
+
+-- ============================================================================
+-- CATALOG - COMPLIANCE EXCEPTIONS
+-- ============================================================================
+
+-- Jurisdiction Exceptions
+('error.jurisdiction.not-found', 'error', 'jurisdiction', 'Jurisdiction bulunamadi'),
+('error.jurisdiction.id-required', 'error', 'jurisdiction', 'Jurisdiction ID zorunlu'),
+('error.jurisdiction.code-invalid', 'error', 'jurisdiction', 'Gecersiz jurisdiction kodu (min 2 karakter)'),
+('error.jurisdiction.name-invalid', 'error', 'jurisdiction', 'Gecersiz jurisdiction adi (min 2 karakter)'),
+('error.jurisdiction.country-code-invalid', 'error', 'jurisdiction', 'Gecersiz ulke kodu (2 karakter ISO kodu)'),
+('error.jurisdiction.authority-type-invalid', 'error', 'jurisdiction', 'Gecersiz otorite tipi (national, regional, offshore)'),
+('error.jurisdiction.code-exists', 'error', 'jurisdiction', 'Jurisdiction kodu zaten mevcut'),
+('error.jurisdiction.has-kyc-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli KYC politikasi mevcut'),
+('error.jurisdiction.has-document-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli belge gereksinimleri mevcut'),
+('error.jurisdiction.has-level-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli seviye gereksinimleri mevcut'),
+('error.jurisdiction.has-gaming-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli sorumlu oyun politikasi mevcut'),
+('error.jurisdiction.in-use-by-tenants', 'error', 'jurisdiction', 'Jurisdiction silinemez, tenant tarafindan kullaniliyor'),
+
+-- KYC Policy Exceptions
+('error.kyc-policy.not-found', 'error', 'kyc-policy', 'KYC politikasi bulunamadi'),
+('error.kyc-policy.id-required', 'error', 'kyc-policy', 'KYC politika ID zorunlu'),
+('error.kyc-policy.jurisdiction-required', 'error', 'kyc-policy', 'Jurisdiction ID zorunlu'),
+('error.kyc-policy.already-exists-for-jurisdiction', 'error', 'kyc-policy', 'Bu jurisdiction icin KYC politikasi zaten mevcut'),
+('error.kyc-policy.verification-timing-invalid', 'error', 'kyc-policy', 'Gecersiz dogrulama zamani'),
+('error.kyc-policy.min-age-invalid', 'error', 'kyc-policy', 'Minimum yas 18 den kucuk olamaz'),
+
+-- KYC Document Requirement Exceptions
+('error.kyc-document-requirement.not-found', 'error', 'kyc-document-requirement', 'Belge gereksinimi bulunamadi'),
+('error.kyc-document-requirement.id-required', 'error', 'kyc-document-requirement', 'Belge gereksinimi ID zorunlu'),
+('error.kyc-document-requirement.jurisdiction-required', 'error', 'kyc-document-requirement', 'Jurisdiction ID zorunlu'),
+('error.kyc-document-requirement.document-type-invalid', 'error', 'kyc-document-requirement', 'Gecersiz belge tipi'),
+('error.kyc-document-requirement.required-for-invalid', 'error', 'kyc-document-requirement', 'Gecersiz zorunluluk tipi (all, deposit, withdrawal, edd)'),
+('error.kyc-document-requirement.verification-method-invalid', 'error', 'kyc-document-requirement', 'Gecersiz dogrulama yontemi (manual, automated, hybrid)'),
+('error.kyc-document-requirement.already-exists', 'error', 'kyc-document-requirement', 'Bu jurisdiction ve belge tipi kombinasyonu zaten mevcut'),
+
+-- KYC Level Requirement Exceptions
+('error.kyc-level-requirement.not-found', 'error', 'kyc-level-requirement', 'Seviye gereksinimi bulunamadi'),
+('error.kyc-level-requirement.id-required', 'error', 'kyc-level-requirement', 'Seviye gereksinimi ID zorunlu'),
+('error.kyc-level-requirement.jurisdiction-required', 'error', 'kyc-level-requirement', 'Jurisdiction ID zorunlu'),
+('error.kyc-level-requirement.level-invalid', 'error', 'kyc-level-requirement', 'Gecersiz KYC seviyesi (basic, standard, enhanced)'),
+('error.kyc-level-requirement.level-order-invalid', 'error', 'kyc-level-requirement', 'Gecersiz seviye sirasi (0 veya ustu olmali)'),
+('error.kyc-level-requirement.deadline-action-invalid', 'error', 'kyc-level-requirement', 'Gecersiz sure dolumu aksiyonu'),
+('error.kyc-level-requirement.already-exists', 'error', 'kyc-level-requirement', 'Bu jurisdiction ve KYC seviyesi kombinasyonu zaten mevcut'),
+
+-- Responsible Gaming Policy Exceptions
+('error.responsible-gaming-policy.not-found', 'error', 'responsible-gaming-policy', 'Sorumlu oyun politikasi bulunamadi'),
+('error.responsible-gaming-policy.id-required', 'error', 'responsible-gaming-policy', 'Sorumlu oyun politikasi ID zorunlu'),
+('error.responsible-gaming-policy.jurisdiction-required', 'error', 'responsible-gaming-policy', 'Jurisdiction ID zorunlu'),
+('error.responsible-gaming-policy.already-exists-for-jurisdiction', 'error', 'responsible-gaming-policy', 'Bu jurisdiction icin sorumlu oyun politikasi zaten mevcut'),
+
+-- ============================================================================
+-- CATALOG - UIKIT EXCEPTIONS
+-- ============================================================================
+
+-- Theme Exceptions
+('error.theme.not-found', 'error', 'theme', 'Tema bulunamadi'),
+('error.theme.id-required', 'error', 'theme', 'Tema ID zorunlu'),
+('error.theme.code-invalid', 'error', 'theme', 'Gecersiz tema kodu (min 2 karakter)'),
+('error.theme.name-invalid', 'error', 'theme', 'Gecersiz tema adi (min 2 karakter)'),
+('error.theme.code-exists', 'error', 'theme', 'Tema kodu zaten mevcut'),
+
+-- Widget Exceptions
+('error.widget.not-found', 'error', 'widget', 'Widget bulunamadi'),
+('error.widget.id-required', 'error', 'widget', 'Widget ID zorunlu'),
+('error.widget.code-invalid', 'error', 'widget', 'Gecersiz widget kodu (min 2 karakter)'),
+('error.widget.name-invalid', 'error', 'widget', 'Gecersiz widget adi (min 2 karakter)'),
+('error.widget.category-invalid', 'error', 'widget', 'Gecersiz widget kategorisi (CONTENT, GAME, ACCOUNT, NAVIGATION)'),
+('error.widget.component-name-invalid', 'error', 'widget', 'Gecersiz component adi (min 2 karakter)'),
+('error.widget.code-exists', 'error', 'widget', 'Widget kodu zaten mevcut'),
+
+-- UI Position Exceptions
+('error.ui-position.not-found', 'error', 'ui-position', 'UI pozisyonu bulunamadi'),
+('error.ui-position.id-required', 'error', 'ui-position', 'UI pozisyon ID zorunlu'),
+('error.ui-position.code-invalid', 'error', 'ui-position', 'Gecersiz pozisyon kodu (min 2 karakter)'),
+('error.ui-position.name-invalid', 'error', 'ui-position', 'Gecersiz pozisyon adi (min 2 karakter)'),
+('error.ui-position.code-exists', 'error', 'ui-position', 'UI pozisyon kodu zaten mevcut'),
+
+-- Navigation Template Exceptions
+('error.navigation-template.not-found', 'error', 'navigation-template', 'Navigasyon sablonu bulunamadi'),
+('error.navigation-template.id-required', 'error', 'navigation-template', 'Navigasyon sablon ID zorunlu'),
+('error.navigation-template.code-invalid', 'error', 'navigation-template', 'Gecersiz sablon kodu (min 2 karakter)'),
+('error.navigation-template.name-invalid', 'error', 'navigation-template', 'Gecersiz sablon adi (min 2 karakter)'),
+('error.navigation-template.code-exists', 'error', 'navigation-template', 'Navigasyon sablon kodu zaten mevcut'),
+('error.navigation-template.has-items', 'error', 'navigation-template', 'Navigasyon sablonu silinemez, bagli ogeler mevcut'),
+
+-- Navigation Template Item Exceptions
+('error.navigation-template-item.not-found', 'error', 'navigation-template-item', 'Sablon ogesi bulunamadi'),
+('error.navigation-template-item.id-required', 'error', 'navigation-template-item', 'Sablon ogesi ID zorunlu'),
+('error.navigation-template-item.template-required', 'error', 'navigation-template-item', 'Sablon ID zorunlu'),
+('error.navigation-template-item.menu-location-invalid', 'error', 'navigation-template-item', 'Gecersiz menu konumu (min 2 karakter)'),
+('error.navigation-template-item.target-type-invalid', 'error', 'navigation-template-item', 'Gecersiz hedef tipi (INTERNAL, EXTERNAL, ACTION)'),
+('error.navigation-template-item.parent-not-found', 'error', 'navigation-template-item', 'Ust oge bulunamadi'),
+('error.navigation-template-item.self-parent', 'error', 'navigation-template-item', 'Bir oge kendi kendisinin ust ogesi olamaz'),
+('error.navigation-template-item.has-children', 'error', 'navigation-template-item', 'Oge silinemez, alt ogeleri mevcut')
 
 ON CONFLICT DO NOTHING;

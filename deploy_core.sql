@@ -238,6 +238,106 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/localization/localization_export.sql
 \i core/functions/catalog/localization/localization_import.sql
 \i core/functions/catalog/localization/localization_messages_get.sql
+
+-- Provider Type Functions
+\i core/functions/catalog/provider/provider_type_list.sql
+\i core/functions/catalog/provider/provider_type_get.sql
+\i core/functions/catalog/provider/provider_type_create.sql
+\i core/functions/catalog/provider/provider_type_update.sql
+\i core/functions/catalog/provider/provider_type_delete.sql
+
+-- Provider Functions
+\i core/functions/catalog/provider/provider_list.sql
+\i core/functions/catalog/provider/provider_get.sql
+\i core/functions/catalog/provider/provider_create.sql
+\i core/functions/catalog/provider/provider_update.sql
+\i core/functions/catalog/provider/provider_delete.sql
+
+-- Provider Setting Functions
+\i core/functions/catalog/provider/provider_setting_list.sql
+\i core/functions/catalog/provider/provider_setting_get.sql
+\i core/functions/catalog/provider/provider_setting_upsert.sql
+\i core/functions/catalog/provider/provider_setting_delete.sql
+
+-- Payment Method Functions
+\i core/functions/catalog/payment/payment_method_list.sql
+\i core/functions/catalog/payment/payment_method_get.sql
+\i core/functions/catalog/payment/payment_method_create.sql
+\i core/functions/catalog/payment/payment_method_update.sql
+\i core/functions/catalog/payment/payment_method_delete.sql
+
+-- Compliance Functions
+-- Jurisdictions
+\i core/functions/catalog/compliance/jurisdiction_list.sql
+\i core/functions/catalog/compliance/jurisdiction_get.sql
+\i core/functions/catalog/compliance/jurisdiction_create.sql
+\i core/functions/catalog/compliance/jurisdiction_update.sql
+\i core/functions/catalog/compliance/jurisdiction_delete.sql
+
+-- KYC Policies
+\i core/functions/catalog/compliance/kyc_policy_list.sql
+\i core/functions/catalog/compliance/kyc_policy_get.sql
+\i core/functions/catalog/compliance/kyc_policy_create.sql
+\i core/functions/catalog/compliance/kyc_policy_update.sql
+\i core/functions/catalog/compliance/kyc_policy_delete.sql
+
+-- KYC Document Requirements
+\i core/functions/catalog/compliance/kyc_document_requirement_list.sql
+\i core/functions/catalog/compliance/kyc_document_requirement_get.sql
+\i core/functions/catalog/compliance/kyc_document_requirement_create.sql
+\i core/functions/catalog/compliance/kyc_document_requirement_update.sql
+\i core/functions/catalog/compliance/kyc_document_requirement_delete.sql
+
+-- KYC Level Requirements
+\i core/functions/catalog/compliance/kyc_level_requirement_list.sql
+\i core/functions/catalog/compliance/kyc_level_requirement_get.sql
+\i core/functions/catalog/compliance/kyc_level_requirement_create.sql
+\i core/functions/catalog/compliance/kyc_level_requirement_update.sql
+\i core/functions/catalog/compliance/kyc_level_requirement_delete.sql
+
+-- Responsible Gaming Policies
+\i core/functions/catalog/compliance/responsible_gaming_policy_list.sql
+\i core/functions/catalog/compliance/responsible_gaming_policy_get.sql
+\i core/functions/catalog/compliance/responsible_gaming_policy_create.sql
+\i core/functions/catalog/compliance/responsible_gaming_policy_update.sql
+\i core/functions/catalog/compliance/responsible_gaming_policy_delete.sql
+
+-- UIKit Functions
+-- Themes
+\i core/functions/catalog/uikit/theme_list.sql
+\i core/functions/catalog/uikit/theme_get.sql
+\i core/functions/catalog/uikit/theme_create.sql
+\i core/functions/catalog/uikit/theme_update.sql
+\i core/functions/catalog/uikit/theme_delete.sql
+
+-- Widgets
+\i core/functions/catalog/uikit/widget_list.sql
+\i core/functions/catalog/uikit/widget_get.sql
+\i core/functions/catalog/uikit/widget_create.sql
+\i core/functions/catalog/uikit/widget_update.sql
+\i core/functions/catalog/uikit/widget_delete.sql
+
+-- UI Positions
+\i core/functions/catalog/uikit/ui_position_list.sql
+\i core/functions/catalog/uikit/ui_position_get.sql
+\i core/functions/catalog/uikit/ui_position_create.sql
+\i core/functions/catalog/uikit/ui_position_update.sql
+\i core/functions/catalog/uikit/ui_position_delete.sql
+
+-- Navigation Templates
+\i core/functions/catalog/uikit/navigation_template_list.sql
+\i core/functions/catalog/uikit/navigation_template_get.sql
+\i core/functions/catalog/uikit/navigation_template_create.sql
+\i core/functions/catalog/uikit/navigation_template_update.sql
+\i core/functions/catalog/uikit/navigation_template_delete.sql
+
+-- Navigation Template Items
+\i core/functions/catalog/uikit/navigation_template_item_list.sql
+\i core/functions/catalog/uikit/navigation_template_item_get.sql
+\i core/functions/catalog/uikit/navigation_template_item_create.sql
+\i core/functions/catalog/uikit/navigation_template_item_update.sql
+\i core/functions/catalog/uikit/navigation_template_item_delete.sql
+
 -- Session Functions
 \i core/functions/security/session/session_list.sql
 \i core/functions/security/session/session_save.sql

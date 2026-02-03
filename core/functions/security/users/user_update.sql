@@ -12,7 +12,6 @@
 --   - Silinmiş hedef güncellenemez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_update(BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), BOOLEAN, BIGINT);
 DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN);
 
 CREATE OR REPLACE FUNCTION security.user_update(
@@ -73,7 +72,7 @@ BEGIN
     GROUP BY u.id, u.company_id;
 
     IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.caller.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
     -- ========================================
