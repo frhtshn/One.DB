@@ -86,7 +86,9 @@ if ($Reset) {
     Write-Host "[..] Schema'lar siliniyor..." -ForegroundColor Cyan
     $drop = "DROP SCHEMA IF EXISTS affiliate, affiliate_audit, affiliate_log, auth, backoffice, billing, bonus, bonus_log, campaign, catalog, commission, content, core, finance, finance_log, game, game_log, infra, kyc, kyc_audit, kyc_log, logs, metric_helpers, payout, performance, presentation, profile, promotion, public, routing, security, tracking, transaction, user_management, wallet CASCADE;"
 
-    psql -h $HOST_IP -p $PORT -U $USER -d $DB -c $drop
+    $env:PGOPTIONS = "--client-min-messages=error"
+    psql -h $HOST_IP -p $PORT -U $USER -d $DB -q -c $drop 2>&1 | Out-Null
+    $env:PGOPTIONS = ""
     Write-Host "[OK] Silindi" -ForegroundColor Green
     Write-Host ""
 }
