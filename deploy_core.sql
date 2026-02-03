@@ -373,6 +373,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/permissions/user_permission_list.sql
 \i core/functions/security/permissions/user_permission_override_list.sql
 \i core/functions/security/permissions/user_permission_set.sql
+\i core/functions/security/permissions/user_permission_set_with_outbox.sql
 \i core/functions/security/permissions/user_permission_remove.sql
 
 -- Role Functions
@@ -435,6 +436,15 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 \i core/functions/presentation/pages/build_page_json.sql
 \i core/functions/presentation/structure/menu_structure.sql
+
+-- Outbox Functions
+\i core/functions/outbox/outbox_create.sql
+\i core/functions/outbox/outbox_create_batch.sql
+\i core/functions/outbox/outbox_get_pending.sql
+\i core/functions/outbox/outbox_mark_completed.sql
+\i core/functions/outbox/outbox_mark_failed.sql
+\i core/functions/outbox/outbox_stats.sql
+\i core/functions/outbox/outbox_cleanup.sql
 
 -- TRIGGERS
 \i core/triggers/update_updated_at_column.sql
