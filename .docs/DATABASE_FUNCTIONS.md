@@ -7,6 +7,8 @@ This document lists all stored procedures, functions, and triggers defined in th
 ### Catalog Schema
 
 - **`country_list()`**: Returns list of countries for comboboxes (Value: country_code, Label: country_name).
+- **`transaction_type_list()`**: Returns transaction type list for dropdowns. No auth required - public catalog data.
+- **`operation_type_list()`**: Returns operation type list for dropdowns. No auth required - public catalog data.
 - **`currency_create(p_code, p_name, p_symbol, p_numeric_code)`**: Creates a new currency.
 - **`currency_delete(p_code)`**: Soft deletes a currency by setting is_active to false (checks for usage first).
 - **`currency_get(p_code)`**: Gets details of a specific currency by code.
@@ -33,6 +35,8 @@ This document lists all stored procedures, functions, and triggers defined in th
 
 #### Provider Functions (SuperAdmin Only)
 
+- **`provider_type_lookup(p_caller_id)`**: Returns provider type list for dropdowns. SuperAdmin only.
+- **`provider_lookup(p_caller_id, p_type_id)`**: Returns provider list for dropdowns. Optional type_id filter. SuperAdmin only.
 - **`provider_type_list(p_caller_id)`**: Lists all provider types.
 - **`provider_type_get(p_caller_id, p_id)`**: Gets provider type details by ID.
 - **`provider_type_create(p_caller_id, p_code, p_name, p_description)`**: Creates a new provider type.
@@ -50,6 +54,7 @@ This document lists all stored procedures, functions, and triggers defined in th
 
 #### Payment Method Functions (SuperAdmin Only)
 
+- **`payment_method_lookup(p_caller_id, p_provider_id)`**: Returns payment method list for dropdowns. Optional provider_id filter. SuperAdmin only.
 - **`payment_method_list(p_caller_id)`**: Lists all payment methods.
 - **`payment_method_get(p_caller_id, p_id)`**: Gets payment method details by ID.
 - **`payment_method_create(p_caller_id, p_code, p_name, p_type, p_icon, p_description)`**: Creates a new payment method.
@@ -58,6 +63,7 @@ This document lists all stored procedures, functions, and triggers defined in th
 
 #### Compliance Functions (Platform Admin: SuperAdmin + Admin)
 
+- **`jurisdiction_lookup(p_caller_id)`**: Returns jurisdiction list for dropdowns. Platform Admin (SuperAdmin + Admin) only.
 - **`jurisdiction_list(p_caller_id)`**: Lists all jurisdictions (regulatory authorities).
 - **`jurisdiction_get(p_caller_id, p_id)`**: Gets jurisdiction details by ID.
 - **`jurisdiction_create(p_caller_id, p_code, p_name, p_country_code, p_regulatory_body, p_license_url, p_description)`**: Creates a new jurisdiction.
@@ -86,6 +92,7 @@ This document lists all stored procedures, functions, and triggers defined in th
 
 #### UIKit Functions (SuperAdmin Only)
 
+- **`theme_lookup(p_caller_id)`**: Returns theme list for dropdowns. SuperAdmin only.
 - **`theme_list(p_caller_id)`**: Lists all themes.
 - **`theme_get(p_caller_id, p_id)`**: Gets theme details by ID including variables.
 - **`theme_create(p_caller_id, p_code, p_name, p_description, p_base_theme, p_variables, p_is_default)`**: Creates a new theme.
@@ -114,11 +121,13 @@ This document lists all stored procedures, functions, and triggers defined in th
 
 ### Core Schema
 
+- **`company_lookup(p_caller_id)`**: Returns company list for dropdowns with IDOR protection. Platform Admin sees all, others see only their own company.
 - **`company_create(p_company_code, p_company_name, p_country_code, p_timezone)`**: Creates a new company record for management UI.
 - **`company_delete(p_id)`**: Soft deletes a company record for management UI.
 - **`company_get(p_id)`**: Returns details of a company by id for management UI.
 - **`company_list(p_page, p_page_size, p_search)`**: Returns a paginated list of companies for management UI. Searchable by name or code.
 - **`company_update(p_id, p_company_code, p_company_name, p_status, p_country_code, p_timezone)`**: Updates company information for management UI.
+- **`tenant_lookup(p_caller_id, p_company_id)`**: Returns tenant list for dropdowns with IDOR protection. Platform Admin sees all, CompanyAdmin sees own company tenants, others see only allowed tenants.
 - **`tenant_create(p_caller_id, p_company_id, p_tenant_code, p_tenant_name, ...)`**: Creates a new tenant. Checks caller permissions.
 - **`tenant_delete(p_caller_id, p_id)`**: Soft deletes a tenant. Checks caller permissions.
 - **`tenant_get(p_caller_id, p_id)`**: Returns detailed tenant information. Checks caller permissions.

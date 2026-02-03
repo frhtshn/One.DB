@@ -182,6 +182,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/companies/company_create.sql
 \i core/functions/core/companies/company_update.sql
 \i core/functions/core/companies/company_delete.sql
+\i core/functions/core/companies/company_lookup.sql
 
 -- Tenants
 \i core/functions/core/tenants/tenant_list.sql
@@ -189,6 +190,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/tenants/tenant_create.sql
 \i core/functions/core/tenants/tenant_update.sql
 \i core/functions/core/tenants/tenant_delete.sql
+\i core/functions/core/tenants/tenant_lookup.sql
 
 -- Tenant Settings
 \i core/functions/core/tenant_settings/tenant_setting_upsert.sql
@@ -224,6 +226,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Timezone Functions
 \i core/functions/catalog/timezones/timezone_list.sql
 
+-- Transaction Type Functions
+\i core/functions/catalog/transaction/transaction_type_list.sql
+
+-- Operation Type Functions
+\i core/functions/catalog/transaction/operation_type_list.sql
+
 -- Localization Functions
 -- Localization Functions
 \i core/functions/catalog/localization/localization_key_list.sql
@@ -245,6 +253,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/providers/provider_type_create.sql
 \i core/functions/catalog/providers/provider_type_update.sql
 \i core/functions/catalog/providers/provider_type_delete.sql
+\i core/functions/catalog/providers/provider_type_lookup.sql
 
 -- Provider Functions
 \i core/functions/catalog/providers/provider_list.sql
@@ -252,6 +261,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/providers/provider_create.sql
 \i core/functions/catalog/providers/provider_update.sql
 \i core/functions/catalog/providers/provider_delete.sql
+\i core/functions/catalog/providers/provider_lookup.sql
 
 -- Provider Setting Functions
 \i core/functions/catalog/providers/provider_setting_list.sql
@@ -265,6 +275,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/payment/payment_method_create.sql
 \i core/functions/catalog/payment/payment_method_update.sql
 \i core/functions/catalog/payment/payment_method_delete.sql
+\i core/functions/catalog/payment/payment_method_lookup.sql
 
 -- Compliance Functions
 -- Jurisdictions
@@ -273,6 +284,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/compliance/jurisdiction_create.sql
 \i core/functions/catalog/compliance/jurisdiction_update.sql
 \i core/functions/catalog/compliance/jurisdiction_delete.sql
+\i core/functions/catalog/compliance/jurisdiction_lookup.sql
 
 -- KYC Policies
 \i core/functions/catalog/compliance/kyc_policy_list.sql
@@ -309,6 +321,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/uikit/theme_create.sql
 \i core/functions/catalog/uikit/theme_update.sql
 \i core/functions/catalog/uikit/theme_delete.sql
+\i core/functions/catalog/uikit/theme_lookup.sql
 
 -- Widgets
 \i core/functions/catalog/uikit/widget_list.sql

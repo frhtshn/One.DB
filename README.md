@@ -25,6 +25,69 @@ Detaylı mimari ve yapı dokümantasyonu için:
 
 ---
 
+## Deployment Script (deploy.ps1)
+
+Bu script, yerel geliştirme ortamında veritabanı dağıtımı ve yönetimi için kullanılır.
+
+**Temel Kullanım**
+
+```powershell
+# Default: deploy_core.sql -> core database
+.\deploy.ps1
+```
+
+**Dosya Belirtme**
+
+Belirli bir veritabanını veya senaryoyu deploy etmek için:
+
+```powershell
+.\deploy.ps1 deploy_core.sql           # core db
+.\deploy.ps1 deploy_core_staging.sql   # core db (staging seed)
+.\deploy.ps1 deploy_core_report.sql    # core_report db
+.\deploy.ps1 deploy_tenant.sql         # tenant db
+.\deploy.ps1 deploy_game.sql           # game db
+.\deploy.ps1 create_dbs.sql            # postgres db (tüm db'leri oluşturma)
+```
+
+**Dry Run (Önce Kontrol)**
+
+Değişiklik yapmadan bağlantıyı test etmek ve yapılacak işlemleri görmek için `-Dry` parametresini kullanın:
+
+```powershell
+# Bağlantıyı test et, deploy etme
+.\deploy.ps1 deploy_core.sql -Dry
+.\deploy.ps1 deploy_tenant.sql -Dry
+```
+
+**Reset (Schema Sil + Deploy)**
+
+Mevcut şemaları silip sıfırdan kurulum yapmak için `-Reset` parametresini kullanın:
+
+```powershell
+# Tüm schema'ları sil, sıfırdan kur
+.\deploy.ps1 deploy_core.sql -Reset
+
+# Önce kontrol et (Reset modunda ne olacağını gör)
+.\deploy.ps1 deploy_core.sql -Reset -Dry
+```
+
+**Kombinasyonlar**
+
+Farklı parametreleri birleştirerek kullanabilirsiniz:
+
+```powershell
+# Tenant veritabanını sıfırla ve yeniden kur
+.\deploy.ps1 deploy_tenant.sql -Reset
+
+# Game veritabanı deploy işlemini simüle et (Dry Run)
+.\deploy.ps1 deploy_game.sql -Dry
+
+# Production seed ile core veritabanını sıfırdan kur
+.\deploy.ps1 deploy_core_production.sql -Reset
+```
+
+---
+
 ## Beta Server Deployment
 
 ```bash
