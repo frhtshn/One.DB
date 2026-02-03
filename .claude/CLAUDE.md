@@ -205,6 +205,24 @@ user          : level 10,  is_platform_role = FALSE
 2. **Tenant Scope:** TenantAdmin ve altı sadece `security.user_allowed_tenants` tablosunda yetkili olduğu tenant'larda işlem yapabilir
 3. **Company Scope:** CompanyAdmin sadece kendi company'sindeki tenant'larda işlem yapabilir
 
+## Mimari Kurallar
+
+### Fiziksel İzolasyon
+MainDB, ClientDB ve PluginDB fiziksel olarak ayrıdır. Tablo üretirken bu ayrımı koru, birbirine karıştırma.
+
+### Extension Standartları
+PostgreSQL eklentileri (pgcrypto, uuid-ossp, pg_stat_statements, btree_gin, btree_gist, tablefunc, citext) her zaman `infra` şeması üzerinden çağrılmalıdır.
+```sql
+-- Doğru kullanım
+SELECT infra.gen_random_uuid();
+```
+
+### Idempotency Zorunluluğu
+Finansal işlemlerde `idempotency.processed_requests` kontrolü içeren SQL blokları üretilmelidir.
+
+### Outbox Pattern
+Plugin'lerden Core'a veri gönderimi için `plugin_internal.outbox_events` tablosu kullanılmalıdır.
+
 ## Notlar
 - Her tenant için ayrı ClientDB klonlanır (tenant template'den)
 - Log tablolarında günlük partitioning kullanılıyor

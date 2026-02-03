@@ -176,7 +176,7 @@ Her tenant (marka) için ayrı bir veritabanı oluşturulur. `tenant` şablon DB
 ```
 nucleoDb/
 │
-├── 📁 .agent/                    # AI Agent workflow'ları
+├── 📁 .claude/                   # Claude AI context ve workflow'ları
 ├── 📁 .docs/                     # Proje dokümantasyonu
 │
 ├── 📁 core/                      # Core veritabanı kaynakları
