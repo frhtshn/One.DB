@@ -240,24 +240,24 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/localization/localization_messages_get.sql
 
 -- Provider Type Functions
-\i core/functions/catalog/provider/provider_type_list.sql
-\i core/functions/catalog/provider/provider_type_get.sql
-\i core/functions/catalog/provider/provider_type_create.sql
-\i core/functions/catalog/provider/provider_type_update.sql
-\i core/functions/catalog/provider/provider_type_delete.sql
+\i core/functions/catalog/providers/provider_type_list.sql
+\i core/functions/catalog/providers/provider_type_get.sql
+\i core/functions/catalog/providers/provider_type_create.sql
+\i core/functions/catalog/providers/provider_type_update.sql
+\i core/functions/catalog/providers/provider_type_delete.sql
 
 -- Provider Functions
-\i core/functions/catalog/provider/provider_list.sql
-\i core/functions/catalog/provider/provider_get.sql
-\i core/functions/catalog/provider/provider_create.sql
-\i core/functions/catalog/provider/provider_update.sql
-\i core/functions/catalog/provider/provider_delete.sql
+\i core/functions/catalog/providers/provider_list.sql
+\i core/functions/catalog/providers/provider_get.sql
+\i core/functions/catalog/providers/provider_create.sql
+\i core/functions/catalog/providers/provider_update.sql
+\i core/functions/catalog/providers/provider_delete.sql
 
 -- Provider Setting Functions
-\i core/functions/catalog/provider/provider_setting_list.sql
-\i core/functions/catalog/provider/provider_setting_get.sql
-\i core/functions/catalog/provider/provider_setting_upsert.sql
-\i core/functions/catalog/provider/provider_setting_delete.sql
+\i core/functions/catalog/providers/provider_setting_list.sql
+\i core/functions/catalog/providers/provider_setting_get.sql
+\i core/functions/catalog/providers/provider_setting_upsert.sql
+\i core/functions/catalog/providers/provider_setting_delete.sql
 
 -- Payment Method Functions
 \i core/functions/catalog/payment/payment_method_list.sql
