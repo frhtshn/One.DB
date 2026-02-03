@@ -1,7 +1,8 @@
 -- ================================================================
--- OUTBOX_MARK_FAILED - Mesajı başarısız olarak işaretle
+-- OUTBOX_MARK_FAILED: Mesajı başarısız olarak işaretler
 -- ================================================================
 
+DROP FUNCTION IF EXISTS outbox.outbox_mark_failed CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_mark_failed(
     p_id UUID,
     p_error TEXT
@@ -44,24 +45,4 @@ BEGIN
 END;
 $$;
 
--- Batch için
-CREATE OR REPLACE FUNCTION outbox.outbox_mark_failed_batch(
-    p_ids UUID[],
-    p_error TEXT
-)
-RETURNS INT
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_count INT := 0;
-    v_id UUID;
-BEGIN
-    FOREACH v_id IN ARRAY p_ids LOOP
-        IF outbox.outbox_mark_failed(v_id, p_error) THEN
-            v_count := v_count + 1;
-        END IF;
-    END LOOP;
-
-    RETURN v_count;
-END;
-$$;
+COMMENT ON FUNCTION outbox.outbox_mark_failed IS 'Marks a message as failed and schedules retry with exponential backoff (max 5 min). Returns BOOLEAN.';

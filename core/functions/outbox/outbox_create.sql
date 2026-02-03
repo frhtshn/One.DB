@@ -1,7 +1,8 @@
 -- ================================================================
--- OUTBOX_CREATE - Tek mesaj oluştur
+-- OUTBOX_CREATE: Tek mesaj oluşturur
 -- ================================================================
 
+DROP FUNCTION IF EXISTS outbox.outbox_create CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_create(
     p_action_type VARCHAR(50),
     p_aggregate_type VARCHAR(100),
@@ -30,3 +31,5 @@ BEGIN
     RETURN v_id;
 END;
 $$;
+
+COMMENT ON FUNCTION outbox.outbox_create IS 'Creates a single outbox message for reliable event delivery using transactional outbox pattern. Returns UUID of created message.';

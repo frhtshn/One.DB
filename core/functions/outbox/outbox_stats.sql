@@ -1,7 +1,8 @@
 -- ================================================================
--- OUTBOX_STATS - İstatistikler
+-- OUTBOX_STATS: Kuyruk istatistiklerini döndürür
 -- ================================================================
 
+DROP FUNCTION IF EXISTS outbox.outbox_stats CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_stats()
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -35,3 +36,5 @@ BEGIN
     RETURN v_result;
 END;
 $$;
+
+COMMENT ON FUNCTION outbox.outbox_stats IS 'Returns comprehensive statistics about the outbox queue including counts by status, age of pending messages, and average processing time. Returns JSONB.';

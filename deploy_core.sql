@@ -455,7 +455,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/outbox/outbox_create_batch.sql
 \i core/functions/outbox/outbox_get_pending.sql
 \i core/functions/outbox/outbox_mark_completed.sql
+\i core/functions/outbox/outbox_mark_completed_batch.sql
 \i core/functions/outbox/outbox_mark_failed.sql
+\i core/functions/outbox/outbox_mark_failed_batch.sql
 \i core/functions/outbox/outbox_stats.sql
 \i core/functions/outbox/outbox_cleanup.sql
 

@@ -1,7 +1,8 @@
 -- ================================================================
--- OUTBOX_GET_PENDING - Bekleyen mesajları al (FOR UPDATE SKIP LOCKED)
+-- OUTBOX_GET_PENDING: Bekleyen mesajları alır ve kilitler
 -- ================================================================
 
+DROP FUNCTION IF EXISTS outbox.outbox_get_pending CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_get_pending(
     p_batch_size INT DEFAULT 100
 )
@@ -41,3 +42,5 @@ BEGIN
         m.retry_count, m.max_retries, m.sequence_number, m.created_at;
 END;
 $$;
+
+COMMENT ON FUNCTION outbox.outbox_get_pending IS 'Retrieves and locks pending messages for processing using FOR UPDATE SKIP LOCKED. Also picks up failed messages ready for retry.';

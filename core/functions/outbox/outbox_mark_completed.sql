@@ -1,8 +1,8 @@
 -- ================================================================
--- OUTBOX_MARK_COMPLETED - Mesajı tamamlandı olarak işaretle
+-- OUTBOX_MARK_COMPLETED: Tek mesajı tamamlandı olarak işaretler
 -- ================================================================
 
--- Tek mesaj için
+DROP FUNCTION IF EXISTS outbox.outbox_mark_completed CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_mark_completed(
     p_id UUID
 )
@@ -19,22 +19,4 @@ BEGIN
 END;
 $$;
 
--- Batch için (overload)
-CREATE OR REPLACE FUNCTION outbox.outbox_mark_completed(
-    p_ids UUID[]
-)
-RETURNS INT
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_count INT;
-BEGIN
-    UPDATE outbox.messages
-    SET status = 'completed',
-        processed_at = NOW()
-    WHERE id = ANY(p_ids) AND status = 'processing';
-
-    GET DIAGNOSTICS v_count = ROW_COUNT;
-    RETURN v_count;
-END;
-$$;
+COMMENT ON FUNCTION outbox.outbox_mark_completed IS 'Marks a single message as successfully completed. Returns BOOLEAN.';

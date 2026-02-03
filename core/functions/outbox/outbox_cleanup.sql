@@ -1,7 +1,8 @@
 -- ================================================================
--- OUTBOX_CLEANUP - Eski kayıtları temizle
+-- OUTBOX_CLEANUP: Eski kayıtları temizler
 -- ================================================================
 
+DROP FUNCTION IF EXISTS outbox.outbox_cleanup CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_cleanup(
     p_retention_days INT DEFAULT 7
 )
@@ -36,3 +37,5 @@ BEGIN
     );
 END;
 $$;
+
+COMMENT ON FUNCTION outbox.outbox_cleanup IS 'Removes old processed messages to prevent table bloat. Deletes completed and permanently failed messages older than retention period. Returns JSONB with deletion stats.';

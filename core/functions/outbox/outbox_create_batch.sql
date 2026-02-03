@@ -1,7 +1,8 @@
 -- ================================================================
--- OUTBOX_CREATE_BATCH - Toplu mesaj oluştur
+-- OUTBOX_CREATE_BATCH: Toplu mesaj oluşturur
 -- ================================================================
 
+DROP FUNCTION IF EXISTS outbox.outbox_create_batch CASCADE;
 CREATE OR REPLACE FUNCTION outbox.outbox_create_batch(
     p_messages TEXT  -- JSON array string
 )
@@ -26,3 +27,5 @@ BEGIN
     RETURNING outbox.messages.id, outbox.messages.sequence_number;
 END;
 $$;
+
+COMMENT ON FUNCTION outbox.outbox_create_batch IS 'Creates multiple outbox messages in a single batch operation. Accepts JSON array of messages. Returns TABLE(id UUID, sequence_number BIGINT).';
