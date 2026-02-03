@@ -22,7 +22,7 @@ CREATE TABLE catalog.payment_methods (
     -- Kategorilendirme
     payment_type VARCHAR(50) NOT NULL,                              -- Ana tip: CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER
     payment_subtype VARCHAR(50),                                    -- Alt tip: CREDIT, DEBIT, PREPAID, WIRE, INSTANT
-    channel VARCHAR(50) DEFAULT 'ONLINE',                           -- Kanal: ONLINE, OFFLINE, MOBILE, POS
+    channel VARCHAR(50) DEFAULT 'online',                           -- Kanal: online, offline, mobile, pos
 
     -- Görseller
     icon_url VARCHAR(500),                                          -- Yöntem ikonu

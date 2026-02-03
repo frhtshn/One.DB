@@ -18,7 +18,7 @@ CREATE TABLE catalog.navigation_template_items (
     icon varchar(50),
 
     -- Hedef (Master Data - Tenant değiştiremez)
-    target_type varchar(20) NOT NULL DEFAULT 'INTERNAL',
+    target_type varchar(20) NOT NULL DEFAULT 'internal',
     target_url varchar(255),
     target_action varchar(50),
 

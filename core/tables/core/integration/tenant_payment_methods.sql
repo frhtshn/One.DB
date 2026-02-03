@@ -50,7 +50,7 @@ CREATE TABLE core.tenant_payment_methods (
     override_kyc_level SMALLINT,                                    -- Override KYC seviyesi
 
     -- Platform Kısıtlamaları
-    allowed_platforms VARCHAR(20)[] DEFAULT '{WEB,MOBILE,APP}',     -- İzin verilen platformlar
+    allowed_platforms VARCHAR(20)[] DEFAULT '{web,mobile,app}',     -- İzin verilen platformlar
 
     -- Coğrafi Kısıtlamalar
     blocked_countries CHAR(2)[] DEFAULT '{}',                       -- Engelli ülkeler
@@ -61,7 +61,7 @@ CREATE TABLE core.tenant_payment_methods (
     available_until TIMESTAMP,                                      -- Ne zamana kadar mevcut
 
     -- Senkronizasyon
-    sync_status VARCHAR(20) DEFAULT 'PENDING',                      -- Tenant DB senkronizasyon durumu
+    sync_status VARCHAR(20) DEFAULT 'pending',                      -- Tenant DB senkronizasyon durumu
     last_synced_at TIMESTAMP,                                       -- Son senkronizasyon tarihi
 
     -- Audit

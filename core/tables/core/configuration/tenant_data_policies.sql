@@ -23,7 +23,7 @@ CREATE TABLE core.tenant_data_policies (
     retention_days int NOT NULL,            -- Örn: 30, 90, 365, 1825 (5 yıl)
 
     -- Süre Dolunca Yapılacak İşlem
-    action_type varchar(20) NOT NULL DEFAULT 'DROP_PARTITION',
+    action_type varchar(20) NOT NULL DEFAULT 'drop_partition',
     -- Seçenekler:
     -- 'DROP_PARTITION' : Veriyi kalıcı olarak sil (Partition drop)
     -- 'DELETE_ROWS'    : Satır bazlı silme (Partition yoksa)

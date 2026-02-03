@@ -33,7 +33,7 @@ CREATE TABLE core.tenant_games (
     rtp_variant VARCHAR(20),                                        -- RTP varyantı: DEFAULT, HIGH, LOW
 
     -- Platform Kısıtlamaları (Tenant seviyesinde)
-    allowed_platforms VARCHAR(20)[] DEFAULT '{WEB,MOBILE,APP}',     -- İzin verilen platformlar
+    allowed_platforms VARCHAR(20)[] DEFAULT '{web,mobile,app}',     -- İzin verilen platformlar
 
     -- Coğrafi Kısıtlamalar (Tenant'a özel)
     blocked_countries CHAR(2)[] DEFAULT '{}',                       -- Engelli ülkeler (tenant override)
@@ -44,7 +44,7 @@ CREATE TABLE core.tenant_games (
     available_until TIMESTAMP,                                      -- Ne zamana kadar mevcut
 
     -- Senkronizasyon
-    sync_status VARCHAR(20) DEFAULT 'PENDING',                      -- Tenant DB senkronizasyon durumu: PENDING, SYNCED, FAILED
+    sync_status VARCHAR(20) DEFAULT 'pending',                      -- Tenant DB senkronizasyon durumu: pending, synced, failed
     last_synced_at TIMESTAMP,                                       -- Son senkronizasyon tarihi
 
     -- Audit

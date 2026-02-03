@@ -15,7 +15,7 @@ CREATE TABLE billing.tenant_commission_rates (
     commission_type varchar(20) NOT NULL,                  -- Komisyon tipi: GGR, NGR, TURNOVER
 
     -- Oran yapısı
-    rate_type varchar(10) NOT NULL DEFAULT 'FLAT',         -- Oran tipi: FLAT (sabit), TIERED (kademeli)
+    rate_type varchar(10) NOT NULL DEFAULT 'flat',         -- Oran tipi: flat (sabit), tiered (kademeli)
     flat_rate numeric(5,2),                                -- Sabit oran (rate_type=FLAT ise)
 
     -- Para birimi (kademeli hesaplama için)

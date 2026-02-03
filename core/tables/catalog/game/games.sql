@@ -21,7 +21,7 @@ CREATE TABLE catalog.games (
     description TEXT,                                               -- Oyun açıklaması
 
     -- Kategorilendirme
-    game_type VARCHAR(50) NOT NULL DEFAULT 'SLOT',                  -- Ana tip: SLOT, LIVE, TABLE, CRASH, SCRATCH, BINGO, VIRTUAL
+    game_type VARCHAR(50) NOT NULL DEFAULT 'slot',                  -- Ana tip: slot, live, table, crash, scratch, bingo, virtual
     game_subtype VARCHAR(50),                                       -- Alt tip: VIDEO_SLOT, MEGAWAYS, CLASSIC, BLACKJACK, ROULETTE, BACCARAT
     categories VARCHAR(50)[] DEFAULT '{}',                          -- Kategoriler: popular, new, hot, jackpot, bonus_buy
     tags VARCHAR(50)[] DEFAULT '{}',                                -- Etiketler: fruits, egypt, asian, adventure
@@ -57,7 +57,7 @@ CREATE TABLE catalog.games (
     is_mobile BOOLEAN NOT NULL DEFAULT true,                        -- Mobil uyumlu mu
     is_desktop BOOLEAN NOT NULL DEFAULT true,                       -- Desktop uyumlu mu
     is_tablet BOOLEAN NOT NULL DEFAULT true,                        -- Tablet uyumlu mu
-    supported_platforms VARCHAR(20)[] DEFAULT '{WEB,MOBILE,APP}',   -- Desteklenen platformlar
+    supported_platforms VARCHAR(20)[] DEFAULT '{web,mobile,app}',   -- Desteklenen platformlar
 
     -- Desteklenen Ayarlar (Provider seviyesinde)
     supported_currencies CHAR(3)[] DEFAULT '{}',                    -- Desteklenen para birimleri

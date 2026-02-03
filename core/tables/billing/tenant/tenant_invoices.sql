@@ -13,7 +13,7 @@ CREATE TABLE billing.tenant_invoices (
 
     -- Fatura bilgileri
     invoice_number varchar(50) NOT NULL UNIQUE,            -- Benzersiz fatura numarası
-    invoice_type varchar(20) NOT NULL DEFAULT 'STANDARD',  -- Fatura tipi: STANDARD, CREDIT_NOTE, PROFORMA
+    invoice_type varchar(20) NOT NULL DEFAULT 'standard',  -- Fatura tipi: standard, credit_note, proforma
     invoice_date date NOT NULL,                            -- Fatura tarihi
     due_date date NOT NULL,                                -- Ödeme vadesi
 

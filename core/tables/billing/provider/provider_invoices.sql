@@ -13,7 +13,7 @@ CREATE TABLE billing.provider_invoices (
 
     -- Fatura bilgileri
     invoice_number varchar(100) NOT NULL,                  -- Provider fatura numarası
-    invoice_type varchar(20) NOT NULL DEFAULT 'STANDARD',  -- Fatura tipi: STANDARD, CREDIT_NOTE, PROFORMA
+    invoice_type varchar(20) NOT NULL DEFAULT 'standard',  -- Fatura tipi: standard, credit_note, proforma
     invoice_date date NOT NULL,                            -- Fatura tarihi
     due_date date NOT NULL,                                -- Ödeme vadesi
     received_date date,                                    -- Fatura alınma tarihi

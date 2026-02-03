@@ -24,7 +24,7 @@ CREATE TABLE presentation.tenant_navigation (
     badge_color varchar(20),                              -- Badge rengi (#ff0000)
 
     -- Hedef (Link/Aksiyon)
-    target_type varchar(20) NOT NULL DEFAULT 'INTERNAL',  -- INTERNAL, EXTERNAL, ACTION, ROUTE
+    target_type varchar(20) NOT NULL DEFAULT 'internal',  -- internal, external, action, route
     target_url varchar(255),                              -- Link: /casino, https://google.com
     target_action varchar(50),                            -- Aksiyon: open_login_modal, toggle_theme
     open_in_new_tab boolean DEFAULT false,                -- Yeni sekmede aç?
@@ -39,7 +39,7 @@ CREATE TABLE presentation.tenant_navigation (
     requires_guest boolean DEFAULT false,                 -- Sadece login OLMAYANLARA göster (Login btn)
     required_roles varchar(50)[],                         -- Opsiyonel: Sadece VIP userlar vb.
 
-    device_visibility varchar(20) DEFAULT 'ALL',          -- ALL, MOBILE_ONLY, DESKTOP_ONLY
+    device_visibility varchar(20) DEFAULT 'all',          -- all, mobile_only, desktop_only
 
     -- Korumalar (Master Data Yönetimi)
     is_locked boolean DEFAULT false,                      -- True = Tenant bu kaydı SİLEMEZ (Master'dan geldi)
