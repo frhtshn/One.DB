@@ -231,6 +231,41 @@ Nucleo.DB/
 | `catalog.transaction_type_list()` | Transaction tipi listesi |
 | `catalog.operation_type_list()` | Operation tipi listesi |
 
+## Password Management (Şifre Yönetimi)
+
+### Core Users (Backoffice)
+
+| Tablo | Açıklama |
+|-------|----------|
+| `security.users` | `password_changed_at`, `require_password_change` alanları |
+| `security.user_password_history` | Son N şifre geçmişi |
+| `security.password_policy` | Platform geneli policy (tek satır) |
+
+| Policy Ayarı | Varsayılan | Açıklama |
+|--------------|------------|----------|
+| `expiry_days` | 30 | Şifre geçerlilik süresi (0 = sınırsız) |
+| `history_count` | 3 | Kontrol edilecek eski şifre sayısı |
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `user_change_password(user_id, current_hash, new_hash)` | Kullanıcı kendi şifresini değiştirir |
+| `user_reset_password(caller_id, user_id, new_hash)` | Admin şifre sıfırlama (IDOR korumalı) |
+| `user_authenticate(email)` | `requirePasswordChange` ve `passwordChangedAt` döner |
+
+### Tenant Players
+
+| Tablo | Açıklama |
+|-------|----------|
+| `auth.player_credentials` | `last_password_change_at`, `require_password_change` alanları |
+| `auth.player_password_history` | Son N şifre geçmişi |
+| `core.tenant_settings` | Password policy (Security kategorisi, tenant bazlı) |
+
+| Setting Key | Varsayılan | Açıklama |
+|-------------|------------|----------|
+| `password_expiry_days` | 30 | Şifre geçerlilik süresi |
+| `password_history_count` | 3 | Eski şifre kontrolü |
+| `password_min_length` | 8 | Minimum uzunluk |
+
 ## Rol Hiyerarşisi ve Güvenlik
 
 ### Rol Seviyeleri

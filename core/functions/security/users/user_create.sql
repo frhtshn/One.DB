@@ -86,6 +86,8 @@ BEGIN
         timezone,
         currency,
         status,
+        password_changed_at,
+        require_password_change,
         created_by,
         created_at,
         updated_at
@@ -101,6 +103,8 @@ BEGIN
         p_timezone,
         p_currency,
         1,
+        NOW(),
+        TRUE,  -- Yeni kullanıcı ilk girişte şifresini değiştirmeli
         p_caller_id,
         NOW(),
         NOW()

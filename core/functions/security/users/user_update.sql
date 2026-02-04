@@ -13,6 +13,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN);
+DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION security.user_update(
     p_caller_id BIGINT,
@@ -25,7 +26,8 @@ CREATE OR REPLACE FUNCTION security.user_update(
     p_language CHAR(2) DEFAULT NULL,
     p_timezone VARCHAR(50) DEFAULT NULL,
     p_currency CHAR(3) DEFAULT NULL,
-    p_two_factor_enabled BOOLEAN DEFAULT NULL
+    p_two_factor_enabled BOOLEAN DEFAULT NULL,
+    p_require_password_change BOOLEAN DEFAULT NULL
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -183,6 +185,7 @@ BEGIN
         timezone = COALESCE(p_timezone, timezone),
         currency = COALESCE(p_currency, currency),
         two_factor_enabled = COALESCE(p_two_factor_enabled, two_factor_enabled),
+        require_password_change = COALESCE(p_require_password_change, require_password_change),
         updated_at = NOW(),
         updated_by = p_caller_id
     WHERE id = p_user_id;
@@ -194,7 +197,8 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN) IS
+COMMENT ON FUNCTION security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN) IS
 'Updates user with IDOR protection.
 Access: Self (always), Platform Admin (all), CompanyAdmin (own company + hierarchy), TenantAdmin (own tenants + hierarchy).
-Locked callers and deleted targets are rejected.';
+Locked callers and deleted targets are rejected.
+p_require_password_change: Admins can force user to change password on next login.';

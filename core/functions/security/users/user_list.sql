@@ -156,7 +156,8 @@ BEGIN
         'WITH filtered_users AS (
             SELECT u.id, u.company_id, u.first_name, u.last_name, u.email, u.username,
                    u.status, u.is_locked, u.two_factor_enabled, u.language, u.timezone,
-                   u.currency, u.last_login_at, u.created_at
+                   u.currency, u.last_login_at, u.password_changed_at, u.require_password_change,
+                   u.created_at
             FROM security.users u
             WHERE u.company_id = $1
               AND ($2 IS NULL OR u.status = $2)
@@ -210,6 +211,8 @@ BEGIN
                 ''timezone'', fu.timezone,
                 ''currency'', fu.currency,
                 ''lastLoginAt'', fu.last_login_at,
+                ''passwordChangedAt'', fu.password_changed_at,
+                ''requirePasswordChange'', fu.require_password_change,
                 ''createdAt'', fu.created_at,
                 ''roles'', CASE WHEN $7 THEN COALESCE(ura.global_roles, ''[]''::jsonb) ELSE ''[]''::jsonb END,
                 ''tenantRoles'', COALESCE(ura.tenant_roles, ''[]''::jsonb)

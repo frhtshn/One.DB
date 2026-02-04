@@ -147,6 +147,8 @@ BEGIN
         'timezone', u.timezone,
         'currency', u.currency,
         'lastLoginAt', u.last_login_at,
+        'passwordChangedAt', u.password_changed_at,
+        'requirePasswordChange', u.require_password_change,
         'createdAt', u.created_at,
         'updatedAt', u.updated_at,
         'companyId', u.company_id,

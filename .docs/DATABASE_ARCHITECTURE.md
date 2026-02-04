@@ -179,10 +179,12 @@ Backoffice kullanıcı ve yetki yönetimi.
 
 #### Identity
 
-| Tablo           | Açıklama                 |
-| --------------- | ------------------------ |
-| `users`         | Backoffice kullanıcıları |
-| `user_sessions` | Aktif oturumlar          |
+| Tablo                   | Açıklama                                    |
+| ----------------------- | ------------------------------------------- |
+| `users`                 | Backoffice kullanıcıları                    |
+| `user_sessions`         | Aktif oturumlar                             |
+| `user_password_history` | Şifre değişiklik geçmişi (son N şifre)      |
+| `password_policy`       | Platform geneli şifre politikası (tek satır)|
 
 #### RBAC (Role Based Access Control)
 
