@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Add centralized IDOR access control helper functions\n\n- Add 11 new access helper functions in security.access schema:\n  - Foundation: user_get_access_level, user_is_platform_admin, user_is_superadmin\n  - Boolean checks: user_can_access_tenant, user_can_access_company, user_can_manage_user\n  - Guard clauses: user_assert_* variants that raise P0403 on failure\n\n- Refactor all IDOR-controlled functions to use centralized helpers:\n  - Catalog \\(70+ functions\\): user_assert_superadmin, user_assert_platform_admin\n  - Core tenant functions: user_assert_access_company\n  - Presentation functions: user_assert_access_tenant\n  - Security user_create: user_assert_access_company\n\n- Add performance indexes for user_allowed_tenants table\n- Update DATABASE_FUNCTIONS.md with Access Helper Functions documentation\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
-    ]
-  }
-}
