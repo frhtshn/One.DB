@@ -2,10 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(grep:*)",
-      "Bash(find:*)",
-      "Bash(Remove-Item -Recurse -Force \"c:\\\\Projects\\\\Git\\\\nucleoDb\\\\.agent\")",
-      "Bash(Remove-Item -Recurse -Force \"c:\\\\Projects\\\\Git\\\\nucleoDb\\\\.antigravity\")",
-      "Bash(Remove-Item -Recurse -Force \"c:\\\\Projects\\\\Git\\\\nucleoDb\\\\.references\")"
+      "Bash(find:*)"
     ]
   }
 }
