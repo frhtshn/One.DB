@@ -5,12 +5,13 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, BIGINT, VARCHAR, JSONB, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_setting_upsert(
     p_caller_id BIGINT,
     p_provider_id BIGINT,
     p_key VARCHAR(100),
-    p_value JSONB,
+    p_value TEXT,
     p_description VARCHAR(255) DEFAULT NULL
 )
 RETURNS BIGINT
@@ -57,7 +58,7 @@ BEGIN
 
     -- Upsert
     INSERT INTO catalog.provider_settings (provider_id, setting_key, setting_value, description, created_at, updated_at)
-    VALUES (p_provider_id, v_key, p_value, NULLIF(TRIM(p_description), ''), NOW(), NOW())
+    VALUES (p_provider_id, v_key, p_value::jsonb, NULLIF(TRIM(p_description), ''), NOW(), NOW())
     ON CONFLICT (provider_id, setting_key) DO UPDATE
     SET setting_value = EXCLUDED.setting_value,
         description = COALESCE(EXCLUDED.description, catalog.provider_settings.description),

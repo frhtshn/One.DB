@@ -6,13 +6,16 @@
 DROP FUNCTION IF EXISTS catalog.navigation_template_item_create(
     BIGINT, INT, VARCHAR, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
 );
+DROP FUNCTION IF EXISTS catalog.navigation_template_item_create(
+    BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
+);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_item_create(
     p_caller_id BIGINT,
     p_template_id INT,
     p_menu_location VARCHAR(50),
     p_translation_key VARCHAR(100) DEFAULT NULL,
-    p_default_label JSONB DEFAULT NULL,
+    p_default_label TEXT DEFAULT NULL,
     p_icon VARCHAR(50) DEFAULT NULL,
     p_target_type VARCHAR(20) DEFAULT 'INTERNAL',
     p_target_url VARCHAR(255) DEFAULT NULL,
@@ -70,7 +73,7 @@ BEGIN
         is_locked, is_mandatory, created_at, updated_at
     )
     VALUES (
-        p_template_id, TRIM(p_menu_location), TRIM(p_translation_key), p_default_label, TRIM(p_icon),
+        p_template_id, TRIM(p_menu_location), TRIM(p_translation_key), p_default_label::jsonb, TRIM(p_icon),
         COALESCE(p_target_type, 'INTERNAL'), TRIM(p_target_url), TRIM(p_target_action), p_parent_id,
         COALESCE(p_display_order, 0), COALESCE(p_is_locked, TRUE), COALESCE(p_is_mandatory, TRUE),
         NOW(), NOW()

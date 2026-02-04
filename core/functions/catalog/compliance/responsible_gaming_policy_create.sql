@@ -15,17 +15,28 @@ DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
     VARCHAR, BOOLEAN, VARCHAR,
     BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
 );
+DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
+    BIGINT, INT,
+    BOOLEAN, TEXT, INT,
+    BOOLEAN, TEXT,
+    BOOLEAN, INT, BOOLEAN, INT, INT,
+    BOOLEAN, INT,
+    BOOLEAN, INT, INT, BOOLEAN,
+    BOOLEAN, INT, BOOLEAN, BOOLEAN,
+    VARCHAR, BOOLEAN, VARCHAR,
+    BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
+);
 
 CREATE OR REPLACE FUNCTION catalog.responsible_gaming_policy_create(
     p_caller_id BIGINT,
     p_jurisdiction_id INT,
     -- Deposit limits
     p_deposit_limit_required BOOLEAN DEFAULT FALSE,
-    p_deposit_limit_options JSONB DEFAULT NULL,
+    p_deposit_limit_options TEXT DEFAULT NULL,
     p_deposit_limit_max_increase_wait_hours INT DEFAULT NULL,
     -- Loss limits
     p_loss_limit_required BOOLEAN DEFAULT FALSE,
-    p_loss_limit_options JSONB DEFAULT NULL,
+    p_loss_limit_options TEXT DEFAULT NULL,
     -- Session limits
     p_session_limit_required BOOLEAN DEFAULT FALSE,
     p_session_limit_max_hours INT DEFAULT NULL,
@@ -106,8 +117,8 @@ BEGIN
     )
     VALUES (
         p_jurisdiction_id,
-        COALESCE(p_deposit_limit_required, FALSE), p_deposit_limit_options, p_deposit_limit_max_increase_wait_hours,
-        COALESCE(p_loss_limit_required, FALSE), p_loss_limit_options,
+        COALESCE(p_deposit_limit_required, FALSE), p_deposit_limit_options::jsonb, p_deposit_limit_max_increase_wait_hours,
+        COALESCE(p_loss_limit_required, FALSE), p_loss_limit_options::jsonb,
         COALESCE(p_session_limit_required, FALSE), p_session_limit_max_hours,
         COALESCE(p_session_break_required, FALSE), p_session_break_after_hours, p_session_break_duration_minutes,
         COALESCE(p_reality_check_required, FALSE), p_reality_check_interval_minutes,

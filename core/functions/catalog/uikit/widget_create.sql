@@ -4,6 +4,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.widget_create(BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB);
+DROP FUNCTION IF EXISTS catalog.widget_create(BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION catalog.widget_create(
     p_caller_id BIGINT,
@@ -12,7 +13,7 @@ CREATE OR REPLACE FUNCTION catalog.widget_create(
     p_category VARCHAR(30),
     p_component_name VARCHAR(100),
     p_description TEXT DEFAULT NULL,
-    p_default_props JSONB DEFAULT '{}'
+    p_default_props TEXT DEFAULT '{}'
 )
 RETURNS INT
 LANGUAGE plpgsql
@@ -68,7 +69,7 @@ BEGIN
     )
     VALUES (
         v_code, TRIM(p_name), TRIM(p_description), p_category, TRIM(p_component_name),
-        COALESCE(p_default_props, '{}'), TRUE, NOW(), NOW()
+        COALESCE(p_default_props, '{}')::jsonb, TRUE, NOW(), NOW()
     )
     RETURNING catalog.widgets.id INTO v_new_id;
 

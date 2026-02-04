@@ -7,12 +7,15 @@
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_update(
     BIGINT, INT, VARCHAR, JSONB, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
 );
+DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_update(
+    BIGINT, INT, VARCHAR, TEXT, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
+);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_document_requirement_update(
     p_caller_id BIGINT,
     p_id INT,
     p_document_type VARCHAR(30) DEFAULT NULL,
-    p_accepted_subtypes JSONB DEFAULT NULL,
+    p_accepted_subtypes TEXT DEFAULT NULL,
     p_is_required BOOLEAN DEFAULT NULL,
     p_required_for VARCHAR(30) DEFAULT NULL,
     p_max_document_age_days INT DEFAULT NULL,
@@ -87,7 +90,7 @@ BEGIN
     -- Güncelle
     UPDATE catalog.kyc_document_requirements SET
         document_type = COALESCE(p_document_type, document_type),
-        accepted_subtypes = COALESCE(p_accepted_subtypes, accepted_subtypes),
+        accepted_subtypes = COALESCE(p_accepted_subtypes::jsonb, accepted_subtypes),
         is_required = COALESCE(p_is_required, is_required),
         required_for = COALESCE(p_required_for, required_for),
         max_document_age_days = COALESCE(p_max_document_age_days, max_document_age_days),

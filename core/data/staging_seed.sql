@@ -134,7 +134,17 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 -- AUDIT SCOPE (3) - TenantAdmin + üstü
 ('audit.list', 'Audit Log Listesi', 'Audit loglarını listeleme', 'audit', 1),
 ('audit.view', 'Audit Log Görüntüleme', 'Audit log detayları', 'audit', 1),
-('audit.export', 'Audit Log Export', 'Audit loglarını dışa aktarma', 'audit', 1);
+('audit.export', 'Audit Log Export', 'Audit loglarını dışa aktarma', 'audit', 1),
+
+-- CATALOG SCOPE (8) - SuperAdmin + Platform Admin
+('catalog.provider.list', 'Provider Listesi', 'Provider ve tipi listeleme', 'catalog', 1),
+('catalog.provider.manage', 'Provider Yönetimi', 'Provider CRUD işlemleri', 'catalog', 1),
+('catalog.payment.list', 'Ödeme Yöntemi Listesi', 'Ödeme yöntemlerini listeleme', 'catalog', 1),
+('catalog.payment.manage', 'Ödeme Yöntemi Yönetimi', 'Ödeme yöntemi CRUD işlemleri', 'catalog', 1),
+('catalog.compliance.list', 'Compliance Listesi', 'Jurisdiction/KYC/RG listeleme', 'catalog', 1),
+('catalog.compliance.manage', 'Compliance Yönetimi', 'Jurisdiction/KYC/RG CRUD işlemleri', 'catalog', 1),
+('catalog.uikit.list', 'UIKit Listesi', 'Theme/Widget/Navigation listeleme', 'catalog', 1),
+('catalog.uikit.manage', 'UIKit Yönetimi', 'Theme/Widget/Navigation CRUD işlemleri', 'catalog', 1);
 
 -- ================================================================
 -- 5. ROLE-PERMISSION MAPPING
@@ -217,6 +227,21 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'user'
   AND p.code IN ('audit.list');
+
+-- ================================================================
+-- CATALOG PERMISSION - ROLE MAPPING
+-- ================================================================
+
+-- SUPERADMIN: Tüm catalog permission'lar (zaten CROSS JOIN ile otomatik ekleniyor)
+-- NOT: superadmin pattern'i tüm permission'ları alıyor (satır 143-148)
+
+-- ADMIN: catalog.compliance.* (Platform Admin)
+INSERT INTO security.role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM security.roles r
+CROSS JOIN security.permissions p
+WHERE r.code = 'admin'
+  AND p.code IN ('catalog.compliance.list', 'catalog.compliance.manage');
 
 -- ================================================================
 -- 6. TENANTS

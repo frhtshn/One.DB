@@ -4,6 +4,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.theme_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.theme_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.theme_create(
     p_caller_id BIGINT,
@@ -12,7 +13,7 @@ CREATE OR REPLACE FUNCTION catalog.theme_create(
     p_description TEXT DEFAULT NULL,
     p_version VARCHAR(20) DEFAULT '1.0.0',
     p_thumbnail_url VARCHAR(255) DEFAULT NULL,
-    p_default_config JSONB DEFAULT '{}',
+    p_default_config TEXT DEFAULT '{}',
     p_is_premium BOOLEAN DEFAULT FALSE
 )
 RETURNS INT
@@ -61,7 +62,7 @@ BEGIN
     )
     VALUES (
         v_code, v_name, TRIM(p_description), COALESCE(p_version, '1.0.0'),
-        TRIM(p_thumbnail_url), COALESCE(p_default_config, '{}'),
+        TRIM(p_thumbnail_url), COALESCE(p_default_config, '{}')::jsonb,
         TRUE, COALESCE(p_is_premium, FALSE), NOW(), NOW()
     )
     RETURNING catalog.themes.id INTO v_new_id;
