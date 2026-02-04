@@ -21,56 +21,22 @@ SECURITY DEFINER
 SET search_path = security, core, pg_temp
 AS $$
 DECLARE
-    v_caller_company_id BIGINT;
-    v_caller_has_platform_role BOOLEAN;
-    v_caller_is_company_admin BOOLEAN;
     v_result JSONB;
 BEGIN
     -- ========================================
-    -- 1. CALLER BİLGİLERİNİ AL
+    -- 1. IDOR KONTROLÜ (Helper ile)
     -- ========================================
-    SELECT
-        u.company_id,
-        EXISTS(
-            SELECT 1 FROM security.user_roles ur2
-            JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
-        ),
-        EXISTS(
-            SELECT 1 FROM security.user_roles ur2
-            JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.code = 'companyadmin'
-        )
-    INTO v_caller_company_id, v_caller_has_platform_role, v_caller_is_company_admin
-    FROM security.users u
-    WHERE u.id = p_caller_id
-      AND u.status = 1
-      AND u.is_locked = FALSE
-      AND (u.locked_until IS NULL OR u.locked_until < NOW());
-
-    IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
-    END IF;
+    PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
 
     -- ========================================
-    -- 2. IDOR KONTROLÜ
-    -- ========================================
-    IF NOT v_caller_has_platform_role THEN
-        -- CompanyAdmin sadece kendi company'sini görebilir
-        IF NOT v_caller_is_company_admin OR v_caller_company_id != p_company_id THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
-        END IF;
-    END IF;
-
-    -- ========================================
-    -- 3. COMPANY VARLIK KONTROLÜ
+    -- 2. COMPANY VARLIK KONTROLÜ
     -- ========================================
     IF NOT EXISTS (SELECT 1 FROM core.companies WHERE id = p_company_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.company.not-found';
     END IF;
 
     -- ========================================
-    -- 4. POLİTİKAYI GETİR (veya default)
+    -- 3. POLİTİKAYI GETİR (veya default)
     -- ========================================
     SELECT jsonb_build_object(
         'companyId', p_company_id,
