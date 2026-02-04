@@ -60,10 +60,11 @@ BEGIN
     -- ================================================================
     -- 2. SIFRE DEGISIKLIK KONTROLU
     -- ================================================================
-    -- Password policy'den expiry_days al
-    SELECT COALESCE(expiry_days, 0) INTO v_password_expiry_days
-    FROM security.password_policy
-    WHERE id = 1;
+    -- Company password policy'den expiry_days al (yoksa platform default: 30)
+    SELECT COALESCE(
+        (SELECT cpp.expiry_days FROM security.company_password_policy cpp WHERE cpp.company_id = v_user.company_id),
+        30
+    ) INTO v_password_expiry_days;
 
     -- Şifre değişikliği gerekli mi?
     v_require_password_change := COALESCE(v_user.require_password_change, FALSE)

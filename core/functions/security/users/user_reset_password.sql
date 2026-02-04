@@ -175,10 +175,10 @@ BEGIN
     -- ========================================
     -- 7. FAZLA HISTORY KAYITLARINI TEMİZLE
     -- ========================================
-    SELECT COALESCE(pp.history_count, 3)
-    INTO v_history_count
-    FROM security.password_policy pp
-    WHERE pp.id = 1;
+    SELECT COALESCE(
+        (SELECT cpp.history_count FROM security.company_password_policy cpp WHERE cpp.company_id = v_target_company_id),
+        3  -- Platform default
+    ) INTO v_history_count;
 
     IF v_history_count > 0 THEN
         DELETE FROM security.user_password_history

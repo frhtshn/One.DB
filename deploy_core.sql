@@ -125,7 +125,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/identity/users.sql
 \i core/tables/security/identity/user_sessions.sql
 \i core/tables/security/identity/user_password_history.sql
-\i core/tables/security/identity/password_policy.sql
+\i core/tables/security/identity/company_password_policy.sql
 
 -- RBAC (Rol ve Yetki Yönetimi)
 \i core/tables/security/rbac/roles.sql
@@ -410,6 +410,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- Auth Functions
 \i core/functions/security/auth/user_authenticate.sql
+
+-- Password Policy Functions
+\i core/functions/security/policy/company_password_policy_get.sql
+\i core/functions/security/policy/company_password_policy_upsert.sql
 
 -- Presentation Functions
 -- Menu Groups

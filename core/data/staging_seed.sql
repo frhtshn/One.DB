@@ -34,7 +34,7 @@ TRUNCATE TABLE presentation.menu_groups RESTART IDENTITY CASCADE;
 
 -- Security
 TRUNCATE TABLE security.user_password_history RESTART IDENTITY CASCADE;
-TRUNCATE TABLE security.password_policy RESTART IDENTITY CASCADE;
+TRUNCATE TABLE security.company_password_policy RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_allowed_tenants RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.users RESTART IDENTITY CASCADE;
@@ -74,10 +74,21 @@ INSERT INTO core.companies (id, company_code, company_name, status, country_code
 SELECT setval('core.companies_id_seq', (SELECT MAX(id) FROM core.companies) + 1);
 
 -- ================================================================
--- 3. PASSWORD POLICY (Platform geneli)
+-- 3. COMPANY PASSWORD POLICY (Her company için özel politika)
 -- ================================================================
-INSERT INTO security.password_policy (id, expiry_days, history_count)
-VALUES (1, 30, 3);
+-- Company ID 0 (Nucleo Platform) için
+INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
+VALUES (0, 90, 5, 1);  -- Platform: 90 gün, son 5 şifre
+
+-- Company ID 1 (EuroBet) için
+INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
+VALUES (1, 30, 3, 1);  -- Default: 30 gün, son 3 şifre
+
+-- Company ID 2 (CyprusPlay) için - policy yok, platform default kullanacak
+
+-- Company ID 3 (TurkBet) için
+INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
+VALUES (3, 60, 4, 1);  -- 60 gün, son 4 şifre
 
 -- ================================================================
 -- 4. ROLES

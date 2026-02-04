@@ -4,7 +4,7 @@
 -- Güvenlik Kuralları:
 --   - Kullanıcı aktif ve kilitli değil olmalı
 --   - Mevcut şifre hash'i doğrulanmalı
---   - Yeni şifre son N şifre ile aynı olmamalı (password_policy.history_count)
+--   - Yeni şifre son N şifre ile aynı olmamalı (company_password_policy.history_count)
 -- İşlem:
 --   - Eski şifre -> user_password_history'ye kaydedilir
 --   - password_changed_at güncellenir
@@ -33,7 +33,7 @@ BEGIN
     -- ========================================
     -- 1. KULLANICI BİLGİLERİNİ AL VE DOĞRULA
     -- ========================================
-    SELECT id, password, status, is_locked, locked_until
+    SELECT id, company_id, password, status, is_locked, locked_until
     INTO v_user
     FROM security.users
     WHERE id = p_user_id;
@@ -60,12 +60,12 @@ BEGIN
     END IF;
 
     -- ========================================
-    -- 3. PASSWORD POLICY'DEN HISTORY COUNT AL
+    -- 3. COMPANY PASSWORD POLICY'DEN HISTORY COUNT AL
     -- ========================================
-    SELECT COALESCE(pp.history_count, 3)
-    INTO v_history_count
-    FROM security.password_policy pp
-    WHERE pp.id = 1;
+    SELECT COALESCE(
+        (SELECT cpp.history_count FROM security.company_password_policy cpp WHERE cpp.company_id = v_user.company_id),
+        3  -- Platform default
+    ) INTO v_history_count;
 
     -- ========================================
     -- 4. YENİ ŞİFRE MEVCUT ŞİFRE İLE AYNI MI?

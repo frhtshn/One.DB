@@ -233,6 +233,10 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.user.change-password.same-as-current', 'error', 'user', 'Yeni sifre mevcut sifre ile ayni olamaz'),
 ('error.user.change-password.recently-used', 'error', 'user', 'Bu sifre yakin zamanda kullanilmis'),
 
+-- Password Policy Exceptions
+('error.password-policy.invalid-expiry-days', 'error', 'password-policy', 'Gecersiz sifre gecerlilik suresi'),
+('error.password-policy.invalid-history-count', 'error', 'password-policy', 'Sifre gecmisi sayisi 0-10 arasi olmali'),
+
 -- Company Exceptions
 ('error.company.not-found', 'error', 'company', 'Sirket bulunamadi veya pasif'),
 

@@ -221,6 +221,10 @@ JOIN (VALUES
     ('error.user.change-password.same-as-current', 'New password cannot be the same as current password'),
     ('error.user.change-password.recently-used', 'This password has been used recently'),
 
+    -- Error Messages - Password Policy
+    ('error.password-policy.invalid-expiry-days', 'Invalid password expiry days value'),
+    ('error.password-policy.invalid-history-count', 'Password history count must be between 0 and 10'),
+
     -- Error Messages - Company
     ('error.company.not-found', 'Company not found or inactive'),
 

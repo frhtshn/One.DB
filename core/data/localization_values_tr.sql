@@ -218,6 +218,10 @@ JOIN (VALUES
     ('error.user.change-password.same-as-current', 'Yeni şifre mevcut şifre ile aynı olamaz'),
     ('error.user.change-password.recently-used', 'Bu şifre yakın zamanda kullanılmış'),
 
+    -- Error Messages - Password Policy
+    ('error.password-policy.invalid-expiry-days', 'Geçersiz şifre geçerlilik süresi'),
+    ('error.password-policy.invalid-history-count', 'Şifre geçmişi sayısı 0-10 arası olmalı'),
+
     -- Error Messages - Company
     ('error.company.not-found', 'Şirket bulunamadı veya pasif durumda'),
 
