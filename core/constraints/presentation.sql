@@ -118,3 +118,19 @@ DO $$ BEGIN
             FOREIGN KEY (template_item_id) REFERENCES catalog.navigation_template_items(id) ON DELETE SET NULL;
     END IF;
 END $$;
+
+-- tenant_themes unique constraint (one config per theme per tenant)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_themes_tenant_theme') THEN
+        ALTER TABLE presentation.tenant_themes ADD CONSTRAINT uq_tenant_themes_tenant_theme
+            UNIQUE (tenant_id, theme_id);
+    END IF;
+END $$;
+
+-- tenant_layouts unique constraint (one layout per name per tenant)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_layouts_tenant_name') THEN
+        ALTER TABLE presentation.tenant_layouts ADD CONSTRAINT uq_tenant_layouts_tenant_name
+            UNIQUE (tenant_id, layout_name);
+    END IF;
+END $$;

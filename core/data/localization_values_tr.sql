@@ -400,6 +400,24 @@ JOIN (VALUES
     ('error.navigation-template-item.target-type-invalid', 'Geçersiz hedef tipi. INTERNAL, EXTERNAL veya ACTION olmalı'),
     ('error.navigation-template-item.parent-not-found', 'Üst öğe bulunamadı'),
     ('error.navigation-template-item.self-parent', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
-    ('error.navigation-template-item.has-children', 'Öğe silinemez. Alt öğeleri mevcut')
+    ('error.navigation-template-item.has-children', 'Öğe silinemez. Alt öğeleri mevcut'),
+
+    -- Tenant Navigation Errors
+    ('error.tenant-navigation.not-found', 'Navigasyon öğesi bulunamadı'),
+    ('error.tenant-navigation.already-initialized', 'Tenant navigasyonu zaten mevcut'),
+    ('error.tenant-navigation.is-locked', 'Kilitli öğe silinemez'),
+    ('error.tenant-navigation.has-children', 'Öğe silinemez. Alt öğeleri mevcut'),
+    ('error.tenant-navigation.parent-not-found', 'Üst öğe bulunamadı'),
+    ('error.tenant-navigation.self-parent', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
+    ('error.tenant-navigation.readonly-field-update', 'Salt okunur alan güncellenemez'),
+    ('error.tenant-navigation.invalid-item-ids', 'Geçersiz öğe ID listesi'),
+
+    -- Tenant Theme Errors
+    ('error.tenant-theme.not-found', 'Tenant tema yapılandırması bulunamadı'),
+    ('error.tenant-theme.no-active-theme', 'Aktif tema bulunamadı'),
+
+    -- Tenant Layout Errors
+    ('error.tenant-layout.not-found', 'Layout bulunamadı'),
+    ('error.tenant-layout.no-filter', 'En az bir filtre parametresi gerekli')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

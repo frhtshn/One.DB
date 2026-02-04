@@ -112,7 +112,7 @@ else {
     Write-Host ""
     Write-Host "[XX] DEPLOY BASARISIZ" -ForegroundColor Red
     Write-Host ""
-    Write-Host "═══════════════ HATA DETAYI ═══════════════" -ForegroundColor Red
+    Write-Host "=============== HATA DETAYI ===============" -ForegroundColor Red
     Write-Host ""
 
     # Hata satırlarını bul ve göster
@@ -125,7 +125,7 @@ else {
     }
 
     Write-Host ""
-    Write-Host "════════════════════════════════════════════" -ForegroundColor Red
+    Write-Host "============================================" -ForegroundColor Red
     exit 1
 }
 Write-Host ""

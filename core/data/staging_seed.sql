@@ -7,12 +7,16 @@
 -- İÇERİK:
 -- 1. TRUNCATE (tüm tablolar)
 -- 2. Companies (platform + test companies)
--- 3. Roles + Permissions + Role-Permission mapping
--- 4. Tenants (test tenants)
--- 5. Users (superadmin + admin + test users)
--- 6. User roles (global + tenant)
--- 7. Tenant ayarları (currencies, languages, settings)
--- 8. Menu yapısı (groups + menus + pages)
+-- 3-5. Roles + Permissions + Role-Permission mapping
+-- 6. Tenants (test tenants)
+-- 7. Users (superadmin + admin + test users)
+-- 8. Company Password Policy (users'dan SONRA - FK bağımlılığı)
+-- 9-10. User roles (global + tenant)
+-- 11. Tenant erişim izinleri
+-- 12. Tenant ayarları (currencies, languages, settings)
+-- 13-17. Menu yapısı (groups + menus + submenus + pages + contexts)
+-- 18. Doğrulama
+-- 19. Jurisdictions & KYC Compliance
 -- ================================================================
 -- NOT: Menu localization için seed_menu_localization.sql'i ÖNCE çalıştırın!
 -- ================================================================
@@ -74,24 +78,7 @@ INSERT INTO core.companies (id, company_code, company_name, status, country_code
 SELECT setval('core.companies_id_seq', (SELECT MAX(id) FROM core.companies) + 1);
 
 -- ================================================================
--- 3. COMPANY PASSWORD POLICY (Her company için özel politika)
--- ================================================================
--- Company ID 0 (Nucleo Platform) için
-INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
-VALUES (0, 90, 5, 1);  -- Platform: 90 gün, son 5 şifre
-
--- Company ID 1 (EuroBet) için
-INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
-VALUES (1, 30, 3, 1);  -- Default: 30 gün, son 3 şifre
-
--- Company ID 2 (CyprusPlay) için - policy yok, platform default kullanacak
-
--- Company ID 3 (TurkBet) için
-INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
-VALUES (3, 60, 4, 1);  -- 60 gün, son 4 şifre
-
--- ================================================================
--- 4. ROLES
+-- 3. ROLES
 -- ================================================================
 -- Hierarchy: superadmin > admin > companyadmin > tenantadmin > moderator > editor > operator > user
 
@@ -344,7 +331,26 @@ INSERT INTO security.users (company_id, first_name, last_name, email, username, 
  1, 'en', 'Europe/Malta', 'EUR');
 
 -- ================================================================
--- 8. GLOBAL ROL ATAMALARI (security.user_roles - tenant_id = NULL)
+-- 8. COMPANY PASSWORD POLICY (Her company için özel politika)
+-- ================================================================
+-- NOT: Users tablosu dolduktan SONRA çalıştırılmalı (created_by FK)
+
+-- Company ID 0 (Nucleo Platform) için
+INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
+VALUES (0, 90, 5, 1);  -- Platform: 90 gün, son 5 şifre
+
+-- Company ID 1 (EuroBet) için
+INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
+VALUES (1, 30, 3, 1);  -- Default: 30 gün, son 3 şifre
+
+-- Company ID 2 (CyprusPlay) için - policy yok, platform default kullanacak
+
+-- Company ID 3 (TurkBet) için
+INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
+VALUES (3, 60, 4, 1);  -- 60 gün, son 4 şifre
+
+-- ================================================================
+-- 9. GLOBAL ROL ATAMALARI (security.user_roles - tenant_id = NULL)
 -- ================================================================
 
 -- superadmin@nucleo.io → superadmin (global)
@@ -373,7 +379,7 @@ SELECT u.id, r.id, NULL FROM security.users u, security.roles r
 WHERE u.email = 'turkbet@nucleo.io' AND r.code = 'companyadmin';
 
 -- ================================================================
--- 9. TENANT ROL ATAMALARI (security.user_roles - tenant_id = değer)
+-- 10. TENANT ROL ATAMALARI (security.user_roles - tenant_id = değer)
 -- ================================================================
 
 -- eurobet.eu@nucleo.io → tenantadmin @ eurobet_eu
@@ -419,7 +425,7 @@ FROM security.users u, security.roles r, core.tenants t
 WHERE u.email = 'eurobet.user@nucleo.io' AND r.code = 'user' AND t.tenant_code = 'eurobet_eu';
 
 -- ================================================================
--- 10. TENANT ERİŞİM İZİNLERİ (security.user_allowed_tenants)
+-- 11. TENANT ERİŞİM İZİNLERİ (security.user_allowed_tenants)
 -- ================================================================
 
 -- TenantAdmin'ler kendi tenant'larına
@@ -454,7 +460,7 @@ SELECT u.id, t.id FROM security.users u, core.tenants t
 WHERE u.email = 'eurobet.user@nucleo.io' AND t.tenant_code = 'eurobet_eu';
 
 -- ================================================================
--- 11. TENANT AYARLARI
+-- 12. TENANT AYARLARI
 -- ================================================================
 
 -- Tenant Para Birimleri
@@ -577,7 +583,7 @@ SELECT t.id, 'Security', 'password_min_length',
 FROM core.tenants t;
 
 -- ================================================================
--- 12. MENU GROUPS
+-- 13. MENU GROUPS
 -- ================================================================
 -- NOT: Menu localization seed_menu_localization.sql dosyasında.
 -- ================================================================
@@ -590,7 +596,7 @@ INSERT INTO presentation.menu_groups (code, title_localization_key, order_index,
 ('audit', 'ui.menu-group.audit', 4, TRUE);
 
 -- ================================================================
--- 13. MENUS
+-- 14. MENUS
 -- ================================================================
 
 -- Platform Group
@@ -634,7 +640,7 @@ CROSS JOIN (VALUES
 WHERE mg.code = 'audit';
 
 -- ================================================================
--- 14. SUBMENUS
+-- 15. SUBMENUS
 -- ================================================================
 
 -- System Menu Submenus
@@ -660,7 +666,7 @@ CROSS JOIN (VALUES
 WHERE m.code = 'rbac';
 
 -- ================================================================
--- 15. PAGES
+-- 16. PAGES
 -- ================================================================
 
 -- System Submenu Pages
@@ -715,7 +721,7 @@ JOIN (VALUES
 ) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
 
 -- ================================================================
--- 16. CONTEXTS (Sayfa içi dinamik bölümler)
+-- 17. CONTEXTS (Sayfa içi dinamik bölümler)
 -- ================================================================
 -- context_type: section, table, card, action, field
 -- permission_edit: düzenleme yetkisi
@@ -737,7 +743,7 @@ JOIN (VALUES
 ) AS v(page_code, code, ctx_type, label_key, perm_edit, perm_readonly) ON p.code = v.page_code;
 
 -- ================================================================
--- 17. DOĞRULAMA
+-- 18. DOĞRULAMA
 -- ================================================================
 
 DO $$
@@ -809,12 +815,12 @@ END;
 -- ================================================================
 
 -- ================================================================
--- 9. JURISDICTIONS & KYC COMPLIANCE DATA
+-- 19. JURISDICTIONS & KYC COMPLIANCE DATA
 -- ================================================================
 -- NOTE: TRUNCATE statements moved to top of file with other truncates
 
 -- ================================================================
--- 9.1 JURISDICTIONS (Lisans Otoriteleri)
+-- 19.1 JURISDICTIONS (Lisans Otoriteleri)
 -- ================================================================
 INSERT INTO catalog.jurisdictions (id, code, name, country_code, region, authority_type, website_url, license_prefix, is_active) VALUES
 -- Tier 1 - Strict Regulators
@@ -840,7 +846,7 @@ INSERT INTO catalog.jurisdictions (id, code, name, country_code, region, authori
 SELECT setval('catalog.jurisdictions_id_seq', (SELECT MAX(id) FROM catalog.jurisdictions) + 1);
 
 -- ================================================================
--- 9.2 KYC POLICIES (Her Jurisdiction için)
+-- 19.2 KYC POLICIES (Her Jurisdiction için)
 -- ================================================================
 INSERT INTO catalog.kyc_policies (jurisdiction_id, verification_timing, verification_deadline_hours, grace_period_hours,
     edd_deposit_threshold, edd_withdrawal_threshold, edd_cumulative_threshold, edd_threshold_currency,
@@ -884,7 +890,7 @@ INSERT INTO catalog.kyc_policies (jurisdiction_id, verification_timing, verifica
 (12, 'before_deposit', 24, 0, 3000.00, 3000.00, 15000.00, 'EUR', 18, TRUE, TRUE, 90, 10000.00, TRUE, TRUE, TRUE, TRUE);
 
 -- ================================================================
--- 9.3 KYC DOCUMENT REQUIREMENTS
+-- 19.3 KYC DOCUMENT REQUIREMENTS
 -- ================================================================
 -- MGA (Malta)
 INSERT INTO catalog.kyc_document_requirements (jurisdiction_id, document_type, accepted_subtypes, is_required, required_for, max_document_age_days, expires_after_days, verification_method, display_order) VALUES
@@ -910,7 +916,7 @@ INSERT INTO catalog.kyc_document_requirements (jurisdiction_id, document_type, a
 (7, 'selfie', '["selfie_with_id"]', TRUE, 'withdrawal', NULL, 730, 'manual', 3);
 
 -- ================================================================
--- 9.4 KYC LEVEL REQUIREMENTS
+-- 19.4 KYC LEVEL REQUIREMENTS
 -- ================================================================
 -- MGA Levels
 INSERT INTO catalog.kyc_level_requirements (jurisdiction_id, kyc_level,
@@ -963,7 +969,7 @@ INSERT INTO catalog.kyc_level_requirements (jurisdiction_id, kyc_level,
     336, 0, 'block_all', 2, TRUE);
 
 -- ================================================================
--- 9.5 RESPONSIBLE GAMING POLICIES
+-- 19.5 RESPONSIBLE GAMING POLICIES
 -- ================================================================
 INSERT INTO catalog.responsible_gaming_policies (jurisdiction_id,
     deposit_limit_required, deposit_limit_options, deposit_limit_max_increase_wait_hours,

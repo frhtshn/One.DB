@@ -398,6 +398,24 @@ JOIN (VALUES
     ('error.navigation-template-item.target-type-invalid', 'Invalid target type. Must be one of: INTERNAL, EXTERNAL, ACTION'),
     ('error.navigation-template-item.parent-not-found', 'Parent item not found'),
     ('error.navigation-template-item.self-parent', 'An item cannot be its own parent'),
-    ('error.navigation-template-item.has-children', 'Cannot delete item. It has child items')
+    ('error.navigation-template-item.has-children', 'Cannot delete item. It has child items'),
+
+    -- Tenant Navigation Errors
+    ('error.tenant-navigation.not-found', 'Navigation item not found'),
+    ('error.tenant-navigation.already-initialized', 'Tenant navigation already initialized'),
+    ('error.tenant-navigation.is-locked', 'Cannot delete locked item'),
+    ('error.tenant-navigation.has-children', 'Cannot delete item. It has child items'),
+    ('error.tenant-navigation.parent-not-found', 'Parent item not found'),
+    ('error.tenant-navigation.self-parent', 'An item cannot be its own parent'),
+    ('error.tenant-navigation.readonly-field-update', 'Cannot update readonly field'),
+    ('error.tenant-navigation.invalid-item-ids', 'Invalid item ID list'),
+
+    -- Tenant Theme Errors
+    ('error.tenant-theme.not-found', 'Tenant theme configuration not found'),
+    ('error.tenant-theme.no-active-theme', 'No active theme found'),
+
+    -- Tenant Layout Errors
+    ('error.tenant-layout.not-found', 'Layout not found'),
+    ('error.tenant-layout.no-filter', 'At least one filter parameter is required')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

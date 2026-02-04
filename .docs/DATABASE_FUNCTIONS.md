@@ -59,6 +59,7 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`navigation_template_item_list(p_caller_id BIGINT, p_template_id INT, p_menu_location VARCHAR(50) DEFAULT NULL)`**: Navigation template item list.
 - **`navigation_template_item_update(p_caller_id BIGINT, p_id BIGINT, p_menu_location VARCHAR(50) DEFAULT NULL, p_translation_key VARCHAR(100) DEFAULT NULL, p_default_label JSONB DEFAULT NULL, p_icon VARCHAR(50) DEFAULT NULL, p_target_type VARCHAR(20) DEFAULT NULL, p_target_url VARCHAR(255) DEFAULT NULL, p_target_action VARCHAR(50) DEFAULT NULL, p_parent_id BIGINT DEFAULT NULL, p_display_order INT DEFAULT NULL, p_is_locked BOOLEAN DEFAULT NULL, p_is_mandatory BOOLEAN DEFAULT NULL)`**: Navigation template item update.
 - **`navigation_template_list(p_caller_id BIGINT, p_is_active BOOLEAN DEFAULT NULL)`**: Navigation template list.
+- **`navigation_template_lookup(p_caller_id BIGINT)`**: Navigation template lookup for dropdowns. Platform Admin only.
 - **`navigation_template_update(p_caller_id BIGINT, p_id INT, p_code VARCHAR(50) DEFAULT NULL, p_name VARCHAR(100) DEFAULT NULL, p_description TEXT DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL, p_is_default BOOLEAN DEFAULT NULL)`**: Navigation template update.
 - **`operation_type_list()`**: Operation type list.
 - **`payment_method_create(p_caller_id BIGINT, p_provider_id BIGINT, p_code VARCHAR(100), p_name VARCHAR(255), p_payment_type VARCHAR(50), -- Opsiyonel parametreler p_external_method_id VARCHAR(100) DEFAULT NULL, p_description TEXT DEFAULT NULL, p_payment_subtype VARCHAR(50) DEFAULT NULL, p_channel VARCHAR(50) DEFAULT 'ONLINE', p_icon_url VARCHAR(500) DEFAULT NULL, p_logo_url VARCHAR(500) DEFAULT NULL, p_banner_url VARCHAR(500) DEFAULT NULL, p_supports_deposit BOOLEAN DEFAULT TRUE, p_supports_withdrawal BOOLEAN DEFAULT TRUE, p_supports_refund BOOLEAN DEFAULT FALSE, p_min_deposit DECIMAL(18,8) DEFAULT NULL, p_max_deposit DECIMAL(18,8) DEFAULT NULL, p_min_withdrawal DECIMAL(18,8) DEFAULT NULL, p_max_withdrawal DECIMAL(18,8) DEFAULT NULL, p_deposit_fee_percent DECIMAL(5,4) DEFAULT NULL, p_deposit_fee_fixed DECIMAL(18,8) DEFAULT NULL, p_withdrawal_fee_percent DECIMAL(5,4) DEFAULT NULL, p_withdrawal_fee_fixed DECIMAL(18,8) DEFAULT NULL, p_deposit_processing_time VARCHAR(50) DEFAULT NULL, p_withdrawal_processing_time VARCHAR(50) DEFAULT NULL, p_supported_currencies CHAR(3)[] DEFAULT '{}', p_blocked_countries CHAR(2)[] DEFAULT '{}', p_requires_kyc_level SMALLINT DEFAULT 0, p_requires_3ds BOOLEAN DEFAULT FALSE, p_requires_verification BOOLEAN DEFAULT FALSE, p_features VARCHAR(50)[] DEFAULT '{}', p_supports_recurring BOOLEAN DEFAULT FALSE, p_supports_tokenization BOOLEAN DEFAULT FALSE, p_supports_partial_refund BOOLEAN DEFAULT FALSE, p_is_mobile BOOLEAN DEFAULT TRUE, p_is_desktop BOOLEAN DEFAULT TRUE, p_is_app BOOLEAN DEFAULT TRUE, p_sort_order INTEGER DEFAULT 0)`**: Payment method create.
@@ -173,6 +174,21 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`tab_delete(p_tab_id BIGINT)`**: Tab delete.
 - **`tab_list(p_page_id BIGINT)`**: Tab list.
 - **`tab_update(p_tab_id BIGINT, p_title_localization_key TEXT DEFAULT NULL, p_order_index INT DEFAULT NULL, p_required_permission TEXT DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Tab update.
+- **`tenant_layout_delete(p_caller_id BIGINT, p_tenant_id BIGINT, p_id BIGINT)`**: Deletes a tenant layout. IDOR protected.
+- **`tenant_layout_get(p_caller_id BIGINT, p_tenant_id BIGINT, p_id BIGINT DEFAULT NULL, p_page_id BIGINT DEFAULT NULL, p_layout_name VARCHAR(50) DEFAULT NULL)`**: Gets tenant layout by ID, page_id, or layout_name.
+- **`tenant_layout_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Lists all tenant layouts (widget placements).
+- **`tenant_layout_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_layout_name VARCHAR(50), p_structure JSONB, p_page_id BIGINT DEFAULT NULL, p_is_active BOOLEAN DEFAULT TRUE)`**: Creates or updates tenant layout. layout_name is unique per tenant.
+- **`tenant_navigation_create(p_caller_id BIGINT, p_tenant_id BIGINT, ...)`**: Creates a new custom navigation item. Custom items are fully editable/deletable.
+- **`tenant_navigation_delete(p_caller_id BIGINT, p_tenant_id BIGINT, p_id BIGINT)`**: Deletes navigation item. Locked items (from template) cannot be deleted.
+- **`tenant_navigation_get(p_caller_id BIGINT, p_tenant_id BIGINT, p_id BIGINT)`**: Gets a single navigation item.
+- **`tenant_navigation_init_from_template(p_caller_id BIGINT, p_tenant_id BIGINT, p_template_id INT, p_force BOOLEAN DEFAULT FALSE)`**: Initializes tenant navigation from a catalog template. Copies all template items with parent-child relationships.
+- **`tenant_navigation_list(p_caller_id BIGINT, p_tenant_id BIGINT, p_menu_location VARCHAR(50) DEFAULT NULL)`**: Lists tenant navigation items, optionally filtered by menu_location.
+- **`tenant_navigation_reorder(p_caller_id BIGINT, p_tenant_id BIGINT, p_menu_location VARCHAR(50), p_item_ids BIGINT[])`**: Reorders navigation items within a menu_location.
+- **`tenant_navigation_update(p_caller_id BIGINT, p_tenant_id BIGINT, p_id BIGINT, ...)`**: Updates navigation item. Readonly items can only have visibility fields updated.
+- **`tenant_theme_activate(p_caller_id BIGINT, p_tenant_id BIGINT, p_theme_id INT)`**: Activates a theme for the tenant, deactivating others.
+- **`tenant_theme_get(p_caller_id BIGINT, p_tenant_id BIGINT, p_theme_id INT DEFAULT NULL)`**: Gets tenant theme config. Returns merged config (default + override). NULL returns active theme.
+- **`tenant_theme_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Lists all available themes with tenant configuration status.
+- **`tenant_theme_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_theme_id INT, p_config JSONB DEFAULT '{}', p_custom_css TEXT DEFAULT NULL, p_set_active BOOLEAN DEFAULT FALSE)`**: Creates or updates tenant theme configuration.
 
 ### Security Schema
 

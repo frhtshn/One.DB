@@ -423,6 +423,24 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.navigation-template-item.target-type-invalid', 'error', 'navigation-template-item', 'Gecersiz hedef tipi (INTERNAL, EXTERNAL, ACTION)'),
 ('error.navigation-template-item.parent-not-found', 'error', 'navigation-template-item', 'Ust oge bulunamadi'),
 ('error.navigation-template-item.self-parent', 'error', 'navigation-template-item', 'Bir oge kendi kendisinin ust ogesi olamaz'),
-('error.navigation-template-item.has-children', 'error', 'navigation-template-item', 'Oge silinemez, alt ogeleri mevcut')
+('error.navigation-template-item.has-children', 'error', 'navigation-template-item', 'Oge silinemez, alt ogeleri mevcut'),
+
+-- Tenant Navigation Errors
+('error.tenant-navigation.not-found', 'error', 'tenant-navigation', 'Navigasyon ogesi bulunamadi'),
+('error.tenant-navigation.already-initialized', 'error', 'tenant-navigation', 'Tenant navigasyonu zaten mevcut'),
+('error.tenant-navigation.is-locked', 'error', 'tenant-navigation', 'Kilitli oge silinemez'),
+('error.tenant-navigation.has-children', 'error', 'tenant-navigation', 'Oge silinemez, alt ogeleri mevcut'),
+('error.tenant-navigation.parent-not-found', 'error', 'tenant-navigation', 'Ust oge bulunamadi'),
+('error.tenant-navigation.self-parent', 'error', 'tenant-navigation', 'Bir oge kendi kendisinin ust ogesi olamaz'),
+('error.tenant-navigation.readonly-field-update', 'error', 'tenant-navigation', 'Salt okunur alan guncellenemez'),
+('error.tenant-navigation.invalid-item-ids', 'error', 'tenant-navigation', 'Gecersiz oge ID listesi'),
+
+-- Tenant Theme Errors
+('error.tenant-theme.not-found', 'error', 'tenant-theme', 'Tenant tema yapilandirmasi bulunamadi'),
+('error.tenant-theme.no-active-theme', 'error', 'tenant-theme', 'Aktif tema bulunamadi'),
+
+-- Tenant Layout Errors
+('error.tenant-layout.not-found', 'error', 'tenant-layout', 'Layout bulunamadi'),
+('error.tenant-layout.no-filter', 'error', 'tenant-layout', 'En az bir filtre parametresi gerekli')
 
 ON CONFLICT DO NOTHING;

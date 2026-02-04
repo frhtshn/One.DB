@@ -345,6 +345,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/uikit/navigation_template_create.sql
 \i core/functions/catalog/uikit/navigation_template_update.sql
 \i core/functions/catalog/uikit/navigation_template_delete.sql
+\i core/functions/catalog/uikit/navigation_template_lookup.sql
 
 -- Navigation Template Items
 \i core/functions/catalog/uikit/navigation_template_item_list.sql
@@ -459,7 +460,32 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/presentation/backoffice/structure/menu_structure.sql
 
 -- Presentation Functions (Frontend)
--- TODO: tenant_layouts, tenant_themes, tenant_navigation functions
+-- Management (Platform Admin + CompanyAdmin + TenantAdmin with IDOR)
+-- Tenant Navigation
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_init_from_template.sql
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_list.sql
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_get.sql
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_create.sql
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_update.sql
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_delete.sql
+\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_reorder.sql
+
+-- Tenant Themes
+\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_list.sql
+\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_get.sql
+\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_upsert.sql
+\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_activate.sql
+
+-- Tenant Layouts
+\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_list.sql
+\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_get.sql
+\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_upsert.sql
+\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_delete.sql
+
+-- Consumer (Frontend App - Read Only)
+\i core/functions/presentation/frontend/consumer/get_navigation.sql
+\i core/functions/presentation/frontend/consumer/get_active_theme.sql
+\i core/functions/presentation/frontend/consumer/get_layout.sql
 
 -- Outbox Functions
 \i core/functions/outbox/outbox_create.sql

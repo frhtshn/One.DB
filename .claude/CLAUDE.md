@@ -218,6 +218,7 @@ Nucleo.DB/
 | `catalog.provider_type_lookup(p_caller_id)` | SuperAdmin | Provider tipi listesi |
 | `catalog.provider_lookup(p_caller_id, p_type_id?)` | SuperAdmin | Provider listesi |
 | `catalog.jurisdiction_lookup(p_caller_id)` | Platform Admin | Jurisdiction listesi |
+| `catalog.navigation_template_lookup(p_caller_id)` | Platform Admin | Navigasyon şablonu listesi |
 | `catalog.theme_lookup(p_caller_id)` | SuperAdmin | Tema listesi |
 | `catalog.payment_method_lookup(p_caller_id, p_provider_id?)` | SuperAdmin | Ödeme yöntemi listesi |
 
