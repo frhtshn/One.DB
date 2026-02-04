@@ -10,7 +10,6 @@
 --   Sayfa render edilirken widget'ları yerleştirmek için.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.get_layout(BIGINT, VARCHAR);
 DROP FUNCTION IF EXISTS presentation.get_layout(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION presentation.get_layout(
