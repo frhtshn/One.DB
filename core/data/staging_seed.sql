@@ -513,6 +513,25 @@ SELECT t.id, 'Database', 'connection_tenant_report',
     'Tenant report database connection settings (replica enabled for heavy queries)'
 FROM core.tenants t;
 
+-- Password Policy Ayarları
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Security', 'password_expiry_days',
+    '30'::jsonb,
+    'Player password expiry period in days (0 = never expires)'
+FROM core.tenants t;
+
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Security', 'password_history_count',
+    '3'::jsonb,
+    'Number of previous passwords to check for reuse prevention'
+FROM core.tenants t;
+
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Security', 'password_min_length',
+    '8'::jsonb,
+    'Minimum password length requirement'
+FROM core.tenants t;
+
 -- ================================================================
 -- 12. MENU GROUPS
 -- ================================================================

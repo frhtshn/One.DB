@@ -18,6 +18,7 @@ CREATE TABLE auth.player_credentials (
     lockout_enabled boolean NOT NULL DEFAULT false,  -- Hesap kilitli mi?
     lockout_end_at timestamp without time zone,   -- Kilit bitiş zamanı
     last_password_change_at timestamp without time zone, -- Son şifre değişikliği
+    require_password_change boolean NOT NULL DEFAULT false, -- Zorunlu şifre değişikliği gerekiyor mu?
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now()
 );
