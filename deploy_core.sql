@@ -415,48 +415,51 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/policy/company_password_policy_get.sql
 \i core/functions/security/policy/company_password_policy_upsert.sql
 
--- Presentation Functions
+-- Presentation Functions (Backoffice)
 -- Menu Groups
-\i core/functions/presentation/menu_groups/menu_group_list.sql
-\i core/functions/presentation/menu_groups/menu_group_get.sql
-\i core/functions/presentation/menu_groups/menu_group_create.sql
-\i core/functions/presentation/menu_groups/menu_group_update.sql
-\i core/functions/presentation/menu_groups/menu_group_delete.sql
+\i core/functions/presentation/backoffice/menu_groups/menu_group_list.sql
+\i core/functions/presentation/backoffice/menu_groups/menu_group_get.sql
+\i core/functions/presentation/backoffice/menu_groups/menu_group_create.sql
+\i core/functions/presentation/backoffice/menu_groups/menu_group_update.sql
+\i core/functions/presentation/backoffice/menu_groups/menu_group_delete.sql
 
 -- Menus
-\i core/functions/presentation/menus/menu_list.sql
-\i core/functions/presentation/menus/menu_get.sql
-\i core/functions/presentation/menus/menu_create.sql
-\i core/functions/presentation/menus/menu_update.sql
-\i core/functions/presentation/menus/menu_delete.sql
+\i core/functions/presentation/backoffice/menus/menu_list.sql
+\i core/functions/presentation/backoffice/menus/menu_get.sql
+\i core/functions/presentation/backoffice/menus/menu_create.sql
+\i core/functions/presentation/backoffice/menus/menu_update.sql
+\i core/functions/presentation/backoffice/menus/menu_delete.sql
 
 -- Submenus
-\i core/functions/presentation/submenus/submenu_list.sql
-\i core/functions/presentation/submenus/submenu_create.sql
-\i core/functions/presentation/submenus/submenu_update.sql
-\i core/functions/presentation/submenus/submenu_delete.sql
+\i core/functions/presentation/backoffice/submenus/submenu_list.sql
+\i core/functions/presentation/backoffice/submenus/submenu_create.sql
+\i core/functions/presentation/backoffice/submenus/submenu_update.sql
+\i core/functions/presentation/backoffice/submenus/submenu_delete.sql
 
 -- Pages
-\i core/functions/presentation/pages/page_list.sql
-\i core/functions/presentation/pages/page_get.sql
-\i core/functions/presentation/pages/page_create.sql
-\i core/functions/presentation/pages/page_update.sql
-\i core/functions/presentation/pages/page_delete.sql
+\i core/functions/presentation/backoffice/pages/page_list.sql
+\i core/functions/presentation/backoffice/pages/page_get.sql
+\i core/functions/presentation/backoffice/pages/page_create.sql
+\i core/functions/presentation/backoffice/pages/page_update.sql
+\i core/functions/presentation/backoffice/pages/page_delete.sql
 
 -- Tabs
-\i core/functions/presentation/tabs/tab_list.sql
-\i core/functions/presentation/tabs/tab_create.sql
-\i core/functions/presentation/tabs/tab_update.sql
-\i core/functions/presentation/tabs/tab_delete.sql
+\i core/functions/presentation/backoffice/tabs/tab_list.sql
+\i core/functions/presentation/backoffice/tabs/tab_create.sql
+\i core/functions/presentation/backoffice/tabs/tab_update.sql
+\i core/functions/presentation/backoffice/tabs/tab_delete.sql
 
 -- Contexts
-\i core/functions/presentation/contexts/context_list.sql
-\i core/functions/presentation/contexts/context_create.sql
-\i core/functions/presentation/contexts/context_update.sql
-\i core/functions/presentation/contexts/context_delete.sql
+\i core/functions/presentation/backoffice/contexts/context_list.sql
+\i core/functions/presentation/backoffice/contexts/context_create.sql
+\i core/functions/presentation/backoffice/contexts/context_update.sql
+\i core/functions/presentation/backoffice/contexts/context_delete.sql
 
-\i core/functions/presentation/pages/build_page_json.sql
-\i core/functions/presentation/structure/menu_structure.sql
+\i core/functions/presentation/backoffice/pages/build_page_json.sql
+\i core/functions/presentation/backoffice/structure/menu_structure.sql
+
+-- Presentation Functions (Frontend)
+-- TODO: tenant_layouts, tenant_themes, tenant_navigation functions
 
 -- Outbox Functions
 \i core/functions/outbox/outbox_create.sql
