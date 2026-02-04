@@ -226,6 +226,51 @@ Core veritabanı için 3 farklı deployment senaryosu bulunur:
 
 ## Tenant Template Example
 
+Aynı sunucuda template'den yeni tenant DB oluşturma:
+
 ```sql
-CREATE DATABASE tenant_ferhatbet WITH TEMPLATE tenant;
+CREATE DATABASE tenant_1 WITH TEMPLATE tenant;
+```
+
+---
+
+## Cross-Server Tenant Migration (pg_dump / pg_restore)
+
+Farklı sunucuya tenant DB kopyalama (template aynı sunucuda çalışmadığında):
+
+### 1. Kaynak Sunucudan Dump Al
+
+```bash
+# Custom format (önerilen - sıkıştırılmış, paralel restore destekli)
+pg_dump -h SOURCE_HOST -p 5433 -U postgres -Fc tenant > tenant_template.dump
+
+# Veya plain SQL format
+pg_dump -h SOURCE_HOST -p 5433 -U postgres tenant > tenant_template.sql
+```
+
+### 2. Hedef Sunucuda DB Oluştur ve Restore Et
+
+```bash
+# Yeni DB oluştur
+createdb -h TARGET_HOST -p 5433 -U postgres tenant_1
+
+# Custom format restore
+pg_restore -h TARGET_HOST -p 5433 -U postgres -d tenant_1 tenant_template.dump
+
+# Veya plain SQL restore
+psql -h TARGET_HOST -p 5433 -U postgres -d tenant_1 -f tenant_template.sql
+```
+
+### 3. Tek Komutla Pipe (Aynı anda dump + restore)
+
+```bash
+pg_dump -h SOURCE_HOST -p 5433 -U postgres tenant | \
+psql -h TARGET_HOST -p 5433 -U postgres tenant_1
+```
+
+### Paralel Restore (Büyük DB'ler için)
+
+```bash
+# 4 paralel job ile hızlı restore
+pg_restore -h TARGET_HOST -p 5433 -U postgres -d tenant_1 -j 4 tenant_template.dump
 ```
