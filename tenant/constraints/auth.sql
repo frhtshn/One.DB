@@ -22,3 +22,8 @@ ALTER TABLE auth.player_classification
     ADD CONSTRAINT fk_player_classification_category
     FOREIGN KEY (player_category_id) REFERENCES auth.player_categories(id) ON DELETE SET NULL;
 
+-- player_password_history -> players
+ALTER TABLE auth.player_password_history
+    ADD CONSTRAINT fk_player_password_history_player
+    FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+

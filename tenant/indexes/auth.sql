@@ -25,3 +25,6 @@ CREATE INDEX idx_player_classification_category ON auth.player_classification US
 CREATE INDEX idx_player_classification_group ON auth.player_classification USING btree(player_group_id) WHERE player_group_id IS NOT NULL;
 CREATE UNIQUE INDEX idx_player_classification_unique ON auth.player_classification USING btree(player_id, player_category_id, player_group_id);
 
+-- player_password_history (son şifreleri hızlı çekmek için)
+CREATE INDEX idx_player_password_history_lookup ON auth.player_password_history USING btree(player_id, changed_at DESC);
+

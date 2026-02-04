@@ -124,6 +124,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Identity (Kullanıcı kimliği)
 \i core/tables/security/identity/users.sql
 \i core/tables/security/identity/user_sessions.sql
+\i core/tables/security/identity/user_password_history.sql
+\i core/tables/security/identity/password_policy.sql
 
 -- RBAC (Rol ve Yetki Yönetimi)
 \i core/tables/security/rbac/roles.sql

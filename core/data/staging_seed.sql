@@ -33,6 +33,8 @@ TRUNCATE TABLE presentation.menus RESTART IDENTITY CASCADE;
 TRUNCATE TABLE presentation.menu_groups RESTART IDENTITY CASCADE;
 
 -- Security
+TRUNCATE TABLE security.user_password_history RESTART IDENTITY CASCADE;
+TRUNCATE TABLE security.password_policy RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_allowed_tenants RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.users RESTART IDENTITY CASCADE;
@@ -72,7 +74,13 @@ INSERT INTO core.companies (id, company_code, company_name, status, country_code
 SELECT setval('core.companies_id_seq', (SELECT MAX(id) FROM core.companies) + 1);
 
 -- ================================================================
--- 3. ROLES
+-- 3. PASSWORD POLICY (Platform geneli)
+-- ================================================================
+INSERT INTO security.password_policy (id, expiry_days, history_count)
+VALUES (1, 30, 3);
+
+-- ================================================================
+-- 4. ROLES
 -- ================================================================
 -- Hierarchy: superadmin > admin > companyadmin > tenantadmin > moderator > editor > operator > user
 

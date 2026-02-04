@@ -15,6 +15,8 @@ CREATE TABLE security.users (
     email infra.citext NOT NULL,                           -- E-posta adresi (Case-Insensitive)
     username infra.citext NOT NULL,                        -- Kullanıcı adı (Case-Insensitive)
     password VARCHAR(255) NOT NULL,                        -- Hash'lenmiş şifre
+    password_changed_at TIMESTAMPTZ,                       -- Son şifre değişiklik zamanı
+    require_password_change BOOLEAN NOT NULL DEFAULT FALSE, -- Zorunlu şifre değişikliği gerekiyor mu?
     status SMALLINT NOT NULL DEFAULT 1,                    -- Durum: 0=Pasif, 1=Aktif, 2=Askıda
     is_locked BOOLEAN NOT NULL DEFAULT FALSE,              -- Hesap kilitli mi?
     locked_until TIMESTAMPTZ,                              -- Kilitlenme bitiş zamanı

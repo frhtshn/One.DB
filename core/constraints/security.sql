@@ -79,3 +79,19 @@ ALTER TABLE security.user_allowed_tenants
 ALTER TABLE security.user_allowed_tenants
     ADD CONSTRAINT fk_user_allowed_tenants_created_by
     FOREIGN KEY (created_by) REFERENCES security.users(id);
+
+-- user_password_history -> users
+ALTER TABLE security.user_password_history
+    ADD CONSTRAINT fk_user_password_history_user
+    FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE;
+
+-- password_policy -> updated_by (self-reference to users)
+ALTER TABLE security.password_policy
+    ADD CONSTRAINT fk_password_policy_updated_by
+    FOREIGN KEY (updated_by) REFERENCES security.users(id);
+
+-- password_policy check constraints
+ALTER TABLE security.password_policy
+    ADD CONSTRAINT chk_password_policy_single_row CHECK (id = 1),
+    ADD CONSTRAINT chk_password_policy_expiry CHECK (expiry_days >= 0),
+    ADD CONSTRAINT chk_password_policy_history CHECK (history_count >= 0 AND history_count <= 10);
