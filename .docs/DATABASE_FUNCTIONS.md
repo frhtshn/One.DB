@@ -308,3 +308,21 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`error_list(p_tenant_id BIGINT DEFAULT NULL, p_error_code TEXT DEFAULT NULL, p_from_date TIMESTAMPTZ DEFAULT NULL, p_to_date TIMESTAMPTZ DEFAULT NULL, p_limit INT DEFAULT 100)`**: Get recent errors with filtering
 - **`error_log(p_error_code TEXT, p_error_message TEXT, p_exception_type TEXT DEFAULT NULL, p_http_status_code INT DEFAULT 500, p_is_retryable BOOLEAN DEFAULT FALSE, p_tenant_id BIGINT DEFAULT NULL, p_user_id TEXT DEFAULT NULL, p_correlation_id TEXT DEFAULT NULL, p_request_path TEXT DEFAULT NULL, p_request_method TEXT DEFAULT NULL, p_resource_type TEXT DEFAULT NULL, p_resource_key TEXT DEFAULT NULL, p_error_metadata TEXT DEFAULT NULL, p_stack_trace TEXT DEFAULT NULL, p_cluster_name TEXT DEFAULT NULL, p_occurred_at TIMESTAMPTZ DEFAULT NOW())`**: Error log.
 - **`error_stats(p_tenant_id BIGINT DEFAULT NULL, p_hours INT DEFAULT 24)`**: Get error statistics
+
+## Tenant Database
+
+> **Note:** Tenant database functions do NOT perform IDOR (access control) checks.
+> Authorization is handled in Core DB via `user_assert_access_tenant(caller_id, tenant_id)` before calling tenant functions.
+> This follows the cross-database security pattern: **Core DB (auth) → Tenant DB (business logic)**.
+
+### Content Schema - Backoffice Functions
+
+- **`slide_list(p_page INTEGER DEFAULT 1, p_page_size INTEGER DEFAULT 20, p_placement_id INTEGER DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL, p_search TEXT DEFAULT NULL)`**: Paginated slide list with filtering. Returns items and total count.
+- **`slide_get(p_id INTEGER)`**: Get slide details with translations and images.
+- **`slide_create(p_placement_id INTEGER, p_category_id INTEGER DEFAULT NULL, p_code VARCHAR(50) DEFAULT NULL, p_sort_order INTEGER DEFAULT 0, p_priority INTEGER DEFAULT 0, p_link_url VARCHAR(500) DEFAULT NULL, p_link_target VARCHAR(20) DEFAULT '_self', p_link_type VARCHAR(20) DEFAULT 'url', p_link_reference VARCHAR(100) DEFAULT NULL, p_start_date TIMESTAMP DEFAULT NULL, p_end_date TIMESTAMP DEFAULT NULL, p_segment_ids INTEGER[] DEFAULT NULL, p_country_codes CHAR(2)[] DEFAULT NULL, p_excluded_country_codes CHAR(2)[] DEFAULT NULL, p_display_duration INTEGER DEFAULT 5000, p_animation_type VARCHAR(30) DEFAULT 'fade', p_is_active BOOLEAN DEFAULT TRUE, p_operator_id INTEGER DEFAULT NULL)`**: Create a new slide. Returns the new slide ID.
+- **`slide_update(p_id INTEGER, ...)`**: Update slide with partial update support (NULL = no change).
+- **`slide_delete(p_id INTEGER, p_operator_id INTEGER DEFAULT NULL)`**: Soft delete a slide.
+
+### Content Schema - Frontend Functions
+
+- **`get_active_slides(p_placement_code VARCHAR(50), p_language CHAR(2) DEFAULT 'en', p_country_code CHAR(2) DEFAULT NULL, p_segment_ids INTEGER[] DEFAULT NULL)`**: Get active slides for frontend rendering. Applies date, country, and segment filtering. No auth required (public content).

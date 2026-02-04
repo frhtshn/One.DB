@@ -143,8 +143,19 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/views/v_daily_base_rates.sql
 \i tenant/views/v_cross_rates.sql
 
--- FUNCTIONS
--- \i tenant/functions/your_function.sql
+-- =============================================================================
+-- FUNCTIONS - Backoffice (Auth checked in Core DB)
+-- =============================================================================
+\i tenant/functions/backoffice/content/slides/slide_list.sql
+\i tenant/functions/backoffice/content/slides/slide_get.sql
+\i tenant/functions/backoffice/content/slides/slide_create.sql
+\i tenant/functions/backoffice/content/slides/slide_update.sql
+\i tenant/functions/backoffice/content/slides/slide_delete.sql
+
+-- =============================================================================
+-- FUNCTIONS - Frontend (Public content, no auth required)
+-- =============================================================================
+\i tenant/functions/frontend/content/slides/get_active_slides.sql
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created
