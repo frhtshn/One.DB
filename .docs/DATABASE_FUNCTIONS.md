@@ -190,6 +190,11 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`tenant_theme_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Lists all available themes with tenant configuration status.
 - **`tenant_theme_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_theme_id INT, p_config JSONB DEFAULT '{}', p_custom_css TEXT DEFAULT NULL, p_set_active BOOLEAN DEFAULT FALSE)`**: Creates or updates tenant theme configuration.
 
+#### Consumer Functions (Frontend App)
+- **`get_active_theme(p_tenant_id BIGINT)`**: Returns active theme with merged config for frontend rendering.
+- **`get_layout(p_tenant_id BIGINT, p_layout_name VARCHAR(50) DEFAULT NULL, p_page_id BIGINT DEFAULT NULL)`**: Returns active layout structure for frontend rendering.
+- **`get_navigation(p_tenant_id BIGINT, p_menu_location VARCHAR(50) DEFAULT NULL)`**: Returns visible navigation items as nested tree structure for frontend rendering.
+
 ### Security Schema
 
 - **`is_system_role(p_role_code VARCHAR)`**: Is system role.
