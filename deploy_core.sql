@@ -376,6 +376,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/users/user_login_failed_increment.sql
 \i core/functions/security/users/user_login_failed_reset.sql
 \i core/functions/security/users/user_unlock.sql
+\i core/functions/security/users/user_get_password_hash.sql
+\i core/functions/security/users/user_password_history_list.sql
 
 -- Permission Functions
 \i core/functions/security/permissions/permission_exists.sql

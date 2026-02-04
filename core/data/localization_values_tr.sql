@@ -15,13 +15,18 @@ JOIN (VALUES
     ('validation.field.min-length', '{0} alanı en az {1} karakter olmalıdır'),
     ('validation.field.length', '{0} alanı {1} ile {2} karakter arasında olmalıdır'),
     ('validation.field.exact-length', '{0} alanı tam olarak {1} karakter olmalıdır'),
+    ('validation.field.invalid-value', 'Geçersiz değer'),
+    ('validation.field.only-one-allowed', 'Sadece bir değere izin veriliyor'),
     ('validation.format.email-invalid', '{0} geçerli bir e-posta adresi değil'),
     ('validation.format.url-invalid', '{0} geçerli bir URL değil'),
     ('validation.format.invalid', '{0} geçerli bir format değil'),
     ('validation.format.timezone-invalid', '{0} geçerli bir timezone değil'),
+    ('validation.format.target-type-invalid', 'Geçersiz hedef tipi'),
+    ('validation.format.environment-invalid', 'Geçersiz ortam değeri'),
     ('validation.range.greater-than-zero', '{0} sıfırdan büyük olmalıdır'),
     ('validation.range.between', '{0} değeri {1} ile {2} arasında olmalıdır'),
     ('validation.range.min', '{0} en az {1} olmalıdır'),
+    ('validation.range.cooling-off-invalid', 'Cooling off minimum değeri maksimum değerden büyük olamaz'),
     ('validation.filter.sort-field-invalid', '{0} şu değerlerden biri olmalıdır: {1}'),
     ('validation.filter.sort-order-invalid', '{0} ''asc'' veya ''desc'' olmalıdır'),
     ('validation.request.invalid', 'Geçersiz istek'),
@@ -32,6 +37,9 @@ JOIN (VALUES
     ('validation.password.require-lowercase', 'Şifre en az bir küçük harf içermeli'),
     ('validation.password.require-digit', 'Şifre en az bir rakam içermeli'),
     ('validation.password.require-special', 'Şifre en az bir özel karakter içermeli'),
+    ('validation.password.mismatch', 'Şifreler eşleşmiyor'),
+    ('validation.kyc.level-invalid', 'Geçersiz KYC seviyesi'),
+    ('validation.kyc.deadline-action-invalid', 'Geçersiz deadline action değeri'),
 
     -- Error Messages - Logs
     ('error.logs.errornotfound', 'Error log bulunamadı'),
@@ -123,6 +131,7 @@ JOIN (VALUES
     ('error.auth.token.refresh-invalid', 'Geçersiz veya süresi dolmuş refresh token'),
     ('error.auth.token.refresh-required', 'Refresh token zorunludur'),
     ('error.auth.token.refresh-failed', 'Token yenileme başarısız'),
+    ('error.auth.token.refresh-in-progress', 'Yenileme işlemi zaten devam ediyor'),
 
     -- Error Messages - Auth Login
     ('error.auth.login.throttled', 'Çok fazla giriş denemesi. Lütfen {0} saniye bekleyin.'),
@@ -153,11 +162,13 @@ JOIN (VALUES
     ('success.auth.logout-all', 'Tüm oturumlar sonlandırıldı'),
     ('success.auth.session-revoked', 'Oturum sonlandırıldı'),
     ('success.auth.unlocked', 'Hesap kilidi açıldı'),
+    ('success.auth.password-changed', 'Şifre başarıyla değiştirildi'),
 
     -- Success Messages - Presentation
     ('success.presentation.cache-invalidated', 'Presentation cache temizlendi'),
 
     -- Error Messages - Permission
+    ('error.permission.escalation', 'Yetki yükseltme girişimi engellendi'),
     ('error.permission.not-found', 'Yetki bulunamadı'),
     ('error.permission.grant.failed', 'Yetki verme başarısız'),
     ('error.permission.deny.failed', 'Yetki reddetme başarısız'),

@@ -17,13 +17,18 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('validation.field.min-length', 'validation', 'field', '{0} alani min uzunluk hatasi. Args: {1}=minLength'),
 ('validation.field.length', 'validation', 'field', '{0} alani uzunluk araligi. Args: {1}=min, {2}=max'),
 ('validation.field.exact-length', 'validation', 'field', '{0} alani tam uzunluk. Args: {1}=length'),
+('validation.field.invalid-value', 'validation', 'field', 'Gecersiz deger'),
+('validation.field.only-one-allowed', 'validation', 'field', 'Sadece bir deger izin veriliyor'),
 ('validation.format.email-invalid', 'validation', 'format', 'Gecersiz email formati'),
 ('validation.format.url-invalid', 'validation', 'format', 'Gecersiz URL formati'),
 ('validation.format.invalid', 'validation', 'format', 'Gecersiz format'),
 ('validation.format.timezone-invalid', 'validation', 'format', 'Gecersiz timezone'),
+('validation.format.target-type-invalid', 'validation', 'format', 'Gecersiz hedef tipi'),
+('validation.format.environment-invalid', 'validation', 'format', 'Gecersiz ortam degeri'),
 ('validation.range.greater-than-zero', 'validation', 'range', 'Sifirdan buyuk olmali'),
 ('validation.range.between', 'validation', 'range', 'Aralik kontrolu. Args: {1}=min, {2}=max'),
 ('validation.range.min', 'validation', 'range', 'Minimum deger kontrolu. Args: {1}=min'),
+('validation.range.cooling-off-invalid', 'validation', 'range', 'Cooling off min degeri max degerden buyuk olamaz'),
 ('validation.filter.sort-field-invalid', 'validation', 'filter', 'Gecersiz siralama alani. Args: {1}=allowedFields'),
 ('validation.filter.sort-order-invalid', 'validation', 'filter', 'Gecersiz siralama yonu'),
 ('validation.request.invalid', 'validation', 'request', 'Gecersiz istek'),
@@ -36,6 +41,11 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('validation.password.require-lowercase', 'validation', 'password', 'Kucuk harf gerekli'),
 ('validation.password.require-digit', 'validation', 'password', 'Rakam gerekli'),
 ('validation.password.require-special', 'validation', 'password', 'Ozel karakter gerekli'),
+('validation.password.mismatch', 'validation', 'password', 'Sifre tekrari uyusmuyor'),
+
+-- KYC Validation
+('validation.kyc.level-invalid', 'validation', 'kyc', 'Gecersiz KYC seviyesi'),
+('validation.kyc.deadline-action-invalid', 'validation', 'kyc', 'Gecersiz deadline action degeri'),
 
 -- ============================================================================
 -- ERROR MESSAGES (Exception siniflarinda kullanilan)
@@ -138,6 +148,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.auth.token.refresh-invalid', 'error', 'auth', 'Gecersiz veya suresi dolmus refresh token'),
 ('error.auth.token.refresh-required', 'error', 'auth', 'Refresh token zorunlu'),
 ('error.auth.token.refresh-failed', 'error', 'auth', 'Token yenileme basarisiz'),
+('error.auth.token.refresh-in-progress', 'error', 'auth', 'Refresh islemi zaten devam ediyor'),
 
 -- Auth - Login Exceptions
 ('error.auth.login.throttled', 'error', 'auth', 'Cok fazla giris denemesi. Args: {0}=saniye'),
@@ -168,11 +179,13 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('success.auth.logout-all', 'success', 'auth', 'Tum oturumlar sonlandirildi mesaji'),
 ('success.auth.session-revoked', 'success', 'auth', 'Oturum sonlandirildi mesaji'),
 ('success.auth.unlocked', 'success', 'auth', 'Hesap kilidi acildi'),
+('success.auth.password-changed', 'success', 'auth', 'Sifre degistirildi mesaji'),
 
 -- Presentation Success Messages
 ('success.presentation.cache-invalidated', 'success', 'presentation', 'Presentation cache temizlendi'),
 
 -- Permission Exceptions
+('error.permission.escalation', 'error', 'auth', 'Yetki yukseltme girisimi engellendi'),
 ('error.permission.not-found', 'error', 'permission', 'Yetki bulunamadi'),
 ('error.permission.grant.failed', 'error', 'permission', 'Yetki verme basarisiz'),
 ('error.permission.deny.failed', 'error', 'permission', 'Yetki reddetme basarisiz'),

@@ -15,13 +15,18 @@ JOIN (VALUES
     ('validation.field.min-length', '{0} must be at least {1} characters'),
     ('validation.field.length', '{0} must be between {1} and {2} characters'),
     ('validation.field.exact-length', '{0} must be exactly {1} characters'),
+    ('validation.field.invalid-value', 'Invalid value'),
+    ('validation.field.only-one-allowed', 'Only one value is allowed'),
     ('validation.format.email-invalid', '{0} is not a valid email address'),
     ('validation.format.url-invalid', '{0} is not a valid URL'),
     ('validation.format.invalid', '{0} has invalid format'),
     ('validation.format.timezone-invalid', '{0} is not a valid timezone'),
+    ('validation.format.target-type-invalid', 'Invalid target type'),
+    ('validation.format.environment-invalid', 'Invalid environment value'),
     ('validation.range.greater-than-zero', '{0} must be greater than zero'),
     ('validation.range.between', '{0} must be between {1} and {2}'),
     ('validation.range.min', '{0} must be at least {1}'),
+    ('validation.range.cooling-off-invalid', 'Cooling off minimum cannot be greater than maximum'),
     ('validation.filter.sort-field-invalid', '{0} must be one of: {1}'),
     ('validation.filter.sort-order-invalid', '{0} must be ''asc'' or ''desc'''),
     ('validation.request.invalid', 'Invalid request'),
@@ -32,6 +37,9 @@ JOIN (VALUES
     ('validation.password.require-lowercase', 'Password must contain at least one lowercase letter'),
     ('validation.password.require-digit', 'Password must contain at least one digit'),
     ('validation.password.require-special', 'Password must contain at least one special character'),
+    ('validation.password.mismatch', 'Passwords do not match'),
+    ('validation.kyc.level-invalid', 'Invalid KYC level'),
+    ('validation.kyc.deadline-action-invalid', 'Invalid deadline action value'),
 
     -- Error Messages - Logs
     ('error.logs.errornotfound', 'Error log not found'),
@@ -126,6 +134,7 @@ JOIN (VALUES
     ('error.auth.token.refresh-invalid', 'Invalid or expired refresh token'),
     ('error.auth.token.refresh-required', 'Refresh token is required'),
     ('error.auth.token.refresh-failed', 'Token refresh failed'),
+    ('error.auth.token.refresh-in-progress', 'Refresh operation already in progress'),
 
     -- Error Messages - Auth Login
     ('error.auth.login.throttled', 'Too many login attempts. Please wait {0} seconds.'),
@@ -156,11 +165,13 @@ JOIN (VALUES
     ('success.auth.logout-all', 'All sessions terminated'),
     ('success.auth.session-revoked', 'Session terminated'),
     ('success.auth.unlocked', 'Account unlocked'),
+    ('success.auth.password-changed', 'Password changed successfully'),
 
     -- Success Messages - Presentation
     ('success.presentation.cache-invalidated', 'Presentation cache invalidated'),
 
     -- Error Messages - Permission
+    ('error.permission.escalation', 'Permission escalation attempt blocked'),
     ('error.permission.not-found', 'Permission not found'),
     ('error.permission.grant.failed', 'Failed to grant permission'),
     ('error.permission.deny.failed', 'Failed to deny permission'),
