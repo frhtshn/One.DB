@@ -10,6 +10,12 @@ DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_update(
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR,
     JSONB, JSONB, INT, INT, VARCHAR, BOOLEAN
 );
+DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_update(
+    BIGINT, INT, VARCHAR, INT,
+    DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR, INT, BOOLEAN,
+    DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR,
+    TEXT, TEXT, INT, INT, VARCHAR, BOOLEAN
+);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_level_requirement_update(
     p_caller_id BIGINT,
@@ -34,8 +40,8 @@ CREATE OR REPLACE FUNCTION catalog.kyc_level_requirement_update(
     p_max_monthly_withdrawal DECIMAL(18,2) DEFAULT NULL,
     p_limit_currency CHAR(3) DEFAULT NULL,
     -- Gereksinimler
-    p_required_documents JSONB DEFAULT NULL,
-    p_required_verifications JSONB DEFAULT NULL,
+    p_required_documents TEXT DEFAULT NULL,
+    p_required_verifications TEXT DEFAULT NULL,
     p_verification_deadline_hours INT DEFAULT NULL,
     p_grace_period_hours INT DEFAULT NULL,
     p_on_deadline_action VARCHAR(30) DEFAULT NULL,
@@ -119,8 +125,8 @@ BEGIN
         max_monthly_deposit = COALESCE(p_max_monthly_deposit, max_monthly_deposit),
         max_monthly_withdrawal = COALESCE(p_max_monthly_withdrawal, max_monthly_withdrawal),
         limit_currency = COALESCE(p_limit_currency, limit_currency),
-        required_documents = COALESCE(p_required_documents, required_documents),
-        required_verifications = COALESCE(p_required_verifications, required_verifications),
+        required_documents = COALESCE(p_required_documents::jsonb, required_documents),
+        required_verifications = COALESCE(p_required_verifications::jsonb, required_verifications),
         verification_deadline_hours = COALESCE(p_verification_deadline_hours, verification_deadline_hours),
         grace_period_hours = COALESCE(p_grace_period_hours, grace_period_hours),
         on_deadline_action = COALESCE(p_on_deadline_action, on_deadline_action),

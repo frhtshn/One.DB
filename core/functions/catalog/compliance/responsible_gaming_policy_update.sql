@@ -15,17 +15,28 @@ DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_update(
     VARCHAR, BOOLEAN, VARCHAR,
     BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
 );
+DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_update(
+    BIGINT, INT,
+    BOOLEAN, TEXT, INT,
+    BOOLEAN, TEXT,
+    BOOLEAN, INT, BOOLEAN, INT, INT,
+    BOOLEAN, INT,
+    BOOLEAN, INT, INT, BOOLEAN,
+    BOOLEAN, INT, BOOLEAN, BOOLEAN,
+    VARCHAR, BOOLEAN, VARCHAR,
+    BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
+);
 
 CREATE OR REPLACE FUNCTION catalog.responsible_gaming_policy_update(
     p_caller_id BIGINT,
     p_id INT,
     -- Deposit limits
     p_deposit_limit_required BOOLEAN DEFAULT NULL,
-    p_deposit_limit_options JSONB DEFAULT NULL,
+    p_deposit_limit_options TEXT DEFAULT NULL,
     p_deposit_limit_max_increase_wait_hours INT DEFAULT NULL,
     -- Loss limits
     p_loss_limit_required BOOLEAN DEFAULT NULL,
-    p_loss_limit_options JSONB DEFAULT NULL,
+    p_loss_limit_options TEXT DEFAULT NULL,
     -- Session limits
     p_session_limit_required BOOLEAN DEFAULT NULL,
     p_session_limit_max_hours INT DEFAULT NULL,
@@ -86,10 +97,10 @@ BEGIN
     -- Güncelle
     UPDATE catalog.responsible_gaming_policies SET
         deposit_limit_required = COALESCE(p_deposit_limit_required, deposit_limit_required),
-        deposit_limit_options = COALESCE(p_deposit_limit_options, deposit_limit_options),
+        deposit_limit_options = COALESCE(p_deposit_limit_options::jsonb, deposit_limit_options),
         deposit_limit_max_increase_wait_hours = COALESCE(p_deposit_limit_max_increase_wait_hours, deposit_limit_max_increase_wait_hours),
         loss_limit_required = COALESCE(p_loss_limit_required, loss_limit_required),
-        loss_limit_options = COALESCE(p_loss_limit_options, loss_limit_options),
+        loss_limit_options = COALESCE(p_loss_limit_options::jsonb, loss_limit_options),
         session_limit_required = COALESCE(p_session_limit_required, session_limit_required),
         session_limit_max_hours = COALESCE(p_session_limit_max_hours, session_limit_max_hours),
         session_break_required = COALESCE(p_session_break_required, session_break_required),

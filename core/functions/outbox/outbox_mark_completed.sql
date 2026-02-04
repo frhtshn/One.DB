@@ -2,7 +2,7 @@
 -- OUTBOX_MARK_COMPLETED: Tek mesajı tamamlandı olarak işaretler
 -- ================================================================
 
-DROP FUNCTION IF EXISTS outbox.outbox_mark_completed CASCADE;
+DROP FUNCTION IF EXISTS outbox.outbox_mark_completed(uuid);
 CREATE OR REPLACE FUNCTION outbox.outbox_mark_completed(
     p_id UUID
 )

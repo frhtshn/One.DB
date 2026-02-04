@@ -7,12 +7,15 @@
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_create(
     BIGINT, INT, VARCHAR, JSONB, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
 );
+DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_create(
+    BIGINT, INT, VARCHAR, TEXT, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
+);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_document_requirement_create(
     p_caller_id BIGINT,
     p_jurisdiction_id INT,
     p_document_type VARCHAR(30),
-    p_accepted_subtypes JSONB DEFAULT NULL,
+    p_accepted_subtypes TEXT DEFAULT NULL,
     p_is_required BOOLEAN DEFAULT TRUE,
     p_required_for VARCHAR(30) DEFAULT 'all',
     p_max_document_age_days INT DEFAULT NULL,
@@ -91,7 +94,7 @@ BEGIN
     VALUES (
         p_jurisdiction_id,
         p_document_type,
-        p_accepted_subtypes,
+        p_accepted_subtypes::jsonb,
         COALESCE(p_is_required, TRUE),
         COALESCE(p_required_for, 'all'),
         p_max_document_age_days,

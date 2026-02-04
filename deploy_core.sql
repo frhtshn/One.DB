@@ -387,6 +387,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/permissions/permission_check.sql
 \i core/functions/security/permissions/user_permission_list.sql
 \i core/functions/security/permissions/user_permission_override_list.sql
+\i core/functions/security/permissions/user_permission_override_load.sql
 \i core/functions/security/permissions/user_permission_set.sql
 \i core/functions/security/permissions/user_permission_set_with_outbox.sql
 \i core/functions/security/permissions/user_permission_remove.sql

@@ -5,6 +5,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.widget_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.widget_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.widget_update(
     p_caller_id BIGINT,
@@ -14,7 +15,7 @@ CREATE OR REPLACE FUNCTION catalog.widget_update(
     p_description TEXT DEFAULT NULL,
     p_category VARCHAR(30) DEFAULT NULL,
     p_component_name VARCHAR(100) DEFAULT NULL,
-    p_default_props JSONB DEFAULT NULL,
+    p_default_props TEXT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
 RETURNS VOID
@@ -86,7 +87,7 @@ BEGIN
         description = COALESCE(TRIM(p_description), description),
         category = COALESCE(p_category, category),
         component_name = COALESCE(TRIM(p_component_name), component_name),
-        default_props = COALESCE(p_default_props, default_props),
+        default_props = COALESCE(p_default_props::jsonb, default_props),
         is_active = COALESCE(p_is_active, is_active),
         updated_at = NOW()
     WHERE id = p_id;

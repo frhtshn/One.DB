@@ -6,13 +6,16 @@
 DROP FUNCTION IF EXISTS catalog.navigation_template_item_update(
     BIGINT, BIGINT, VARCHAR, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
 );
+DROP FUNCTION IF EXISTS catalog.navigation_template_item_update(
+    BIGINT, BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
+);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_item_update(
     p_caller_id BIGINT,
     p_id BIGINT,
     p_menu_location VARCHAR(50) DEFAULT NULL,
     p_translation_key VARCHAR(100) DEFAULT NULL,
-    p_default_label JSONB DEFAULT NULL,
+    p_default_label TEXT DEFAULT NULL,
     p_icon VARCHAR(50) DEFAULT NULL,
     p_target_type VARCHAR(20) DEFAULT NULL,
     p_target_url VARCHAR(255) DEFAULT NULL,
@@ -75,7 +78,7 @@ BEGIN
     UPDATE catalog.navigation_template_items SET
         menu_location = COALESCE(TRIM(p_menu_location), menu_location),
         translation_key = COALESCE(TRIM(p_translation_key), translation_key),
-        default_label = COALESCE(p_default_label, default_label),
+        default_label = COALESCE(p_default_label::jsonb, default_label),
         icon = COALESCE(TRIM(p_icon), icon),
         target_type = COALESCE(p_target_type, target_type),
         target_url = COALESCE(TRIM(p_target_url), target_url),
