@@ -10,6 +10,10 @@
 -- Güvenlik:
 --   - Kilitli caller erişemez
 --   - Silinmiş hedefin şifresi sıfırlanamaz
+-- İşlem:
+--   - Eski şifre -> user_password_history'ye kaydedilir
+--   - require_password_change = TRUE (kullanıcı giriş sonrası değiştirmeli)
+--   - password_changed_at güncellenir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_reset_password(BIGINT, BIGINT, TEXT);
@@ -34,6 +38,8 @@ DECLARE
     v_target_level INT;
     v_target_status SMALLINT;
     v_target_has_role_in_caller_tenant BOOLEAN;
+    v_old_password TEXT;
+    v_history_count INT := 3;
 BEGIN
     -- ========================================
     -- 1. KENDİNİ SIFIRLAMAZ (Admin reset)
@@ -140,10 +146,23 @@ BEGIN
     END IF;
 
     -- ========================================
-    -- 5. ŞİFREYİ GÜNCELLE
+    -- 5. ESKİ ŞİFREYİ AL VE HISTORY'YE KAYDET
+    -- ========================================
+    SELECT password INTO v_old_password
+    FROM security.users
+    WHERE id = p_user_id;
+
+    -- Eski şifreyi history'ye kaydet
+    INSERT INTO security.user_password_history (user_id, password_hash, changed_at)
+    VALUES (p_user_id, v_old_password, NOW());
+
+    -- ========================================
+    -- 6. ŞİFREYİ GÜNCELLE
     -- ========================================
     UPDATE security.users
     SET password = p_new_password,
+        password_changed_at = NOW(),
+        require_password_change = TRUE,  -- Kullanıcı giriş sonrası şifresini değiştirmeli
         updated_at = NOW(),
         updated_by = p_caller_id
     WHERE id = p_user_id;
@@ -152,6 +171,26 @@ BEGIN
     IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.concurrent-modification';
     END IF;
+
+    -- ========================================
+    -- 7. FAZLA HISTORY KAYITLARINI TEMİZLE
+    -- ========================================
+    SELECT COALESCE(pp.history_count, 3)
+    INTO v_history_count
+    FROM security.password_policy pp
+    WHERE pp.id = 1;
+
+    IF v_history_count > 0 THEN
+        DELETE FROM security.user_password_history
+        WHERE user_id = p_user_id
+          AND id NOT IN (
+              SELECT id
+              FROM security.user_password_history
+              WHERE user_id = p_user_id
+              ORDER BY changed_at DESC
+              LIMIT v_history_count
+          );
+    END IF;
 END;
 $$;
 
@@ -159,4 +198,5 @@ COMMENT ON FUNCTION security.user_reset_password(BIGINT, BIGINT, TEXT) IS
 'Resets user password with IDOR protection.
 Self-reset NOT allowed (use change_password for self).
 Access: Platform Admin (all), CompanyAdmin (own company + hierarchy), TenantAdmin (own tenants + hierarchy).
-Locked callers and deleted targets are rejected.';
+Locked callers and deleted targets are rejected.
+Old password saved to history, require_password_change set to TRUE (user must change on next login).';

@@ -225,7 +225,13 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.user.update.username-exists', 'error', 'user', 'Kullanici adi bu sirkette baska kullanicida mevcut'),
 ('error.user.delete.already-deleted', 'error', 'user', 'Kullanici zaten silinmis'),
 ('error.user.reset-password.is-deleted', 'error', 'user', 'Silinmis kullanicinin sifresi sifirlanamaz'),
+('error.user.reset-password.self-not-allowed', 'error', 'user', 'Kendi sifrenizi sifirlamak icin change-password kullanin'),
 ('error.user.restore.not-deleted', 'error', 'user', 'Kullanici silinmis degil'),
+('error.user.account-inactive', 'error', 'user', 'Hesap aktif degil'),
+('error.user.account-locked', 'error', 'user', 'Hesap kilitli'),
+('error.user.change-password.current-password-invalid', 'error', 'user', 'Mevcut sifre hatali'),
+('error.user.change-password.same-as-current', 'error', 'user', 'Yeni sifre mevcut sifre ile ayni olamaz'),
+('error.user.change-password.recently-used', 'error', 'user', 'Bu sifre yakin zamanda kullanilmis'),
 
 -- Company Exceptions
 ('error.company.not-found', 'error', 'company', 'Sirket bulunamadi veya pasif'),

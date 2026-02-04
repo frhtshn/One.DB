@@ -213,7 +213,13 @@ JOIN (VALUES
     ('error.user.update.username-exists', 'This username is in use by another user in this company'),
     ('error.user.delete.already-deleted', 'User is already deleted'),
     ('error.user.reset-password.is-deleted', 'Cannot reset password for deleted user'),
+    ('error.user.reset-password.self-not-allowed', 'Use change-password to change your own password'),
     ('error.user.restore.not-deleted', 'User is not deleted'),
+    ('error.user.account-inactive', 'Account is not active'),
+    ('error.user.account-locked', 'Account is locked'),
+    ('error.user.change-password.current-password-invalid', 'Current password is incorrect'),
+    ('error.user.change-password.same-as-current', 'New password cannot be the same as current password'),
+    ('error.user.change-password.recently-used', 'This password has been used recently'),
 
     -- Error Messages - Company
     ('error.company.not-found', 'Company not found or inactive'),

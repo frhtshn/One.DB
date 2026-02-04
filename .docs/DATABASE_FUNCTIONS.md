@@ -202,7 +202,7 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`session_revoke_all(p_user_id BIGINT, p_reason VARCHAR(200) DEFAULT 'User requested logout all', p_except_session_id VARCHAR(50) DEFAULT NULL)`**: Session revoke all.
 - **`session_save(p_session_id VARCHAR(50), p_user_id BIGINT, p_refresh_token_id VARCHAR(100), p_ip_address VARCHAR(50), p_user_agent VARCHAR(500), p_device_name VARCHAR(100), p_expires_at TIMESTAMPTZ)`**: Session save.
 - **`session_update_activity(p_session_id VARCHAR(50))`**: SESSION_UPDATE_ACTIVITY: Session son aktivite zamanÄ±nÄ± gÃ¼ncelle AÃ§Ä±klama: Refresh token kullanÄ±ldÄ±ÄŸÄ±nda Ã§aÄŸrÄ±lÄ±r.
-- **`user_authenticate(p_email VARCHAR(255))`**: User authenticate.
+- **`user_authenticate(p_email VARCHAR(255))`**: User authenticate. Returns user info with `requirePasswordChange` (true if password expired or flag set) and `passwordChangedAt`.
 - **`user_check_email_exists(p_email TEXT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check email exists.
 - **`user_check_username_exists(p_username TEXT, p_company_id BIGINT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check username exists.
 - **`user_create(p_caller_id BIGINT, p_email TEXT, p_username TEXT, p_password TEXT, p_first_name TEXT, p_last_name TEXT, p_company_id BIGINT, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL)`**: User create.

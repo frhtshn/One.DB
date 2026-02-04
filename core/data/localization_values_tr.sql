@@ -210,7 +210,13 @@ JOIN (VALUES
     ('error.user.update.username-exists', 'Bu kullanıcı adı şirkette başka bir kullanıcıda mevcut'),
     ('error.user.delete.already-deleted', 'Kullanıcı zaten silinmiş'),
     ('error.user.reset-password.is-deleted', 'Silinmiş kullanıcının şifresi sıfırlanamaz'),
+    ('error.user.reset-password.self-not-allowed', 'Kendi şifrenizi değiştirmek için change-password kullanın'),
     ('error.user.restore.not-deleted', 'Kullanıcı silinmiş değil'),
+    ('error.user.account-inactive', 'Hesap aktif değil'),
+    ('error.user.account-locked', 'Hesap kilitli'),
+    ('error.user.change-password.current-password-invalid', 'Mevcut şifre hatalı'),
+    ('error.user.change-password.same-as-current', 'Yeni şifre mevcut şifre ile aynı olamaz'),
+    ('error.user.change-password.recently-used', 'Bu şifre yakın zamanda kullanılmış'),
 
     -- Error Messages - Company
     ('error.company.not-found', 'Şirket bulunamadı veya pasif durumda'),

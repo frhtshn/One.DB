@@ -29,6 +29,8 @@ DECLARE
     v_company_roles TEXT[] := '{}';
     v_global_permissions JSONB := '[]'::jsonb;
     v_company_role_permissions TEXT[] := '{}';
+    v_password_expiry_days INT := 0;
+    v_require_password_change BOOLEAN := FALSE;
 BEGIN
     -- ================================================================
     -- 1. KULLANICI DOGRULAMA
@@ -37,6 +39,7 @@ BEGIN
         id, company_id, username, email, password,
         first_name, last_name, status, failed_login_count,
         is_locked, locked_until, last_login_at,
+        password_changed_at, require_password_change,
         language, timezone, currency
     INTO v_user
     FROM security.users
@@ -55,7 +58,21 @@ BEGIN
     END IF;
 
     -- ================================================================
-    -- 2. GLOBAL ROLLER VE SCOPE (tek sorgu - tenant_id IS NULL)
+    -- 2. SIFRE DEGISIKLIK KONTROLU
+    -- ================================================================
+    -- Password policy'den expiry_days al
+    SELECT COALESCE(expiry_days, 0) INTO v_password_expiry_days
+    FROM security.password_policy
+    WHERE id = 1;
+
+    -- Şifre değişikliği gerekli mi?
+    v_require_password_change := COALESCE(v_user.require_password_change, FALSE)
+        OR v_user.password_changed_at IS NULL
+        OR (v_password_expiry_days > 0
+            AND v_user.password_changed_at + (v_password_expiry_days || ' days')::INTERVAL < NOW());
+
+    -- ================================================================
+    -- 3. GLOBAL ROLLER VE SCOPE (tek sorgu - tenant_id IS NULL)
     -- ================================================================
     SELECT
         COALESCE(ARRAY_AGG(DISTINCT r.code) FILTER (WHERE r.is_platform_role), '{}'),
@@ -69,7 +86,7 @@ BEGIN
     v_is_company_role := array_length(v_company_roles, 1) > 0;
 
     -- ================================================================
-    -- 3. PLATFORM PERMISSION'LARI
+    -- 4. PLATFORM PERMISSION'LARI
     -- ================================================================
     IF v_is_platform_role THEN
         SELECT COALESCE(jsonb_agg(DISTINCT p.code), '[]'::jsonb)
@@ -81,14 +98,14 @@ BEGIN
     END IF;
 
     -- ================================================================
-    -- 4. ALLOWED TENANTS KONTROLU
+    -- 5. ALLOWED TENANTS KONTROLU
     -- ================================================================
     v_has_allowed_tenants := EXISTS (
         SELECT 1 FROM security.user_allowed_tenants WHERE user_id = v_user.id
     );
 
     -- ================================================================
-    -- 5. SCOPE BAZLI ISLEM
+    -- 6. SCOPE BAZLI ISLEM
     -- ================================================================
 
     IF v_user.company_id = 0 AND 'superadmin' = ANY(v_platform_roles) THEN
@@ -262,7 +279,7 @@ BEGIN
     END IF;
 
     -- ================================================================
-    -- 6. RESPONSE
+    -- 7. RESPONSE
     -- ================================================================
     RETURN jsonb_build_object(
         'user', jsonb_build_object(
@@ -275,6 +292,8 @@ BEGIN
             'lastName', v_user.last_name,
             'failedLoginCount', v_user.failed_login_count,
             'lastLoginAt', v_user.last_login_at,
+            'passwordChangedAt', v_user.password_changed_at,
+            'requirePasswordChange', v_require_password_change,
             'language', v_user.language,
             'timezone', v_user.timezone,
             'currency', v_user.currency
@@ -288,4 +307,4 @@ END;
 $$;
 
 COMMENT ON FUNCTION security.user_authenticate IS
-'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific.';
+'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific. Sifre suresi dolmussa requirePasswordChange=true doner.';
