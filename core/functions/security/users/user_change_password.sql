@@ -131,6 +131,6 @@ $$;
 COMMENT ON FUNCTION security.user_change_password(BIGINT, TEXT, TEXT) IS
 'User changes their own password.
 - Current password hash must match
-- New password cannot match current or recent N passwords (from password_policy)
+- New password cannot match current or recent N passwords (from company_password_policy)
 - Old password saved to history, excess history records cleaned up
 - Sets password_changed_at = NOW(), require_password_change = FALSE';
