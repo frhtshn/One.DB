@@ -2,23 +2,27 @@
 -- NUCLEO PLATFORM - STAGING/DEV SEED FILE
 -- ================================================================
 -- Staging ve development ortamları için test verileri.
--- Çalıştırma: psql -U postgres -d nucleo -f core/data/staging_seed.sql
+-- ================================================================
+-- ÇALIŞTIRMA:
+--   psql -f core/data/staging_seed.sql          (bu dosya)
+--   psql -f core/data/permissions_full.sql      (permissions - UPSERT)
+--   psql -f core/data/role_permissions_full.sql (role mapping - UPSERT)
+-- NOT: UPSERT kullanıldığı için sıralama esnek, ancak önerilen sıra yukarıdaki.
 -- ================================================================
 -- İÇERİK:
--- 1. TRUNCATE (tüm tablolar)
+-- 1. TRUNCATE (permissions HARİÇ tüm tablolar)
 -- 2. Companies (platform + test companies)
--- 3-5. Roles + Permissions + Role-Permission mapping
--- 6. Tenants (test tenants)
--- 7. Users (superadmin + admin + test users)
--- 8. Company Password Policy (users'dan SONRA - FK bağımlılığı)
--- 9-10. User roles (global + tenant)
--- 11. Tenant erişim izinleri
--- 12. Tenant ayarları (currencies, languages, settings)
--- 13-17. Menu yapısı (groups + menus + submenus + pages + contexts)
--- 18. Doğrulama
--- 19. Jurisdictions & KYC Compliance
--- ================================================================
--- NOT: Menu localization için seed_menu_localization.sql'i ÖNCE çalıştırın!
+-- 3. Roles
+-- 4. Tenants (test tenants)
+-- 5. Users (superadmin + admin + test users)
+-- 6. Company Password Policy
+-- 7-8. User roles (global + tenant)
+-- 9. Tenant erişim izinleri
+-- 10. Tenant ayarları (currencies, languages, settings)
+-- 11-15. Menu yapısı (groups + menus + submenus + pages + contexts)
+-- 16. Doğrulama
+-- 17. Jurisdictions & KYC Compliance
+-- NOTE: Permissions managed separately in permissions_full.sql
 -- ================================================================
 -- UYARI: Bu dosya TÜM verileri siler ve yeniden oluşturur!
 -- SADECE staging/dev ortamlarında kullanın - PRODUCTION'DA KULLANMAYIN!
@@ -27,6 +31,8 @@
 -- ================================================================
 -- 1. TRUNCATE ALL TABLES
 -- ================================================================
+-- NOT: permissions ve role_permissions TRUNCATE edilmiyor
+-- Bunlar permissions_full.sql ve role_permissions_full.sql'de yönetiliyor
 
 -- Menu/Presentation
 TRUNCATE TABLE presentation.contexts RESTART IDENTITY CASCADE;
@@ -36,14 +42,12 @@ TRUNCATE TABLE presentation.submenus RESTART IDENTITY CASCADE;
 TRUNCATE TABLE presentation.menus RESTART IDENTITY CASCADE;
 TRUNCATE TABLE presentation.menu_groups RESTART IDENTITY CASCADE;
 
--- Security
+-- Security (permissions hariç)
 TRUNCATE TABLE security.user_password_history RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.company_password_policy RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_allowed_tenants RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.users RESTART IDENTITY CASCADE;
-TRUNCATE TABLE security.role_permissions RESTART IDENTITY CASCADE;
-TRUNCATE TABLE security.permissions RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.roles RESTART IDENTITY CASCADE;
 
 -- Core
@@ -93,164 +97,7 @@ INSERT INTO security.roles (code, name, description, level, status, is_platform_
 ('user', 'User', 'Standart kullanıcı - Sadece görüntüleme', 10, 1, FALSE);
 
 -- ================================================================
--- 4. PERMISSIONS
--- ================================================================
--- Scope bazlı permission yapısı:
--- - platform.*  → SuperAdmin only
--- - company.*   → Admin + SuperAdmin
--- - tenant.*    → CompanyAdmin + Admin + SuperAdmin
--- - audit.*     → TenantAdmin + üstü
-
-INSERT INTO security.permissions (code, name, description, category, status) VALUES
--- PLATFORM SCOPE (6) - Sadece SuperAdmin
-('platform.menu.manage', 'Menü Yönetimi', 'Menu/Submenu/Page/Tab/Context CRUD işlemleri', 'platform', 1),
-('platform.permission.manage', 'Permission Yönetimi', 'Permission tanımlama ve düzenleme', 'platform', 1),
-('platform.role.manage', 'Rol Yönetimi', 'Rol tanımlama ve düzenleme', 'platform', 1),
-('platform.system.settings', 'Sistem Ayarları', 'Platform ayarları yönetimi', 'platform', 1),
-('platform.logs.view', 'Log Görüntüleme', 'Sistem loglarını görüntüleme', 'platform', 1),
-('platform.health.view', 'Health Check', 'Sistem sağlık kontrolü', 'platform', 1),
-
--- COMPANY SCOPE (10) - Admin + SuperAdmin
-('company.list', 'Şirket Listesi', 'Tüm şirketleri listeleme', 'company', 1),
-('company.view', 'Şirket Görüntüleme', 'Şirket detaylarını görüntüleme', 'company', 1),
-('company.create', 'Şirket Oluşturma', 'Yeni şirket oluşturma', 'company', 1),
-('company.edit', 'Şirket Düzenleme', 'Şirket bilgilerini düzenleme', 'company', 1),
-('company.delete', 'Şirket Silme', 'Şirket silme (soft delete)', 'company', 1),
-('company.user.list', 'Company User Listesi', 'Company kullanıcılarını listeleme', 'company', 1),
-('company.user.create', 'Company User Oluşturma', 'Company''ye kullanıcı ekleme', 'company', 1),
-('company.user.edit', 'Company User Düzenleme', 'Company kullanıcısını düzenleme', 'company', 1),
-('company.tenant.create', 'Tenant Oluşturma', 'Yeni tenant oluşturma', 'company', 1),
-('company.tenant.edit', 'Tenant Düzenleme', 'Tenant bilgilerini düzenleme', 'company', 1),
-
--- TENANT SCOPE (6) - CompanyAdmin + Admin + SuperAdmin
-('tenant.list', 'Tenant Listesi', 'Tenant listeleme (kendi company)', 'tenant', 1),
-('tenant.view', 'Tenant Görüntüleme', 'Tenant detaylarını görüntüleme', 'tenant', 1),
-('tenant.edit', 'Tenant Düzenleme', 'Tenant bilgilerini düzenleme (kısıtlı)', 'tenant', 1),
-('tenant.user.list', 'Tenant User Listesi', 'Tenant kullanıcılarını listeleme', 'tenant', 1),
-('tenant.user.create', 'Tenant User Oluşturma', 'Tenant''a kullanıcı ekleme', 'tenant', 1),
-('tenant.user.role.assign', 'Tenant Rol Atama', 'Kullanıcıya tenant rolü atama', 'tenant', 1),
-('tenant.user.delete', 'Tenant User Silme', 'Tenant kullanıcısını silme (soft delete)', 'tenant', 1),
-('tenant.user.edit', 'Tenant User Düzenleme', 'Tenant kullanıcısını düzenleme (şifre sıfırlama dahil)', 'tenant', 1),
-
--- TENANT İÇİ SCOPE (3) - TenantAdmin + üstü
-('tenant.user.permission.grant', 'Permission Verme', 'Kullanıcıya permission override (grant)', 'tenant', 1),
-('tenant.user.permission.deny', 'Permission Kaldırma', 'Kullanıcıdan permission override (deny)', 'tenant', 1),
-('tenant.settings.edit', 'Tenant Ayarları', 'Tenant ayarlarını düzenleme', 'tenant', 1),
-
--- AUDIT SCOPE (3) - TenantAdmin + üstü
-('audit.list', 'Audit Log Listesi', 'Audit loglarını listeleme', 'audit', 1),
-('audit.view', 'Audit Log Görüntüleme', 'Audit log detayları', 'audit', 1),
-('audit.export', 'Audit Log Export', 'Audit loglarını dışa aktarma', 'audit', 1),
-
--- CATALOG SCOPE (8) - SuperAdmin + Platform Admin
-('catalog.provider.list', 'Provider Listesi', 'Provider ve tipi listeleme', 'catalog', 1),
-('catalog.provider.manage', 'Provider Yönetimi', 'Provider CRUD işlemleri', 'catalog', 1),
-('catalog.payment.list', 'Ödeme Yöntemi Listesi', 'Ödeme yöntemlerini listeleme', 'catalog', 1),
-('catalog.payment.manage', 'Ödeme Yöntemi Yönetimi', 'Ödeme yöntemi CRUD işlemleri', 'catalog', 1),
-('catalog.compliance.list', 'Compliance Listesi', 'Jurisdiction/KYC/RG listeleme', 'catalog', 1),
-('catalog.compliance.manage', 'Compliance Yönetimi', 'Jurisdiction/KYC/RG CRUD işlemleri', 'catalog', 1),
-('catalog.uikit.list', 'UIKit Listesi', 'Theme/Widget/Navigation listeleme', 'catalog', 1),
-('catalog.uikit.manage', 'UIKit Yönetimi', 'Theme/Widget/Navigation CRUD işlemleri', 'catalog', 1);
-
--- ================================================================
--- 5. ROLE-PERMISSION MAPPING
--- ================================================================
-
--- SUPERADMIN: TÜM PERMISSION'LAR
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'superadmin';
-
--- ADMIN: company.* + tenant.* + audit.* (platform.* hariç)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'admin'
-  AND p.category IN ('company', 'tenant', 'audit');
-
--- COMPANYADMIN: tenant.* + audit.* (company.* hariç)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'companyadmin'
-  AND p.category IN ('tenant', 'audit');
-
--- TENANTADMIN: tenant.user.* + tenant.settings.* + tenant.user.permission.* + audit.*
--- NOT: tenant.view/list YOK - TenantAdmin tenant yönetimi sayfasına girmez, kendi tenant'ında çalışır
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'tenantadmin'
-  AND (
-    p.code IN (
-      'tenant.user.list',
-      'tenant.user.create',
-      'tenant.user.edit',
-      'tenant.user.delete',
-      'tenant.user.role.assign',
-      'tenant.user.permission.grant',
-      'tenant.user.permission.deny',
-      'tenant.settings.edit'
-    )
-    OR p.category = 'audit'
-  );
-
--- MODERATOR: tenant.user.list + audit.list + audit.view
--- Kendi tenant'ındaki kullanıcıları listeleyebilir
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'moderator'
-  AND p.code IN ('tenant.user.list', 'audit.list', 'audit.view');
-
--- EDITOR: audit.list
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'editor'
-  AND p.code IN ('audit.list');
-
--- OPERATOR: tenant.user.list + audit.list
--- Kendi tenant'ındaki kullanıcıları listeleyebilir (müşteri hizmetleri)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'operator'
-  AND p.code IN ('tenant.user.list', 'audit.list');
-
--- USER: audit.list (minimum yetki)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'user'
-  AND p.code IN ('audit.list');
-
--- ================================================================
--- CATALOG PERMISSION - ROLE MAPPING
--- ================================================================
-
--- SUPERADMIN: Tüm catalog permission'lar (zaten CROSS JOIN ile otomatik ekleniyor)
--- NOT: superadmin pattern'i tüm permission'ları alıyor (satır 143-148)
-
--- ADMIN: catalog.compliance.* (Platform Admin)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'admin'
-  AND p.code IN ('catalog.compliance.list', 'catalog.compliance.manage');
-
--- ================================================================
--- 6. TENANTS
+-- 4. TENANTS
 -- ================================================================
 
 INSERT INTO core.tenants (company_id, tenant_code, tenant_name, environment, base_currency, default_language, default_country, timezone, status) VALUES
@@ -263,7 +110,7 @@ INSERT INTO core.tenants (company_id, tenant_code, tenant_name, environment, bas
 (3, 'turkbet_tr', 'TurkBet Türkiye', 'prod', 'TRY', 'tr', 'TR', 'Europe/Istanbul', 1);
 
 -- ================================================================
--- 7. USERS
+-- 5. USERS
 -- ================================================================
 -- Şifre: deneme (tüm kullanıcılar için aynı)
 -- Hash: zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=
@@ -331,7 +178,7 @@ INSERT INTO security.users (company_id, first_name, last_name, email, username, 
  1, 'en', 'Europe/Malta', 'EUR');
 
 -- ================================================================
--- 8. COMPANY PASSWORD POLICY (Her company için özel politika)
+-- 6. COMPANY PASSWORD POLICY (Her company için özel politika)
 -- ================================================================
 -- NOT: Users tablosu dolduktan SONRA çalıştırılmalı (created_by FK)
 
@@ -350,7 +197,7 @@ INSERT INTO security.company_password_policy (company_id, expiry_days, history_c
 VALUES (3, 60, 4, 1);  -- 60 gün, son 4 şifre
 
 -- ================================================================
--- 9. GLOBAL ROL ATAMALARI (security.user_roles - tenant_id = NULL)
+-- 7. GLOBAL ROL ATAMALARI (security.user_roles - tenant_id = NULL)
 -- ================================================================
 
 -- superadmin@nucleo.io → superadmin (global)
@@ -379,7 +226,7 @@ SELECT u.id, r.id, NULL FROM security.users u, security.roles r
 WHERE u.email = 'turkbet@nucleo.io' AND r.code = 'companyadmin';
 
 -- ================================================================
--- 10. TENANT ROL ATAMALARI (security.user_roles - tenant_id = değer)
+-- 8. TENANT ROL ATAMALARI (security.user_roles - tenant_id = değer)
 -- ================================================================
 
 -- eurobet.eu@nucleo.io → tenantadmin @ eurobet_eu
@@ -425,7 +272,7 @@ FROM security.users u, security.roles r, core.tenants t
 WHERE u.email = 'eurobet.user@nucleo.io' AND r.code = 'user' AND t.tenant_code = 'eurobet_eu';
 
 -- ================================================================
--- 11. TENANT ERİŞİM İZİNLERİ (security.user_allowed_tenants)
+-- 9. TENANT ERİŞİM İZİNLERİ (security.user_allowed_tenants)
 -- ================================================================
 
 -- TenantAdmin'ler kendi tenant'larına
@@ -460,7 +307,7 @@ SELECT u.id, t.id FROM security.users u, core.tenants t
 WHERE u.email = 'eurobet.user@nucleo.io' AND t.tenant_code = 'eurobet_eu';
 
 -- ================================================================
--- 12. TENANT AYARLARI
+-- 10. TENANT AYARLARI
 -- ================================================================
 
 -- Tenant Para Birimleri
@@ -583,64 +430,152 @@ SELECT t.id, 'Security', 'password_min_length',
 FROM core.tenants t;
 
 -- ================================================================
--- 13. MENU GROUPS
+-- 11. MENU GROUPS (10 Kategori)
 -- ================================================================
 -- NOT: Menu localization seed_menu_localization.sql dosyasında.
--- ================================================================
+-- Sıralama: Platform → Companies → Tenants → Players → Games →
+--           Finance → Bonuses → Affiliate → Reports → Audit
 -- ================================================================
 
 INSERT INTO presentation.menu_groups (code, title_localization_key, order_index, is_active) VALUES
 ('platform', 'ui.menu-group.platform', 1, TRUE),
 ('companies', 'ui.menu-group.companies', 2, TRUE),
 ('tenants', 'ui.menu-group.tenants', 3, TRUE),
-('audit', 'ui.menu-group.audit', 4, TRUE);
+('players', 'ui.menu-group.players', 4, TRUE),
+('games', 'ui.menu-group.games', 5, TRUE),
+('finance', 'ui.menu-group.finance', 6, TRUE),
+('bonuses', 'ui.menu-group.bonuses', 7, TRUE),
+('affiliate', 'ui.menu-group.affiliate', 8, TRUE),
+('reports', 'ui.menu-group.reports', 9, TRUE),
+('audit', 'ui.menu-group.audit', 10, TRUE);
 
 -- ================================================================
--- 14. MENUS
+-- 12. MENUS
 -- ================================================================
 
--- Platform Group
+-- Platform Group (SuperAdmin)
 INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
     ('system', 'ui.menu.system', 'pi pi-cog', 1, 'platform.health.view'),
-    ('rbac', 'ui.menu.rbac', 'pi pi-shield', 2, 'platform.role.manage')
+    ('rbac', 'ui.menu.rbac', 'pi pi-shield', 2, 'platform.role.manage'),
+    ('catalog', 'ui.menu.catalog', 'pi pi-database', 3, 'catalog.provider.list')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'platform';
 
--- Companies Group
+-- Companies Group (Admin+)
 INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
     ('companies', 'ui.menu.companies', 'pi pi-building', 1, 'company.list'),
-    ('company-users', 'ui.menu.company-users', 'pi pi-users', 2, 'company.user.list')
+    ('company-users', 'ui.menu.company-users', 'pi pi-users', 2, 'company.user.list'),
+    ('company-billing', 'ui.menu.company-billing', 'pi pi-wallet', 3, 'company.billing.view')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'companies';
 
--- Tenants Group
+-- Tenants Group (CompanyAdmin+)
 INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
     ('tenants', 'ui.menu.tenants', 'pi pi-sitemap', 1, 'tenant.list'),
     ('tenant-users', 'ui.menu.tenant-users', 'pi pi-users', 2, 'tenant.user.list'),
-    ('tenant-settings', 'ui.menu.tenant-settings', 'pi pi-cog', 3, 'tenant.settings.edit')
+    ('tenant-settings', 'ui.menu.tenant-settings', 'pi pi-cog', 3, 'tenant.settings.edit'),
+    ('tenant-content', 'ui.menu.tenant-content', 'pi pi-images', 4, 'tenant.content.list')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'tenants';
 
--- Audit Group
+-- Players Group (Operator+)
 INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
-    ('audit-logs', 'ui.menu.audit-logs', 'pi pi-list', 1, 'audit.list')
+    ('player-list', 'ui.menu.player-list', 'pi pi-users', 1, 'player.list'),
+    ('player-kyc', 'ui.menu.player-kyc', 'pi pi-id-card', 2, 'player.kyc.list'),
+    ('player-rg', 'ui.menu.player-rg', 'pi pi-heart', 3, 'player.rg.view')
+) AS v(code, title_key, icon, ord, perm)
+WHERE mg.code = 'players';
+
+-- Games Group (Editor+)
+INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
+SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
+FROM presentation.menu_groups mg
+CROSS JOIN (VALUES
+    ('game-providers', 'ui.menu.game-providers', 'pi pi-server', 1, 'game.provider.list'),
+    ('game-list', 'ui.menu.game-list', 'pi pi-th-large', 2, 'game.list'),
+    ('game-categories', 'ui.menu.game-categories', 'pi pi-tags', 3, 'game.category.list'),
+    ('game-lobby', 'ui.menu.game-lobby', 'pi pi-star', 4, 'game.lobby.manage')
+) AS v(code, title_key, icon, ord, perm)
+WHERE mg.code = 'games';
+
+-- Finance Group (Moderator+)
+INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
+SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
+FROM presentation.menu_groups mg
+CROSS JOIN (VALUES
+    ('finance-transactions', 'ui.menu.finance-transactions', 'pi pi-list', 1, 'finance.transaction.list'),
+    ('finance-deposits', 'ui.menu.finance-deposits', 'pi pi-download', 2, 'finance.deposit.list'),
+    ('finance-withdrawals', 'ui.menu.finance-withdrawals', 'pi pi-upload', 3, 'finance.withdrawal.list'),
+    ('finance-adjustments', 'ui.menu.finance-adjustments', 'pi pi-pencil', 4, 'finance.adjustment.list'),
+    ('finance-payment-methods', 'ui.menu.finance-payment-methods', 'pi pi-credit-card', 5, 'finance.payment.list')
+) AS v(code, title_key, icon, ord, perm)
+WHERE mg.code = 'finance';
+
+-- Bonuses Group (Editor+)
+INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
+SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
+FROM presentation.menu_groups mg
+CROSS JOIN (VALUES
+    ('bonus-list', 'ui.menu.bonus-list', 'pi pi-gift', 1, 'bonus.list'),
+    ('bonus-campaigns', 'ui.menu.bonus-campaigns', 'pi pi-megaphone', 2, 'bonus.campaign.list'),
+    ('promo-codes', 'ui.menu.promo-codes', 'pi pi-ticket', 3, 'bonus.promo.list'),
+    ('bonus-templates', 'ui.menu.bonus-templates', 'pi pi-copy', 4, 'bonus.template.list')
+) AS v(code, title_key, icon, ord, perm)
+WHERE mg.code = 'bonuses';
+
+-- Affiliate Group (TenantAdmin+)
+INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
+SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
+FROM presentation.menu_groups mg
+CROSS JOIN (VALUES
+    ('affiliate-list', 'ui.menu.affiliate-list', 'pi pi-users', 1, 'affiliate.list'),
+    ('affiliate-commissions', 'ui.menu.affiliate-commissions', 'pi pi-percentage', 2, 'affiliate.commission.view'),
+    ('affiliate-reports', 'ui.menu.affiliate-reports', 'pi pi-chart-bar', 3, 'affiliate.report.view')
+) AS v(code, title_key, icon, ord, perm)
+WHERE mg.code = 'affiliate';
+
+-- Reports Group (Operator+)
+INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
+SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
+FROM presentation.menu_groups mg
+CROSS JOIN (VALUES
+    ('report-dashboard', 'ui.menu.report-dashboard', 'pi pi-chart-pie', 1, 'report.dashboard.view'),
+    ('report-players', 'ui.menu.report-players', 'pi pi-users', 2, 'report.player.view'),
+    ('report-games', 'ui.menu.report-games', 'pi pi-th-large', 3, 'report.game.view'),
+    ('report-financial', 'ui.menu.report-financial', 'pi pi-dollar', 4, 'report.financial.view'),
+    ('report-risk', 'ui.menu.report-risk', 'pi pi-exclamation-triangle', 5, 'report.risk.view')
+) AS v(code, title_key, icon, ord, perm)
+WHERE mg.code = 'reports';
+
+-- Audit Group (TenantAdmin+)
+INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, icon, order_index, required_permission, is_active)
+SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
+FROM presentation.menu_groups mg
+CROSS JOIN (VALUES
+    ('audit-logs', 'ui.menu.audit-logs', 'pi pi-list', 1, 'audit.list'),
+    ('audit-kyc', 'ui.menu.audit-kyc', 'pi pi-id-card', 2, 'audit.kyc.view'),
+    ('audit-aml', 'ui.menu.audit-aml', 'pi pi-shield', 3, 'audit.aml.view'),
+    ('audit-fraud', 'ui.menu.audit-fraud', 'pi pi-ban', 4, 'audit.fraud.view')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'audit';
 
 -- ================================================================
--- 15. SUBMENUS
+-- 13. SUBMENUS
+-- ================================================================
+-- NOT: Sadece alt menü gerekli olan menülerde submenu kullanılır.
+-- Çoğu menü doğrudan page'e bağlanır (submenu_id = NULL).
 -- ================================================================
 
 -- System Menu Submenus
@@ -665,9 +600,27 @@ CROSS JOIN (VALUES
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'rbac';
 
+-- Catalog Menu Submenus
+INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
+SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
+FROM presentation.menus m
+CROSS JOIN (VALUES
+    ('providers', 'ui.submenu.providers', '/admin/catalog/providers', 1, 'catalog.provider.list'),
+    ('games-catalog', 'ui.submenu.games-catalog', '/admin/catalog/games', 2, 'catalog.game.list'),
+    ('payment-methods', 'ui.submenu.payment-methods', '/admin/catalog/payment-methods', 3, 'catalog.payment.list'),
+    ('compliance', 'ui.submenu.compliance', '/admin/catalog/compliance', 4, 'catalog.compliance.list'),
+    ('uikit', 'ui.submenu.uikit', '/admin/catalog/uikit', 5, 'catalog.uikit.list'),
+    ('reference-data', 'ui.submenu.reference-data', '/admin/catalog/reference', 6, 'catalog.reference.list')
+) AS v(code, title_key, route, ord, perm)
+WHERE m.code = 'catalog';
+
 -- ================================================================
--- 16. PAGES
+-- 14. PAGES
 -- ================================================================
+
+-- ----------------------------------------------------------------
+-- 14.1 PLATFORM GROUP PAGES (Submenu'ye bağlı)
+-- ----------------------------------------------------------------
 
 -- System Submenu Pages
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
@@ -679,78 +632,211 @@ JOIN (VALUES
     ('system-settings', 'page-system-settings', '/admin/system-settings', 'ui.page.system-settings', 'platform.system.settings'),
     ('menus', 'page-menu-management', '/admin/menus', 'ui.page.menu-management', 'platform.menu.manage'),
     ('roles', 'page-roles', '/admin/roles', 'ui.page.roles', 'platform.role.manage'),
-    ('permissions', 'page-permissions', '/admin/permissions', 'ui.page.permissions', 'platform.permission.manage')
+    ('permissions', 'page-permissions', '/admin/permissions', 'ui.page.permissions', 'platform.permission.manage'),
+    ('providers', 'page-providers', '/admin/catalog/providers', 'ui.page.providers', 'catalog.provider.list'),
+    ('games-catalog', 'page-games-catalog', '/admin/catalog/games', 'ui.page.games-catalog', 'catalog.game.list'),
+    ('payment-methods', 'page-payment-methods', '/admin/catalog/payment-methods', 'ui.page.payment-methods', 'catalog.payment.list'),
+    ('compliance', 'page-compliance', '/admin/catalog/compliance', 'ui.page.compliance', 'catalog.compliance.list'),
+    ('uikit', 'page-uikit', '/admin/catalog/uikit', 'ui.page.uikit', 'catalog.uikit.list'),
+    ('reference-data', 'page-reference-data', '/admin/catalog/reference', 'ui.page.reference-data', 'catalog.reference.list')
 ) AS v(submenu_code, code, route, title_key, perm) ON s.code = v.submenu_code;
 
--- Companies Menu Pages (detail sayfaları menüde görünmez, listeden navigasyon ile açılır)
+-- ----------------------------------------------------------------
+-- 14.2 COMPANIES GROUP PAGES
+-- ----------------------------------------------------------------
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
 SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.menus m
 JOIN (VALUES
     ('companies', 'page-companies', '/admin/companies', 'ui.page.companies', 'company.list', 1),
-    ('company-users', 'page-company-users', '/admin/company-users', 'ui.page.company-users', 'company.user.list', 1)
+    ('companies', 'page-company-detail', '/admin/companies/:id', 'ui.page.company-detail', 'company.view', 2),
+    ('company-users', 'page-company-users', '/admin/company-users', 'ui.page.company-users', 'company.user.list', 1),
+    ('company-users', 'page-company-user-detail', '/admin/company-users/:id', 'ui.page.company-user-detail', 'company.user.view', 2),
+    ('company-billing', 'page-company-billing', '/admin/company-billing', 'ui.page.company-billing', 'company.billing.view', 1)
 ) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
 
--- Tenants Menu Pages (detail sayfaları menüde görünmez, listeden navigasyon ile açılır)
+-- ----------------------------------------------------------------
+-- 14.3 TENANTS GROUP PAGES
+-- ----------------------------------------------------------------
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
 SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.menus m
 JOIN (VALUES
     ('tenants', 'page-tenants', '/admin/tenants', 'ui.page.tenants', 'tenant.list', 1),
-    ('tenant-users', 'page-tenant-users', '/admin/tenant-users', 'ui.page.tenant-users', 'tenant.user.list', 1),
-    ('tenant-settings', 'page-tenant-settings', '/admin/tenant-settings', 'ui.page.tenant-settings', 'tenant.settings.edit', 1)
-) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
-
--- Audit Menu Pages
-INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.menus m
-JOIN (VALUES
-    ('audit-logs', 'page-audit-logs', '/admin/audit-logs', 'ui.page.audit-logs', 'audit.list', 1)
-) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
-
--- Detail Pages (menüye bağlı, route parametreli olduğu için frontend'de sidebar'dan filtrelenir)
-INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.menus m
-JOIN (VALUES
-    ('companies', 'page-company-detail', '/admin/companies/:id', 'ui.page.company-detail', 'company.view', 2),
     ('tenants', 'page-tenant-detail', '/admin/tenants/:id', 'ui.page.tenant-detail', 'tenant.view', 2),
-    ('tenant-users', 'page-tenant-user-detail', '/admin/tenant-users/:id', 'ui.page.tenant-user-detail', 'tenant.user.list', 2),
-    ('audit-logs', 'page-audit-log-detail', '/admin/audit-logs/:id', 'ui.page.audit-log-detail', 'audit.view', 2)
+    ('tenant-users', 'page-tenant-users', '/admin/tenant-users', 'ui.page.tenant-users', 'tenant.user.list', 1),
+    ('tenant-users', 'page-tenant-user-detail', '/admin/tenant-users/:id', 'ui.page.tenant-user-detail', 'tenant.user.view', 2),
+    ('tenant-settings', 'page-tenant-settings', '/admin/tenant-settings', 'ui.page.tenant-settings', 'tenant.settings.edit', 1),
+    ('tenant-content', 'page-tenant-content', '/admin/tenant-content', 'ui.page.tenant-content', 'tenant.content.list', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.4 PLAYERS GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('player-list', 'page-players', '/admin/players', 'ui.page.players', 'player.list', 1),
+    ('player-list', 'page-player-detail', '/admin/players/:id', 'ui.page.player-detail', 'player.view', 2),
+    ('player-kyc', 'page-player-kyc', '/admin/players/kyc', 'ui.page.player-kyc', 'player.kyc.list', 1),
+    ('player-kyc', 'page-player-kyc-detail', '/admin/players/kyc/:id', 'ui.page.player-kyc-detail', 'player.kyc.view', 2),
+    ('player-rg', 'page-player-rg', '/admin/players/rg', 'ui.page.player-rg', 'player.rg.view', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.5 GAMES GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('game-providers', 'page-game-providers', '/admin/games/providers', 'ui.page.game-providers', 'game.provider.list', 1),
+    ('game-providers', 'page-game-provider-detail', '/admin/games/providers/:id', 'ui.page.game-provider-detail', 'game.provider.view', 2),
+    ('game-list', 'page-games', '/admin/games', 'ui.page.games', 'game.list', 1),
+    ('game-list', 'page-game-detail', '/admin/games/:id', 'ui.page.game-detail', 'game.view', 2),
+    ('game-categories', 'page-game-categories', '/admin/games/categories', 'ui.page.game-categories', 'game.category.list', 1),
+    ('game-lobby', 'page-game-lobby', '/admin/games/lobby', 'ui.page.game-lobby', 'game.lobby.manage', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.6 FINANCE GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('finance-transactions', 'page-finance-transactions', '/admin/finance/transactions', 'ui.page.finance-transactions', 'finance.transaction.list', 1),
+    ('finance-deposits', 'page-finance-deposits', '/admin/finance/deposits', 'ui.page.finance-deposits', 'finance.deposit.list', 1),
+    ('finance-deposits', 'page-finance-deposit-detail', '/admin/finance/deposits/:id', 'ui.page.finance-deposit-detail', 'finance.deposit.view', 2),
+    ('finance-withdrawals', 'page-finance-withdrawals', '/admin/finance/withdrawals', 'ui.page.finance-withdrawals', 'finance.withdrawal.list', 1),
+    ('finance-withdrawals', 'page-finance-withdrawal-detail', '/admin/finance/withdrawals/:id', 'ui.page.finance-withdrawal-detail', 'finance.withdrawal.view', 2),
+    ('finance-adjustments', 'page-finance-adjustments', '/admin/finance/adjustments', 'ui.page.finance-adjustments', 'finance.adjustment.list', 1),
+    ('finance-payment-methods', 'page-finance-payment-methods', '/admin/finance/payment-methods', 'ui.page.finance-payment-methods', 'finance.payment.list', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.7 BONUSES GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('bonus-list', 'page-bonuses', '/admin/bonuses', 'ui.page.bonuses', 'bonus.list', 1),
+    ('bonus-list', 'page-bonus-detail', '/admin/bonuses/:id', 'ui.page.bonus-detail', 'bonus.view', 2),
+    ('bonus-campaigns', 'page-bonus-campaigns', '/admin/bonuses/campaigns', 'ui.page.bonus-campaigns', 'bonus.campaign.list', 1),
+    ('bonus-campaigns', 'page-bonus-campaign-detail', '/admin/bonuses/campaigns/:id', 'ui.page.bonus-campaign-detail', 'bonus.campaign.view', 2),
+    ('promo-codes', 'page-promo-codes', '/admin/bonuses/promo-codes', 'ui.page.promo-codes', 'bonus.promo.list', 1),
+    ('bonus-templates', 'page-bonus-templates', '/admin/bonuses/templates', 'ui.page.bonus-templates', 'bonus.template.list', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.8 AFFILIATE GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('affiliate-list', 'page-affiliates', '/admin/affiliates', 'ui.page.affiliates', 'affiliate.list', 1),
+    ('affiliate-list', 'page-affiliate-detail', '/admin/affiliates/:id', 'ui.page.affiliate-detail', 'affiliate.view', 2),
+    ('affiliate-commissions', 'page-affiliate-commissions', '/admin/affiliates/commissions', 'ui.page.affiliate-commissions', 'affiliate.commission.view', 1),
+    ('affiliate-reports', 'page-affiliate-reports', '/admin/affiliates/reports', 'ui.page.affiliate-reports', 'affiliate.report.view', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.9 REPORTS GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('report-dashboard', 'page-report-dashboard', '/admin/reports/dashboard', 'ui.page.report-dashboard', 'report.dashboard.view', 1),
+    ('report-players', 'page-report-players', '/admin/reports/players', 'ui.page.report-players', 'report.player.view', 1),
+    ('report-games', 'page-report-games', '/admin/reports/games', 'ui.page.report-games', 'report.game.view', 1),
+    ('report-financial', 'page-report-financial', '/admin/reports/financial', 'ui.page.report-financial', 'report.financial.view', 1),
+    ('report-risk', 'page-report-risk', '/admin/reports/risk', 'ui.page.report-risk', 'report.risk.view', 1)
+) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+
+-- ----------------------------------------------------------------
+-- 14.10 AUDIT GROUP PAGES
+-- ----------------------------------------------------------------
+INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
+SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.menus m
+JOIN (VALUES
+    ('audit-logs', 'page-audit-logs', '/admin/audit/logs', 'ui.page.audit-logs', 'audit.list', 1),
+    ('audit-logs', 'page-audit-log-detail', '/admin/audit/logs/:id', 'ui.page.audit-log-detail', 'audit.view', 2),
+    ('audit-kyc', 'page-audit-kyc', '/admin/audit/kyc', 'ui.page.audit-kyc', 'audit.kyc.view', 1),
+    ('audit-aml', 'page-audit-aml', '/admin/audit/aml', 'ui.page.audit-aml', 'audit.aml.view', 1),
+    ('audit-fraud', 'page-audit-fraud', '/admin/audit/fraud', 'ui.page.audit-fraud', 'audit.fraud.view', 1)
 ) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
 
 -- ================================================================
--- 17. CONTEXTS (Sayfa içi dinamik bölümler)
+-- 15. CONTEXTS (Sayfa içi dinamik bölümler)
 -- ================================================================
--- context_type: section, table, card, action, field
+-- context_type: section, table, card, action, field, button
 -- permission_edit: düzenleme yetkisi
 -- permission_readonly: görüntüleme yetkisi (edit yoksa readonly kontrol edilir)
+-- Öncelik: edit > readonly > mask > hide
 
 INSERT INTO presentation.contexts (page_id, code, context_type, label_localization_key, permission_edit, permission_readonly, is_active)
 SELECT p.id, v.code, v.ctx_type, v.label_key, v.perm_edit, v.perm_readonly, TRUE
 FROM presentation.pages p
 JOIN (VALUES
-    -- Company Detail Contexts (context_type: field, action, section, button)
+    -- Company Detail Contexts
     ('page-company-detail', 'company-info', 'section', 'ui.context.company-info', 'company.edit', 'company.view'),
     ('page-company-detail', 'company-tenants', 'section', 'ui.context.company-tenants', 'company.tenant.create', 'tenant.list'),
     ('page-company-detail', 'company-users', 'section', 'ui.context.company-users', 'company.user.create', 'company.user.list'),
+    ('page-company-detail', 'company-billing', 'section', 'ui.context.company-billing', NULL, 'company.billing.view'),
 
     -- Tenant Detail Contexts
     ('page-tenant-detail', 'tenant-info', 'section', 'ui.context.tenant-info', 'tenant.edit', 'tenant.view'),
     ('page-tenant-detail', 'tenant-users', 'section', 'ui.context.tenant-users', 'tenant.user.create', 'tenant.user.list'),
-    ('page-tenant-detail', 'tenant-settings', 'section', 'ui.context.tenant-settings', 'tenant.settings.edit', 'tenant.view')
+    ('page-tenant-detail', 'tenant-settings', 'section', 'ui.context.tenant-settings', 'tenant.settings.edit', 'tenant.view'),
+    ('page-tenant-detail', 'tenant-providers', 'section', 'ui.context.tenant-providers', 'tenant.provider.manage', 'tenant.provider.list'),
+
+    -- Player Detail Contexts
+    ('page-player-detail', 'player-info', 'section', 'ui.context.player-info', 'player.edit', 'player.view'),
+    ('page-player-detail', 'player-wallet', 'section', 'ui.context.player-wallet', NULL, 'player.wallet.view'),
+    ('page-player-detail', 'player-kyc', 'section', 'ui.context.player-kyc', 'player.kyc.approve', 'player.kyc.view'),
+    ('page-player-detail', 'player-transactions', 'section', 'ui.context.player-transactions', NULL, 'player.transaction.view'),
+    ('page-player-detail', 'player-gaming', 'section', 'ui.context.player-gaming', NULL, 'player.gaming.view'),
+    ('page-player-detail', 'player-bonuses', 'section', 'ui.context.player-bonuses', NULL, 'player.bonus.view'),
+    ('page-player-detail', 'player-limits', 'section', 'ui.context.player-limits', 'player.limits.edit', 'player.limits.view'),
+    ('page-player-detail', 'player-communication', 'section', 'ui.context.player-communication', 'player.communication.send', 'player.communication.view'),
+    ('page-player-detail', 'player-actions', 'action', 'ui.context.player-actions', 'player.block', 'player.view'),
+
+    -- Game Detail Contexts
+    ('page-game-detail', 'game-info', 'section', 'ui.context.game-info', 'game.settings.edit', 'game.view'),
+    ('page-game-detail', 'game-stats', 'section', 'ui.context.game-stats', NULL, 'game.stats.view'),
+    ('page-game-detail', 'game-risk', 'section', 'ui.context.game-risk', 'game.risk.manage', 'game.risk.view'),
+
+    -- Finance Detail Contexts
+    ('page-finance-deposit-detail', 'deposit-info', 'section', 'ui.context.deposit-info', NULL, 'finance.deposit.view'),
+    ('page-finance-deposit-detail', 'deposit-actions', 'action', 'ui.context.deposit-actions', 'finance.deposit.approve', 'finance.deposit.view'),
+    ('page-finance-withdrawal-detail', 'withdrawal-info', 'section', 'ui.context.withdrawal-info', NULL, 'finance.withdrawal.view'),
+    ('page-finance-withdrawal-detail', 'withdrawal-actions', 'action', 'ui.context.withdrawal-actions', 'finance.withdrawal.approve', 'finance.withdrawal.view'),
+
+    -- Bonus Detail Contexts
+    ('page-bonus-detail', 'bonus-info', 'section', 'ui.context.bonus-info', 'bonus.edit', 'bonus.view'),
+    ('page-bonus-detail', 'bonus-rules', 'section', 'ui.context.bonus-rules', 'bonus.rule.manage', 'bonus.view'),
+    ('page-bonus-detail', 'bonus-awards', 'section', 'ui.context.bonus-awards', NULL, 'bonus.award.view'),
+
+    -- Affiliate Detail Contexts
+    ('page-affiliate-detail', 'affiliate-info', 'section', 'ui.context.affiliate-info', 'affiliate.edit', 'affiliate.view'),
+    ('page-affiliate-detail', 'affiliate-players', 'section', 'ui.context.affiliate-players', NULL, 'affiliate.players.view'),
+    ('page-affiliate-detail', 'affiliate-commissions', 'section', 'ui.context.affiliate-commissions', NULL, 'affiliate.commission.view')
 ) AS v(page_code, code, ctx_type, label_key, perm_edit, perm_readonly) ON p.code = v.page_code;
 
 -- ================================================================
--- 18. DOĞRULAMA
+-- 16. DOĞRULAMA
 -- ================================================================
 
 DO $$
 DECLARE
     v_companies INT; v_tenants INT; v_roles INT; v_permissions INT;
     v_users INT; v_global_roles INT; v_tenant_roles INT;
-    v_menu_groups INT; v_menus INT; v_submenus INT; v_pages INT;
+    v_menu_groups INT; v_menus INT; v_submenus INT; v_pages INT; v_contexts INT;
 BEGIN
     SELECT COUNT(*) INTO v_companies FROM core.companies;
     SELECT COUNT(*) INTO v_tenants FROM core.tenants;
@@ -763,6 +849,7 @@ BEGIN
     SELECT COUNT(*) INTO v_menus FROM presentation.menus;
     SELECT COUNT(*) INTO v_submenus FROM presentation.submenus;
     SELECT COUNT(*) INTO v_pages FROM presentation.pages;
+    SELECT COUNT(*) INTO v_contexts FROM presentation.contexts;
 
     RAISE NOTICE '================================================';
     RAISE NOTICE 'NUCLEO PLATFORM SEED TAMAMLANDI';
@@ -774,10 +861,12 @@ BEGIN
     RAISE NOTICE 'Users: %', v_users;
     RAISE NOTICE 'Global Role Assignments: %', v_global_roles;
     RAISE NOTICE 'Tenant Role Assignments: %', v_tenant_roles;
+    RAISE NOTICE '------------------------------------------------';
     RAISE NOTICE 'Menu Groups: %', v_menu_groups;
     RAISE NOTICE 'Menus: %', v_menus;
     RAISE NOTICE 'Submenus: %', v_submenus;
     RAISE NOTICE 'Pages: %', v_pages;
+    RAISE NOTICE 'Contexts: %', v_contexts;
     RAISE NOTICE '================================================';
 END $$;
 
@@ -815,7 +904,7 @@ END;
 -- ================================================================
 
 -- ================================================================
--- 19. JURISDICTIONS & KYC COMPLIANCE DATA
+-- 17. JURISDICTIONS & KYC COMPLIANCE DATA
 -- ================================================================
 -- NOTE: TRUNCATE statements moved to top of file with other truncates
 

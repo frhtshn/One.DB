@@ -2,32 +2,36 @@
 -- NUCLEO PLATFORM - PRODUCTION SEED FILE
 -- ================================================================
 -- Minimal production seed data.
--- Run: psql -U postgres -d nucleo -f core/data/production_seed.sql
+-- ================================================================
+-- ÇALIŞTIRMA:
+--   psql -f core/data/production_seed.sql       (bu dosya)
+--   psql -f core/data/permissions_full.sql      (permissions - UPSERT)
+--   psql -f core/data/role_permissions_full.sql (role mapping - UPSERT)
+-- NOT: UPSERT kullanıldığı için sıralama esnek, ancak önerilen sıra yukarıdaki.
 -- ================================================================
 -- CONTENTS:
--- 1. TRUNCATE (required tables only)
+-- 1. TRUNCATE (users, roles, companies - NOT permissions)
 -- 2. Companies (platform only)
 -- 3. Roles (with English descriptions)
--- 4. Permissions (with English descriptions)
--- 5. Role-Permission mapping
--- 6. Users (superadmin only)
--- 7. User roles (superadmin global role)
--- 8. Validation
+-- 4. Users (superadmin only)
+-- 5. User roles (superadmin global role)
+-- 6. Validation
+-- NOTE: Permissions managed separately in permissions_full.sql
 -- ================================================================
--- WARNING: This file deletes ALL data and recreates it!
--- Use with caution in production environment.
+-- WARNING: This file deletes user/role/company data!
+-- Permissions are managed in permissions_full.sql
 -- ================================================================
 
 -- ================================================================
 -- 1. TRUNCATE REQUIRED TABLES
 -- ================================================================
+-- NOT: permissions ve role_permissions TRUNCATE edilmiyor
+-- Bunlar permissions_full.sql ve role_permissions_full.sql'de yönetiliyor
 
--- Security
+-- Security (users & roles only)
 TRUNCATE TABLE security.user_allowed_tenants RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.users RESTART IDENTITY CASCADE;
-TRUNCATE TABLE security.role_permissions RESTART IDENTITY CASCADE;
-TRUNCATE TABLE security.permissions RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.roles RESTART IDENTITY CASCADE;
 
 -- Core
@@ -65,137 +69,7 @@ INSERT INTO security.roles (code, name, description, level, status, is_platform_
 ('user', 'User', 'Standard user - View only access', 10, 1, FALSE);
 
 -- ================================================================
--- 4. PERMISSIONS
--- ================================================================
--- Scope-based permission structure:
--- - platform.*  → SuperAdmin only
--- - company.*   → Admin + SuperAdmin
--- - tenant.*    → CompanyAdmin + Admin + SuperAdmin
--- - audit.*     → TenantAdmin and above
-
-INSERT INTO security.permissions (code, name, description, category, status) VALUES
--- PLATFORM SCOPE (6) - SuperAdmin only
-('platform.menu.manage', 'Menu Management', 'Menu/Submenu/Page/Tab/Context CRUD operations', 'platform', 1),
-('platform.permission.manage', 'Permission Management', 'Define and edit permissions', 'platform', 1),
-('platform.role.manage', 'Role Management', 'Define and edit roles', 'platform', 1),
-('platform.system.settings', 'System Settings', 'Platform settings management', 'platform', 1),
-('platform.logs.view', 'View Logs', 'View system logs', 'platform', 1),
-('platform.health.view', 'Health Check', 'System health monitoring', 'platform', 1),
-
--- COMPANY SCOPE (10) - Admin + SuperAdmin
-('company.list', 'Company List', 'List all companies', 'company', 1),
-('company.view', 'View Company', 'View company details', 'company', 1),
-('company.create', 'Create Company', 'Create new company', 'company', 1),
-('company.edit', 'Edit Company', 'Edit company information', 'company', 1),
-('company.delete', 'Delete Company', 'Delete company (soft delete)', 'company', 1),
-('company.user.list', 'Company User List', 'List company users', 'company', 1),
-('company.user.create', 'Create Company User', 'Add user to company', 'company', 1),
-('company.user.edit', 'Edit Company User', 'Edit company user', 'company', 1),
-('company.tenant.create', 'Create Tenant', 'Create new tenant', 'company', 1),
-('company.tenant.edit', 'Edit Tenant', 'Edit tenant information', 'company', 1),
-
--- TENANT SCOPE (8) - CompanyAdmin + Admin + SuperAdmin
-('tenant.list', 'Tenant List', 'List tenants (own company)', 'tenant', 1),
-('tenant.view', 'View Tenant', 'View tenant details', 'tenant', 1),
-('tenant.edit', 'Edit Tenant', 'Edit tenant information (limited)', 'tenant', 1),
-('tenant.user.list', 'Tenant User List', 'List tenant users', 'tenant', 1),
-('tenant.user.create', 'Create Tenant User', 'Add user to tenant', 'tenant', 1),
-('tenant.user.role.assign', 'Assign Tenant Role', 'Assign tenant role to user', 'tenant', 1),
-('tenant.user.delete', 'Delete Tenant User', 'Delete tenant user (soft delete)', 'tenant', 1),
-('tenant.user.edit', 'Edit Tenant User', 'Edit tenant user (including password reset)', 'tenant', 1),
-
--- TENANT INTERNAL SCOPE (3) - TenantAdmin and above
-('tenant.user.permission.grant', 'Grant Permission', 'Grant permission override to user', 'tenant', 1),
-('tenant.user.permission.deny', 'Deny Permission', 'Deny permission override from user', 'tenant', 1),
-('tenant.settings.edit', 'Tenant Settings', 'Edit tenant settings', 'tenant', 1),
-
--- AUDIT SCOPE (3) - TenantAdmin and above
-('audit.list', 'Audit Log List', 'List audit logs', 'audit', 1),
-('audit.view', 'View Audit Log', 'View audit log details', 'audit', 1),
-('audit.export', 'Export Audit Log', 'Export audit logs', 'audit', 1);
-
--- ================================================================
--- 5. ROLE-PERMISSION MAPPING
--- ================================================================
-
--- SUPERADMIN: ALL PERMISSIONS
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'superadmin';
-
--- ADMIN: company.* + tenant.* + audit.* (excluding platform.*)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'admin'
-  AND p.category IN ('company', 'tenant', 'audit');
-
--- COMPANYADMIN: tenant.* + audit.* (excluding company.*)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'companyadmin'
-  AND p.category IN ('tenant', 'audit');
-
--- TENANTADMIN: tenant.user.* + tenant.settings.* + tenant.user.permission.* + audit.*
--- NOTE: No tenant.view/list - TenantAdmin works within their own tenant
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'tenantadmin'
-  AND (
-    p.code IN (
-      'tenant.user.list',
-      'tenant.user.create',
-      'tenant.user.edit',
-      'tenant.user.delete',
-      'tenant.user.role.assign',
-      'tenant.user.permission.grant',
-      'tenant.user.permission.deny',
-      'tenant.settings.edit'
-    )
-    OR p.category = 'audit'
-  );
-
--- MODERATOR: tenant.user.list + audit.list + audit.view
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'moderator'
-  AND p.code IN ('tenant.user.list', 'audit.list', 'audit.view');
-
--- EDITOR: audit.list
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'editor'
-  AND p.code IN ('audit.list');
-
--- OPERATOR: tenant.user.list + audit.list
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'operator'
-  AND p.code IN ('tenant.user.list', 'audit.list');
-
--- USER: audit.list (minimum permission)
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'user'
-  AND p.code IN ('audit.list');
-
--- ================================================================
--- 6. USERS
+-- 4. USERS
 -- ================================================================
 -- Password: deneme
 -- Hash: zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=
@@ -207,7 +81,7 @@ INSERT INTO security.users (company_id, first_name, last_name, email, username, 
  1, 'en', 'Europe/Istanbul', 'EUR');
 
 -- ================================================================
--- 7. GLOBAL ROLE ASSIGNMENT
+-- 5. GLOBAL ROLE ASSIGNMENT
 -- ================================================================
 
 -- superadmin@nucleo.io → superadmin (global)
@@ -216,7 +90,7 @@ SELECT u.id, r.id, NULL FROM security.users u, security.roles r
 WHERE u.email = 'superadmin@nucleo.io' AND r.code = 'superadmin';
 
 -- ================================================================
--- 8. VALIDATION
+-- 6. VALIDATION
 -- ================================================================
 
 DO $$

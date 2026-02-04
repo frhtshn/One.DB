@@ -10,6 +10,8 @@
 -- 1. Core Deployment (schemas, tables, functions, triggers, constraints)
 -- 2. Menu Localization (key + values)
 -- 3. Staging Seed Data (companies, tenants, users, menus)
+-- 4. Permissions (UPSERT - 168 permissions)
+-- 5. Role-Permission Mappings (role bazlı permission atamaları)
 -- ============================================================================
 -- UYARI: Bu dosya TÜM verileri siler ve yeniden oluşturur!
 -- SADECE staging/dev ortamlarında kullanın - PRODUCTION'DA KULLANMAYIN!
@@ -36,6 +38,20 @@
 -- Test şirketleri, tenant'lar, kullanıcılar ve menü yapısı
 
 \i core/data/staging_seed.sql
+
+-- ============================================================================
+-- 4. PERMISSIONS
+-- ============================================================================
+-- 168 permission tanımı (UPSERT - güvenli tekrar çalıştırılabilir)
+
+\i core/data/permissions_full.sql
+
+-- ============================================================================
+-- 5. ROLE-PERMISSION MAPPINGS
+-- ============================================================================
+-- Her rol için permission atamaları (roles ve permissions'dan sonra çalışmalı)
+
+\i core/data/role_permissions_full.sql
 
 -- ============================================================================
 -- DEPLOYMENT TAMAMLANDI
