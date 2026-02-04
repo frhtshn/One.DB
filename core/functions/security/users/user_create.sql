@@ -25,37 +25,13 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-    v_caller_company_id BIGINT;
-    v_caller_has_platform_role BOOLEAN;
     v_new_id BIGINT;
 BEGIN
-    -- ========================================
-    -- 1. CALLER BİLGİLERİNİ AL
-    -- ========================================
-    SELECT
-        u.company_id,
-        EXISTS(
-            SELECT 1 FROM security.user_roles ur2
-            JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
-        )
-    INTO v_caller_company_id, v_caller_has_platform_role
-    FROM security.users u
-    WHERE u.id = p_caller_id AND u.status = 1;
-
-    IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
-    END IF;
+    -- 1. Company erişim kontrolü
+    PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
 
     -- ========================================
-    -- 2. IDOR KONTROLÜ - Company Scope
-    -- ========================================
-    IF NOT v_caller_has_platform_role AND v_caller_company_id != p_company_id THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
-    END IF;
-
-    -- ========================================
-    -- 3. VALIDASYONLAR
+    -- 2. VALIDASYONLAR
     -- ========================================
     -- Email benzersizlik kontrolü
     IF EXISTS (SELECT 1 FROM security.users WHERE email = LOWER(TRIM(p_email))) THEN

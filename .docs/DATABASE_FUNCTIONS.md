@@ -197,6 +197,29 @@ This document lists all stored procedures, functions, and triggers defined in th
 
 ### Security Schema
 
+#### Access Helper Functions (IDOR Protection)
+
+These functions provide centralized access control for IDOR (Insecure Direct Object Reference) protection across the application.
+
+**Foundation Functions:**
+- **`user_get_access_level(p_caller_id BIGINT)`**: Returns caller's access level including `is_platform_admin`, `company_id`, `allowed_company_ids`, and `allowed_tenant_ids`. Foundation for all access checks.
+- **`user_is_platform_admin(p_caller_id BIGINT)`**: Returns TRUE if caller has a platform role (SuperAdmin or Admin, level >= 90).
+- **`user_is_superadmin(p_caller_id BIGINT)`**: Returns TRUE if caller has the SuperAdmin role.
+
+**Boolean Check Functions:**
+- **`user_can_access_tenant(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Returns TRUE if caller can access the specified tenant.
+- **`user_can_access_company(p_caller_id BIGINT, p_company_id BIGINT)`**: Returns TRUE if caller can access the specified company.
+- **`user_can_manage_user(p_caller_id BIGINT, p_target_user_id BIGINT)`**: Returns TRUE if caller can manage (update/delete) the target user.
+
+**Guard Clause Functions (Raise Exception on Failure):**
+- **`user_assert_access_tenant(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Raises P0403 exception if caller cannot access the tenant.
+- **`user_assert_access_company(p_caller_id BIGINT, p_company_id BIGINT)`**: Raises P0403 exception if caller cannot access the company.
+- **`user_assert_manage_user(p_caller_id BIGINT, p_target_user_id BIGINT)`**: Raises P0403 exception if caller cannot manage the target user.
+- **`user_assert_platform_admin(p_caller_id BIGINT)`**: Raises P0403 exception if caller is not a Platform Admin.
+- **`user_assert_superadmin(p_caller_id BIGINT)`**: Raises P0403 exception if caller is not a SuperAdmin.
+
+#### Other Security Functions
+
 - **`is_system_role(p_role_code VARCHAR)`**: Is system role.
 - **`permission_category_list()`**: Permission category list.
 - **`permission_check(p_user_id BIGINT, p_permission_code VARCHAR(100), p_tenant_id BIGINT DEFAULT NULL)`**: Permission check.

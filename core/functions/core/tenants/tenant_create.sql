@@ -27,26 +27,9 @@ DECLARE
     v_id BIGINT;
     v_curr VARCHAR;
     v_lang VARCHAR;
-    v_caller_company_id BIGINT;
-    v_has_platform_role BOOLEAN;
 BEGIN
-    -- 1. Yetki Kontrolü
-    SELECT
-        u.company_id,
-        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE)
-    INTO v_caller_company_id, v_has_platform_role
-    FROM security.users u
-    WHERE u.id = p_caller_id AND u.status = 1;
-
-    IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
-    END IF;
-
-    IF NOT v_has_platform_role THEN
-        IF p_company_id != v_caller_company_id THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
-        END IF;
-    END IF;
+    -- 1. Company erişim kontrolü
+    PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
 
     -- Company Exists Check
     IF NOT EXISTS (SELECT 1 FROM core.companies WHERE id = p_company_id) THEN

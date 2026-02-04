@@ -85,6 +85,12 @@ CREATE INDEX idx_user_permission_overrides_active ON security.user_permission_ov
 -- user_allowed_tenants (user lookup - user_authenticate)
 CREATE INDEX idx_user_allowed_tenants_user_id ON security.user_allowed_tenants USING btree(user_id);
 
+-- user_allowed_tenants (tenant lookup - access helpers)
+CREATE INDEX idx_user_allowed_tenants_tenant_id ON security.user_allowed_tenants USING btree(tenant_id);
+
+-- user_allowed_tenants (composite lookup - user_can_access_tenant helper)
+CREATE INDEX idx_user_allowed_tenants_lookup ON security.user_allowed_tenants USING btree(user_id, tenant_id);
+
 -- user_password_history (son şifreleri hızlı çekmek için)
 CREATE INDEX idx_user_password_history_lookup ON security.user_password_history USING btree(user_id, changed_at DESC);
 

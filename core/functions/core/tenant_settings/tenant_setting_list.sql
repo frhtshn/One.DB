@@ -15,39 +15,20 @@ LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-    v_caller_company_id BIGINT;
-    v_has_platform_role BOOLEAN;
     v_tenant_company_id BIGINT;
 BEGIN
-    -- 1. Yetki ve Kullanıcı Kontrolü
-    SELECT
-        u.company_id,
-        EXISTS(SELECT 1 FROM security.user_roles ur JOIN security.roles r ON ur.role_id = r.id WHERE ur.user_id = u.id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE)
-    INTO v_caller_company_id, v_has_platform_role
-    FROM security.users u
-    WHERE u.id = p_caller_id AND u.status = 1;
-
-    IF v_caller_company_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
-    END IF;
-
-    -- 2. Tenant Varlık Kontrolü
+    -- 1. Tenant varlık kontrolü
     SELECT company_id INTO v_tenant_company_id
-    FROM core.tenants
-    WHERE id = p_tenant_id;
+    FROM core.tenants WHERE id = p_tenant_id;
 
     IF NOT FOUND THEN
-         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
     END IF;
 
-    -- 3. Scope Kontrolü
-    IF NOT v_has_platform_role THEN
-        IF v_tenant_company_id != v_caller_company_id THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
-        END IF;
-    END IF;
+    -- 2. Company erişim kontrolü
+    PERFORM security.user_assert_access_company(p_caller_id, v_tenant_company_id);
 
-    -- 4. List Data
+    -- 3. List Data
     RETURN COALESCE((
         SELECT jsonb_agg(
             jsonb_build_object(

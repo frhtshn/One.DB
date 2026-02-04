@@ -24,17 +24,8 @@ DECLARE
     v_name VARCHAR(100);
     v_new_id INT;
 BEGIN
-    -- Platform Admin kontrolü (SuperAdmin veya Admin)
-    IF NOT EXISTS(
-        SELECT 1 FROM security.user_roles ur
-        JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id
-          AND ur.tenant_id IS NULL
-          AND r.code IN ('superadmin', 'admin')
-          AND r.status = 1
-    ) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
-    END IF;
+    -- Platform Admin check
+    PERFORM security.user_assert_platform_admin(p_caller_id);
 
     -- Kod kontrolü
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN

@@ -20,17 +20,8 @@ DECLARE
     v_code VARCHAR(50);
     v_new_id INT;
 BEGIN
-    -- SuperAdmin kontrolü
-    IF NOT EXISTS(
-        SELECT 1 FROM security.user_roles ur
-        JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id
-          AND ur.tenant_id IS NULL
-          AND r.code = 'superadmin'
-          AND r.status = 1
-    ) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
-    END IF;
+    -- SuperAdmin check
+    PERFORM security.user_assert_superadmin(p_caller_id);
 
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template.code-invalid';

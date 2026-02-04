@@ -23,38 +23,27 @@ DECLARE
     v_offset INTEGER;
     v_total_count INTEGER;
     v_items JSONB;
-    v_caller_company_id BIGINT;
-    v_has_platform_role BOOLEAN;
+    v_access RECORD;
 BEGIN
     v_offset := (p_page - 1) * p_page_size;
 
-    -- 1. Yetki Kontrolü
-    SELECT
-        u.company_id,
-        EXISTS(
-            SELECT 1
-            FROM security.user_roles ur
-            JOIN security.roles r ON ur.role_id = r.id
-            WHERE ur.user_id = u.id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
-        )
-    INTO v_caller_company_id, v_has_platform_role
-    FROM security.users u
-    WHERE u.id = p_caller_id AND u.status = 1;
+    -- 1. Erişim seviyesi kontrolü
+    SELECT * INTO v_access FROM security.user_get_access_level(p_caller_id);
 
-    IF v_caller_company_id IS NULL THEN
+    IF v_access.user_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
-    -- Platform rolü yoksa, company scope kontrolü yap
-    IF NOT v_has_platform_role THEN
-        -- Eğer belirli bir company_id istenmişse, kullanıcının kendi company_id'si ile eşleşmeli
-        IF p_company_id IS NOT NULL AND p_company_id != v_caller_company_id THEN
-             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
+    -- 2. Company scope kontrolü
+    IF v_access.allowed_company_ids IS NOT NULL THEN
+        -- Sınırlı erişim - belirli bir company istenmişse erişim kontrolü
+        IF p_company_id IS NOT NULL AND NOT (p_company_id = ANY(v_access.allowed_company_ids)) THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
         END IF;
 
-        -- Company_id verilmemişse, kullanıcının kendi company_id'sine zorla
+        -- Company belirtilmemişse kendi şirketine zorla
         IF p_company_id IS NULL THEN
-            p_company_id := v_caller_company_id;
+            p_company_id := v_access.company_id;
         END IF;
     END IF;
 

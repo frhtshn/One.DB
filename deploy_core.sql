@@ -354,6 +354,19 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/uikit/navigation_template_item_update.sql
 \i core/functions/catalog/uikit/navigation_template_item_delete.sql
 
+-- Access Helper Functions (IDOR Protection)
+\i core/functions/security/access/user_get_access_level.sql
+\i core/functions/security/access/user_can_access_tenant.sql
+\i core/functions/security/access/user_can_access_company.sql
+\i core/functions/security/access/user_can_manage_user.sql
+\i core/functions/security/access/user_assert_access_tenant.sql
+\i core/functions/security/access/user_assert_access_company.sql
+\i core/functions/security/access/user_assert_manage_user.sql
+\i core/functions/security/access/user_is_platform_admin.sql
+\i core/functions/security/access/user_assert_platform_admin.sql
+\i core/functions/security/access/user_is_superadmin.sql
+\i core/functions/security/access/user_assert_superadmin.sql
+
 -- Session Functions
 \i core/functions/security/session/session_list.sql
 \i core/functions/security/session/session_save.sql
