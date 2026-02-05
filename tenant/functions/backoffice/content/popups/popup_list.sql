@@ -42,6 +42,8 @@ BEGIN
             'code', p.code,
             'popupTypeId', p.popup_type_id,
             'popupTypeCode', pt.code,
+            'popupTypeIcon', pt.icon,
+            'popupTypeName', COALESCE(ptt.name, pt.code),
             'triggerType', p.trigger_type,
             'triggerDelay', p.trigger_delay,
             'frequencyType', p.frequency_type,
@@ -73,7 +75,8 @@ BEGIN
         ORDER BY priority DESC, created_at DESC
         LIMIT p_page_size OFFSET v_offset
     ) p
-    LEFT JOIN content.popup_types pt ON pt.id = p.popup_type_id;
+    LEFT JOIN content.popup_types pt ON pt.id = p.popup_type_id
+    LEFT JOIN content.popup_type_translations ptt ON ptt.popup_type_id = pt.id AND ptt.language_code = 'en';
 
     RETURN jsonb_build_object(
         'items', v_items,

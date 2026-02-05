@@ -9,8 +9,8 @@ DROP TABLE IF EXISTS content.promotions CASCADE;
 CREATE TABLE content.promotions (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) NOT NULL,                    -- Benzersiz promosyon kodu (welcome_bonus, friday_reload)
+    promotion_type_id INTEGER NOT NULL,           -- Promosyon türü (promotion_types tablosuna referans)
     bonus_id INTEGER,                             -- Bağlı bonus kuralı (bonus.bonus_rules tablosuna referans)
-    promo_type VARCHAR(30) NOT NULL DEFAULT 'general', -- Promosyon tipi: general, welcome, deposit, cashback, freespin, tournament, vip, seasonal
     min_deposit NUMERIC(18,2),                    -- Minimum depozit tutarı (varsa)
     max_deposit NUMERIC(18,2),                    -- Maksimum depozit tutarı (varsa)
     start_date TIMESTAMP WITHOUT TIME ZONE,       -- Promosyon başlangıç tarihi

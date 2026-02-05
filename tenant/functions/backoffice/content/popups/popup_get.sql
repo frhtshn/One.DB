@@ -22,6 +22,13 @@ BEGIN
         'code', p.code,
         'popupTypeId', p.popup_type_id,
         'popupTypeCode', pt.code,
+        'popupTypeIcon', pt.icon,
+        'popupTypeName', COALESCE(ptt.name, pt.code),
+        'popupTypeHasOverlay', pt.has_overlay,
+        'popupTypeCanClose', pt.can_close,
+        'popupTypeCloseOnOverlayClick', pt.close_on_overlay_click,
+        'popupTypeDefaultWidth', pt.default_width,
+        'popupTypeDefaultHeight', pt.default_height,
         -- Görüntüleme
         'displayDuration', p.display_duration,
         'autoClose', p.auto_close,
@@ -93,6 +100,7 @@ BEGIN
     INTO v_result
     FROM content.popups p
     LEFT JOIN content.popup_types pt ON pt.id = p.popup_type_id
+    LEFT JOIN content.popup_type_translations ptt ON ptt.popup_type_id = pt.id AND ptt.language_code = 'en'
     WHERE p.id = p_id AND p.is_deleted = FALSE;
 
     IF v_result IS NULL THEN
