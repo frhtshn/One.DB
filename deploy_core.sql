@@ -362,10 +362,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/access/user_assert_access_tenant.sql
 \i core/functions/security/access/user_assert_access_company.sql
 \i core/functions/security/access/user_assert_manage_user.sql
-\i core/functions/security/access/user_is_platform_admin.sql
-\i core/functions/security/access/user_assert_platform_admin.sql
-\i core/functions/security/access/user_is_superadmin.sql
-\i core/functions/security/access/user_assert_superadmin.sql
 
 -- Session Functions
 \i core/functions/security/session/session_list.sql

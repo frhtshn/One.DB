@@ -1,12 +1,10 @@
 -- ================================================================
--- PROVIDER_TYPE_UPDATE: Provider tipi günceller
--- Sadece SuperAdmin kullanabilir (IDOR korumalı)
+-- PROVIDER_TYPE_UPDATE: Provider tipi gunceller
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.provider_type_update(BIGINT, BIGINT, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.provider_type_update(BIGINT, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_type_update(
-    p_caller_id BIGINT,
     p_id BIGINT,
     p_code VARCHAR(30),
     p_name VARCHAR(100)
@@ -20,25 +18,22 @@ DECLARE
     v_name VARCHAR(100);
     v_existing_id BIGINT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
-    -- ID kontrolü
+    -- ID kontrolu
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-type.id-required';
     END IF;
 
-    -- Mevcut kayıt kontrolü
+    -- Mevcut kayit kontrolu
     IF NOT EXISTS(SELECT 1 FROM catalog.provider_types pt WHERE pt.id = p_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider-type.not-found';
     END IF;
 
-    -- Kod kontrolü
+    -- Kod kontrolu
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-type.code-invalid';
     END IF;
 
-    -- İsim kontrolü
+    -- Isim kontrolu
     IF p_name IS NULL OR LENGTH(TRIM(p_name)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-type.name-invalid';
     END IF;
@@ -46,7 +41,7 @@ BEGIN
     v_code := UPPER(TRIM(p_code));
     v_name := TRIM(p_name);
 
-    -- Kod unique kontrolü (başka kayıtta aynı kod var mı)
+    -- Kod unique kontrolu (baska kayitta ayni kod var mi)
     SELECT pt.id INTO v_existing_id
     FROM catalog.provider_types pt
     WHERE pt.provider_type_code = v_code AND pt.id != p_id;
@@ -55,7 +50,7 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.provider-type.code-exists';
     END IF;
 
-    -- Güncelle
+    -- Guncelle
     UPDATE catalog.provider_types
     SET provider_type_code = v_code,
         provider_type_name = v_name
@@ -63,4 +58,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_type_update IS 'Updates a provider type. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_type_update IS 'Updates a provider type.';

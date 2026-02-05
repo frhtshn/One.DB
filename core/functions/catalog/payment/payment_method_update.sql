@@ -1,11 +1,10 @@
 -- ================================================================
 -- PAYMENT_METHOD_UPDATE: Ödeme yöntemi günceller
--- Sadece SuperAdmin kullanabilir (IDOR korumalı)
 -- NULL geçilen alanlar güncellenmez (COALESCE pattern)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.payment_method_update(
-    BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR,
+    BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR,
     VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BOOLEAN, BOOLEAN,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL,
@@ -14,7 +13,6 @@ DROP FUNCTION IF EXISTS catalog.payment_method_update(
 );
 
 CREATE OR REPLACE FUNCTION catalog.payment_method_update(
-    p_caller_id BIGINT,
     p_id BIGINT,
     p_provider_id BIGINT DEFAULT NULL,
     p_code VARCHAR(100) DEFAULT NULL,
@@ -63,9 +61,6 @@ DECLARE
     v_code VARCHAR(100);
     v_existing_id BIGINT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.payment-method.id-required';
@@ -153,4 +148,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.payment_method_update IS 'Updates a payment method. SuperAdmin only. NULL values preserve existing data.';
+COMMENT ON FUNCTION catalog.payment_method_update IS 'Updates a payment method. NULL values preserve existing data.';

@@ -1,14 +1,11 @@
 -- ================================================================
 -- PAYMENT_METHOD_GET: Tekil ödeme yöntemi getirir
--- Sadece SuperAdmin erişebilir
 -- Tüm detayları içerir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.payment_method_get(BIGINT);
-DROP FUNCTION IF EXISTS catalog.payment_method_get(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.payment_method_get(
-    p_caller_id BIGINT,
     p_id BIGINT
 )
 RETURNS TABLE(
@@ -62,9 +59,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.payment-method.id-required';
@@ -127,4 +121,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.payment_method_get IS 'Gets a single payment method with all details. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.payment_method_get IS 'Gets a single payment method with all details.';

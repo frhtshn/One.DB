@@ -1,12 +1,10 @@
 -- ================================================================
 -- UI_POSITION_LIST: UI pozisyonlarını listeler
--- SuperAdmin erişebilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.ui_position_list(BIGINT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.ui_position_list(BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.ui_position_list(
-    p_caller_id BIGINT,
     p_is_global BOOLEAN DEFAULT NULL
 )
 RETURNS TABLE(
@@ -22,9 +20,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         up.id,
@@ -39,4 +34,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.ui_position_list IS 'Lists UI positions. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.ui_position_list IS 'Lists UI positions.';

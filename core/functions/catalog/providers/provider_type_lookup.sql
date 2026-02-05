@@ -1,14 +1,10 @@
 -- ================================================================
--- PROVIDER_TYPE_LOOKUP: Provider tipi dropdown için basit liste
--- SuperAdmin erişebilir (provider_type_list ile tutarlı)
+-- PROVIDER_TYPE_LOOKUP: Provider tipi dropdown icin basit liste
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_type_lookup();
-DROP FUNCTION IF EXISTS catalog.provider_type_lookup(BIGINT);
 
-CREATE OR REPLACE FUNCTION catalog.provider_type_lookup(
-    p_caller_id BIGINT
-)
+CREATE OR REPLACE FUNCTION catalog.provider_type_lookup()
 RETURNS TABLE(
     id BIGINT,
     code VARCHAR(30),
@@ -20,9 +16,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         pt.id,
@@ -34,4 +27,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_type_lookup(BIGINT) IS 'Returns provider type list for dropdowns. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_type_lookup() IS 'Returns provider type list for dropdowns.';

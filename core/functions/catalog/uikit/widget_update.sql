@@ -1,14 +1,12 @@
 -- ================================================================
 -- WIDGET_UPDATE: Widget günceller
--- SuperAdmin kullanabilir
 -- NULL geçilen alanlar güncellenmez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.widget_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
-DROP FUNCTION IF EXISTS catalog.widget_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.widget_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.widget_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.widget_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_code VARCHAR(50) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
@@ -26,9 +24,6 @@ DECLARE
     v_code VARCHAR(50);
     v_existing_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.widget.id-required';
@@ -85,4 +80,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.widget_update IS 'Updates a widget. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.widget_update IS 'Updates a widget.';

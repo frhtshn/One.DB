@@ -1,12 +1,10 @@
 -- ================================================================
 -- KYC_LEVEL_REQUIREMENT_GET: Tekil seviye gereksinimi getirir
--- Platform Admin (SuperAdmin + Admin) erişebilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_get(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_get(INT);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_level_requirement_get(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS TABLE(
@@ -45,9 +43,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-level-requirement.id-required';
@@ -95,4 +90,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_level_requirement_get IS 'Gets a single KYC level requirement by ID. Platform Admin only.';
+COMMENT ON FUNCTION catalog.kyc_level_requirement_get IS 'Gets a single KYC level requirement by ID.';

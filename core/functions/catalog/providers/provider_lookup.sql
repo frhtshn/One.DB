@@ -1,14 +1,11 @@
 -- ================================================================
--- PROVIDER_LOOKUP: Provider dropdown için basit liste
--- SuperAdmin erişebilir (provider_list ile tutarlı)
+-- PROVIDER_LOOKUP: Provider dropdown icin basit liste
 -- Opsiyonel provider_type_id filtresi
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_lookup(BIGINT);
-DROP FUNCTION IF EXISTS catalog.provider_lookup(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.provider_lookup(
-    p_caller_id BIGINT,
     p_type_id BIGINT DEFAULT NULL
 )
 RETURNS TABLE(
@@ -25,9 +22,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         p.id,
@@ -44,4 +38,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_lookup(BIGINT, BIGINT) IS 'Returns provider list for dropdowns. Optional type_id filter. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_lookup(BIGINT) IS 'Returns provider list for dropdowns. Optional type_id filter.';

@@ -1,12 +1,10 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_CREATE: Yeni navigasyon şablonu oluşturur
--- SuperAdmin kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.navigation_template_create(BIGINT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.navigation_template_create(VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_create(
-    p_caller_id BIGINT,
     p_code VARCHAR(50),
     p_name VARCHAR(100),
     p_description TEXT DEFAULT NULL,
@@ -20,9 +18,6 @@ DECLARE
     v_code VARCHAR(50);
     v_new_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template.code-invalid';
     END IF;
@@ -50,4 +45,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_create IS 'Creates a new navigation template. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.navigation_template_create IS 'Creates a new navigation template.';

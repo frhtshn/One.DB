@@ -1,18 +1,16 @@
 -- ================================================================
 -- KYC_DOCUMENT_REQUIREMENT_UPDATE: Belge gereksinimi günceller
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- NULL geçilen alanlar güncellenmez (COALESCE pattern)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_update(
-    BIGINT, INT, VARCHAR, JSONB, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
+    INT, VARCHAR, JSONB, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
 );
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_update(
-    BIGINT, INT, VARCHAR, TEXT, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
+    INT, VARCHAR, TEXT, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
 );
 
 CREATE OR REPLACE FUNCTION catalog.kyc_document_requirement_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_document_type VARCHAR(30) DEFAULT NULL,
     p_accepted_subtypes TEXT DEFAULT NULL,
@@ -31,9 +29,6 @@ DECLARE
     v_jurisdiction_id INT;
     v_existing_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-document-requirement.id-required';
@@ -93,4 +88,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_document_requirement_update IS 'Updates a KYC document requirement. Platform Admin only.';
+COMMENT ON FUNCTION catalog.kyc_document_requirement_update IS 'Updates a KYC document requirement.';

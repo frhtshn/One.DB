@@ -1,14 +1,11 @@
 -- ================================================================
 -- PAYMENT_METHOD_LIST: Ödeme yöntemlerini listeler
--- Sadece SuperAdmin erişebilir
 -- Opsiyonel provider_id, payment_type ve is_active filtresi
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.payment_method_list(BIGINT, VARCHAR, BOOLEAN);
-DROP FUNCTION IF EXISTS catalog.payment_method_list(BIGINT, BIGINT, VARCHAR, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.payment_method_list(
-    p_caller_id BIGINT,
     p_provider_id BIGINT DEFAULT NULL,
     p_payment_type VARCHAR(50) DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
@@ -47,9 +44,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         pm.id,
@@ -88,4 +82,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.payment_method_list IS 'Lists payment methods with optional filters. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.payment_method_list IS 'Lists payment methods with optional filters.';

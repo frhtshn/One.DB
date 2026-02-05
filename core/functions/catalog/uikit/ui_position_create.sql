@@ -1,12 +1,10 @@
 -- ================================================================
 -- UI_POSITION_CREATE: Yeni UI pozisyonu oluşturur
--- SuperAdmin kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.ui_position_create(BIGINT, VARCHAR, VARCHAR, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.ui_position_create(VARCHAR, VARCHAR, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.ui_position_create(
-    p_caller_id BIGINT,
     p_code VARCHAR(50),
     p_name VARCHAR(100),
     p_is_global BOOLEAN DEFAULT FALSE
@@ -19,9 +17,6 @@ DECLARE
     v_code VARCHAR(50);
     v_new_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.ui-position.code-invalid';
     END IF;
@@ -44,4 +39,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.ui_position_create IS 'Creates a new UI position. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.ui_position_create IS 'Creates a new UI position.';

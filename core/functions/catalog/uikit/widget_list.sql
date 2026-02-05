@@ -1,13 +1,11 @@
 -- ================================================================
 -- WIDGET_LIST: Widget'ları listeler
--- SuperAdmin erişebilir
 -- Opsiyonel category ve is_active filtresi
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.widget_list(BIGINT, VARCHAR, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.widget_list(VARCHAR, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.widget_list(
-    p_caller_id BIGINT,
     p_category VARCHAR(30) DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
@@ -28,9 +26,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         w.id,
@@ -50,4 +45,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.widget_list IS 'Lists widgets. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.widget_list IS 'Lists widgets.';

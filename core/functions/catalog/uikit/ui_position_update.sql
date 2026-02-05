@@ -1,12 +1,10 @@
 -- ================================================================
 -- UI_POSITION_UPDATE: UI pozisyonu günceller
--- SuperAdmin kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.ui_position_update(BIGINT, INT, VARCHAR, VARCHAR, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.ui_position_update(INT, VARCHAR, VARCHAR, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.ui_position_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_code VARCHAR(50) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
@@ -20,9 +18,6 @@ DECLARE
     v_code VARCHAR(50);
     v_existing_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.ui-position.id-required';
     END IF;
@@ -60,4 +55,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.ui_position_update IS 'Updates a UI position. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.ui_position_update IS 'Updates a UI position.';

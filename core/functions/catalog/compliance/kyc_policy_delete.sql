@@ -1,12 +1,10 @@
 -- ================================================================
 -- KYC_POLICY_DELETE: KYC policy siler
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.kyc_policy_delete(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.kyc_policy_delete(INT);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_policy_delete(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS VOID
@@ -14,9 +12,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-policy.id-required';
@@ -37,4 +32,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_policy_delete IS 'Deletes a KYC policy. Platform Admin only.';
+COMMENT ON FUNCTION catalog.kyc_policy_delete IS 'Deletes a KYC policy.';

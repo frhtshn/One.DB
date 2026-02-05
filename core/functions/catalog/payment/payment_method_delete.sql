@@ -1,13 +1,11 @@
 -- ================================================================
 -- PAYMENT_METHOD_DELETE: Ödeme yöntemi siler
--- Sadece SuperAdmin kullanabilir (IDOR korumalı)
 -- Tenant'larda kullanılıyorsa silme engellenir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.payment_method_delete(BIGINT, BIGINT);
+DROP FUNCTION IF EXISTS catalog.payment_method_delete(BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.payment_method_delete(
-    p_caller_id BIGINT,
     p_id BIGINT
 )
 RETURNS VOID
@@ -15,9 +13,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.payment-method.id-required';
@@ -38,4 +33,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.payment_method_delete IS 'Deletes a payment method. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.payment_method_delete IS 'Deletes a payment method.';

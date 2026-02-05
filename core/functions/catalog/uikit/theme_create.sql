@@ -1,13 +1,11 @@
 -- ================================================================
 -- THEME_CREATE: Yeni tema oluşturur
--- SuperAdmin kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
-DROP FUNCTION IF EXISTS catalog.theme_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.theme_create(VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.theme_create(VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.theme_create(
-    p_caller_id BIGINT,
     p_code VARCHAR(50),
     p_name VARCHAR(100),
     p_description TEXT DEFAULT NULL,
@@ -25,9 +23,6 @@ DECLARE
     v_name VARCHAR(100);
     v_new_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- Kod kontrolü
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.theme.code-invalid';
@@ -62,4 +57,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_create IS 'Creates a new theme. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.theme_create IS 'Creates a new theme.';

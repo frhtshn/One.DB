@@ -1,11 +1,10 @@
 -- ================================================================
 -- RESPONSIBLE_GAMING_POLICY_UPDATE: Sorumlu oyun politikası günceller
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- NULL geçilen alanlar güncellenmez (COALESCE pattern)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_update(
-    BIGINT, INT,
+    INT,
     BOOLEAN, JSONB, INT,
     BOOLEAN, JSONB,
     BOOLEAN, INT, BOOLEAN, INT, INT,
@@ -16,7 +15,7 @@ DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_update(
     BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
 );
 DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_update(
-    BIGINT, INT,
+    INT,
     BOOLEAN, TEXT, INT,
     BOOLEAN, TEXT,
     BOOLEAN, INT, BOOLEAN, INT, INT,
@@ -28,7 +27,6 @@ DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_update(
 );
 
 CREATE OR REPLACE FUNCTION catalog.responsible_gaming_policy_update(
-    p_caller_id BIGINT,
     p_id INT,
     -- Deposit limits
     p_deposit_limit_required BOOLEAN DEFAULT NULL,
@@ -72,9 +70,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.responsible-gaming-policy.id-required';
@@ -120,4 +115,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.responsible_gaming_policy_update IS 'Updates a responsible gaming policy. Platform Admin only.';
+COMMENT ON FUNCTION catalog.responsible_gaming_policy_update IS 'Updates a responsible gaming policy.';

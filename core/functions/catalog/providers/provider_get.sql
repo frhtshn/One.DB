@@ -1,13 +1,10 @@
 -- ================================================================
 -- PROVIDER_GET: Tekil provider getirir
--- Sadece SuperAdmin erişebilir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_get(BIGINT);
-DROP FUNCTION IF EXISTS catalog.provider_get(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.provider_get(
-    p_caller_id BIGINT,
     p_id BIGINT
 )
 RETURNS TABLE(
@@ -25,10 +22,7 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
-    -- ID kontrolü
+    -- ID kontrolu
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.id-required';
     END IF;
@@ -47,11 +41,11 @@ BEGIN
     JOIN catalog.provider_types pt ON pt.id = p.provider_type_id
     WHERE p.id = p_id;
 
-    -- Bulunamadı kontrolü
+    -- Bulunamadi kontrolu
     IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider.not-found';
     END IF;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_get IS 'Gets a single provider by ID. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_get IS 'Gets a single provider by ID.';

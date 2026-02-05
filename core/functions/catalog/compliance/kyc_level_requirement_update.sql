@@ -1,24 +1,22 @@
 -- ================================================================
 -- KYC_LEVEL_REQUIREMENT_UPDATE: Seviye gereksinimi günceller
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- NULL geçilen alanlar güncellenmez (COALESCE pattern)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_update(
-    BIGINT, INT, VARCHAR, INT,
+    INT, VARCHAR, INT,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR, INT, BOOLEAN,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR,
     JSONB, JSONB, INT, INT, VARCHAR, BOOLEAN
 );
 DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_update(
-    BIGINT, INT, VARCHAR, INT,
+    INT, VARCHAR, INT,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR, INT, BOOLEAN,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR,
     TEXT, TEXT, INT, INT, VARCHAR, BOOLEAN
 );
 
 CREATE OR REPLACE FUNCTION catalog.kyc_level_requirement_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_kyc_level VARCHAR(20) DEFAULT NULL,
     p_level_order INT DEFAULT NULL,
@@ -55,9 +53,6 @@ DECLARE
     v_jurisdiction_id INT;
     v_existing_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-level-requirement.id-required';
@@ -127,4 +122,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_level_requirement_update IS 'Updates a KYC level requirement. Platform Admin only.';
+COMMENT ON FUNCTION catalog.kyc_level_requirement_update IS 'Updates a KYC level requirement.';

@@ -1,13 +1,11 @@
 -- ================================================================
 -- JURISDICTION_UPDATE: Jurisdiction günceller
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- NULL geçilen alanlar güncellenmez (COALESCE pattern)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.jurisdiction_update(BIGINT, INT, VARCHAR, VARCHAR, CHAR(2), VARCHAR, VARCHAR, VARCHAR, VARCHAR, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.jurisdiction_update(INT, VARCHAR, VARCHAR, CHAR(2), VARCHAR, VARCHAR, VARCHAR, VARCHAR, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.jurisdiction_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_code VARCHAR(20) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
@@ -26,9 +24,6 @@ DECLARE
     v_code VARCHAR(20);
     v_existing_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.jurisdiction.id-required';
@@ -87,4 +82,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.jurisdiction_update IS 'Updates a jurisdiction. Platform Admin only. NULL values keep existing data.';
+COMMENT ON FUNCTION catalog.jurisdiction_update IS 'Updates a jurisdiction. NULL values keep existing data.';

@@ -1,12 +1,10 @@
 -- ================================================================
--- PROVIDER_CREATE: Yeni provider oluşturur
--- Sadece SuperAdmin kullanabilir (IDOR korumalı)
+-- PROVIDER_CREATE: Yeni provider olusturur
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.provider_create(BIGINT, BIGINT, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.provider_create(BIGINT, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_create(
-    p_caller_id BIGINT,
     p_type_id BIGINT,
     p_code VARCHAR(50),
     p_name VARCHAR(255)
@@ -20,25 +18,22 @@ DECLARE
     v_name VARCHAR(255);
     v_new_id BIGINT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
-    -- Type ID kontrolü
+    -- Type ID kontrolu
     IF p_type_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.type-required';
     END IF;
 
-    -- Provider type varlık kontrolü
+    -- Provider type varlik kontrolu
     IF NOT EXISTS(SELECT 1 FROM catalog.provider_types pt WHERE pt.id = p_type_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider-type.not-found';
     END IF;
 
-    -- Kod kontrolü
+    -- Kod kontrolu
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.code-invalid';
     END IF;
 
-    -- İsim kontrolü
+    -- Isim kontrolu
     IF p_name IS NULL OR LENGTH(TRIM(p_name)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.name-invalid';
     END IF;
@@ -46,7 +41,7 @@ BEGIN
     v_code := UPPER(TRIM(p_code));
     v_name := TRIM(p_name);
 
-    -- Mevcut kod kontrolü (aynı type içinde unique)
+    -- Mevcut kod kontrolu (ayni type icinde unique)
     IF EXISTS(
         SELECT 1 FROM catalog.providers p
         WHERE p.provider_code = v_code
@@ -63,4 +58,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_create IS 'Creates a new provider. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_create IS 'Creates a new provider.';

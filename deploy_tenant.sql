@@ -146,16 +146,24 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 -- FUNCTIONS - Backoffice (Auth checked in Core DB)
 -- =============================================================================
+-- Slides
 \i tenant/functions/backoffice/content/slides/slide_list.sql
 \i tenant/functions/backoffice/content/slides/slide_get.sql
 \i tenant/functions/backoffice/content/slides/slide_create.sql
 \i tenant/functions/backoffice/content/slides/slide_update.sql
 \i tenant/functions/backoffice/content/slides/slide_delete.sql
+-- Popups
+\i tenant/functions/backoffice/content/popups/popup_list.sql
+\i tenant/functions/backoffice/content/popups/popup_get.sql
+\i tenant/functions/backoffice/content/popups/popup_create.sql
+\i tenant/functions/backoffice/content/popups/popup_update.sql
+\i tenant/functions/backoffice/content/popups/popup_delete.sql
 
 -- =============================================================================
 -- FUNCTIONS - Frontend (Public content, no auth required)
 -- =============================================================================
 \i tenant/functions/frontend/content/slides/get_active_slides.sql
+\i tenant/functions/frontend/content/popups/get_active_popups.sql
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created

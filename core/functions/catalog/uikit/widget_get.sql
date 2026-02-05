@@ -1,12 +1,10 @@
 -- ================================================================
 -- WIDGET_GET: Tekil widget getirir
--- SuperAdmin erişebilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.widget_get(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.widget_get(INT);
 
 CREATE OR REPLACE FUNCTION catalog.widget_get(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS TABLE(
@@ -26,9 +24,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.widget.id-required';
@@ -55,4 +50,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.widget_get IS 'Gets a single widget by ID. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.widget_get IS 'Gets a single widget by ID.';

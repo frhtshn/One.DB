@@ -1,12 +1,10 @@
 -- ================================================================
 -- KYC_DOCUMENT_REQUIREMENT_DELETE: Belge gereksinimi siler
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_delete(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_delete(INT);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_document_requirement_delete(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS VOID
@@ -14,9 +12,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-document-requirement.id-required';
@@ -32,4 +27,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_document_requirement_delete IS 'Deletes a KYC document requirement. Platform Admin only.';
+COMMENT ON FUNCTION catalog.kyc_document_requirement_delete IS 'Deletes a KYC document requirement.';

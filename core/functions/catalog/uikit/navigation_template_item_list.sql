@@ -1,13 +1,11 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_ITEM_LIST: Şablon öğelerini listeler
--- SuperAdmin erişebilir
 -- Template ID zorunlu
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.navigation_template_item_list(BIGINT, INT, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.navigation_template_item_list(INT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_item_list(
-    p_caller_id BIGINT,
     p_template_id INT,
     p_menu_location VARCHAR(50) DEFAULT NULL
 )
@@ -33,9 +31,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_template_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template-item.template-required';
     END IF;
@@ -68,4 +63,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_item_list IS 'Lists navigation template items. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.navigation_template_item_list IS 'Lists navigation template items.';

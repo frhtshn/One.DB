@@ -1,13 +1,11 @@
 -- ================================================================
 -- KYC_DOCUMENT_REQUIREMENT_LIST: KYC belge gereksinimlerini listeler
--- Platform Admin (SuperAdmin + Admin) erişebilir
 -- Jurisdiction bazlı filtreleme
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_list(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_list(INT);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_document_requirement_list(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT DEFAULT NULL
 )
 RETURNS TABLE(
@@ -31,9 +29,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         kdr.id,
@@ -57,4 +52,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_document_requirement_list IS 'Lists KYC document requirements. Platform Admin only. Optional jurisdiction filter.';
+COMMENT ON FUNCTION catalog.kyc_document_requirement_list IS 'Lists KYC document requirements. Optional jurisdiction filter.';

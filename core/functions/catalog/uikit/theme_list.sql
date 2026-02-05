@@ -1,13 +1,11 @@
 -- ================================================================
 -- THEME_LIST: Temaları listeler
--- SuperAdmin erişebilir
 -- Opsiyonel is_active ve is_premium filtresi
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_list(BIGINT, BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.theme_list(BOOLEAN, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.theme_list(
-    p_caller_id BIGINT,
     p_is_active BOOLEAN DEFAULT NULL,
     p_is_premium BOOLEAN DEFAULT NULL
 )
@@ -29,9 +27,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         t.id,
@@ -52,4 +47,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_list IS 'Lists themes. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.theme_list IS 'Lists themes.';

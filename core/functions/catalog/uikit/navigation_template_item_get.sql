@@ -1,12 +1,10 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_ITEM_GET: Tekil şablon öğesi getirir
--- SuperAdmin erişebilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.navigation_template_item_get(BIGINT, BIGINT);
+DROP FUNCTION IF EXISTS catalog.navigation_template_item_get(BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_item_get(
-    p_caller_id BIGINT,
     p_id BIGINT
 )
 RETURNS TABLE(
@@ -31,9 +29,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template-item.id-required';
     END IF;
@@ -64,4 +59,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_item_get IS 'Gets a single navigation template item. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.navigation_template_item_get IS 'Gets a single navigation template item.';

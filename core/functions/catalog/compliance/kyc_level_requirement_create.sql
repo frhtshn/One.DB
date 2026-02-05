@@ -1,24 +1,22 @@
 -- ================================================================
 -- KYC_LEVEL_REQUIREMENT_CREATE: Yeni seviye gereksinimi oluşturur
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- Her jurisdiction için her level sadece 1 kayıt olabilir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_create(
-    BIGINT, INT, VARCHAR, INT,
+    INT, VARCHAR, INT,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR, INT, BOOLEAN,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR,
     JSONB, JSONB, INT, INT, VARCHAR
 );
 DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_create(
-    BIGINT, INT, VARCHAR, INT,
+    INT, VARCHAR, INT,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR, INT, BOOLEAN,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, DECIMAL, CHAR,
     TEXT, TEXT, INT, INT, VARCHAR
 );
 
 CREATE OR REPLACE FUNCTION catalog.kyc_level_requirement_create(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT,
     p_kyc_level VARCHAR(20),
     p_level_order INT,
@@ -53,9 +51,6 @@ AS $$
 DECLARE
     v_new_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- Jurisdiction kontrolü
     IF p_jurisdiction_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-level-requirement.jurisdiction-required';
@@ -125,4 +120,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_level_requirement_create IS 'Creates a KYC level requirement. Platform Admin only. One per jurisdiction+level.';
+COMMENT ON FUNCTION catalog.kyc_level_requirement_create IS 'Creates a KYC level requirement. One per jurisdiction+level.';

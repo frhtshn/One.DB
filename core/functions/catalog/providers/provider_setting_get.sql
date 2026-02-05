@@ -1,15 +1,12 @@
 -- ================================================================
--- PROVIDER_SETTING_GET: Tekil provider ayarı getirir
--- Sadece SuperAdmin erişebilir
+-- PROVIDER_SETTING_GET: Tekil provider ayari getirir
 -- provider_id + key ile arama
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_setting_get(BIGINT);
 DROP FUNCTION IF EXISTS catalog.provider_setting_get(BIGINT, VARCHAR);
-DROP FUNCTION IF EXISTS catalog.provider_setting_get(BIGINT, BIGINT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_setting_get(
-    p_caller_id BIGINT,
     p_provider_id BIGINT,
     p_key VARCHAR(100)
 )
@@ -27,15 +24,12 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
-    -- Provider ID kontrolü
+    -- Provider ID kontrolu
     IF p_provider_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-setting.provider-required';
     END IF;
 
-    -- Key kontrolü
+    -- Key kontrolu
     IF p_key IS NULL OR LENGTH(TRIM(p_key)) = 0 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-setting.key-required';
     END IF;
@@ -53,11 +47,11 @@ BEGIN
     WHERE ps.provider_id = p_provider_id
       AND ps.setting_key = LOWER(TRIM(p_key));
 
-    -- Bulunamadı kontrolü
+    -- Bulunamadi kontrolu
     IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider-setting.not-found';
     END IF;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_setting_get IS 'Gets a provider setting by key. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_setting_get IS 'Gets a provider setting by key.';

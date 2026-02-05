@@ -1,13 +1,11 @@
 -- ================================================================
 -- KYC_LEVEL_REQUIREMENT_LIST: KYC seviye gereksinimlerini listeler
--- Platform Admin (SuperAdmin + Admin) erişebilir
 -- Jurisdiction bazlı filtreleme
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_list(BIGINT, INT, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_list(INT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_level_requirement_list(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT DEFAULT NULL,
     p_kyc_level VARCHAR(20) DEFAULT NULL
 )
@@ -47,9 +45,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         klr.id,
@@ -89,4 +84,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_level_requirement_list IS 'Lists KYC level requirements. Platform Admin only. Optional jurisdiction and level filters.';
+COMMENT ON FUNCTION catalog.kyc_level_requirement_list IS 'Lists KYC level requirements. Optional jurisdiction and level filters.';

@@ -1,13 +1,11 @@
 -- ================================================================
 -- WIDGET_CREATE: Yeni widget oluşturur
--- SuperAdmin kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.widget_create(BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB);
-DROP FUNCTION IF EXISTS catalog.widget_create(BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT);
+DROP FUNCTION IF EXISTS catalog.widget_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB);
+DROP FUNCTION IF EXISTS catalog.widget_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION catalog.widget_create(
-    p_caller_id BIGINT,
     p_code VARCHAR(50),
     p_name VARCHAR(100),
     p_category VARCHAR(30),
@@ -23,9 +21,6 @@ DECLARE
     v_code VARCHAR(50);
     v_new_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- Kod kontrolü
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.widget.code-invalid';
@@ -68,4 +63,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.widget_create IS 'Creates a new widget. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.widget_create IS 'Creates a new widget.';

@@ -1,13 +1,11 @@
 -- ================================================================
 -- JURISDICTION_LIST: Lisans otoritelerini listeler
--- Platform Admin (SuperAdmin + Admin) erişebilir
 -- Opsiyonel country_code ve is_active filtresi
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.jurisdiction_list(BIGINT, CHAR(2), BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.jurisdiction_list(CHAR(2), BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.jurisdiction_list(
-    p_caller_id BIGINT,
     p_country_code CHAR(2) DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
@@ -29,9 +27,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         j.id,
@@ -52,4 +47,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.jurisdiction_list IS 'Lists jurisdictions. Platform Admin only. Optional country_code and is_active filters.';
+COMMENT ON FUNCTION catalog.jurisdiction_list IS 'Lists jurisdictions. Optional country_code and is_active filters.';

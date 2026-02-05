@@ -1,13 +1,11 @@
 -- ================================================================
 -- RESPONSIBLE_GAMING_POLICY_LIST: Sorumlu oyun politikalarını listeler
--- Platform Admin (SuperAdmin + Admin) erişebilir
 -- Jurisdiction bazlı filtreleme
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_list(BIGINT, INT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_list(INT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.responsible_gaming_policy_list(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
@@ -52,9 +50,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         rgp.id,
@@ -99,4 +94,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.responsible_gaming_policy_list IS 'Lists responsible gaming policies. Platform Admin only.';
+COMMENT ON FUNCTION catalog.responsible_gaming_policy_list IS 'Lists responsible gaming policies.';

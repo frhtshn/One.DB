@@ -1,17 +1,15 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_ITEM_CREATE: Yeni şablon öğesi oluşturur
--- SuperAdmin kullanabilir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.navigation_template_item_create(
-    BIGINT, INT, VARCHAR, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
+    INT, VARCHAR, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
 );
 DROP FUNCTION IF EXISTS catalog.navigation_template_item_create(
-    BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
+    INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
 );
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_item_create(
-    p_caller_id BIGINT,
     p_template_id INT,
     p_menu_location VARCHAR(50),
     p_translation_key VARCHAR(100) DEFAULT NULL,
@@ -32,9 +30,6 @@ AS $$
 DECLARE
     v_new_id BIGINT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_template_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template-item.template-required';
     END IF;
@@ -75,4 +70,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_item_create IS 'Creates a navigation template item. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.navigation_template_item_create IS 'Creates a navigation template item.';

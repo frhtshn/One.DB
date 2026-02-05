@@ -1,13 +1,11 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_DELETE: Navigasyon şablonu siler
--- SuperAdmin kullanabilir
 -- Bağlı item varsa silme engellenir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.navigation_template_delete(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.navigation_template_delete(INT);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_delete(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS VOID
@@ -15,9 +13,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template.id-required';
     END IF;
@@ -35,4 +30,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_delete IS 'Deletes a navigation template. SuperAdmin only. Fails if items exist.';
+COMMENT ON FUNCTION catalog.navigation_template_delete IS 'Deletes a navigation template. Fails if items exist.';

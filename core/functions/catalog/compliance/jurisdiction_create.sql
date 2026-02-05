@@ -1,12 +1,10 @@
 -- ================================================================
 -- JURISDICTION_CREATE: Yeni jurisdiction oluşturur
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.jurisdiction_create(BIGINT, VARCHAR, VARCHAR, CHAR(2), VARCHAR, VARCHAR, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.jurisdiction_create(VARCHAR, VARCHAR, CHAR(2), VARCHAR, VARCHAR, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.jurisdiction_create(
-    p_caller_id BIGINT,
     p_code VARCHAR(20),
     p_name VARCHAR(100),
     p_country_code CHAR(2),
@@ -24,9 +22,6 @@ DECLARE
     v_name VARCHAR(100);
     v_new_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- Kod kontrolü
     IF p_code IS NULL OR LENGTH(TRIM(p_code)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.jurisdiction.code-invalid';
@@ -70,4 +65,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.jurisdiction_create IS 'Creates a new jurisdiction. Platform Admin only.';
+COMMENT ON FUNCTION catalog.jurisdiction_create IS 'Creates a new jurisdiction.';

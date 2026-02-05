@@ -1,11 +1,10 @@
 -- ================================================================
 -- RESPONSIBLE_GAMING_POLICY_CREATE: Yeni sorumlu oyun politikası oluşturur
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- Her jurisdiction için sadece 1 policy olabilir (1:1)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
-    BIGINT, INT,
+    INT,
     BOOLEAN, JSONB, INT,
     BOOLEAN, JSONB,
     BOOLEAN, INT, BOOLEAN, INT, INT,
@@ -16,7 +15,7 @@ DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
     BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
 );
 DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
-    BIGINT, INT,
+    INT,
     BOOLEAN, TEXT, INT,
     BOOLEAN, TEXT,
     BOOLEAN, INT, BOOLEAN, INT, INT,
@@ -28,7 +27,6 @@ DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
 );
 
 CREATE OR REPLACE FUNCTION catalog.responsible_gaming_policy_create(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT,
     -- Deposit limits
     p_deposit_limit_required BOOLEAN DEFAULT FALSE,
@@ -73,9 +71,6 @@ AS $$
 DECLARE
     v_new_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- Jurisdiction kontrolü
     IF p_jurisdiction_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.responsible-gaming-policy.jurisdiction-required';
@@ -128,4 +123,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.responsible_gaming_policy_create IS 'Creates a responsible gaming policy. Platform Admin only. One per jurisdiction.';
+COMMENT ON FUNCTION catalog.responsible_gaming_policy_create IS 'Creates a responsible gaming policy. One per jurisdiction.';

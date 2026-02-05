@@ -1,13 +1,11 @@
 -- ================================================================
 -- THEME_DELETE: Tema siler
--- SuperAdmin kullanabilir
 -- Tenant tarafından kullanılıyorsa silme engellenir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_delete(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.theme_delete(INT);
 
 CREATE OR REPLACE FUNCTION catalog.theme_delete(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS VOID
@@ -15,9 +13,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.theme.id-required';
@@ -38,4 +33,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_delete IS 'Deletes a theme. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.theme_delete IS 'Deletes a theme.';

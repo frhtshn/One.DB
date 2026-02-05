@@ -1,14 +1,12 @@
 -- ================================================================
 -- THEME_UPDATE: Tema günceller
--- SuperAdmin kullanabilir
 -- NULL geçilen alanlar güncellenmez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN, BOOLEAN);
-DROP FUNCTION IF EXISTS catalog.theme_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.theme_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.theme_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.theme_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_code VARCHAR(50) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
@@ -27,9 +25,6 @@ DECLARE
     v_code VARCHAR(50);
     v_existing_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.theme.id-required';
@@ -77,4 +72,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_update IS 'Updates a theme. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.theme_update IS 'Updates a theme.';

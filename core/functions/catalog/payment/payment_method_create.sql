@@ -1,11 +1,10 @@
 -- ================================================================
 -- PAYMENT_METHOD_CREATE: Yeni ödeme yöntemi oluşturur
--- Sadece SuperAdmin kullanabilir (IDOR korumalı)
 -- Zorunlu: provider_id, code, name, payment_type
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.payment_method_create(
-    BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR,
+    BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR,
     VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BOOLEAN, BOOLEAN,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL,
     DECIMAL, DECIMAL, DECIMAL, DECIMAL,
@@ -14,7 +13,6 @@ DROP FUNCTION IF EXISTS catalog.payment_method_create(
 );
 
 CREATE OR REPLACE FUNCTION catalog.payment_method_create(
-    p_caller_id BIGINT,
     p_provider_id BIGINT,
     p_code VARCHAR(100),
     p_name VARCHAR(255),
@@ -64,9 +62,6 @@ DECLARE
     v_payment_type VARCHAR(50);
     v_new_id BIGINT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- Provider ID kontrolü
     IF p_provider_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.payment-method.provider-required';
@@ -138,4 +133,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.payment_method_create IS 'Creates a new payment method. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.payment_method_create IS 'Creates a new payment method.';

@@ -1,14 +1,12 @@
 -- ================================================================
--- PROVIDER_SETTING_UPSERT: Provider ayarı ekler veya günceller
--- Sadece SuperAdmin kullanabilir (IDOR korumalı)
--- Key varsa günceller, yoksa ekler
+-- PROVIDER_SETTING_UPSERT: Provider ayari ekler veya gunceller
+-- Key varsa gunceller, yoksa ekler
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, BIGINT, VARCHAR, JSONB, VARCHAR);
-DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, VARCHAR, JSONB, VARCHAR);
+DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, VARCHAR, TEXT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_setting_upsert(
-    p_caller_id BIGINT,
     p_provider_id BIGINT,
     p_key VARCHAR(100),
     p_value TEXT,
@@ -22,25 +20,22 @@ DECLARE
     v_key VARCHAR(100);
     v_result_id BIGINT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
-    -- Provider ID kontrolü
+    -- Provider ID kontrolu
     IF p_provider_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-setting.provider-required';
     END IF;
 
-    -- Provider varlık kontrolü
+    -- Provider varlik kontrolu
     IF NOT EXISTS(SELECT 1 FROM catalog.providers p WHERE p.id = p_provider_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider.not-found';
     END IF;
 
-    -- Key kontrolü
+    -- Key kontrolu
     IF p_key IS NULL OR LENGTH(TRIM(p_key)) < 2 THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-setting.key-invalid';
     END IF;
 
-    -- Value kontrolü
+    -- Value kontrolu
     IF p_value IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-setting.value-required';
     END IF;
@@ -60,4 +55,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_setting_upsert IS 'Creates or updates a provider setting. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_setting_upsert IS 'Creates or updates a provider setting.';

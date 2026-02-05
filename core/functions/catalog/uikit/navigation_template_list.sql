@@ -1,12 +1,10 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_LIST: Navigasyon şablonlarını listeler
--- SuperAdmin erişebilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.navigation_template_list(BIGINT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.navigation_template_list(BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_list(
-    p_caller_id BIGINT,
     p_is_active BOOLEAN DEFAULT NULL
 )
 RETURNS TABLE(
@@ -24,9 +22,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         nt.id,
@@ -43,4 +38,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_list IS 'Lists navigation templates. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.navigation_template_list IS 'Lists navigation templates.';

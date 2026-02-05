@@ -1,12 +1,10 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_UPDATE: Navigasyon şablonu günceller
--- SuperAdmin kullanabilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.navigation_template_update(BIGINT, INT, VARCHAR, VARCHAR, TEXT, BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.navigation_template_update(INT, VARCHAR, VARCHAR, TEXT, BOOLEAN, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.navigation_template_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_code VARCHAR(50) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
@@ -22,9 +20,6 @@ DECLARE
     v_code VARCHAR(50);
     v_existing_id INT;
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template.id-required';
     END IF;
@@ -69,4 +64,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_update IS 'Updates a navigation template. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.navigation_template_update IS 'Updates a navigation template.';

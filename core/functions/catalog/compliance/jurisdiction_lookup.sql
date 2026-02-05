@@ -1,14 +1,10 @@
 -- ================================================================
 -- JURISDICTION_LOOKUP: Jurisdiction dropdown için basit liste
--- Platform Admin (SuperAdmin + Admin) erişebilir (jurisdiction_list ile tutarlı)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.jurisdiction_lookup();
-DROP FUNCTION IF EXISTS catalog.jurisdiction_lookup(BIGINT);
 
-CREATE OR REPLACE FUNCTION catalog.jurisdiction_lookup(
-    p_caller_id BIGINT
-)
+CREATE OR REPLACE FUNCTION catalog.jurisdiction_lookup()
 RETURNS TABLE(
     id INT,
     code VARCHAR(20),
@@ -22,9 +18,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         j.id,
@@ -38,4 +31,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.jurisdiction_lookup(BIGINT) IS 'Returns jurisdiction list for dropdowns. Platform Admin (SuperAdmin + Admin) only.';
+COMMENT ON FUNCTION catalog.jurisdiction_lookup IS 'Returns jurisdiction list for dropdowns.';

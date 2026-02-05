@@ -1,14 +1,11 @@
 -- ================================================================
--- PROVIDER_LIST: Provider'ları listeler
--- Sadece SuperAdmin erişebilir
+-- PROVIDER_LIST: Provider'lari listeler
 -- Opsiyonel type_id ve is_active filtresi
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_list(BIGINT, BOOLEAN);
-DROP FUNCTION IF EXISTS catalog.provider_list(BIGINT, BIGINT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.provider_list(
-    p_caller_id BIGINT,
     p_type_id BIGINT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
@@ -27,9 +24,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         p.id,
@@ -48,4 +42,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_list IS 'Lists providers with optional filters. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_list IS 'Lists providers with optional filters.';

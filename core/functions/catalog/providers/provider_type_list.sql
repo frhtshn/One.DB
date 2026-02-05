@@ -1,14 +1,10 @@
 -- ================================================================
--- PROVIDER_TYPE_LIST: Tüm provider tiplerini listeler
--- Sadece SuperAdmin erişebilir
+-- PROVIDER_TYPE_LIST: Tum provider tiplerini listeler
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_type_list();
-DROP FUNCTION IF EXISTS catalog.provider_type_list(BIGINT);
 
-CREATE OR REPLACE FUNCTION catalog.provider_type_list(
-    p_caller_id BIGINT
-)
+CREATE OR REPLACE FUNCTION catalog.provider_type_list()
 RETURNS TABLE(
     id BIGINT,
     provider_type_code VARCHAR(30),
@@ -20,9 +16,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         pt.id,
@@ -34,4 +27,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_type_list IS 'Lists all provider types. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_type_list IS 'Lists all provider types.';

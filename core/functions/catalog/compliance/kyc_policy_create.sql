@@ -1,18 +1,16 @@
 -- ================================================================
 -- KYC_POLICY_CREATE: Yeni KYC policy oluşturur
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- Her jurisdiction için sadece 1 policy olabilir (1:1)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_policy_create(
-    BIGINT, INT, VARCHAR, INT, INT,
+    INT, VARCHAR, INT, INT,
     DECIMAL, DECIMAL, DECIMAL, CHAR,
     INT, BOOLEAN, BOOLEAN, INT,
     DECIMAL, BOOLEAN, BOOLEAN, BOOLEAN
 );
 
 CREATE OR REPLACE FUNCTION catalog.kyc_policy_create(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT,
     p_verification_timing VARCHAR(30),
     p_verification_deadline_hours INT DEFAULT NULL,
@@ -37,9 +35,6 @@ AS $$
 DECLARE
     v_new_id INT;
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- Jurisdiction kontrolü
     IF p_jurisdiction_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-policy.jurisdiction-required';
@@ -116,4 +111,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_policy_create IS 'Creates a KYC policy for a jurisdiction. Platform Admin only. One policy per jurisdiction.';
+COMMENT ON FUNCTION catalog.kyc_policy_create IS 'Creates a KYC policy for a jurisdiction. One policy per jurisdiction.';

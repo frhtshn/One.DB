@@ -1,14 +1,10 @@
 -- ================================================================
 -- NAVIGATION_TEMPLATE_LOOKUP: Template dropdown için basit liste
--- Platform Admin erişebilir (init_from_template için)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.navigation_template_lookup();
-DROP FUNCTION IF EXISTS catalog.navigation_template_lookup(BIGINT);
 
-CREATE OR REPLACE FUNCTION catalog.navigation_template_lookup(
-    p_caller_id BIGINT
-)
+CREATE OR REPLACE FUNCTION catalog.navigation_template_lookup()
 RETURNS TABLE(
     id INT,
     code VARCHAR(50),
@@ -18,12 +14,9 @@ RETURNS TABLE(
 LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
-SET search_path = catalog, security, pg_temp
+SET search_path = catalog, pg_temp
 AS $$
 BEGIN
-    -- Platform Admin check (superadmin or admin)
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         nt.id,
@@ -36,6 +29,6 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_lookup(BIGINT) IS
-'Returns navigation template list for dropdowns. Platform Admin only.
+COMMENT ON FUNCTION catalog.navigation_template_lookup() IS
+'Returns navigation template list for dropdowns.
 Used in tenant_navigation_init_from_template for template selection.';

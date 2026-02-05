@@ -1,14 +1,11 @@
 -- ================================================================
--- PROVIDER_SETTING_LIST: Provider ayarlarını listeler
--- Sadece SuperAdmin erişebilir
--- Provider ID'ye göre filtreleme zorunlu
+-- PROVIDER_SETTING_LIST: Provider ayarlarini listeler
+-- Provider ID'ye gore filtreleme zorunlu
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.provider_setting_list(BIGINT);
-DROP FUNCTION IF EXISTS catalog.provider_setting_list(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.provider_setting_list(
-    p_caller_id BIGINT,
     p_provider_id BIGINT
 )
 RETURNS TABLE(
@@ -25,15 +22,12 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
-    -- Provider ID kontrolü
+    -- Provider ID kontrolu
     IF p_provider_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider-setting.provider-required';
     END IF;
 
-    -- Provider varlık kontrolü
+    -- Provider varlik kontrolu
     IF NOT EXISTS(SELECT 1 FROM catalog.providers p WHERE p.id = p_provider_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.provider.not-found';
     END IF;
@@ -53,4 +47,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.provider_setting_list IS 'Lists all settings for a provider. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.provider_setting_list IS 'Lists all settings for a provider.';

@@ -1,14 +1,11 @@
 -- ================================================================
 -- PAYMENT_METHOD_LOOKUP: Payment method dropdown için basit liste
--- SuperAdmin erişebilir (payment_method_list ile tutarlı)
 -- Opsiyonel provider_id filtresi
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.payment_method_lookup(BIGINT);
-DROP FUNCTION IF EXISTS catalog.payment_method_lookup(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION catalog.payment_method_lookup(
-    p_caller_id BIGINT,
     p_provider_id BIGINT DEFAULT NULL
 )
 RETURNS TABLE(
@@ -28,9 +25,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         pm.id,
@@ -50,4 +44,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.payment_method_lookup(BIGINT, BIGINT) IS 'Returns payment method list for dropdowns. Optional provider_id filter. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.payment_method_lookup IS 'Returns payment method list for dropdowns. Optional provider_id filter.';

@@ -1,12 +1,10 @@
 -- ================================================================
 -- THEME_GET: Tekil tema getirir
--- SuperAdmin erişebilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_get(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.theme_get(INT);
 
 CREATE OR REPLACE FUNCTION catalog.theme_get(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS TABLE(
@@ -27,9 +25,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.theme.id-required';
@@ -57,4 +52,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_get IS 'Gets a single theme by ID. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.theme_get IS 'Gets a single theme by ID.';

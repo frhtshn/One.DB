@@ -1,13 +1,11 @@
 -- ================================================================
 -- JURISDICTION_DELETE: Jurisdiction siler
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- Bağlı kayıt varsa silme engellenir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.jurisdiction_delete(BIGINT, INT);
+DROP FUNCTION IF EXISTS catalog.jurisdiction_delete(INT);
 
 CREATE OR REPLACE FUNCTION catalog.jurisdiction_delete(
-    p_caller_id BIGINT,
     p_id INT
 )
 RETURNS VOID
@@ -15,9 +13,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.jurisdiction.id-required';
@@ -58,4 +53,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.jurisdiction_delete IS 'Deletes a jurisdiction. Platform Admin only. Fails if related records exist.';
+COMMENT ON FUNCTION catalog.jurisdiction_delete IS 'Deletes a jurisdiction. Fails if related records exist.';

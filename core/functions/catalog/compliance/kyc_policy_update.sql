@@ -1,18 +1,16 @@
 -- ================================================================
 -- KYC_POLICY_UPDATE: KYC policy günceller
--- Platform Admin (SuperAdmin + Admin) kullanabilir
 -- NULL geçilen alanlar güncellenmez (COALESCE pattern)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_policy_update(
-    BIGINT, INT, VARCHAR, INT, INT,
+    INT, VARCHAR, INT, INT,
     DECIMAL, DECIMAL, DECIMAL, CHAR,
     INT, BOOLEAN, BOOLEAN, INT,
     DECIMAL, BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
 );
 
 CREATE OR REPLACE FUNCTION catalog.kyc_policy_update(
-    p_caller_id BIGINT,
     p_id INT,
     p_verification_timing VARCHAR(30) DEFAULT NULL,
     p_verification_deadline_hours INT DEFAULT NULL,
@@ -36,9 +34,6 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     -- ID kontrolü
     IF p_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-policy.id-required';
@@ -84,4 +79,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_policy_update IS 'Updates a KYC policy. Platform Admin only. NULL values keep existing data.';
+COMMENT ON FUNCTION catalog.kyc_policy_update IS 'Updates a KYC policy. NULL values keep existing data.';

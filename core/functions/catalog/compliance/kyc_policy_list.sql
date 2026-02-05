@@ -1,13 +1,11 @@
 -- ================================================================
 -- KYC_POLICY_LIST: KYC politikalarını listeler
--- Platform Admin (SuperAdmin + Admin) erişebilir
 -- Opsiyonel jurisdiction_id ve is_active filtresi
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.kyc_policy_list(BIGINT, INT, BOOLEAN);
+DROP FUNCTION IF EXISTS catalog.kyc_policy_list(INT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_policy_list(
-    p_caller_id BIGINT,
     p_jurisdiction_id INT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
@@ -40,9 +38,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- Platform Admin check
-    PERFORM security.user_assert_platform_admin(p_caller_id);
-
     RETURN QUERY
     SELECT
         kp.id,
@@ -75,4 +70,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_policy_list IS 'Lists KYC policies with jurisdiction info. Platform Admin only.';
+COMMENT ON FUNCTION catalog.kyc_policy_list IS 'Lists KYC policies with jurisdiction info.';

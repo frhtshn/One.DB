@@ -1,14 +1,10 @@
 -- ================================================================
 -- THEME_LOOKUP: Theme dropdown için basit liste
--- SuperAdmin erişebilir (theme_list ile tutarlı)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.theme_lookup();
-DROP FUNCTION IF EXISTS catalog.theme_lookup(BIGINT);
 
-CREATE OR REPLACE FUNCTION catalog.theme_lookup(
-    p_caller_id BIGINT
-)
+CREATE OR REPLACE FUNCTION catalog.theme_lookup()
 RETURNS TABLE(
     id INT,
     code VARCHAR(50),
@@ -21,9 +17,6 @@ STABLE
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- SuperAdmin check
-    PERFORM security.user_assert_superadmin(p_caller_id);
-
     RETURN QUERY
     SELECT
         t.id,
@@ -36,4 +29,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_lookup(BIGINT) IS 'Returns theme list for dropdowns. SuperAdmin only.';
+COMMENT ON FUNCTION catalog.theme_lookup() IS 'Returns theme list for dropdowns.';
