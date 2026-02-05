@@ -96,9 +96,9 @@ WHERE r.code = 'tenantadmin'
   );
 
 -- ================================================================
--- 6. MODERATOR: player.* (edit) + finance.* (view) + audit.list/view
+-- 6. MODERATOR: player.* (edit) + finance.* (view)
 -- ================================================================
--- Level 60 - Content moderator, player editing
+-- Level 60 - Player moderator, player editing and KYC
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
@@ -125,14 +125,12 @@ WHERE r.code = 'moderator'
     )
     -- Affiliate (view)
     OR p.code IN ('affiliate.list', 'affiliate.view', 'affiliate.players.view')
-    -- Audit (view)
-    OR p.code IN ('audit.list', 'audit.view')
     -- Reports (player only)
     OR p.code = 'report.player.view'
   );
 
 -- ================================================================
--- 7. EDITOR: game.* + bonus.* + tenant.content.* + audit.list
+-- 7. EDITOR: game.* + bonus.* + tenant.content.*
 -- ================================================================
 -- Level 50 - Content editor, banner/slider/game management
 
@@ -153,12 +151,10 @@ WHERE r.code = 'editor'
     OR p.category = 'bonus'
     -- Tenant content
     OR p.code IN ('tenant.content.list', 'tenant.content.manage')
-    -- Audit (list only)
-    OR p.code = 'audit.list'
   );
 
 -- ================================================================
--- 8. OPERATOR: player.list/view + player.kyc.* + audit.list
+-- 8. OPERATOR: player.list/view + player.kyc.* + communication
 -- ================================================================
 -- Level 40 - Customer service, player viewing and KYC
 
@@ -168,17 +164,13 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'operator'
   AND p.code IN (
-    -- Player (view + KYC)
+    -- Player (view + KYC + communication)
     'player.list', 'player.view',
     'player.wallet.view', 'player.transaction.view',
     'player.kyc.list', 'player.kyc.view', 'player.kyc.request',
     'player.bonus.view', 'player.gaming.view',
     'player.communication.view', 'player.communication.send',
-    'player.audit.view',
-    -- Tenant user list (for internal reference)
-    'tenant.user.list',
-    -- Audit
-    'audit.list'
+    'player.audit.view'
   );
 
 -- ================================================================
