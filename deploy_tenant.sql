@@ -94,8 +94,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- NOTE: player_kyc_provider_logs -> tenant_log DB
 
 -- BONUS TABLES
-\i tenant/tables/bonus/bonus_awards.sql
-\i tenant/tables/bonus/promo_redemptions.sql
+\i tenant/tables/bonus/awards/bonus_awards.sql
+\i tenant/tables/bonus/redemptions/promo_redemptions.sql
 
 -- CONTENT MANAGEMENT TABLES
 -- CMS
@@ -115,6 +115,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/content/faq/faq_item_translations.sql
 
 -- Promotions
+\i tenant/tables/content/promotion/promotion_types.sql
+\i tenant/tables/content/promotion/promotion_type_translations.sql
 \i tenant/tables/content/promotion/promotions.sql
 \i tenant/tables/content/promotion/promotion_translations.sql
 \i tenant/tables/content/promotion/promotion_banners.sql
@@ -146,24 +148,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 -- FUNCTIONS - Backoffice (Auth checked in Core DB)
 -- =============================================================================
--- Slides
-\i tenant/functions/backoffice/content/slides/slide_list.sql
-\i tenant/functions/backoffice/content/slides/slide_get.sql
-\i tenant/functions/backoffice/content/slides/slide_create.sql
-\i tenant/functions/backoffice/content/slides/slide_update.sql
-\i tenant/functions/backoffice/content/slides/slide_delete.sql
--- Popups
-\i tenant/functions/backoffice/content/popups/popup_list.sql
-\i tenant/functions/backoffice/content/popups/popup_get.sql
-\i tenant/functions/backoffice/content/popups/popup_create.sql
-\i tenant/functions/backoffice/content/popups/popup_update.sql
-\i tenant/functions/backoffice/content/popups/popup_delete.sql
+-- TODO: Add backoffice functions when created
 
 -- =============================================================================
 -- FUNCTIONS - Frontend (Public content, no auth required)
 -- =============================================================================
-\i tenant/functions/frontend/content/slides/get_active_slides.sql
-\i tenant/functions/frontend/content/popups/get_active_popups.sql
+-- TODO: Add frontend functions when created
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created

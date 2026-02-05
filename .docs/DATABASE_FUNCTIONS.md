@@ -311,23 +311,10 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 > Authorization is handled in Core DB via `user_assert_access_tenant(caller_id, tenant_id)` before calling tenant functions.
 > This follows the cross-database security pattern: **Core DB (auth) → Tenant DB (business logic)**.
 
-### Content Schema - Backoffice Functions
+### Content Schema
 
-#### Slides
-- **`slide_list(p_page INTEGER DEFAULT 1, p_page_size INTEGER DEFAULT 20, p_placement_id INTEGER DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL, p_search TEXT DEFAULT NULL)`**: Paginated slide list with filtering. Returns items and total count.
-- **`slide_get(p_id INTEGER)`**: Get slide details with translations and images.
-- **`slide_create(p_placement_id INTEGER, p_category_id INTEGER DEFAULT NULL, p_code VARCHAR(50) DEFAULT NULL, p_sort_order INTEGER DEFAULT 0, p_priority INTEGER DEFAULT 0, p_link_url VARCHAR(500) DEFAULT NULL, p_link_target VARCHAR(20) DEFAULT '_self', p_link_type VARCHAR(20) DEFAULT 'url', p_link_reference VARCHAR(100) DEFAULT NULL, p_start_date TIMESTAMP DEFAULT NULL, p_end_date TIMESTAMP DEFAULT NULL, p_segment_ids INTEGER[] DEFAULT NULL, p_country_codes CHAR(2)[] DEFAULT NULL, p_excluded_country_codes CHAR(2)[] DEFAULT NULL, p_display_duration INTEGER DEFAULT 5000, p_animation_type VARCHAR(30) DEFAULT 'fade', p_is_active BOOLEAN DEFAULT TRUE, p_operator_id INTEGER DEFAULT NULL)`**: Create a new slide. Returns the new slide ID.
-- **`slide_update(p_id INTEGER, ...)`**: Update slide with partial update support (NULL = no change).
-- **`slide_delete(p_id INTEGER, p_operator_id INTEGER DEFAULT NULL)`**: Soft delete a slide.
+> Functions will be documented here as they are implemented.
 
-#### Popups
-- **`popup_list(p_page INTEGER DEFAULT 1, p_page_size INTEGER DEFAULT 20, p_popup_type_id INTEGER DEFAULT NULL, p_trigger_type VARCHAR(30) DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL, p_search TEXT DEFAULT NULL)`**: Paginated popup list with filtering. Returns items and total count.
-- **`popup_get(p_id INTEGER)`**: Get popup details with translations, images, and type info.
-- **`popup_create(p_popup_type_id INTEGER, p_code VARCHAR(50) DEFAULT NULL, ...)`**: Create a new popup with display, trigger, frequency, targeting settings. Returns the new popup ID.
-- **`popup_update(p_id INTEGER, ...)`**: Update popup with partial update support (NULL = no change).
-- **`popup_delete(p_id INTEGER, p_operator_id INTEGER DEFAULT NULL)`**: Soft delete a popup.
+### Bonus Schema
 
-### Content Schema - Frontend Functions
-
-- **`get_active_slides(p_placement_code VARCHAR(50), p_language CHAR(2) DEFAULT 'en', p_country_code CHAR(2) DEFAULT NULL, p_segment_ids INTEGER[] DEFAULT NULL)`**: Get active slides for frontend rendering. Applies date, country, and segment filtering. No auth required (public content).
-- **`get_active_popups(p_trigger_type VARCHAR(30) DEFAULT NULL, p_language CHAR(2) DEFAULT 'en', p_country_code CHAR(2) DEFAULT NULL, p_segment_ids INTEGER[] DEFAULT NULL, p_page_url TEXT DEFAULT NULL)`**: Get active popups for frontend. Filters by trigger type, date, country, segments, and page URL. Returns popup config with type settings, translations, and images.
+> Functions will be documented here as they are implemented.
