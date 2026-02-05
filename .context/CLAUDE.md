@@ -36,6 +36,48 @@
 - Tenant verileri **tamamen izole**
 - Paylaşılan veriler **sadece Core DB'de**
 
+#### Cross-Database İzolasyon (KRİTİK)
+**TEMEL KURAL: Her klasör = Ayrı fiziksel veritabanı**
+
+PostgreSQL veritabanları fiziksel olarak tamamen izole edilmiştir:
+- `core`, `game`, `finance`, `bonus`, `tenant_XXX` → **Her biri ayrı database**
+- Veritabanlar arası doğrudan query **YAPILAMAZ**
+- Örnek HATALI query: `SELECT FROM core.catalog.table` (tenant DB'den)
+- Örnek HATALI query: `SELECT FROM game.providers` (core DB'den)
+
+**Fiziksel Veritabanları (Her biri izole):**
+```
+core              → Platform merkez DB
+core_log          → Platform operasyonel loglar
+core_audit        → Platform denetim kayıtları
+core_report       → Platform raporlama
+game              → Oyun provider'ları
+game_log          → Oyun işlem logları
+finance           → Finansal provider'lar
+finance_log       → Finansal işlem logları
+bonus             → Bonus sistemi
+tenant_XXX        → Tenant business verileri
+tenant_log_XXX    → Tenant operasyonel loglar
+tenant_audit_XXX  → Tenant denetim kayıtları
+tenant_report_XXX → Tenant raporlama
+tenant_affiliate_XXX → Tenant affiliate sistemi
+```
+
+**Veritabanları Arası Veri Transferi:**
+1. **Backend Application** (.NET/Dapper) - ÖNERİLEN ✅
+   - Her DB için ayrı connection açar
+   - Transaction yönetimi ve error handling
+   - Güvenlik kontrolü ve logging
+2. **dblink extension** - Alternatif ⚠️
+   - Cross-DB query desteği, performans/güvenlik dezavantajları
+3. **postgres_fdw** (Foreign Data Wrapper) - Alternatif ⚠️
+   - Foreign table tanımlama, bakım karmaşıklığı
+
+**Tenant Seeding:**
+- Catalog verileri (transaction_types, operation_types) CoreDB'den TenantDB'ye backend üzerinden kopyalanır
+- ID tutarlılığı garanti edilir (tüm tenant'larda aynı ID'ler)
+- Seed işlemleri `TenantSeedService` üzerinden yapılır
+
 ### Log – Audit – Business Ayrımı
 | Tip | Amaç | Saklama |
 |-----|------|---------|
@@ -123,25 +165,117 @@ C:\Projects\Git\nucleoDb
 | `finance_log` | Ödeme logları | 14-30 gün |
 
 ## Klasör Yapısı
+
+### Temel Kural: Klasör = Veritabanı
+Her klasör bir fiziksel PostgreSQL veritabanını temsil eder. Deploy scriptleri (`deploy_*.sql`) her veritabanı için ayrı ayrıdır.
+
 ```
 Nucleo.DB/
-├── core/                 # Core DB şeması
-│   ├── tables/           # Tablolar (catalog, core, presentation, security, routing, billing)
-│   ├── functions/        # Stored procedures
-│   ├── triggers/         # Triggerlar
-│   ├── constraints/      # FK ve check constraints
-│   ├── indexes/          # Performans indexleri
-│   └── data/             # Seed data
-├── tenant/               # Tenant template DB
-├── bonus/                # Bonus sistemi
-├── core_log/, core_audit/, core_report/
-├── tenant_log/, tenant_audit/, tenant_report/, tenant_affiliate/
-├── game/, game_log/
-├── finance/, finance_log/
-├── deploy_*.sql          # Her DB için deploy scripti
-├── create_dbs.sql        # DB oluşturma
-└── master_deploy.sql     # Tüm deploy
+│
+├── core/                          # Core DB (Platform merkez)
+│   ├── tables/                    # Tablolar (şemalara göre)
+│   │   ├── catalog/               # Catalog şeması
+│   │   │   ├── compliance/        # ↳ Jurisdictions, KYC policies
+│   │   │   ├── game/              # ↳ Games
+│   │   │   ├── localization/      # ↳ Çok dilli içerik
+│   │   │   ├── payment/           # ↳ Payment methods
+│   │   │   ├── provider/          # ↳ Provider settings
+│   │   │   ├── reference/         # ↳ Countries, currencies, languages
+│   │   │   ├── transaction/       # ↳ Transaction/operation types
+│   │   │   └── uikit/             # ↳ Themes, widgets, navigation
+│   │   ├── core/                  # Core şeması (tenants, companies)
+│   │   ├── billing/               # Billing şeması
+│   │   ├── presentation/          # Presentation şeması (menus, pages)
+│   │   ├── routing/               # Routing şeması
+│   │   ├── security/              # Security şeması (users, roles)
+│   │   └── outbox/                # Outbox pattern
+│   ├── functions/                 # Stored procedures (şemalara göre)
+│   │   ├── catalog/               # Catalog fonksiyonları
+│   │   │   ├── compliance/        # ↳ Jurisdiction, KYC
+│   │   │   ├── countries/         # ↳ Country lookups
+│   │   │   ├── currencies/        # ↳ Currency lookups
+│   │   │   ├── languages/         # ↳ Language lookups
+│   │   │   ├── localization/      # ↳ Localization management
+│   │   │   ├── payment/           # ↳ Payment method lookups
+│   │   │   ├── providers/         # ↳ Provider management
+│   │   │   ├── timezones/         # ↳ Timezone lookups
+│   │   │   ├── transaction/       # ↳ Transaction/operation types
+│   │   │   └── uikit/             # ↳ Theme, widget management
+│   │   ├── core/                  # Core fonksiyonları (tenant, company CRUD)
+│   │   ├── presentation/          # Presentation fonksiyonları (menu, page CRUD)
+│   │   └── security/              # Security fonksiyonları (auth, RBAC)
+│   ├── triggers/                  # Database triggers
+│   ├── constraints/               # FK constraints (şemalara göre)
+│   │   ├── catalog.sql
+│   │   ├── core.sql
+│   │   ├── presentation.sql
+│   │   └── security.sql
+│   ├── indexes/                   # Performance indexes (şemalara göre)
+│   │   ├── catalog.sql
+│   │   ├── core.sql
+│   │   └── presentation.sql
+│   └── data/                      # Seed data
+│       ├── transaction_types.sql  # ↳ Transaction types (ID ile)
+│       ├── operation_types.sql    # ↳ Operation types (ID ile)
+│       ├── permissions_full.sql   # ↳ 168 permissions
+│       ├── role_permissions_full.sql
+│       └── staging_seed.sql
+│
+├── core_log/                      # Core operasyonel loglar
+├── core_audit/                    # Core denetim kayıtları
+├── core_report/                   # Core raporlama
+│
+├── game/                          # Game provider DB
+├── game_log/                      # Game işlem logları
+│
+├── finance/                       # Finance provider DB
+├── finance_log/                   # Finance işlem logları
+│
+├── bonus/                         # Bonus sistemi DB
+│
+├── tenant/                        # Tenant template DB
+│   ├── tables/                    # Tenant tabloları (şemalara göre)
+│   │   ├── bonus/                 # Bonus awards, redemptions
+│   │   ├── content/               # CMS, FAQ, Popup, Promotion, Slide
+│   │   ├── finance/               # Transaction/operation types, currency rates
+│   │   ├── game/                  # Game limits, settings
+│   │   ├── kyc/                   # KYC cases, documents, limits
+│   │   ├── player_auth/           # Players, credentials, groups
+│   │   ├── player_profile/        # Player identity, profile
+│   │   ├── transaction/           # Transactions, workflows
+│   │   └── wallet/                # Wallets, snapshots
+│   └── functions/                 # Tenant fonksiyonları
+│
+├── tenant_log/                    # Tenant log template
+├── tenant_audit/                  # Tenant audit template
+├── tenant_report/                 # Tenant report template
+├── tenant_affiliate/              # Tenant affiliate template
+│
+├── deploy_core.sql                # Core DB deploy
+├── deploy_core_staging.sql        # Core staging seed
+├── deploy_core_production.sql     # Core production seed
+├── deploy_core_log.sql
+├── deploy_core_audit.sql
+├── deploy_core_report.sql
+├── deploy_game.sql
+├── deploy_game_log.sql
+├── deploy_finance.sql
+├── deploy_finance_log.sql
+├── deploy_bonus.sql
+├── deploy_tenant.sql              # Tenant template deploy
+├── deploy_tenant_log.sql
+├── deploy_tenant_audit.sql
+├── deploy_tenant_report.sql
+├── deploy_tenant_affiliate.sql
+├── create_dbs.sql                 # Veritabanlarını oluştur
+└── master_deploy.sql              # Tüm deploy (sıralı)
 ```
+
+### Şema İçi Organizasyon Prensibi
+**Aynı şema altındaki tablolar ve fonksiyonlar görev/domain bazında alt klasörlere ayrılmıştır:**
+- `catalog` şeması → compliance, game, localization, payment, provider, reference, transaction, uikit
+- `content` şeması → cms, faq, popup, promotion, slide
+- Bu yapı kod organizasyonu ve bakımı kolaylaştırır
 
 ## Deploy Sırası
 1. `create_dbs.sql` - Veritabanlarını oluştur
@@ -303,6 +437,27 @@ Finansal işlemlerde `idempotency.processed_requests` kontrolü içeren SQL blok
 
 ### Outbox Pattern
 Plugin'lerden Core'a veri gönderimi için `plugin_internal.outbox_events` tablosu kullanılmalıdır.
+
+### Kod Yazım Standartları
+
+**Tablo Script'leri:**
+- Header: 45 char `-- =====` ile başlık bloğu
+- Başlık içeriği: Türkçe (`-- Tablo: schema.table_name`, `-- Açıklama: ...`)
+- Field açıklamaları: Satır sonu Türkçe comment (`-- Türkçe açıklama`)
+- COMMENT ON TABLE: İngilizce
+
+**Fonksiyon Script'leri:**
+- Header: 64 char `-- ====` ile başlık bloğu
+- Başlık içeriği: Türkçe (`-- FUNCTION_NAME_UPPERCASE: Açıklama`)
+- Parametre/kod açıklamaları: Türkçe
+- COMMENT ON FUNCTION: İngilizce
+
+**Genel Kurallar:**
+- Değişken/field isimleri: snake_case, İngilizce
+- Satır içi comment'ler: Türkçe
+- COMMENT ON: Sadece TABLE ve FUNCTION için (field'lar için KULLANILMAZ ❌)
+- Metadata dili: İngilizce
+- Error mesajları: İngilizce key'ler (`error.tenant.not-found`)
 
 ## Notlar
 - Her tenant için ayrı ClientDB klonlanır (tenant template'den)
