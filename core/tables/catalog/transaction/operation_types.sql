@@ -9,7 +9,8 @@
 DROP TABLE IF EXISTS catalog.operation_types CASCADE;
 
 CREATE TABLE catalog.operation_types (
-    code              varchar(30) PRIMARY KEY,            -- Operasyon kodu: DEBIT, CREDIT, HOLD, RELEASE
+    id                smallserial PRIMARY KEY,             -- Benzersiz ID
+    code              varchar(30) NOT NULL UNIQUE,         -- Operasyon kodu: DEBIT, CREDIT, HOLD, RELEASE
     wallet_effect     smallint NOT NULL,                   -- Cüzdan etkisi: -1 (düş), +1 (artır), 0 (etkisiz)
     affects_balance   boolean NOT NULL,                    -- Ana bakiyeyi etkiler mi?
     affects_locked    boolean NOT NULL,                    -- Kilitli bakiyeyi etkiler mi?

@@ -139,3 +139,17 @@ DO $$ BEGIN
         ALTER TABLE catalog.payment_methods ADD CONSTRAINT uq_payment_methods_provider_code UNIQUE (provider_id, payment_method_code);
     END IF;
 END $$;
+
+-- transaction_types unique constraint (code)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_transaction_types_code') THEN
+        ALTER TABLE catalog.transaction_types ADD CONSTRAINT uq_transaction_types_code UNIQUE (code);
+    END IF;
+END $$;
+
+-- operation_types unique constraint (code)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_operation_types_code') THEN
+        ALTER TABLE catalog.operation_types ADD CONSTRAINT uq_operation_types_code UNIQUE (code);
+    END IF;
+END $$;

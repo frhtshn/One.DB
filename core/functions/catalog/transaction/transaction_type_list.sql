@@ -8,6 +8,7 @@ DROP FUNCTION IF EXISTS catalog.transaction_type_list();
 
 CREATE OR REPLACE FUNCTION catalog.transaction_type_list()
 RETURNS TABLE(
+    id SMALLINT,
     code VARCHAR(50),
     category VARCHAR(30),
     product VARCHAR(30),
@@ -23,6 +24,7 @@ LANGUAGE sql
 STABLE
 AS $$
     SELECT
+        tt.id,
         tt.code,
         tt.category,
         tt.product,
@@ -34,7 +36,7 @@ AS $$
         tt.description,
         tt.is_active
     FROM catalog.transaction_types tt
-    ORDER BY tt.category, tt.code;
+    ORDER BY tt.id;
 $$;
 
 COMMENT ON FUNCTION catalog.transaction_type_list() IS 'Returns transaction type list for dropdowns. No auth required - public catalog data.';

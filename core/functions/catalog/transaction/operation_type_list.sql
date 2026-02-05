@@ -8,6 +8,7 @@ DROP FUNCTION IF EXISTS catalog.operation_type_list();
 
 CREATE OR REPLACE FUNCTION catalog.operation_type_list()
 RETURNS TABLE(
+    id SMALLINT,
     code VARCHAR(30),
     wallet_effect SMALLINT,
     affects_balance BOOLEAN,
@@ -19,6 +20,7 @@ LANGUAGE sql
 STABLE
 AS $$
     SELECT
+        ot.id,
         ot.code,
         ot.wallet_effect,
         ot.affects_balance,
@@ -26,7 +28,7 @@ AS $$
         ot.description,
         ot.is_active
     FROM catalog.operation_types ot
-    ORDER BY ot.code;
+    ORDER BY ot.id;
 $$;
 
 COMMENT ON FUNCTION catalog.operation_type_list() IS 'Returns operation type list for dropdowns. No auth required - public catalog data.';

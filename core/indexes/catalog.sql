@@ -38,8 +38,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_localization_keys_key ON catalog.localizat
 CREATE INDEX IF NOT EXISTS idx_localization_keys_domain ON catalog.localization_keys USING btree(domain);
 CREATE INDEX IF NOT EXISTS idx_localization_keys_category ON catalog.localization_keys USING btree(category);
 
--- transaction_types.category (frequent filter)
+-- transaction_types indexes
+CREATE UNIQUE INDEX IF NOT EXISTS idx_transaction_types_code ON catalog.transaction_types USING btree(code);
 CREATE INDEX IF NOT EXISTS idx_transaction_types_category ON catalog.transaction_types USING btree(category);
+CREATE INDEX IF NOT EXISTS idx_transaction_types_product ON catalog.transaction_types USING btree(product) WHERE product IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_transaction_types_active ON catalog.transaction_types USING btree(is_active) WHERE is_active = true;
+
+-- operation_types indexes
+CREATE UNIQUE INDEX IF NOT EXISTS idx_operation_types_code ON catalog.operation_types USING btree(code);
+CREATE INDEX IF NOT EXISTS idx_operation_types_active ON catalog.operation_types USING btree(is_active) WHERE is_active = true;
 
 -- jurisdictions
 CREATE INDEX IF NOT EXISTS idx_jurisdictions_country ON catalog.jurisdictions USING btree(country_code);

@@ -8,7 +8,8 @@
 DROP TABLE IF EXISTS catalog.transaction_types CASCADE;
 
 CREATE TABLE catalog.transaction_types (
-    code            varchar(50) PRIMARY KEY,              -- İşlem kodu (değişmez): BET, WIN, DEPOSIT
+    id              smallserial PRIMARY KEY,               -- Benzersiz ID
+    code            varchar(50) NOT NULL UNIQUE,           -- İşlem kodu (değişmez): BET, WIN, DEPOSIT
     category        varchar(30) NOT NULL,                  -- Kategori: BET, WIN, BONUS, PAYMENT, ADJUSTMENT
     product         varchar(30),                           -- Ürün: SPORTS, CASINO, POKER, PAYMENT
     is_bonus        boolean NOT NULL DEFAULT false,        -- Bonus işlemi mi?
