@@ -375,38 +375,38 @@ SELECT t.id, 'Integration', 'email_provider',
     'Email/SMTP provider configuration'
 FROM core.tenants t;
 
--- Tenant Ana DB Bağlantısı (tenant)
+-- Tenant Ana DB Bağlantısı (tenant_{id})
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Database', 'connection_tenant',
-    '{"host": "207.180.241.230", "port": 5433, "database": "tenant", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 5, "max_pool_size": 50, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 10}'::jsonb,
+    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 5, "max_pool_size": 50, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 10}', t.id)::jsonb,
     'Tenant main database connection settings'
 FROM core.tenants t;
 
--- Tenant Audit DB Bağlantısı
+-- Tenant Audit DB Bağlantısı (tenant_audit_{id})
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Database', 'connection_tenant_audit',
-    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_audit", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}'::jsonb,
+    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_audit_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}', t.id)::jsonb,
     'Tenant audit database connection settings'
 FROM core.tenants t;
 
--- Tenant Log DB Bağlantısı
+-- Tenant Log DB Bağlantısı (tenant_log_{id})
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Database', 'connection_tenant_log',
-    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_log", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}'::jsonb,
+    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_log_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}', t.id)::jsonb,
     'Tenant log database connection settings'
 FROM core.tenants t;
 
--- Tenant Affiliate DB Bağlantısı
+-- Tenant Affiliate DB Bağlantısı (tenant_affiliate_{id})
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Database', 'connection_tenant_affiliate',
-    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_affiliate", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}'::jsonb,
+    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_affiliate_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": false, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}', t.id)::jsonb,
     'Tenant affiliate database connection settings'
 FROM core.tenants t;
 
--- Tenant Report DB Bağlantısı
+-- Tenant Report DB Bağlantısı (tenant_report_{id})
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Database', 'connection_tenant_report',
-    '{"host": "207.180.241.230", "port": 5433, "database": "tenant_report", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 120, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 15}'::jsonb,
+    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_report_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 120, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 15}', t.id)::jsonb,
     'Tenant report database connection settings (replica enabled for heavy queries)'
 FROM core.tenants t;
 
