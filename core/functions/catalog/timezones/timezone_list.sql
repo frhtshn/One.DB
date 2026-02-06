@@ -1,22 +1,18 @@
 -- ================================================================
--- TIMEZONE_LIST: Timezone listesi (Combobox için)
--- catalog.timezones tablosundan veri döner.
+-- TIMEZONE_LIST: Tüm saat dilimlerini listeler
+-- Admin paneli kullanımı içindir, pasifleri de içerir.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.timezone_list();
 
 CREATE OR REPLACE FUNCTION catalog.timezone_list()
-RETURNS TABLE(name VARCHAR, utc_offset VARCHAR, display_name VARCHAR)
+RETURNS TABLE(name VARCHAR(100), utc_offset VARCHAR(10))
 LANGUAGE sql
 STABLE
 AS $$
-    SELECT
-        name,
-        utc_offset,
-        display_name
-    FROM catalog.timezones
-    WHERE is_active = TRUE
-    ORDER BY utc_offset DESC, name;
+    SELECT t.name, t.utc_offset
+    FROM catalog.timezones t
+    ORDER BY t.utc_offset DESC, t.name;
 $$;
 
-COMMENT ON FUNCTION catalog.timezone_list() IS 'Returns list of active timezones from catalog table.';
+COMMENT ON FUNCTION catalog.timezone_list IS 'Lists all timezones including inactive ones (for admin usage)';
