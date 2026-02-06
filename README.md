@@ -21,6 +21,7 @@ Detaylı mimari ve yapı dokümantasyonu için:
 | [PROJECT_OVERVIEW.md](.docs/PROJECT_OVERVIEW.md)           | **Proje genel bakış ve büyük resim**     |
 | [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md) | Veritabanı mimarisi, şemalar ve tablolar |
 | [DATABASE_FUNCTIONS.md](.docs/DATABASE_FUNCTIONS.md)       | Stored procedures ve trigger referansı   |
+| [PARTITION_ARCHITECTURE.md](.docs/PARTITION_ARCHITECTURE.md) | Partition yapısı ve yönetim fonksiyonları |
 | [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                     | Log, audit ve retention stratejisi       |
 
 ---
