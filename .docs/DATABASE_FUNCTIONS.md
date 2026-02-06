@@ -7,6 +7,12 @@ This document lists all stored procedures, functions, and triggers defined in th
 ### Catalog Schema
 
 - **`country_list()`**: Country list.
+- **`data_retention_policy_create(p_jurisdiction_id INT, p_data_category VARCHAR(50), p_retention_days INT, p_legal_reference VARCHAR(100) DEFAULT NULL, p_description VARCHAR(255) DEFAULT NULL)`**: Data retention policy create. Returns new ID.
+- **`data_retention_policy_delete(p_id INT)`**: Data retention policy soft-delete (is_active = false).
+- **`data_retention_policy_get(p_id INT)`**: Data retention policy get with jurisdiction info.
+- **`data_retention_policy_list(p_jurisdiction_id INT DEFAULT NULL, p_data_category VARCHAR(50) DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Data retention policy list with filters.
+- **`data_retention_policy_lookup(p_jurisdiction_id INT DEFAULT NULL)`**: Data retention policy lightweight lookup for dropdowns.
+- **`data_retention_policy_update(p_id INT, p_data_category VARCHAR(50) DEFAULT NULL, p_retention_days INT DEFAULT NULL, p_legal_reference VARCHAR(100) DEFAULT NULL, p_description VARCHAR(255) DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Data retention policy update (COALESCE pattern).
 - **`currency_create(p_code CHAR(3), p_name VARCHAR(100), p_symbol VARCHAR(10) DEFAULT NULL, p_numeric_code SMALLINT DEFAULT NULL)`**: Currency create.
 - **`currency_delete(p_code CHAR(3))`**: Currency delete.
 - **`currency_get(p_code CHAR(3))`**: Currency get.

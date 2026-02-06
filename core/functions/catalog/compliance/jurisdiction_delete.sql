@@ -1,5 +1,5 @@
 -- ================================================================
--- JURISDICTION_DELETE: Jurisdiction siler
+-- JURISDICTION_DELETE: Jurisdiction pasife alır (soft delete)
 -- Bağlı kayıt varsa silme engellenir
 -- ================================================================
 
@@ -43,14 +43,22 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.jurisdiction.has-gaming-policy';
     END IF;
 
+    -- Bağlı Data Retention Policies kontrolü
+    IF EXISTS(SELECT 1 FROM catalog.data_retention_policies drp WHERE drp.jurisdiction_id = p_id) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.jurisdiction.has-retention-policies';
+    END IF;
+
     -- Bağlı Tenant Jurisdictions kontrolü (core şemasında)
     IF EXISTS(SELECT 1 FROM core.tenant_jurisdictions tj WHERE tj.jurisdiction_id = p_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.jurisdiction.in-use-by-tenants';
     END IF;
 
-    -- Sil
-    DELETE FROM catalog.jurisdictions WHERE id = p_id;
+    -- Soft delete
+    UPDATE catalog.jurisdictions SET
+        is_active = FALSE,
+        updated_at = NOW()
+    WHERE id = p_id;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.jurisdiction_delete IS 'Deletes a jurisdiction. Fails if related records exist.';
+COMMENT ON FUNCTION catalog.jurisdiction_delete IS 'Soft-deletes a jurisdiction by setting is_active to false. Fails if related records exist.';

@@ -1,5 +1,5 @@
 -- ================================================================
--- KYC_DOCUMENT_REQUIREMENT_DELETE: Belge gereksinimi siler
+-- KYC_DOCUMENT_REQUIREMENT_DELETE: Belge gereksinimini pasife alır (soft delete)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_delete(INT);
@@ -22,9 +22,12 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.kyc-document-requirement.not-found';
     END IF;
 
-    -- Sil
-    DELETE FROM catalog.kyc_document_requirements WHERE id = p_id;
+    -- Soft delete
+    UPDATE catalog.kyc_document_requirements SET
+        is_active = FALSE,
+        updated_at = NOW()
+    WHERE id = p_id;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_document_requirement_delete IS 'Deletes a KYC document requirement.';
+COMMENT ON FUNCTION catalog.kyc_document_requirement_delete IS 'Soft-deletes a KYC document requirement by setting is_active to false.';

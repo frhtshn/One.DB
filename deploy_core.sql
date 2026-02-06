@@ -317,6 +317,14 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/compliance/responsible_gaming_policy_update.sql
 \i core/functions/catalog/compliance/responsible_gaming_policy_delete.sql
 
+-- Data Retention Policies
+\i core/functions/catalog/compliance/data_retention_policy_list.sql
+\i core/functions/catalog/compliance/data_retention_policy_get.sql
+\i core/functions/catalog/compliance/data_retention_policy_create.sql
+\i core/functions/catalog/compliance/data_retention_policy_update.sql
+\i core/functions/catalog/compliance/data_retention_policy_delete.sql
+\i core/functions/catalog/compliance/data_retention_policy_lookup.sql
+
 -- UIKit Functions
 -- Themes
 \i core/functions/catalog/uikit/theme_list.sql

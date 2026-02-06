@@ -1,5 +1,5 @@
 -- ================================================================
--- KYC_LEVEL_REQUIREMENT_DELETE: Seviye gereksinimi siler
+-- KYC_LEVEL_REQUIREMENT_DELETE: Seviye gereksinimini pasife alır (soft delete)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_level_requirement_delete(INT);
@@ -22,9 +22,12 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.kyc-level-requirement.not-found';
     END IF;
 
-    -- Sil
-    DELETE FROM catalog.kyc_level_requirements WHERE id = p_id;
+    -- Soft delete
+    UPDATE catalog.kyc_level_requirements SET
+        is_active = FALSE,
+        updated_at = NOW()
+    WHERE id = p_id;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_level_requirement_delete IS 'Deletes a KYC level requirement.';
+COMMENT ON FUNCTION catalog.kyc_level_requirement_delete IS 'Soft-deletes a KYC level requirement by setting is_active to false.';

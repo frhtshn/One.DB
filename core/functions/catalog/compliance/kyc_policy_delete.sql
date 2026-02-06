@@ -1,5 +1,5 @@
 -- ================================================================
--- KYC_POLICY_DELETE: KYC policy siler
+-- KYC_POLICY_DELETE: KYC policy pasife alır (soft delete)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_policy_delete(INT);
@@ -22,14 +22,12 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.kyc-policy.not-found';
     END IF;
 
-    -- NOT: Aktif tenant kullanımı kontrolü eklenebilir
-    -- IF EXISTS(SELECT 1 FROM tenant.player_jurisdiction pj WHERE pj.jurisdiction_id = ...) THEN
-    --     RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.kyc-policy.in-use';
-    -- END IF;
-
-    -- Sil
-    DELETE FROM catalog.kyc_policies WHERE id = p_id;
+    -- Soft delete
+    UPDATE catalog.kyc_policies SET
+        is_active = FALSE,
+        updated_at = NOW()
+    WHERE id = p_id;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_policy_delete IS 'Deletes a KYC policy.';
+COMMENT ON FUNCTION catalog.kyc_policy_delete IS 'Soft-deletes a KYC policy by setting is_active to false.';
