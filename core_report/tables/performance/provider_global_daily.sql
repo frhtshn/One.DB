@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS performance.provider_global_daily CASCADE;
 
 CREATE TABLE performance.provider_global_daily (
-    id bigserial PRIMARY KEY,
+    id bigserial,
     report_date date NOT NULL,
     provider_id bigint NOT NULL,
     currency char(3) NOT NULL,
@@ -19,7 +19,11 @@ CREATE TABLE performance.provider_global_daily (
     active_tenants_count int DEFAULT 0,                    -- Bu provider'ı bugün kullanan tenant sayısı
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
-);
+    updated_at timestamp without time zone,
 
-COMMENT ON TABLE performance.provider_global_daily IS 'Global aggregations per provider across all tenants';
+    PRIMARY KEY (id, report_date)
+) PARTITION BY RANGE (report_date);
+
+CREATE TABLE performance.provider_global_daily_default PARTITION OF performance.provider_global_daily DEFAULT;
+
+COMMENT ON TABLE performance.provider_global_daily IS 'Global aggregations per provider across all tenants, partitioned monthly by report_date';

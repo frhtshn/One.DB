@@ -1,0 +1,5 @@
+# Claude Code
+.claude/
+
+# Windows reserved device names
+nul

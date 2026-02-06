@@ -12,6 +12,9 @@ COMMENT ON SCHEMA game IS 'Game performance reporting tables';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
 -- DROP UNUSED SCHEMAS (Clean start)
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -42,5 +45,14 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- INDEXES
 \i tenant_report/indexes/finance.sql
 \i tenant_report/indexes/game.sql
+
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+\i tenant_report/functions/maintenance/create_partitions.sql
+\i tenant_report/functions/maintenance/drop_expired_partitions.sql
+\i tenant_report/functions/maintenance/partition_info.sql
+\i tenant_report/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

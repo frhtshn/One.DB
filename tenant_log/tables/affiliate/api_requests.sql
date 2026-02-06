@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS affiliate_log.api_requests CASCADE;
 
 CREATE TABLE affiliate_log.api_requests (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                                          -- Benzersiz kayıt kimliği
     affiliate_id bigint,                                   -- Affiliate ID (auth başarılıysa)
     user_id bigint,                                        -- Kullanıcı ID (auth başarılıysa)
     request_id uuid NOT NULL,                              -- İstek correlation ID
@@ -21,7 +21,10 @@ CREATE TABLE affiliate_log.api_requests (
     ip_address inet NOT NULL,                              -- IP adresi
     user_agent varchar(500),                               -- Tarayıcı bilgisi
     error_message text,                                    -- Hata mesajı (varsa)
-    created_at timestamp without time zone NOT NULL DEFAULT now() -- İstek zamanı
-);
+    created_at timestamp without time zone NOT NULL DEFAULT now(), -- İstek zamanı
+    PRIMARY KEY (id, created_at)                               -- Partition key PK'ya dahil
+) PARTITION BY RANGE (created_at);
 
-COMMENT ON TABLE affiliate_log.api_requests IS 'API request logs for affiliate panel - performance monitoring and error analysis';
+CREATE TABLE affiliate_log.api_requests_default PARTITION OF affiliate_log.api_requests DEFAULT;
+
+COMMENT ON TABLE affiliate_log.api_requests IS 'API request logs for affiliate panel - performance monitoring and error analysis. Partitioned daily by created_at.';

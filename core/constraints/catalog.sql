@@ -76,6 +76,22 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- data_retention_policies -> jurisdictions
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_data_retention_policies_jurisdiction') THEN
+        ALTER TABLE catalog.data_retention_policies ADD CONSTRAINT fk_data_retention_policies_jurisdiction
+            FOREIGN KEY (jurisdiction_id) REFERENCES catalog.jurisdictions(id);
+    END IF;
+END $$;
+
+-- data_retention_policies unique constraint (jurisdiction_id, data_category)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_data_retention_policies_jurisdiction_category') THEN
+        ALTER TABLE catalog.data_retention_policies ADD CONSTRAINT uq_data_retention_policies_jurisdiction_category
+            UNIQUE (jurisdiction_id, data_category);
+    END IF;
+END $$;
+
 -- kyc_policies -> jurisdictions
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kyc_policies_jurisdiction') THEN

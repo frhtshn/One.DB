@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS performance.tenant_traffic_hourly CASCADE;
 
 CREATE TABLE performance.tenant_traffic_hourly (
-    id bigserial PRIMARY KEY,
+    id bigserial,
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
 
     company_id bigint NOT NULL,
@@ -23,7 +23,11 @@ CREATE TABLE performance.tenant_traffic_hourly (
     avg_latency_ms int DEFAULT 0,                          -- Ortalama yanıt süresi (milisaniye)
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
-);
+    updated_at timestamp without time zone,
 
-COMMENT ON TABLE performance.tenant_traffic_hourly IS 'Hourly traffic and system health indicators per tenant';
+    PRIMARY KEY (id, period_hour)
+) PARTITION BY RANGE (period_hour);
+
+CREATE TABLE performance.tenant_traffic_hourly_default PARTITION OF performance.tenant_traffic_hourly DEFAULT;
+
+COMMENT ON TABLE performance.tenant_traffic_hourly IS 'Hourly traffic and system health indicators per tenant, partitioned monthly by period_hour';

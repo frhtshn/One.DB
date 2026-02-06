@@ -9,7 +9,7 @@
 DROP TABLE IF EXISTS tracking.player_game_stats_daily CASCADE;
 
 CREATE TABLE tracking.player_game_stats_daily (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                              -- Benzersiz kayıt kimliği
     player_id bigint NOT NULL,                             -- Oyuncu ID
     affiliate_id bigint NOT NULL,                          -- O günkü affiliate ID (snapshot)
     game_date date NOT NULL,                               -- İstatistik tarihi
@@ -38,10 +38,13 @@ CREATE TABLE tracking.player_game_stats_daily (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now(),
 
+    PRIMARY KEY (id, game_date),                                 -- Partition key PK'ya dahil
     CONSTRAINT uq_player_game_daily UNIQUE (player_id, game_date, game_id)
-);
+) PARTITION BY RANGE (game_date);
 
-COMMENT ON TABLE tracking.player_game_stats_daily IS 'Daily player game statistics aggregated by worker after each transaction - base for GGR/NGR and commission calculations';
+CREATE TABLE tracking.player_game_stats_daily_default PARTITION OF tracking.player_game_stats_daily DEFAULT;
+
+COMMENT ON TABLE tracking.player_game_stats_daily IS 'Daily player game statistics. Partitioned monthly by game_date. Base for GGR/NGR and commission calculations.';
 COMMENT ON COLUMN tracking.player_game_stats_daily.ggr IS 'Gross Gaming Revenue = bet_amount - win_amount';
 COMMENT ON COLUMN tracking.player_game_stats_daily.ngr IS 'Net Gaming Revenue = ggr - bonus_cost (used for commission calculation)';
 

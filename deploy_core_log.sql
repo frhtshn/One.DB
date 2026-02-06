@@ -11,6 +11,9 @@ COMMENT ON SCHEMA logs IS 'System and error logs';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -25,7 +28,7 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
--- TABLES
+-- TABLES (partitioned - daily by created_at/occurred_at)
 \i core_log/tables/backoffice/audit_logs.sql
 \i core_log/tables/logs/error_logs.sql
 \i core_log/tables/logs/dead_letter_messages.sql
@@ -51,8 +54,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core_log/functions/logs/core_audit_create.sql
 \i core_log/functions/logs/core_audit_list.sql
 
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+\i core_log/functions/maintenance/create_partitions.sql
+\i core_log/functions/maintenance/drop_expired_partitions.sql
+\i core_log/functions/maintenance/partition_info.sql
+\i core_log/functions/maintenance/run_maintenance.sql
+
 -- INDEXES (Performans indexleri - en sonda yükle)
 \i core_log/indexes/backoffice.sql
 \i core_log/indexes/logs.sql
+
+-- INITIAL PARTITIONS (ilk partition'ları oluştur)
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

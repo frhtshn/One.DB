@@ -21,6 +21,9 @@ COMMENT ON SCHEMA tracking IS 'Affiliate tracking and stats';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -92,5 +95,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_affiliate/indexes/commission.sql
 \i tenant_affiliate/indexes/payout.sql
 \i tenant_affiliate/indexes/tracking.sql
+
+-- =============================================================================
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+-- =============================================================================
+\i tenant_affiliate/functions/maintenance/create_partitions.sql
+\i tenant_affiliate/functions/maintenance/drop_expired_partitions.sql
+\i tenant_affiliate/functions/maintenance/partition_info.sql
+\i tenant_affiliate/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

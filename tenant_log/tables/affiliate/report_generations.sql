@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS affiliate_log.report_generations CASCADE;
 
 CREATE TABLE affiliate_log.report_generations (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                                          -- Benzersiz kayıt kimliği
     affiliate_id bigint NOT NULL,                          -- Affiliate ID
     user_id bigint NOT NULL,                               -- Raporu oluşturan kullanıcı
     report_type varchar(50) NOT NULL,                      -- Rapor tipi: COMMISSION, PLAYER, TRAFFIC, CONVERSION, etc.
@@ -20,7 +20,10 @@ CREATE TABLE affiliate_log.report_generations (
     file_size_bytes bigint,                                -- Dosya boyutu (export ise)
     generation_time_ms int,                                -- Oluşturma süresi (ms)
     ip_address inet,                                       -- IP adresi
-    created_at timestamp without time zone NOT NULL DEFAULT now() -- Oluşturma zamanı
-);
+    created_at timestamp without time zone NOT NULL DEFAULT now(), -- Oluşturma zamanı
+    PRIMARY KEY (id, created_at)                               -- Partition key PK'ya dahil
+) PARTITION BY RANGE (created_at);
 
-COMMENT ON TABLE affiliate_log.report_generations IS 'Report generation logs for affiliate panel - resource usage tracking and audit';
+CREATE TABLE affiliate_log.report_generations_default PARTITION OF affiliate_log.report_generations DEFAULT;
+
+COMMENT ON TABLE affiliate_log.report_generations IS 'Report generation logs for affiliate panel - resource usage tracking and audit. Partitioned daily by created_at.';

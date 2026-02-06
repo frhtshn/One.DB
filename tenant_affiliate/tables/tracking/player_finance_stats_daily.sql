@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.player_finance_stats_daily CASCADE;
 
 CREATE TABLE tracking.player_finance_stats_daily (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                              -- Benzersiz kayıt kimliği
     player_id bigint NOT NULL,                             -- Oyuncu ID
     affiliate_id bigint NOT NULL,                          -- O günkü affiliate ID (snapshot)
     stats_date date NOT NULL,                              -- İstatistik tarihi
@@ -38,10 +38,13 @@ CREATE TABLE tracking.player_finance_stats_daily (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now(),
 
+    PRIMARY KEY (id, stats_date),                                -- Partition key PK'ya dahil
     CONSTRAINT uq_player_finance_daily UNIQUE (player_id, stats_date)
-);
+) PARTITION BY RANGE (stats_date);
 
-COMMENT ON TABLE tracking.player_finance_stats_daily IS 'Daily player financial statistics - deposit/withdrawal amounts and processing costs for NGR calculation';
+CREATE TABLE tracking.player_finance_stats_daily_default PARTITION OF tracking.player_finance_stats_daily DEFAULT;
+
+COMMENT ON TABLE tracking.player_finance_stats_daily IS 'Daily player financial statistics. Partitioned monthly by stats_date. Deposit/withdrawal amounts and processing costs for NGR.';
 COMMENT ON COLUMN tracking.player_finance_stats_daily.total_finance_cost IS 'Total payment processing cost to be deducted from GGR for NGR calculation';
 
 -- =============================================

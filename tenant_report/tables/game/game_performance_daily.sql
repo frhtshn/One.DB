@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS game.game_performance_daily CASCADE;
 
 CREATE TABLE game.game_performance_daily (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt ID
+    id bigserial,                              -- Benzersiz kayıt ID
     report_date date NOT NULL,                             -- Rapor tarihi
 
     -- Kırılımlar
@@ -26,11 +26,13 @@ CREATE TABLE game.game_performance_daily (
     rtp_actual numeric(5,2) DEFAULT 0,                     -- Gerçekleşen RTP (Return to Player) %
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
 
-    -- Constraint moved to constraints/game.sql
-);
+    PRIMARY KEY (id, report_date)                              -- Partition key PK'ya dahil
+) PARTITION BY RANGE (report_date);
 
 -- Indexes moved to indexes/game.sql
 
-COMMENT ON TABLE game.game_performance_daily IS 'Daily performance stats per game and provider for invoice reconciliation and RTP analysis';
+CREATE TABLE game.game_performance_daily_default PARTITION OF game.game_performance_daily DEFAULT;
+
+COMMENT ON TABLE game.game_performance_daily IS 'Daily performance stats per game and provider for invoice reconciliation and RTP analysis. Partitioned monthly by report_date.';

@@ -33,6 +33,9 @@ COMMENT ON SCHEMA bonus IS 'Bonus and promotion management';
 CREATE SCHEMA IF NOT EXISTS content;
 COMMENT ON SCHEMA content IS 'Content management system (CMS)';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -180,5 +183,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/indexes/bonus.sql
 \i tenant/indexes/game.sql
 \i tenant/indexes/content.sql
+
+-- =============================================================================
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+-- =============================================================================
+\i tenant/functions/maintenance/create_partitions.sql
+\i tenant/functions/maintenance/drop_expired_partitions.sql
+\i tenant/functions/maintenance/partition_info.sql
+\i tenant/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS finance.tenant_daily_kpi CASCADE;
 
 CREATE TABLE finance.tenant_daily_kpi (
-    id bigserial PRIMARY KEY,                              -- Benzersiz ID
+    id bigserial,                              -- Benzersiz ID
     report_date date NOT NULL,                             -- Rapor tarihi
     company_id bigint NOT NULL,                            -- Company ID (Hızlı filtreleme için)
     tenant_id bigint NOT NULL,                             -- Tenant ID
@@ -30,7 +30,11 @@ CREATE TABLE finance.tenant_daily_kpi (
     ftd_count int DEFAULT 0,                               -- First Time Depositor
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
-);
+    updated_at timestamp without time zone,
 
-COMMENT ON TABLE finance.tenant_daily_kpi IS 'Daily aggregated KPIs per tenant for central management reporting';
+    PRIMARY KEY (id, report_date)
+) PARTITION BY RANGE (report_date);
+
+CREATE TABLE finance.tenant_daily_kpi_default PARTITION OF finance.tenant_daily_kpi DEFAULT;
+
+COMMENT ON TABLE finance.tenant_daily_kpi IS 'Daily aggregated KPIs per tenant for central management reporting, partitioned monthly by report_date';

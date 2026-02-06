@@ -15,6 +15,9 @@ COMMENT ON SCHEMA performance IS 'Global system performance stats';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
 -- DROP UNUSED SCHEMAS (Clean start)
 DROP SCHEMA IF EXISTS public CASCADE;
 
@@ -39,9 +42,18 @@ CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA infra;
 \i core_report/constraints/billing.sql
 \i core_report/constraints/performance.sql
 
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+\i core_report/functions/maintenance/create_partitions.sql
+\i core_report/functions/maintenance/drop_expired_partitions.sql
+\i core_report/functions/maintenance/partition_info.sql
+\i core_report/functions/maintenance/run_maintenance.sql
+
 -- INDEXES
 \i core_report/indexes/finance.sql
 \i core_report/indexes/billing.sql
 \i core_report/indexes/performance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

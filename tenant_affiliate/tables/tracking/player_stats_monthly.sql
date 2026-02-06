@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.player_stats_monthly CASCADE;
 
 CREATE TABLE tracking.player_stats_monthly (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                              -- Benzersiz kayıt kimliği
     player_id bigint NOT NULL,                             -- Oyuncu ID
     affiliate_id bigint NOT NULL,                          -- Affiliate ID (ay boyunca değişmişse son değer)
     period_year smallint NOT NULL,                         -- Yıl
@@ -60,10 +60,13 @@ CREATE TABLE tracking.player_stats_monthly (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now(),
 
+    PRIMARY KEY (id, period_year, period_month),                 -- Multi-column partition key PK'ya dahil
     CONSTRAINT uq_player_monthly UNIQUE (player_id, period_year, period_month)
-);
+) PARTITION BY RANGE (period_year, period_month);
 
-COMMENT ON TABLE tracking.player_stats_monthly IS 'Monthly player statistics aggregated from daily stats - primary source for affiliate commission calculation';
+CREATE TABLE tracking.player_stats_monthly_default PARTITION OF tracking.player_stats_monthly DEFAULT;
+
+COMMENT ON TABLE tracking.player_stats_monthly IS 'Monthly player statistics. Partitioned monthly by (period_year, period_month). Primary source for affiliate commission calculation.';
 COMMENT ON COLUMN tracking.player_stats_monthly.is_ftd_month IS 'First Time Deposit month flag - used for CPA commission model';
 
 -- =============================================

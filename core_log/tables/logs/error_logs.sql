@@ -6,8 +6,8 @@
 
 DROP TABLE IF EXISTS logs.error_logs CASCADE;
 
-CREATE TABLE IF NOT EXISTS logs.error_logs (
-    id BIGSERIAL PRIMARY KEY,                              -- Kayıt ID
+CREATE TABLE logs.error_logs (
+    id BIGSERIAL,                                             -- Kayıt ID
     error_code VARCHAR(100) NOT NULL,                      -- Hata kodu
     error_message TEXT NOT NULL,                           -- Hata mesajı
     exception_type VARCHAR(500),                           -- İstisna (Exception) türü
@@ -24,7 +24,10 @@ CREATE TABLE IF NOT EXISTS logs.error_logs (
     stack_trace TEXT,                                      -- Hata izi (Stack trace)
     cluster_name VARCHAR(100),                             -- Hatanın oluştuğu küme (Cluster) adı
     occurred_at TIMESTAMPTZ NOT NULL,                      -- Hatanın oluştuğu zaman
-    created_at TIMESTAMPTZ DEFAULT NOW()                   -- Kaydın veritabanına yazıldığı zaman
-);
+    created_at TIMESTAMPTZ DEFAULT NOW(),                  -- Kaydın veritabanına yazıldığı zaman
+    PRIMARY KEY (id, occurred_at)                                -- Partition key PK'ya dahil
+) PARTITION BY RANGE (occurred_at);
 
-COMMENT ON TABLE logs.error_logs IS 'Stores application errors for monitoring and debugging. Used by ErrorDataService, ErrorAuditGrain.';
+CREATE TABLE logs.error_logs_default PARTITION OF logs.error_logs DEFAULT;
+
+COMMENT ON TABLE logs.error_logs IS 'Stores application errors for monitoring and debugging. Partitioned daily by occurred_at. Used by ErrorDataService, ErrorAuditGrain.';

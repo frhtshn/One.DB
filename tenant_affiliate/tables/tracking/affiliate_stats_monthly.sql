@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.affiliate_stats_monthly CASCADE;
 
 CREATE TABLE tracking.affiliate_stats_monthly (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                              -- Benzersiz kayıt kimliği
     affiliate_id bigint NOT NULL,                          -- Affiliate ID
     period_year smallint NOT NULL,                         -- Yıl
     period_month smallint NOT NULL,                        -- Ay (1-12)
@@ -69,8 +69,11 @@ CREATE TABLE tracking.affiliate_stats_monthly (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now(),
 
+    PRIMARY KEY (id, period_year, period_month),                 -- Multi-column partition key PK'ya dahil
     CONSTRAINT uq_affiliate_stats_monthly UNIQUE (affiliate_id, period_year, period_month, currency)
-);
+) PARTITION BY RANGE (period_year, period_month);
 
-COMMENT ON TABLE tracking.affiliate_stats_monthly IS 'Monthly affiliate statistics - primary source for commission calculation with network stats included';
+CREATE TABLE tracking.affiliate_stats_monthly_default PARTITION OF tracking.affiliate_stats_monthly DEFAULT;
+
+COMMENT ON TABLE tracking.affiliate_stats_monthly IS 'Monthly affiliate statistics. Partitioned monthly by (period_year, period_month). Primary source for commission calculation with network stats.';
 COMMENT ON COLUMN tracking.affiliate_stats_monthly.network_ngr IS 'NGR from sub-affiliates - used for network commission calculation';

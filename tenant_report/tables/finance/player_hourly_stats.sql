@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS finance.player_hourly_stats CASCADE;
 
 CREATE TABLE finance.player_hourly_stats (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt ID
+    id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat (Örn: 2026-01-30 14:00:00+00)
 
     -- Temel Bilgiler
@@ -46,13 +46,11 @@ CREATE TABLE finance.player_hourly_stats (
 
     -- Meta
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
 
-    -- Constraint moved to constraints/finance.sql
-);
+    PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
+) PARTITION BY RANGE (period_hour);
 
-COMMENT ON TABLE finance.player_hourly_stats IS 'Hourly financial summary per player/wallet using JSONB for flexible vertical reporting';
+CREATE TABLE finance.player_hourly_stats_default PARTITION OF finance.player_hourly_stats DEFAULT;
 
--- Partitioning önerisi:
--- Bu tablo çok hızlı büyüyeceği için aylık partition yapılması önerilir.
--- Nucleo altyapısında otomatik partition mekanizması varsa uygulanmalıdır.
+COMMENT ON TABLE finance.player_hourly_stats IS 'Hourly financial summary per player/wallet using JSONB for flexible vertical reporting. Partitioned monthly by period_hour.';

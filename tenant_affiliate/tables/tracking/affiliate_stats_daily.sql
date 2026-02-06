@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.affiliate_stats_daily CASCADE;
 
 CREATE TABLE tracking.affiliate_stats_daily (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                              -- Benzersiz kayıt kimliği
     affiliate_id bigint NOT NULL,                          -- Affiliate ID
     stats_date date NOT NULL,                              -- İstatistik tarihi
     currency char(3) NOT NULL,                             -- Para birimi
@@ -47,7 +47,10 @@ CREATE TABLE tracking.affiliate_stats_daily (
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone NOT NULL DEFAULT now(),
 
+    PRIMARY KEY (id, stats_date),                                -- Partition key PK'ya dahil
     CONSTRAINT uq_affiliate_stats_daily UNIQUE (affiliate_id, stats_date, currency)
-);
+) PARTITION BY RANGE (stats_date);
 
-COMMENT ON TABLE tracking.affiliate_stats_daily IS 'Daily affiliate statistics aggregated from player stats - used for dashboard and reporting';
+CREATE TABLE tracking.affiliate_stats_daily_default PARTITION OF tracking.affiliate_stats_daily DEFAULT;
+
+COMMENT ON TABLE tracking.affiliate_stats_daily IS 'Daily affiliate statistics. Partitioned monthly by stats_date. Aggregated from player stats for dashboard and reporting.';

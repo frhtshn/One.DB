@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.transaction_events CASCADE;
 
 CREATE TABLE tracking.transaction_events (
-    id bigserial PRIMARY KEY,                              -- Benzersiz event kimliği
+    id bigserial,                              -- Benzersiz event kimliği
     transaction_id bigint NOT NULL,                        -- Transaction ID
     player_id bigint NOT NULL,                             -- Oyuncu ID
     affiliate_id bigint,                                   -- Oyuncunun affiliate'i (snapshot)
@@ -35,10 +35,14 @@ CREATE TABLE tracking.transaction_events (
 
     -- Meta
     transaction_created_at timestamp without time zone NOT NULL, -- Orijinal transaction zamanı
-    created_at timestamp without time zone NOT NULL DEFAULT now()
-);
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
 
-COMMENT ON TABLE tracking.transaction_events IS 'Transaction event queue - worker processes these to update player/affiliate stats';
+    PRIMARY KEY (id, created_at)                                 -- Partition key PK'ya dahil
+) PARTITION BY RANGE (created_at);
+
+CREATE TABLE tracking.transaction_events_default PARTITION OF tracking.transaction_events DEFAULT;
+
+COMMENT ON TABLE tracking.transaction_events IS 'Transaction event queue. Partitioned monthly by created_at. Worker processes these to update player/affiliate stats.';
 
 -- =============================================
 -- Worker Akışı:

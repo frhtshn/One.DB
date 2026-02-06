@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS finance.system_hourly_kpi CASCADE;
 
 CREATE TABLE finance.system_hourly_kpi (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt ID
+    id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
     currency char(3) NOT NULL,                             -- Para birimi
 
@@ -33,8 +33,11 @@ CREATE TABLE finance.system_hourly_kpi (
     net_cash_flow numeric(18, 8) GENERATED ALWAYS AS (total_deposits - total_withdrawals) STORED,
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
 
-);
+    PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
+) PARTITION BY RANGE (period_hour);
 
-COMMENT ON TABLE finance.system_hourly_kpi IS 'System-wide hourly Key Performance Indicators (Non-player specific)';
+CREATE TABLE finance.system_hourly_kpi_default PARTITION OF finance.system_hourly_kpi DEFAULT;
+
+COMMENT ON TABLE finance.system_hourly_kpi IS 'System-wide hourly Key Performance Indicators. Partitioned monthly by period_hour.';

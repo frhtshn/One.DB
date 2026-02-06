@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS billing.monthly_invoices CASCADE;
 
 CREATE TABLE billing.monthly_invoices (
-    id bigserial PRIMARY KEY,
+    id bigserial,
     period_year int NOT NULL,                              -- Yıl (Örn: 2026)
     period_month int NOT NULL,                             -- Ay (Örn: 1)
 
@@ -33,7 +33,11 @@ CREATE TABLE billing.monthly_invoices (
     status smallint DEFAULT 0,                             -- 0:Draft, 1:Finalized, 2:Invoiced, 3:Paid
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone
-);
+    updated_at timestamp without time zone,
 
-COMMENT ON TABLE billing.monthly_invoices IS 'Monthly billing and commission summary for tenants';
+    PRIMARY KEY (id, created_at)
+) PARTITION BY RANGE (created_at);
+
+CREATE TABLE billing.monthly_invoices_default PARTITION OF billing.monthly_invoices DEFAULT;
+
+COMMENT ON TABLE billing.monthly_invoices IS 'Monthly billing and commission summary for tenants, partitioned monthly by created_at';

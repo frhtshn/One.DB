@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS affiliate_log.commission_calculations CASCADE;
 
 CREATE TABLE affiliate_log.commission_calculations (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
+    id bigserial,                                          -- Benzersiz kayıt kimliği
     batch_id uuid NOT NULL,                                -- Hesaplama batch ID
     period_start date NOT NULL,                            -- Dönem başlangıç
     period_end date NOT NULL,                              -- Dönem bitiş
@@ -24,10 +24,13 @@ CREATE TABLE affiliate_log.commission_calculations (
     status varchar(20) NOT NULL,                           -- Durum: RUNNING, COMPLETED, FAILED
     error_message text,                                    -- Hata mesajı (varsa)
     triggered_by varchar(50),                              -- Tetikleyen: CRON, USER:xxx
-    created_at timestamp without time zone NOT NULL DEFAULT now()
-);
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    PRIMARY KEY (id, created_at)                               -- Partition key PK'ya dahil
+) PARTITION BY RANGE (created_at);
 
-COMMENT ON TABLE affiliate_log.commission_calculations IS 'Commission batch calculation logs with network distribution details';
+CREATE TABLE affiliate_log.commission_calculations_default PARTITION OF affiliate_log.commission_calculations DEFAULT;
+
+COMMENT ON TABLE affiliate_log.commission_calculations IS 'Commission batch calculation logs with network distribution details. Partitioned daily by created_at.';
 
 -- =============================================
 -- Örnek Log:

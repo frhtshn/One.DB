@@ -15,6 +15,9 @@ COMMENT ON SCHEMA kyc_log IS 'KYC provider API logs (90+ day retention)';
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -57,5 +60,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_log/indexes/affiliate.sql
 -- \i tenant_log/indexes/bonus.sql
 \i tenant_log/indexes/kyc.sql
+
+-- =============================================================================
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+-- =============================================================================
+\i tenant_log/functions/maintenance/create_partitions.sql
+\i tenant_log/functions/maintenance/drop_expired_partitions.sql
+\i tenant_log/functions/maintenance/partition_info.sql
+\i tenant_log/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

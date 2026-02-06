@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.link_clicks CASCADE;
 
 CREATE TABLE tracking.link_clicks (
-    id bigserial PRIMARY KEY,                              -- Benzersiz tıklama kimliği
+    id bigserial,                              -- Benzersiz tıklama kimliği
     tracking_link_id bigint NOT NULL,                      -- Link ID (FK: tracking.tracking_links)
     affiliate_id bigint NOT NULL,                          -- Affiliate ID (denormalize)
     campaign_id bigint,                                    -- Kampanya ID (denormalize)
@@ -64,10 +64,14 @@ CREATE TABLE tracking.link_clicks (
 
     -- Meta
     raw_query_params jsonb,                                -- Tüm URL parametreleri
-    created_at timestamp without time zone NOT NULL DEFAULT now()
-);
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
 
-COMMENT ON TABLE tracking.link_clicks IS 'Click tracking log for affiliate links - captures visitor data for attribution';
+    PRIMARY KEY (id, clicked_at)                                 -- Partition key PK'ya dahil
+) PARTITION BY RANGE (clicked_at);
+
+CREATE TABLE tracking.link_clicks_default PARTITION OF tracking.link_clicks DEFAULT;
+
+COMMENT ON TABLE tracking.link_clicks IS 'Click tracking log for affiliate links. Partitioned monthly by clicked_at.';
 COMMENT ON COLUMN tracking.link_clicks.click_id IS 'Unique click identifier stored in visitor cookie for attribution';
 COMMENT ON COLUMN tracking.link_clicks.is_unique IS 'First click from this visitor in 24 hours';
 

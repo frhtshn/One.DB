@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS game.game_hourly_stats CASCADE;
 
 CREATE TABLE game.game_hourly_stats (
-    id bigserial PRIMARY KEY,                              -- Benzersiz kayıt ID
+    id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
 
     -- Temel Bilgiler
@@ -36,11 +36,13 @@ CREATE TABLE game.game_hourly_stats (
     provider_stats jsonb DEFAULT '{}'::jsonb,
 
     -- Meta
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
 
-    -- Constraint moved to constraints/game.sql
-);
+    PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
+) PARTITION BY RANGE (period_hour);
 
 -- Indexes moved to indexes/game.sql
 
-COMMENT ON TABLE game.game_hourly_stats IS 'Consolidated hourly game stats per player using JSONB map for games to reduce row count';
+CREATE TABLE game.game_hourly_stats_default PARTITION OF game.game_hourly_stats DEFAULT;
+
+COMMENT ON TABLE game.game_hourly_stats IS 'Consolidated hourly game stats per player using JSONB map for games to reduce row count. Partitioned monthly by period_hour.';

@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS transaction.transactions CASCADE;
 
 CREATE TABLE transaction.transactions (
-    id bigserial PRIMARY KEY,
+    id bigserial,
 
     player_id bigint NOT NULL,                    -- Oyuncu ID
     wallet_id bigint NOT NULL,                    -- Cüzdan ID
@@ -34,7 +34,11 @@ CREATE TABLE transaction.transactions (
     confirmed_at timestamptz,                     -- İşlemin onaylandığı zaman (tamamlanma)
 
     -- Kayıt Zamanı
-    created_at timestamptz NOT NULL DEFAULT now() -- DB kayıt zamanı
-);
+    created_at timestamptz NOT NULL DEFAULT now(), -- DB kayıt zamanı
 
-COMMENT ON TABLE transaction.transactions IS 'Append-only financial transaction ledger recording all money movements with full audit trail';
+    PRIMARY KEY (id, created_at)                     -- Partition key PK'ya dahil
+) PARTITION BY RANGE (created_at);
+
+CREATE TABLE transaction.transactions_default PARTITION OF transaction.transactions DEFAULT;
+
+COMMENT ON TABLE transaction.transactions IS 'Append-only financial transaction ledger. Partitioned monthly by created_at. All money movements with full audit trail.';

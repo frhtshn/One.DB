@@ -122,6 +122,7 @@ Referans dataları içerir. **Read-only** karakterlidir. Mantıksal gruplara ayr
 | `kyc_document_requirements`   | Gerekli KYC belgeleri                   |
 | `kyc_level_requirements`      | KYC seviye geçiş kuralları              |
 | `responsible_gaming_policies` | Sorumlu oyun politikaları               |
+| `data_retention_policies`     | Jurisdiction bazlı veri saklama süreleri |
 
 #### UI Kit (Theme Market)
 
@@ -386,3 +387,22 @@ Yüksek hacimli "Write-Heavy" operasyonel veriler, ana işlem veritabanlarını 
 ### 8.3 Log Stratejisi
 
 Tüm log veritabanları **`DROP PARTITION`** stratejisi ile temizlenir. Detaylar için bkz: `LOGSTRATEGY.md`.
+
+---
+
+## 9. Partition Yapısı
+
+Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 6 veritabanında toplam 26 tablo partitioned çalışır.
+
+| DB | Strateji | Tablo Sayısı | Retention |
+|----|----------|-------------|-----------|
+| `core_log` | Daily | 4 | 30–90 gün |
+| `tenant_log` | Daily | 4 | 30–90 gün |
+| `tenant_report` | Monthly | 5 | Sınırsız |
+| `core_report` | Monthly | 5 | Sınırsız |
+| `tenant_affiliate` | Monthly | 7 | Sınırsız |
+| `tenant` | Monthly | 1 | Sınırsız |
+
+Her partitioned veritabanı `maintenance` şemasında 4 yönetim fonksiyonu içerir: `create_partitions`, `drop_expired_partitions`, `partition_info`, `run_maintenance`.
+
+> Detaylar için bkz: **[PARTITION_ARCHITECTURE.md](PARTITION_ARCHITECTURE.md)**

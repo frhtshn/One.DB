@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS kyc_log.player_kyc_provider_logs CASCADE;
 
 CREATE TABLE kyc_log.player_kyc_provider_logs (
-    id bigserial PRIMARY KEY,
+    id bigserial,
 
     player_id bigint NOT NULL,                    -- Oyuncu ID (tenant DB referans)
     kyc_case_id bigint NOT NULL,                  -- Bağlı KYC vakası ID (tenant DB referans)
@@ -41,7 +41,10 @@ CREATE TABLE kyc_log.player_kyc_provider_logs (
     -- Performans
     response_time_ms int,                         -- Yanıt süresi (milisaniye)
 
-    created_at timestamp NOT NULL DEFAULT now()
-);
+    created_at timestamp NOT NULL DEFAULT now(),
+    PRIMARY KEY (id, created_at)                               -- Partition key PK'ya dahil
+) PARTITION BY RANGE (created_at);
 
-COMMENT ON TABLE kyc_log.player_kyc_provider_logs IS 'External KYC provider API call logs for integrations like Sumsub and Onfido. Retention: 90+ days (extended for KYC compliance).';
+CREATE TABLE kyc_log.player_kyc_provider_logs_default PARTITION OF kyc_log.player_kyc_provider_logs DEFAULT;
+
+COMMENT ON TABLE kyc_log.player_kyc_provider_logs IS 'External KYC provider API call logs for integrations like Sumsub and Onfido. Partitioned daily by created_at. Retention: 90+ days (extended for KYC compliance).';
