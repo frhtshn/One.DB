@@ -73,6 +73,7 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('tenant.integration.manage', 'Manage Integrations', 'Edit callback URLs, webhooks, IP whitelist', 'tenant', 1),
 ('tenant.content.list', 'Tenant Content List', 'View CMS, sliders, popups, FAQ', 'tenant', 1),
 ('tenant.content.manage', 'Manage Tenant Content', 'Edit CMS, sliders, popups, FAQ', 'tenant', 1),
+('tenant.presentation.manage', 'Manage Presentation', 'Manage tenant navigation, themes and layouts', 'tenant', 1),
 
 -- ================================================================
 -- CATALOG SCOPE (9) - SuperAdmin + Platform Admin
