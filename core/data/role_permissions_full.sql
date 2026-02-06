@@ -76,6 +76,7 @@ WHERE r.code = 'tenantadmin'
     OR p.code = 'tenant.settings.edit'
     OR p.code = 'tenant.content.list'
     OR p.code = 'tenant.content.manage'
+    OR p.code = 'tenant.presentation.manage'
     -- Player management (full)
     OR p.category = 'player'
     -- Game management (view + settings)
@@ -127,6 +128,8 @@ WHERE r.code = 'moderator'
     OR p.code IN ('affiliate.list', 'affiliate.view', 'affiliate.players.view')
     -- Reports (player only)
     OR p.code = 'report.player.view'
+    -- Presentation management
+    OR p.code = 'tenant.presentation.manage'
   );
 
 -- ================================================================
@@ -150,7 +153,7 @@ WHERE r.code = 'editor'
     -- Bonus management (full)
     OR p.category = 'bonus'
     -- Tenant content
-    OR p.code IN ('tenant.content.list', 'tenant.content.manage')
+    OR p.code IN ('tenant.content.list', 'tenant.content.manage', 'tenant.presentation.manage')
   );
 
 -- ================================================================
