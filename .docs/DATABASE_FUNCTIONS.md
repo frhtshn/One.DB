@@ -122,6 +122,12 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`company_list(p_page INTEGER DEFAULT 1, p_page_size INTEGER DEFAULT 20, p_search TEXT DEFAULT NULL)`**: Company list.
 - **`company_lookup(p_caller_id BIGINT)`**: Company lookup.
 - **`company_update(p_id BIGINT, p_company_code VARCHAR, p_company_name VARCHAR, p_status SMALLINT, p_country_code CHARACTER(2), p_timezone VARCHAR)`**: Company update.
+- **`department_create(p_caller_id BIGINT, p_company_id BIGINT, p_code VARCHAR(50), p_name TEXT, p_parent_id BIGINT DEFAULT NULL, p_description TEXT DEFAULT NULL)`**: Creates a new department. Code stored uppercase, unique per company. name/description are multi-language JSONB received as TEXT. IDOR protected.
+- **`department_delete(p_caller_id BIGINT, p_company_id BIGINT, p_id BIGINT)`**: Soft deletes a department (is_active=FALSE). Fails if active child departments exist. IDOR protected.
+- **`department_get(p_caller_id BIGINT, p_company_id BIGINT, p_id BIGINT)`**: Returns department details with parent name. name/description/parentName are multi-language JSONB. IDOR protected.
+- **`department_list(p_caller_id BIGINT, p_company_id BIGINT, p_parent_id BIGINT DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL, p_search TEXT DEFAULT NULL)`**: Lists departments. Search works across all language values in JSONB name and code. IDOR protected.
+- **`department_lookup(p_caller_id BIGINT, p_company_id BIGINT, p_lang CHAR(2) DEFAULT NULL)`**: Returns active departments for dropdowns. p_lang=NULL returns full JSONB name, p_lang='tr' returns resolved string with 'en' fallback. IDOR protected.
+- **`department_update(p_caller_id BIGINT, p_company_id BIGINT, p_id BIGINT, p_code VARCHAR(50) DEFAULT NULL, p_name TEXT DEFAULT NULL, p_parent_id BIGINT DEFAULT NULL, p_description TEXT DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Updates department (COALESCE pattern). name/description are multi-language JSONB received as TEXT. IDOR protected.
 - **`tenant_create(p_caller_id BIGINT, p_company_id BIGINT, p_tenant_code VARCHAR, p_tenant_name VARCHAR, p_environment VARCHAR DEFAULT 'prod', p_base_currency CHAR(3) DEFAULT NULL, p_default_language CHAR(2) DEFAULT NULL, p_default_country CHAR(2) DEFAULT NULL, p_timezone VARCHAR DEFAULT NULL, p_supported_currencies VARCHAR[] DEFAULT NULL, -- Array of currency codes p_supported_languages VARCHAR[] DEFAULT NULL -- Array of language codes)`**: Tenant create.
 - **`tenant_currency_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Tenant currency list.
 - **`tenant_currency_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_currency_code CHAR(3), p_is_enabled BOOLEAN DEFAULT TRUE)`**: Tenant currency upsert.
@@ -136,6 +142,9 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`tenant_setting_list(p_caller_id BIGINT, p_tenant_id BIGINT, p_category VARCHAR DEFAULT NULL -- Optional filter)`**: Tenant setting list.
 - **`tenant_setting_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_key VARCHAR, p_value JSONB, p_description VARCHAR DEFAULT NULL, p_category VARCHAR DEFAULT 'General')`**: Tenant setting upsert.
 - **`tenant_update(p_caller_id BIGINT, p_id BIGINT, p_company_id BIGINT DEFAULT NULL, p_tenant_code VARCHAR DEFAULT NULL, p_tenant_name VARCHAR DEFAULT NULL, p_environment VARCHAR DEFAULT NULL, p_base_currency CHAR(3) DEFAULT NULL, p_default_language CHAR(2) DEFAULT NULL, p_default_country CHAR(2) DEFAULT NULL, p_timezone VARCHAR DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_supported_currencies VARCHAR[] DEFAULT NULL, -- Full list to sync p_supported_languages VARCHAR[] DEFAULT NULL -- Full list to sync)`**: Tenant update.
+- **`user_department_assign(p_caller_id BIGINT, p_user_id BIGINT, p_department_id BIGINT, p_is_primary BOOLEAN DEFAULT FALSE)`**: Assigns user to department. Idempotent. If is_primary=TRUE, unsets previous primary. User and department must be in same company. IDOR protected.
+- **`user_department_list(p_caller_id BIGINT, p_user_id BIGINT)`**: Lists all departments assigned to a user. Primary department listed first. departmentName/parentName are multi-language JSONB. IDOR protected.
+- **`user_department_remove(p_caller_id BIGINT, p_user_id BIGINT, p_department_id BIGINT)`**: Removes user from department (hard delete on junction table). IDOR protected.
 
 ### Outbox Schema
 
@@ -241,20 +250,20 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`role_permission_list(p_role_id BIGINT)`**: Role permission list.
 - **`role_permission_remove(p_role_id BIGINT, p_permission_code VARCHAR)`**: Role permission remove.
 - **`role_update(p_id BIGINT, p_name VARCHAR DEFAULT NULL, p_description VARCHAR DEFAULT NULL, p_updated_by BIGINT DEFAULT NULL, p_status SMALLINT DEFAULT NULL)`**: Role update.
-- **`session_belongs_to_user(p_session_id VARCHAR(50), p_user_id BIGINT)`**: SESSION_BELONGS_TO_USER: Session ownership kontrolÃ¼
+- **`session_belongs_to_user(p_session_id VARCHAR(50), p_user_id BIGINT)`**: Checks if a session belongs to the specified user.
 - **`session_cleanup_expired(p_batch_size INT DEFAULT 1000, p_revoked_retention_days INT DEFAULT 7, p_inactivity_days INT DEFAULT 5)`**: Session cleanup expired.
 - **`session_list(p_user_id BIGINT)`**: Session list.
 - **`session_revoke(p_session_id VARCHAR(50), p_reason VARCHAR(200) DEFAULT 'User requested')`**: Session revoke.
 - **`session_revoke_all(p_user_id BIGINT, p_reason VARCHAR(200) DEFAULT 'User requested logout all', p_except_session_id VARCHAR(50) DEFAULT NULL)`**: Session revoke all.
 - **`session_save(p_session_id VARCHAR(50), p_user_id BIGINT, p_refresh_token_id VARCHAR(100), p_ip_address VARCHAR(50), p_user_agent VARCHAR(500), p_device_name VARCHAR(100), p_expires_at TIMESTAMPTZ)`**: Session save.
-- **`session_update_activity(p_session_id VARCHAR(50))`**: SESSION_UPDATE_ACTIVITY: Session son aktivite zamanÄ±nÄ± gÃ¼ncelle AÃ§Ä±klama: Refresh token kullanÄ±ldÄ±ÄŸÄ±nda Ã§aÄŸrÄ±lÄ±r.
-- **`user_authenticate(p_email VARCHAR(255))`**: User authenticate. Returns user info with `requirePasswordChange` (true if password expired or flag set) and `passwordChangedAt`.
+- **`session_update_activity(p_session_id VARCHAR(50))`**: Updates session last activity timestamp. Called when refresh token is used.
+- **`user_authenticate(p_email VARCHAR(255))`**: User authenticate. Returns user info with `requirePasswordChange` (true if password expired or flag set), `passwordChangedAt`, and `primaryDepartment` (JSONB multi-language name).
 - **`user_check_email_exists(p_email TEXT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check email exists.
 - **`user_check_username_exists(p_username TEXT, p_company_id BIGINT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check username exists.
-- **`user_create(p_caller_id BIGINT, p_email TEXT, p_username TEXT, p_password TEXT, p_first_name TEXT, p_last_name TEXT, p_company_id BIGINT, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL)`**: User create.
+- **`user_create(p_caller_id BIGINT, p_email TEXT, p_username TEXT, p_password TEXT, p_first_name TEXT, p_last_name TEXT, p_company_id BIGINT, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL, p_department_id BIGINT DEFAULT NULL)`**: User create. Optional `p_department_id` assigns user to department as primary.
 - **`user_delete(p_caller_id BIGINT, p_user_id BIGINT)`**: User delete.
-- **`user_get(p_caller_id BIGINT, p_user_id BIGINT)`**: User get.
-- **`user_list(p_caller_id BIGINT, p_company_id BIGINT, p_tenant_id BIGINT DEFAULT NULL, p_page INT DEFAULT 1, p_page_size INT DEFAULT 10, p_search TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_sort_by TEXT DEFAULT 'id', p_sort_order TEXT DEFAULT 'ASC')`**: User list.
+- **`user_get(p_caller_id BIGINT, p_user_id BIGINT)`**: User get. Includes `departments` array (JSONB multi-language departmentName/parentName, isPrimary).
+- **`user_list(p_caller_id BIGINT, p_company_id BIGINT, p_tenant_id BIGINT DEFAULT NULL, p_page INT DEFAULT 1, p_page_size INT DEFAULT 10, p_search TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_sort_by TEXT DEFAULT 'id', p_sort_order TEXT DEFAULT 'ASC')`**: User list. Includes `primaryDepartment` (JSONB multi-language name) per user.
 - **`user_login_failed_increment(p_user_id BIGINT, p_lock_threshold INT DEFAULT 5, p_lock_duration_minutes INT DEFAULT 30)`**: User login failed increment.
 - **`user_login_failed_reset(p_user_id BIGINT)`**: User login failed reset.
 - **`user_permission_list(p_user_id BIGINT, p_tenant_id BIGINT DEFAULT NULL)`**: User permission list.
@@ -262,7 +271,7 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`user_permission_override_load(p_user_id BIGINT, p_tenant_id BIGINT DEFAULT NULL)`**: User permission override load.
 - **`user_permission_remove(p_caller_id BIGINT, p_user_id BIGINT, p_permission_code VARCHAR(100), p_tenant_id BIGINT DEFAULT NULL)`**: User permission remove.
 - **`user_permission_set(p_user_id BIGINT, p_permission_code VARCHAR(100), p_is_granted BOOLEAN, p_tenant_id BIGINT DEFAULT NULL, p_reason VARCHAR(500) DEFAULT NULL, p_assigned_by BIGINT DEFAULT NULL, p_expires_at TIMESTAMPTZ DEFAULT NULL)`**: User permission set.
-- **`user_permission_set_with_outbox(p_user_id BIGINT, p_permission_code VARCHAR(100), p_is_granted BOOLEAN, p_tenant_id BIGINT DEFAULT NULL, p_reason VARCHAR(500) DEFAULT NULL, p_assigned_by BIGINT DEFAULT NULL, p_expires_at TIMESTAMPTZ DEFAULT NULL, p_outbox_messages TEXT DEFAULT '[]' -- Dapper text olarak gÃ¶nderir, iÃ§erde JSONB'ye cast edilir)`**: User permission set with outbox.
+- **`user_permission_set_with_outbox(p_user_id BIGINT, p_permission_code VARCHAR(100), p_is_granted BOOLEAN, p_tenant_id BIGINT DEFAULT NULL, p_reason VARCHAR(500) DEFAULT NULL, p_assigned_by BIGINT DEFAULT NULL, p_expires_at TIMESTAMPTZ DEFAULT NULL, p_outbox_messages TEXT DEFAULT '[]')`**: User permission set with outbox. `p_outbox_messages` is sent as TEXT from Dapper and cast to JSONB internally.
 - **`company_password_policy_get(p_caller_id BIGINT, p_company_id BIGINT)`**: Returns company password policy with IDOR protection. Platform Admin can view any company, CompanyAdmin only their own. Returns `hasCustomPolicy` flag to indicate if using defaults (expiryDays=30, historyCount=3).
 - **`company_password_policy_upsert(p_caller_id BIGINT, p_company_id BIGINT, p_expiry_days INT DEFAULT 30, p_history_count INT DEFAULT 3)`**: Creates or updates company password policy with IDOR protection. Platform Admin can edit any company, CompanyAdmin only their own. Validates expiryDays >= 0, historyCount 0-10.
 - **`user_change_password(p_user_id BIGINT, p_current_password_hash TEXT, p_new_password_hash TEXT)`**: User changes own password. Validates current password, checks against recent passwords (from `company_password_policy.history_count` with platform default 3), saves old password to history, sets `require_password_change = FALSE`.
@@ -271,7 +280,7 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`user_role_list(p_caller_id BIGINT, p_user_id BIGINT, p_tenant_id BIGINT DEFAULT NULL)`**: User role list.
 - **`user_role_remove(p_caller_id BIGINT, p_user_id BIGINT, p_role_code VARCHAR, p_tenant_id BIGINT DEFAULT NULL)`**: User role remove.
 - **`user_unlock(p_caller_id BIGINT, p_user_id BIGINT)`**: User unlock.
-- **`user_update(p_caller_id BIGINT, p_user_id BIGINT, p_first_name TEXT DEFAULT NULL, p_last_name TEXT DEFAULT NULL, p_email TEXT DEFAULT NULL, p_username TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL, p_two_factor_enabled BOOLEAN DEFAULT NULL)`**: User update.
+- **`user_update(p_caller_id BIGINT, p_user_id BIGINT, p_first_name TEXT DEFAULT NULL, p_last_name TEXT DEFAULT NULL, p_email TEXT DEFAULT NULL, p_username TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL, p_two_factor_enabled BOOLEAN DEFAULT NULL, p_require_password_change BOOLEAN DEFAULT NULL, p_department_id BIGINT DEFAULT NULL)`**: User update. Optional `p_department_id` changes primary department.
 
 ### Triggers
 

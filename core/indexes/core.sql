@@ -119,3 +119,35 @@ CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_settings_gin ON core.tenant_
 
 -- core.tenant_settings (setting_value) - note: already defined above but grouped here for clarity
 -- CREATE INDEX IF NOT EXISTS idx_tenant_settings_value_gin ON core.tenant_settings USING gin(setting_value);
+
+-- =============================================================================
+-- Department Indexes
+-- =============================================================================
+
+-- departments.company_id -> companies.id (FK performance)
+CREATE INDEX IF NOT EXISTS idx_departments_company_id ON core.departments USING btree(company_id);
+
+-- departments.parent_id -> departments.id (FK performance, hierarchy queries)
+CREATE INDEX IF NOT EXISTS idx_departments_parent_id ON core.departments USING btree(parent_id) WHERE parent_id IS NOT NULL;
+
+-- departments (unique code per company)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_departments_company_code ON core.departments USING btree(company_id, code);
+
+-- departments (active filter per company)
+CREATE INDEX IF NOT EXISTS idx_departments_company_active ON core.departments USING btree(company_id, is_active);
+
+-- user_departments.user_id -> users.id (FK performance)
+CREATE INDEX IF NOT EXISTS idx_user_departments_user_id ON core.user_departments USING btree(user_id);
+
+-- user_departments.department_id -> departments.id (FK performance)
+CREATE INDEX IF NOT EXISTS idx_user_departments_department_id ON core.user_departments USING btree(department_id);
+
+-- user_departments (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_departments_unique ON core.user_departments USING btree(user_id, department_id);
+
+-- user_departments (primary department per user)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_departments_primary ON core.user_departments USING btree(user_id) WHERE is_primary = true;
+
+-- departments JSONB GIN indexes (multi-language search)
+CREATE INDEX IF NOT EXISTS idx_departments_name_gin ON core.departments USING gin(name);
+CREATE INDEX IF NOT EXISTS idx_departments_description_gin ON core.departments USING gin(description);

@@ -8,7 +8,6 @@
 --   Diğerleri: Kaldıramaz
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_permission_remove(BIGINT, VARCHAR, BIGINT);
 DROP FUNCTION IF EXISTS security.user_permission_remove(BIGINT, BIGINT, VARCHAR, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_remove(

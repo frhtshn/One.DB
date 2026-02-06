@@ -195,6 +195,19 @@ BEGIN
             JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
             WHERE ur.user_id IN (SELECT id FROM filtered_users)
             GROUP BY ur.user_id
+        ),
+        user_dept_agg AS (
+            SELECT
+                ud.user_id,
+                jsonb_build_object(
+                    ''departmentId'', d.id,
+                    ''departmentCode'', d.code,
+                    ''departmentName'', d.name
+                ) AS primary_department
+            FROM core.user_departments ud
+            JOIN core.departments d ON d.id = ud.department_id
+            WHERE ud.user_id IN (SELECT id FROM filtered_users)
+              AND ud.is_primary = TRUE
         )
         SELECT COALESCE(jsonb_agg(
             jsonb_build_object(
@@ -215,11 +228,13 @@ BEGIN
                 ''requirePasswordChange'', fu.require_password_change,
                 ''createdAt'', fu.created_at,
                 ''roles'', CASE WHEN $7 THEN COALESCE(ura.global_roles, ''[]''::jsonb) ELSE ''[]''::jsonb END,
-                ''tenantRoles'', COALESCE(ura.tenant_roles, ''[]''::jsonb)
+                ''tenantRoles'', COALESCE(ura.tenant_roles, ''[]''::jsonb),
+                ''primaryDepartment'', uda.primary_department
             ) ORDER BY fu.%s %s
         ), ''[]''::jsonb)
         FROM filtered_users fu
-        LEFT JOIN user_roles_agg ura ON ura.user_id = fu.id',
+        LEFT JOIN user_roles_agg ura ON ura.user_id = fu.id
+        LEFT JOIN user_dept_agg uda ON uda.user_id = fu.id',
         v_sort_column, v_sort_dir,
         v_sort_column, v_sort_dir
     )
@@ -242,6 +257,7 @@ $$;
 
 COMMENT ON FUNCTION security.user_list(BIGINT, BIGINT, BIGINT, INT, INT, TEXT, SMALLINT, TEXT, TEXT) IS
 'Returns paginated user list with IDOR protection (CTE optimized).
+Includes primaryDepartment (JSONB multi-language name) for each user.
 Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (own tenants).
 p_tenant_id NULL means all tenants for Platform/CompanyAdmin, required for TenantAdmin.
-Locked callers are rejected. Roles fetched in single pass (no N+1).';
+Locked callers are rejected. Roles and departments fetched in single pass (no N+1).';

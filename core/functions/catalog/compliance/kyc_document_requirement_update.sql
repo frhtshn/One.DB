@@ -4,9 +4,6 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_update(
-    INT, VARCHAR, JSONB, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
-);
-DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_update(
     INT, VARCHAR, TEXT, BOOLEAN, VARCHAR, INT, INT, VARCHAR, INT
 );
 

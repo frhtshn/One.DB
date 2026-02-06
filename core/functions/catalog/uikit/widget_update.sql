@@ -3,7 +3,6 @@
 -- NULL geçilen alanlar güncellenmez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.widget_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
 DROP FUNCTION IF EXISTS catalog.widget_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.widget_update(

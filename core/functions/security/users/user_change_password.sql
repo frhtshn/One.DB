@@ -5,7 +5,6 @@
 -- DB sadece: user kontrolü, update, history kaydet, temizlik
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_change_password(BIGINT, TEXT, TEXT);
 DROP FUNCTION IF EXISTS security.user_change_password(BIGINT, TEXT);
 
 CREATE OR REPLACE FUNCTION security.user_change_password(

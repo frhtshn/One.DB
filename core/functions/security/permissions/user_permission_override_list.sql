@@ -8,7 +8,6 @@
 --   Diğerleri: Erişim yok
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_permission_override_list(BIGINT, BIGINT);
 DROP FUNCTION IF EXISTS security.user_permission_override_list(BIGINT, BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_override_list(

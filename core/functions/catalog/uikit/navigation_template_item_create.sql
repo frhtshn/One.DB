@@ -3,9 +3,6 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.navigation_template_item_create(
-    INT, VARCHAR, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
-);
-DROP FUNCTION IF EXISTS catalog.navigation_template_item_create(
     INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BIGINT, INT, BOOLEAN, BOOLEAN
 );
 

@@ -5,7 +5,6 @@
 -- DB transaction ile cache invalidation ve event publish atomik garanti.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_permission_set_with_outbox(BIGINT, VARCHAR, BOOLEAN, BIGINT, VARCHAR, BIGINT, TIMESTAMPTZ, JSONB);
 DROP FUNCTION IF EXISTS security.user_permission_set_with_outbox(BIGINT, VARCHAR, BOOLEAN, BIGINT, VARCHAR, BIGINT, TIMESTAMPTZ, TEXT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_set_with_outbox(

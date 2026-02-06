@@ -31,6 +31,7 @@ DECLARE
     v_company_role_permissions TEXT[] := '{}';
     v_password_expiry_days INT := 0;
     v_require_password_change BOOLEAN := FALSE;
+    v_primary_department JSONB := NULL;
 BEGIN
     -- ================================================================
     -- 1. KULLANICI DOGRULAMA
@@ -106,7 +107,20 @@ BEGIN
     );
 
     -- ================================================================
-    -- 6. SCOPE BAZLI ISLEM
+    -- 6. PRIMARY DEPARTMAN
+    -- ================================================================
+    SELECT jsonb_build_object(
+        'departmentId', d.id,
+        'departmentCode', d.code,
+        'departmentName', d.name
+    )
+    INTO v_primary_department
+    FROM core.user_departments ud
+    JOIN core.departments d ON d.id = ud.department_id
+    WHERE ud.user_id = v_user.id AND ud.is_primary = TRUE;
+
+    -- ================================================================
+    -- 7. SCOPE BAZLI ISLEM
     -- ================================================================
 
     IF v_user.company_id = 0 AND 'superadmin' = ANY(v_platform_roles) THEN
@@ -280,7 +294,7 @@ BEGIN
     END IF;
 
     -- ================================================================
-    -- 7. RESPONSE
+    -- 8. RESPONSE
     -- ================================================================
     RETURN jsonb_build_object(
         'user', jsonb_build_object(
@@ -297,7 +311,8 @@ BEGIN
             'requirePasswordChange', v_require_password_change,
             'language', v_user.language,
             'timezone', v_user.timezone,
-            'currency', v_user.currency
+            'currency', v_user.currency,
+            'primaryDepartment', v_primary_department
         ),
         'globalRoles', to_jsonb(v_platform_roles),
         'globalPermissions', v_global_permissions,
@@ -308,4 +323,4 @@ END;
 $$;
 
 COMMENT ON FUNCTION security.user_authenticate IS
-'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific. Sifre suresi dolmussa requirePasswordChange=true doner.';
+'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific. Includes primaryDepartment (JSONB multi-language name) in user object. Sifre suresi dolmussa requirePasswordChange=true doner.';

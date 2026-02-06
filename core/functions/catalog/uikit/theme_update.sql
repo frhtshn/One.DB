@@ -3,7 +3,6 @@
 -- NULL geçilen alanlar güncellenmez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN, BOOLEAN);
 DROP FUNCTION IF EXISTS catalog.theme_update(INT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.theme_update(

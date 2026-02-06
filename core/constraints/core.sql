@@ -214,3 +214,55 @@ DO $$ BEGIN
             UNIQUE (tenant_id, data_category);
     END IF;
 END $$;
+
+-- =============================================================================
+-- Department Constraints
+-- =============================================================================
+
+-- departments -> companies
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_departments_company') THEN
+        ALTER TABLE core.departments ADD CONSTRAINT fk_departments_company
+            FOREIGN KEY (company_id) REFERENCES core.companies(id);
+    END IF;
+END $$;
+
+-- departments -> departments (self-referencing hierarchy)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_departments_parent') THEN
+        ALTER TABLE core.departments ADD CONSTRAINT fk_departments_parent
+            FOREIGN KEY (parent_id) REFERENCES core.departments(id);
+    END IF;
+END $$;
+
+-- departments unique code per company
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_departments_company_code') THEN
+        ALTER TABLE core.departments ADD CONSTRAINT uq_departments_company_code
+            UNIQUE (company_id, code);
+    END IF;
+END $$;
+
+-- user_departments -> users
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_user_departments_user') THEN
+        ALTER TABLE core.user_departments ADD CONSTRAINT fk_user_departments_user
+            FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- user_departments -> departments
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_user_departments_department') THEN
+        ALTER TABLE core.user_departments ADD CONSTRAINT fk_user_departments_department
+            FOREIGN KEY (department_id) REFERENCES core.departments(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- user_departments unique (one assignment per user per department)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_user_departments') THEN
+        ALTER TABLE core.user_departments ADD CONSTRAINT uq_user_departments
+            UNIQUE (user_id, department_id);
+    END IF;
+END $$;

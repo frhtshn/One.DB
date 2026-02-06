@@ -10,10 +10,10 @@
 -- Güvenlik:
 --   - Kilitli caller erişemez
 --   - Silinmiş hedef güncellenemez
+-- p_department_id verilirse primary departman değiştirilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN);
-DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN);
+DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_update(
     p_caller_id BIGINT,
@@ -27,7 +27,8 @@ CREATE OR REPLACE FUNCTION security.user_update(
     p_timezone VARCHAR(50) DEFAULT NULL,
     p_currency CHAR(3) DEFAULT NULL,
     p_two_factor_enabled BOOLEAN DEFAULT NULL,
-    p_require_password_change BOOLEAN DEFAULT NULL
+    p_require_password_change BOOLEAN DEFAULT NULL,
+    p_department_id BIGINT DEFAULT NULL           -- Primary departmanı değiştir
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -172,6 +173,16 @@ BEGIN
         END IF;
     END IF;
 
+    -- Departman varlık kontrolü (değiştiriliyorsa)
+    IF p_department_id IS NOT NULL THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM core.departments
+            WHERE id = p_department_id AND company_id = v_target_company_id AND is_active = TRUE
+        ) THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.department.not-found';
+        END IF;
+    END IF;
+
     -- ========================================
     -- 5. GÜNCELLEME
     -- ========================================
@@ -194,11 +205,28 @@ BEGIN
     IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.concurrent-modification';
     END IF;
+
+    -- ========================================
+    -- 6. DEPARTMAN ATAMASI
+    -- ========================================
+    IF p_department_id IS NOT NULL THEN
+        -- Mevcut primary'yi kaldır
+        UPDATE core.user_departments
+        SET is_primary = FALSE
+        WHERE user_id = p_user_id AND is_primary = TRUE;
+
+        -- Yeni departmanı ata veya güncelle
+        INSERT INTO core.user_departments (user_id, department_id, is_primary, assigned_by)
+        VALUES (p_user_id, p_department_id, TRUE, p_caller_id)
+        ON CONFLICT (user_id, department_id) DO UPDATE
+        SET is_primary = TRUE;
+    END IF;
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN) IS
+COMMENT ON FUNCTION security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN, BIGINT) IS
 'Updates user with IDOR protection.
+p_department_id: optional, changes primary department (validates same company + active).
 Access: Self (always), Platform Admin (all), CompanyAdmin (own company + hierarchy), TenantAdmin (own tenants + hierarchy).
 Locked callers and deleted targets are rejected.
 p_require_password_change: Admins can force user to change password on next login.';

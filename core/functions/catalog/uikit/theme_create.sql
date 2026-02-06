@@ -2,7 +2,6 @@
 -- THEME_CREATE: Yeni tema oluşturur
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.theme_create(VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, JSONB, BOOLEAN);
 DROP FUNCTION IF EXISTS catalog.theme_create(VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.theme_create(

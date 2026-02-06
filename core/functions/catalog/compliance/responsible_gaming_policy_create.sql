@@ -5,17 +5,6 @@
 
 DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
     INT,
-    BOOLEAN, JSONB, INT,
-    BOOLEAN, JSONB,
-    BOOLEAN, INT, BOOLEAN, INT, INT,
-    BOOLEAN, INT,
-    BOOLEAN, INT, INT, BOOLEAN,
-    BOOLEAN, INT, BOOLEAN, BOOLEAN,
-    VARCHAR, BOOLEAN, VARCHAR,
-    BOOLEAN, BOOLEAN, BOOLEAN, BOOLEAN
-);
-DROP FUNCTION IF EXISTS catalog.responsible_gaming_policy_create(
-    INT,
     BOOLEAN, TEXT, INT,
     BOOLEAN, TEXT,
     BOOLEAN, INT, BOOLEAN, INT, INT,

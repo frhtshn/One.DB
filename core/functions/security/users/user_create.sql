@@ -4,9 +4,10 @@
 -- Erişim Kuralları:
 --   - Platform Admin: Her şirkete kullanıcı ekleyebilir
 --   - Diğerleri: Sadece kendi şirketine (caller_company_id == p_company_id)
+-- p_department_id verilirse kullanıcı o departmana primary olarak atanır
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3));
+DROP FUNCTION IF EXISTS security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_create(
     p_caller_id BIGINT,
@@ -18,7 +19,8 @@ CREATE OR REPLACE FUNCTION security.user_create(
     p_company_id BIGINT,
     p_language CHAR(2) DEFAULT NULL,
     p_timezone VARCHAR(50) DEFAULT NULL,
-    p_currency CHAR(3) DEFAULT NULL
+    p_currency CHAR(3) DEFAULT NULL,
+    p_department_id BIGINT DEFAULT NULL       -- Atanacak departman (primary olarak)
 )
 RETURNS BIGINT
 LANGUAGE plpgsql
@@ -46,6 +48,16 @@ BEGIN
     -- Company varlık kontrolü
     IF NOT EXISTS (SELECT 1 FROM core.companies WHERE id = p_company_id AND status = 1) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.company.not-found';
+    END IF;
+
+    -- Departman varlık kontrolü (verilmişse)
+    IF p_department_id IS NOT NULL THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM core.departments
+            WHERE id = p_department_id AND company_id = p_company_id AND is_active = TRUE
+        ) THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.department.not-found';
+        END IF;
     END IF;
 
     -- ========================================
@@ -87,10 +99,18 @@ BEGIN
     )
     RETURNING security.users.id INTO v_new_id;
 
+    -- Departman ataması (verilmişse, primary olarak)
+    IF p_department_id IS NOT NULL THEN
+        INSERT INTO core.user_departments (user_id, department_id, is_primary, assigned_by)
+        VALUES (v_new_id, p_department_id, TRUE, p_caller_id);
+    END IF;
+
     RETURN v_new_id;
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3)) IS
+COMMENT ON FUNCTION security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), BIGINT) IS
 'Creates a new user with IDOR protection.
+p_department_id: optional, assigns user to department as primary.
+Department must belong to same company and be active.
 Access: Platform Admin (any company), Others (own company only).';

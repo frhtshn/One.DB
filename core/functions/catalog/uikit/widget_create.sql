@@ -2,7 +2,6 @@
 -- WIDGET_CREATE: Yeni widget oluşturur
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.widget_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB);
 DROP FUNCTION IF EXISTS catalog.widget_create(VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION catalog.widget_create(

@@ -87,6 +87,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Organization (Şirket ve Tenant yapısı)
 \i core/tables/core/organization/companies.sql
 \i core/tables/core/organization/tenants.sql
+\i core/tables/core/organization/departments.sql
+\i core/tables/core/organization/user_departments.sql
 
 -- Configuration (Tenant ayarları)
 \i core/tables/core/configuration/tenant_settings.sql
@@ -208,6 +210,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Tenant Configs - Languages
 \i core/functions/core/tenant_languages/tenant_language_upsert.sql
 \i core/functions/core/tenant_languages/tenant_language_list.sql
+
+-- Departments
+\i core/functions/core/departments/department_create.sql
+\i core/functions/core/departments/department_get.sql
+\i core/functions/core/departments/department_list.sql
+\i core/functions/core/departments/department_lookup.sql
+\i core/functions/core/departments/department_update.sql
+\i core/functions/core/departments/department_delete.sql
+\i core/functions/core/departments/user_department_assign.sql
+\i core/functions/core/departments/user_department_list.sql
+\i core/functions/core/departments/user_department_remove.sql
 
 -- Country Functions
 \i core/functions/catalog/countries/country_list.sql

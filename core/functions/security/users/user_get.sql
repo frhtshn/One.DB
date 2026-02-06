@@ -153,6 +153,22 @@ BEGIN
         'updatedAt', u.updated_at,
         'companyId', u.company_id,
         'companyName', c.company_name,
+        -- Kullanıcının departmanları
+        'departments', COALESCE((
+            SELECT jsonb_agg(jsonb_build_object(
+                'departmentId', d.id,
+                'departmentCode', d.code,
+                'departmentName', d.name,
+                'parentId', d.parent_id,
+                'parentName', pd.name,
+                'isPrimary', ud.is_primary,
+                'assignedAt', ud.assigned_at
+            ) ORDER BY ud.is_primary DESC, d.code)
+            FROM core.user_departments ud
+            JOIN core.departments d ON d.id = ud.department_id
+            LEFT JOIN core.departments pd ON pd.id = d.parent_id
+            WHERE ud.user_id = u.id
+        ), '[]'::jsonb),
         -- Platform Admin ve CompanyAdmin global rolleri görür
         'globalRoles', CASE
             WHEN v_caller_has_platform_role OR v_caller_is_company_admin THEN
@@ -202,7 +218,7 @@ END;
 $$;
 
 COMMENT ON FUNCTION security.user_get(BIGINT, BIGINT) IS
-'Returns user details with IDOR protection.
+'Returns user details with IDOR protection. Includes departments (JSONB multi-language name).
 Access: Platform Admin (all), CompanyAdmin (same company), TenantAdmin (own tenant users).
 TenantAdmin only sees roles in their own tenant.
 Locked callers and deleted targets are rejected.';

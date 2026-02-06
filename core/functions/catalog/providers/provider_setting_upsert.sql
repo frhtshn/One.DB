@@ -3,7 +3,6 @@
 -- Key varsa gunceller, yoksa ekler
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, VARCHAR, JSONB, VARCHAR);
 DROP FUNCTION IF EXISTS catalog.provider_setting_upsert(BIGINT, VARCHAR, TEXT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_setting_upsert(

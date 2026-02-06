@@ -3,7 +3,6 @@
 -- provider_id + key ile arama
 -- ================================================================
 
-DROP FUNCTION IF EXISTS catalog.provider_setting_get(BIGINT);
 DROP FUNCTION IF EXISTS catalog.provider_setting_get(BIGINT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION catalog.provider_setting_get(

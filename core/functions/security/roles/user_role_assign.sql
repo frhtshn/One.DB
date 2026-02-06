@@ -14,8 +14,6 @@
 -- Returns: TABLE(already_assigned) - idempotent bilgi
 -- =============================================
 
-DROP FUNCTION IF EXISTS security.user_role_assign(BIGINT, VARCHAR, BIGINT);
-DROP FUNCTION IF EXISTS security.user_role_assign(BIGINT, BIGINT, VARCHAR, BIGINT);
 DROP FUNCTION IF EXISTS security.user_role_assign(BIGINT, BIGINT, VARCHAR, BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_role_assign(
