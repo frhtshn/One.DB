@@ -43,7 +43,7 @@ DECLARE
     v_tenant_ids BIGINT[];
     v_company_ids BIGINT[];
 BEGIN
-    -- Get user and highest role info (global role - tenant_id IS NULL)
+    -- Kullanıcının en yüksek rolünü al (global + tenant-specific dahil)
     SELECT
         u.id,
         u.company_id,
@@ -52,7 +52,7 @@ BEGIN
         r.is_platform_role
     INTO v_user
     FROM security.users u
-    JOIN security.user_roles ur ON u.id = ur.user_id AND ur.tenant_id IS NULL
+    JOIN security.user_roles ur ON u.id = ur.user_id
     JOIN security.roles r ON ur.role_id = r.id
     WHERE u.id = p_caller_id
       AND u.status = 1
@@ -77,17 +77,26 @@ BEGIN
 
         v_company_ids := ARRAY[v_user.company_id];
     ELSE
-        -- Others: From user_allowed_tenants table
-        SELECT ARRAY_AGG(uat.tenant_id) INTO v_tenant_ids
-        FROM security.user_allowed_tenants uat
-        WHERE uat.user_id = p_caller_id;
+        -- Diğerleri: user_roles tenant atamaları + user_allowed_tenants birleşimi
+        SELECT ARRAY_AGG(DISTINCT sub.tenant_id) INTO v_tenant_ids
+        FROM (
+            -- Tenant-specific rol atamaları
+            SELECT ur.tenant_id
+            FROM security.user_roles ur
+            WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NOT NULL
+            UNION
+            -- Açık tenant erişim izinleri
+            SELECT uat.tenant_id
+            FROM security.user_allowed_tenants uat
+            WHERE uat.user_id = p_caller_id
+        ) sub;
 
-        -- Companies of allowed tenants
+        -- İzin verilen tenantların company'leri
         SELECT ARRAY_AGG(DISTINCT t.company_id) INTO v_company_ids
         FROM core.tenants t
         WHERE t.id = ANY(v_tenant_ids);
 
-        -- Also add their own company
+        -- Kendi company'sini de ekle
         IF v_company_ids IS NULL THEN
             v_company_ids := ARRAY[v_user.company_id];
         ELSIF NOT (v_user.company_id = ANY(v_company_ids)) THEN
