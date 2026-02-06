@@ -10,13 +10,13 @@
 --   - TenantAdmin: user_allowed_tenants'taki tenant'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_layout_upsert(BIGINT, BIGINT, VARCHAR, JSONB, BIGINT, BOOLEAN);
+DROP FUNCTION IF EXISTS presentation.tenant_layout_upsert(BIGINT, BIGINT, VARCHAR, TEXT, BIGINT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION presentation.tenant_layout_upsert(
     p_caller_id BIGINT,
     p_tenant_id BIGINT,
     p_layout_name VARCHAR(50),
-    p_structure JSONB,
+    p_structure TEXT,
     p_page_id BIGINT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT TRUE
 )
@@ -50,7 +50,7 @@ BEGIN
         p_tenant_id,
         p_page_id,
         p_layout_name,
-        p_structure,
+        p_structure::jsonb,
         p_is_active,
         NOW(),
         NOW()
@@ -66,7 +66,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_layout_upsert(BIGINT, BIGINT, VARCHAR, JSONB, BIGINT, BOOLEAN) IS
+COMMENT ON FUNCTION presentation.tenant_layout_upsert(BIGINT, BIGINT, VARCHAR, TEXT, BIGINT, BOOLEAN) IS
 'Creates or updates a tenant layout (widget placement).
 layout_name is unique per tenant.
 Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';

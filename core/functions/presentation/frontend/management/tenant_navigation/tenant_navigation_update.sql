@@ -14,7 +14,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.tenant_navigation_update(
-    BIGINT, BIGINT, BIGINT, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR,
+    BIGINT, BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR,
     VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BIGINT, INT, BOOLEAN, BOOLEAN,
     BOOLEAN, VARCHAR[], VARCHAR, VARCHAR
 );
@@ -24,7 +24,7 @@ CREATE OR REPLACE FUNCTION presentation.tenant_navigation_update(
     p_tenant_id BIGINT,
     p_id BIGINT,
     -- Readonly olsa da güncellenebilen alanlar
-    p_custom_label JSONB DEFAULT NULL,
+    p_custom_label TEXT DEFAULT NULL,
     p_icon VARCHAR(50) DEFAULT NULL,
     p_badge_text VARCHAR(20) DEFAULT NULL,
     p_badge_color VARCHAR(20) DEFAULT NULL,
@@ -107,7 +107,7 @@ BEGIN
     UPDATE presentation.tenant_navigation
     SET
         -- Her zaman güncellenebilen alanlar
-        custom_label = COALESCE(p_custom_label, custom_label),
+        custom_label = COALESCE(p_custom_label::jsonb, custom_label),
         icon = COALESCE(p_icon, icon),
         badge_text = COALESCE(p_badge_text, badge_text),
         badge_color = COALESCE(p_badge_color, badge_color),

@@ -10,13 +10,13 @@
 --   - TenantAdmin: user_allowed_tenants'taki tenant'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_theme_upsert(BIGINT, BIGINT, INT, JSONB, TEXT, BOOLEAN);
+DROP FUNCTION IF EXISTS presentation.tenant_theme_upsert(BIGINT, BIGINT, INT, TEXT, TEXT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION presentation.tenant_theme_upsert(
     p_caller_id BIGINT,
     p_tenant_id BIGINT,
     p_theme_id INT,
-    p_config JSONB DEFAULT '{}',
+    p_config TEXT DEFAULT '{}',
     p_custom_css TEXT DEFAULT NULL,
     p_set_active BOOLEAN DEFAULT FALSE
 )
@@ -66,7 +66,7 @@ BEGIN
     VALUES (
         p_tenant_id,
         p_theme_id,
-        p_config,
+        p_config::jsonb,
         p_custom_css,
         p_set_active,
         NOW(),
@@ -83,7 +83,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_theme_upsert(BIGINT, BIGINT, INT, JSONB, TEXT, BOOLEAN) IS
+COMMENT ON FUNCTION presentation.tenant_theme_upsert(BIGINT, BIGINT, INT, TEXT, TEXT, BOOLEAN) IS
 'Creates or updates tenant theme configuration.
 If p_set_active is TRUE, deactivates other themes and sets this one as active.
 Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';

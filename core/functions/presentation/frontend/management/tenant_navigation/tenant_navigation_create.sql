@@ -11,7 +11,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.tenant_navigation_create(
-    BIGINT, BIGINT, VARCHAR, VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR,
+    BIGINT, BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR,
     VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BIGINT, INT, BOOLEAN, BOOLEAN,
     BOOLEAN, VARCHAR[], VARCHAR, VARCHAR
 );
@@ -21,7 +21,7 @@ CREATE OR REPLACE FUNCTION presentation.tenant_navigation_create(
     p_tenant_id BIGINT,
     p_menu_location VARCHAR(50),
     p_translation_key VARCHAR(100) DEFAULT NULL,
-    p_custom_label JSONB DEFAULT NULL,
+    p_custom_label TEXT DEFAULT NULL,
     p_icon VARCHAR(50) DEFAULT NULL,
     p_badge_text VARCHAR(20) DEFAULT NULL,
     p_badge_color VARCHAR(20) DEFAULT NULL,
@@ -100,7 +100,7 @@ BEGIN
         NULL,                    -- template_item_id = NULL (custom item)
         p_menu_location,
         p_translation_key,
-        p_custom_label,
+        p_custom_label::jsonb,
         p_icon,
         p_badge_text,
         p_badge_color,
