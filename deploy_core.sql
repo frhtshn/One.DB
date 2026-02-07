@@ -90,7 +90,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/organization/departments.sql
 \i core/tables/core/organization/user_departments.sql
 
--- Configuration (Tenant ayarları)
+-- Configuration (Platform ve Tenant ayarları)
+\i core/tables/core/configuration/platform_settings.sql
 \i core/tables/core/configuration/tenant_settings.sql
 \i core/tables/core/configuration/tenant_currencies.sql
 \i core/tables/core/configuration/tenant_languages.sql
@@ -196,6 +197,13 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/tenants/tenant_update.sql
 \i core/functions/core/tenants/tenant_delete.sql
 \i core/functions/core/tenants/tenant_lookup.sql
+
+-- Platform Settings
+\i core/functions/core/platform_settings/platform_setting_create.sql
+\i core/functions/core/platform_settings/platform_setting_update.sql
+\i core/functions/core/platform_settings/platform_setting_delete.sql
+\i core/functions/core/platform_settings/platform_setting_get.sql
+\i core/functions/core/platform_settings/platform_setting_list.sql
 
 -- Tenant Settings
 \i core/functions/core/tenant_settings/tenant_setting_upsert.sql
