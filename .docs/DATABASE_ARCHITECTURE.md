@@ -156,12 +156,13 @@ Tenant ve şirket yönetimi.
 
 #### Configuration
 
-| Tablo                  | Açıklama                                  |
-| ---------------------- | ----------------------------------------- |
-| `tenant_currencies`    | Tenant'a tanımlı para birimleri           |
-| `tenant_languages`     | Tenant'a tanımlı diller                   |
-| `tenant_settings`      | Tenant özel konfigürasyonları             |
-| `tenant_jurisdictions` | Tenant lisans/jurisdiction eşleştirmeleri |
+| Tablo                  | Açıklama                                              |
+| ---------------------- | ----------------------------------------------------- |
+| `platform_settings`    | Platform seviyesi dış servis ayarları (şifreli config) |
+| `tenant_currencies`    | Tenant'a tanımlı para birimleri                       |
+| `tenant_languages`     | Tenant'a tanımlı diller                               |
+| `tenant_settings`      | Tenant özel konfigürasyonları                         |
+| `tenant_jurisdictions` | Tenant lisans/jurisdiction eşleştirmeleri             |
 
 #### Integration
 

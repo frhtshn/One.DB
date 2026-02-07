@@ -151,3 +151,16 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_user_departments_primary ON core.user_depa
 -- departments JSONB GIN indexes (multi-language search)
 CREATE INDEX IF NOT EXISTS idx_departments_name_gin ON core.departments USING gin(name);
 CREATE INDEX IF NOT EXISTS idx_departments_description_gin ON core.departments USING gin(description);
+
+-- =============================================================================
+-- Platform Settings Indexes
+-- =============================================================================
+
+-- platform_settings.setting_key (lookup by key)
+CREATE INDEX IF NOT EXISTS idx_platform_settings_key ON core.platform_settings USING btree(setting_key);
+
+-- platform_settings (unique lookup: key + environment)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_platform_settings_key_env ON core.platform_settings USING btree(setting_key, environment);
+
+-- platform_settings (active services)
+CREATE INDEX IF NOT EXISTS idx_platform_settings_active ON core.platform_settings USING btree(is_active) WHERE is_active = true;

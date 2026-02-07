@@ -140,7 +140,7 @@ CORE DATABASE
 │
 ├── core (Tenant Yönetimi)
 │   ├── organization     → Şirket ve Tenantlar
-│   ├── configuration    → Tenant ayarları (Dil, Kur)
+│   ├── configuration    → Platform ve Tenant ayarları (Dış Servisler, Dil, Kur)
 │   └── integration      → Tenant provider/oyun erişimleri
 │
 ├── security (Yetki Yönetimi)

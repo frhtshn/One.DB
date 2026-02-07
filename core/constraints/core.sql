@@ -266,3 +266,15 @@ DO $$ BEGIN
             UNIQUE (user_id, department_id);
     END IF;
 END $$;
+
+-- =============================================================================
+-- Platform Settings Constraints
+-- =============================================================================
+
+-- platform_settings unique (setting_key + environment)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_platform_settings_key_env') THEN
+        ALTER TABLE core.platform_settings ADD CONSTRAINT uq_platform_settings_key_env
+            UNIQUE (setting_key, environment);
+    END IF;
+END $$;
