@@ -1,7 +1,7 @@
 -- ================================================================
 -- CREATE_PARTITIONS: Aylık partition'ları otomatik oluşturur
--- tenant veritabanı için monthly partition yönetimi
--- Bu ay + 3 ay ileri partition oluşturur
+-- Core veritabanı için monthly partition yönetimi
+-- Bu ay + N ay ileri partition oluşturur
 -- Idempotent: Zaten varsa atlar
 -- ================================================================
 
@@ -26,10 +26,10 @@ DECLARE
     v_exists BOOLEAN;
     v_tbl RECORD;
 BEGIN
+    -- Core DB'deki partitioned tablolar
     FOR v_tbl IN
         SELECT * FROM (VALUES
-            ('transaction', 'transactions',    'created_at'),
-            ('messaging',   'player_messages', 'created_at')
+            ('messaging', 'user_messages', 'created_at')
         ) AS t(schema_name, tbl_name, partition_key)
     LOOP
         FOR i IN 0..p_look_ahead_months LOOP
@@ -78,4 +78,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.create_partitions(INT) IS 'Creates monthly partitions for tenant transaction tables. Look-ahead: current month + N months. Idempotent.';
+COMMENT ON FUNCTION maintenance.create_partitions(INT) IS 'Creates monthly partitions for core messaging tables. Look-ahead: current month + N months. Idempotent.';

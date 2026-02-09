@@ -1,6 +1,6 @@
 -- ================================================================
 -- DROP_EXPIRED_PARTITIONS: Süresi dolan partition'ları siler
--- tenant veritabanı için retention yönetimi
+-- Core veritabanı için retention yönetimi
 -- Tablo bazlı retention desteği (her tablo kendi süresiyle)
 -- Aktif ayın partition'ını ASLA silmez
 -- ================================================================
@@ -29,8 +29,7 @@ BEGIN
     -- Tablo bazlı retention tanımları
     FOR v_tbl IN
         SELECT * FROM (VALUES
-            ('transaction', 36500),   -- ~100 yıl (finansal işlemler - sınırsız)
-            ('messaging',   180)      -- 6 ay (oyuncu mesajları)
+            ('messaging', 180)   -- 6 ay (kullanıcı mesajları)
         ) AS t(schema_name, default_retention)
     LOOP
         -- Override varsa onu kullan, yoksa tablo varsayılanı
@@ -79,4 +78,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.drop_expired_partitions(INT) IS 'Drops monthly partitions older than per-table retention period. Transactions: indefinite, player_messages: 180 days. Override with p_retention_days. Never drops current month.';
+COMMENT ON FUNCTION maintenance.drop_expired_partitions(INT) IS 'Drops monthly partitions older than retention period. user_messages: 180 days. Override with p_retention_days. Never drops current month.';

@@ -26,6 +26,12 @@ COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 CREATE SCHEMA IF NOT EXISTS outbox;
 COMMENT ON SCHEMA outbox IS 'Transactional outbox pattern for cache invalidation and event publishing';
 
+CREATE SCHEMA IF NOT EXISTS messaging;
+COMMENT ON SCHEMA messaging IS 'User messaging and broadcast system';
+
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management functions';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;
@@ -166,6 +172,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- OUTBOX TABLES
 \i core/tables/outbox/outbox_messages.sql
+
+-- MESSAGING TABLES
+\i core/tables/messaging/user_message_broadcasts.sql
+\i core/tables/messaging/user_messages.sql
 
 -- DATA SEEDING
 \i core/data/companies.sql
@@ -541,6 +551,22 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/outbox/outbox_stats.sql
 \i core/functions/outbox/outbox_cleanup.sql
 
+-- Messaging Functions
+\i core/functions/messaging/user_broadcast_create.sql
+\i core/functions/messaging/user_broadcast_get.sql
+\i core/functions/messaging/user_broadcast_list.sql
+\i core/functions/messaging/user_broadcast_delete.sql
+\i core/functions/messaging/user_message_send.sql
+\i core/functions/messaging/user_messages_list.sql
+\i core/functions/messaging/user_message_read.sql
+\i core/functions/messaging/user_message_delete.sql
+
+-- Maintenance Functions (Partition Yönetimi)
+\i core/functions/maintenance/create_partitions.sql
+\i core/functions/maintenance/drop_expired_partitions.sql
+\i core/functions/maintenance/partition_info.sql
+\i core/functions/maintenance/run_maintenance.sql
+
 -- TRIGGERS
 \i core/triggers/update_updated_at_column.sql
 \i core/triggers/security_triggers.sql
@@ -554,6 +580,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/constraints/security.sql
 \i core/constraints/billing.sql
 \i core/constraints/outbox.sql
+\i core/constraints/messaging.sql
 
 -- INDEXES (Performans indexleri - en sonda yükle)
 \i core/indexes/catalog.sql
@@ -563,5 +590,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/indexes/security.sql
 \i core/indexes/billing.sql
 \i core/indexes/outbox.sql
+\i core/indexes/messaging.sql
+
+-- PARTITION INITIALIZATION
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

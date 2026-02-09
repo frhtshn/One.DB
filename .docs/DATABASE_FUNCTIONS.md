@@ -287,6 +287,24 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`user_unlock(p_caller_id BIGINT, p_user_id BIGINT)`**: User unlock.
 - **`user_update(p_caller_id BIGINT, p_user_id BIGINT, p_first_name TEXT DEFAULT NULL, p_last_name TEXT DEFAULT NULL, p_email TEXT DEFAULT NULL, p_username TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL, p_two_factor_enabled BOOLEAN DEFAULT NULL, p_require_password_change BOOLEAN DEFAULT NULL, p_department_id BIGINT DEFAULT NULL)`**: User update. Optional `p_department_id` changes primary department.
 
+### Messaging Schema
+
+- **`user_broadcast_create(p_sender_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'announcement', p_priority VARCHAR(10) DEFAULT 'normal', p_company_id BIGINT DEFAULT NULL, p_tenant_id BIGINT DEFAULT NULL, p_department_id BIGINT DEFAULT NULL, p_role_id BIGINT DEFAULT NULL, p_expires_at TIMESTAMP DEFAULT NULL, p_created_by BIGINT DEFAULT NULL)`**: Creates a broadcast with filter-based recipient resolution. Filters (company/tenant/department/role) are AND-combined. Hybrid storage: subject/body only in broadcasts table. Returns broadcast ID.
+- **`user_broadcast_get(p_broadcast_id INTEGER)`**: Returns broadcast details as JSONB including sender info, filter columns and read rate percentage.
+- **`user_broadcast_list(p_company_id BIGINT DEFAULT NULL, p_tenant_id BIGINT DEFAULT NULL, p_message_type VARCHAR(30) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INT DEFAULT 0, p_limit INT DEFAULT 20)`**: Paginated broadcast list with company, tenant, type and search filters. Returns JSONB with total count and items.
+- **`user_broadcast_delete(p_broadcast_id INTEGER, p_deleted_by BIGINT DEFAULT NULL)`**: Soft deletes a broadcast record. Individual user_messages remain in recipients' inboxes.
+- **`user_message_send(p_sender_id BIGINT, p_recipient_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'direct', p_priority VARCHAR(10) DEFAULT 'normal', p_expires_at TIMESTAMP DEFAULT NULL)`**: Sends a direct message to a single user inbox. No broadcast infrastructure required. Returns message ID.
+- **`user_messages_list(p_user_id BIGINT, p_is_read BOOLEAN DEFAULT NULL, p_priority VARCHAR(10) DEFAULT NULL, p_offset INT DEFAULT 0, p_limit INT DEFAULT 20)`**: Lists user inbox messages with read/priority filters. Hybrid: broadcast subject/body resolved via JOIN. Excludes expired messages. Returns JSONB with total, unread_count and paginated items.
+- **`user_message_read(p_user_id BIGINT, p_message_id BIGINT)`**: Marks a message as read and updates broadcast read_count if applicable. Returns TRUE on success.
+- **`user_message_delete(p_user_id BIGINT, p_message_id BIGINT)`**: Soft deletes a message from user's inbox. Returns TRUE on success.
+
+### Maintenance Schema
+
+- **`create_partitions(p_look_ahead_months INT DEFAULT 3)`**: Creates monthly partitions for messaging.user_messages. Generates current month plus look-ahead months. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than retention period. user_messages: 180 days. Never drops current month.
+- **`partition_info()`**: Reports partition status for all partitioned tables in core DB messaging schema.
+- **`run_maintenance(p_look_ahead_months INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future partitions and drops expired ones in a single call.
+
 ### Triggers
 
 - **`trigger_menu_groups_updated_at`**: Trigger trigger_menu_groups_updated_at
@@ -325,6 +343,22 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`error_log(p_error_code TEXT, p_error_message TEXT, p_exception_type TEXT DEFAULT NULL, p_http_status_code INT DEFAULT 500, p_is_retryable BOOLEAN DEFAULT FALSE, p_tenant_id BIGINT DEFAULT NULL, p_user_id TEXT DEFAULT NULL, p_correlation_id TEXT DEFAULT NULL, p_request_path TEXT DEFAULT NULL, p_request_method TEXT DEFAULT NULL, p_resource_type TEXT DEFAULT NULL, p_resource_key TEXT DEFAULT NULL, p_error_metadata TEXT DEFAULT NULL, p_stack_trace TEXT DEFAULT NULL, p_cluster_name TEXT DEFAULT NULL, p_occurred_at TIMESTAMPTZ DEFAULT NOW())`**: Error log.
 - **`error_stats(p_tenant_id BIGINT DEFAULT NULL, p_hours INT DEFAULT 24)`**: Get error statistics
 
+### Maintenance Schema
+
+- **`create_partitions(p_days_ahead INT DEFAULT 7)`**: Creates daily partitions for core_log tables. Look-ahead: today + N days. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops daily partitions older than retention period. Never drops current day partition. Safety-first design.
+- **`partition_info()`**: Reports partition status for all partitioned tables in core_log. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_days_ahead INT DEFAULT 7, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future partitions and drops expired ones in a single call.
+
+## Core Report Database
+
+### Maintenance Schema
+
+- **`create_partitions(p_months_ahead INT DEFAULT 3)`**: Creates monthly partitions for all report tables. Generates current month plus look-ahead months. Skips already existing partitions.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops expired monthly partitions older than retention period. Default: indefinite since this is business data.
+- **`partition_info()`**: Returns detailed information about all partitions in performance, finance and billing schemas including row counts, sizes and partition ranges.
+- **`run_maintenance(p_months_ahead INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Runs complete partition maintenance: creates future partitions and drops expired ones. Should be scheduled as a periodic job.
+
 ## Tenant Database
 
 > **Note:** Tenant database functions do NOT perform IDOR (access control) checks.
@@ -342,3 +376,61 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 ### Bonus Schema
 
 > Functions will be documented here as they are implemented.
+
+### Messaging Schema
+
+#### Campaign Functions
+- **`campaign_create(p_name VARCHAR(200), p_channel_type VARCHAR(10), p_template_id INTEGER DEFAULT NULL, p_scheduled_at TIMESTAMP DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_segments JSONB DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Create a new message campaign with translations and targeting segments in a single transaction. Returns INTEGER.
+- **`campaign_update(p_campaign_id INTEGER, p_name VARCHAR(200) DEFAULT NULL, p_channel_type VARCHAR(10) DEFAULT NULL, p_template_id INTEGER DEFAULT NULL, p_scheduled_at TIMESTAMP DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_segments JSONB DEFAULT NULL, p_updated_by INTEGER DEFAULT NULL)`**: Update a draft/scheduled campaign with new details, translations, and segments. Returns BOOLEAN.
+- **`campaign_publish(p_campaign_id INTEGER, p_published_by INTEGER DEFAULT NULL)`**: Publish a draft campaign - sets to scheduled if future date, processing if immediate. Backend pushes to RabbitMQ after this call. Returns BOOLEAN.
+- **`campaign_cancel(p_campaign_id INTEGER, p_cancelled_by INTEGER DEFAULT NULL)`**: Cancel a draft or scheduled campaign. Processing campaigns cannot be cancelled. Returns BOOLEAN.
+- **`campaign_get(p_campaign_id INTEGER)`**: Get campaign details with translations and segments as a single JSON response. Returns JSONB.
+- **`campaign_list(p_channel_type VARCHAR(10) DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List campaigns with channel, status, and search filters. Returns paginated results with total count. Returns JSONB.
+
+#### Template Functions
+- **`template_create(p_code VARCHAR(50), p_name VARCHAR(200), p_channel_type VARCHAR(10), p_description TEXT DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Create a new message template with multilingual translations in a single transaction. Returns INTEGER.
+- **`template_update(p_template_id INTEGER, p_name VARCHAR(200) DEFAULT NULL, p_description TEXT DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_updated_by INTEGER DEFAULT NULL)`**: Update a message template with new details and translations. Returns BOOLEAN.
+- **`template_get(p_template_id INTEGER)`**: Get template details with translations as a single JSON response. Returns JSONB.
+- **`template_list(p_channel_type VARCHAR(10) DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List message templates with channel, status, and search filters. Returns paginated results with total count. Returns JSONB.
+
+#### Player Message Functions
+- **`player_message_send(p_player_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'system', p_campaign_id INTEGER DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Send a single message to a player inbox. Used by system services (automated notifications) and BO users (manual direct messages). Returns BIGINT.
+- **`player_messages_list(p_player_id BIGINT, p_is_read BOOLEAN DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List player inbox messages with read/unread filter. Returns paginated results with total and unread counts. Returns JSONB.
+- **`player_message_read(p_player_id BIGINT, p_message_id BIGINT)`**: Mark a player message as read. Only the owning player can mark their messages. Returns BOOLEAN.
+- **`player_message_delete(p_player_id BIGINT, p_message_id BIGINT)`**: Soft delete a player message from inbox. Only the owning player can delete their messages. Data is preserved for audit. Returns BOOLEAN.
+
+### Maintenance Schema
+
+> Each partitioned database has identical maintenance functions under `maintenance` schema.
+
+- **`create_partitions(p_months_ahead INT DEFAULT 3)`**: Creates monthly partitions for tenant tables (transactions, player_messages). Look-ahead: current month + N months. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than per-table retention period. Transactions: indefinite, player_messages: 180 days. Never drops current month.
+- **`partition_info()`**: Reports partition status for all partitioned tables. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_months_ahead INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future monthly partitions and drops expired ones.
+
+## Tenant Log Database
+
+### Maintenance Schema
+
+- **`create_partitions(p_days_ahead INT DEFAULT 7)`**: Creates daily partitions for tenant_log tables. Look-ahead: today + N days. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops daily partitions older than retention period. Never drops current day partition. Safety-first design.
+- **`partition_info()`**: Reports partition status for all partitioned tables in tenant_log. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_days_ahead INT DEFAULT 7, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future partitions and drops expired ones in a single call.
+
+## Tenant Report Database
+
+### Maintenance Schema
+
+- **`create_partitions(p_months_ahead INT DEFAULT 3)`**: Creates monthly partitions for tenant_report tables. Look-ahead: current month + N months. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than retention period. Default ~100 years (business data). Never drops current month.
+- **`partition_info()`**: Reports partition status for all partitioned tables in tenant_report. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_months_ahead INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future monthly partitions and drops expired ones in a single call.
+
+## Tenant Affiliate Database
+
+### Maintenance Schema
+
+- **`create_partitions(p_months_ahead INT DEFAULT 3)`**: Creates monthly partitions for tenant_affiliate tracking tables. Look-ahead: current month + N months. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than retention period. Default: indefinite (business data). Never drops current month.
+- **`partition_info()`**: Reports partition status for all partitioned tables in tenant_affiliate. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_months_ahead INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future monthly partitions and drops expired ones.

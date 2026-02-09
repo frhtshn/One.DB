@@ -462,6 +462,18 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 
 -- Tenant Layout Errors
 ('error.tenant-layout.not-found', 'error', 'tenant-layout', 'Layout bulunamadi'),
-('error.tenant-layout.no-filter', 'error', 'tenant-layout', 'En az bir filtre parametresi gerekli')
+('error.tenant-layout.no-filter', 'error', 'tenant-layout', 'En az bir filtre parametresi gerekli'),
+
+-- ============================================================================
+-- MESSAGING EXCEPTIONS
+-- ============================================================================
+('error.messaging.sender-id-required', 'error', 'messaging', 'Gonderen kullanici ID zorunlu'),
+('error.messaging.recipient-id-required', 'error', 'messaging', 'Alici kullanici ID zorunlu'),
+('error.messaging.subject-required', 'error', 'messaging', 'Mesaj konusu zorunlu'),
+('error.messaging.body-required', 'error', 'messaging', 'Mesaj icerigi zorunlu'),
+('error.messaging.broadcast-id-required', 'error', 'messaging', 'Broadcast ID zorunlu'),
+('error.messaging.broadcast-not-found', 'error', 'messaging', 'Broadcast bulunamadi'),
+('error.messaging.user-id-required', 'error', 'messaging', 'Kullanici ID zorunlu'),
+('error.messaging.invalid-parameters', 'error', 'messaging', 'Gecersiz parametreler')
 
 ON CONFLICT DO NOTHING;

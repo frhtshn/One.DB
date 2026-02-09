@@ -56,15 +56,27 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
+| `core` | Monthly | 1 | 180 gün |
 | `core_log` | Daily | 4 | 30–90 gün |
-| `tenant_log` | Daily | 4 | 30–90 gün |
+| `tenant_log` | Daily | 5 | 30–90 gün |
 | `tenant_report` | Monthly | 5 | Sınırsız |
 | `core_report` | Monthly | 5 | Sınırsız |
 | `tenant_affiliate` | Monthly | 7 | Sınırsız |
-| `tenant` | Monthly | 1 | Sınırsız |
-| **Toplam** | | **26** | |
+| `tenant` | Monthly | 2 | Sınırsız* |
+| **Toplam** | | **29** | |
 
-### 2.2 core_log (Daily, 30–90 gün retention)
+> \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
+> `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
+
+### 2.2 core (Monthly, 180 gün retention)
+
+| Tablo | Partition Key | Retention | Dosya |
+|-------|--------------|-----------|-------|
+| `messaging.user_messages` | `created_at` | 180 gün | `core/tables/messaging/user_messages.sql` |
+
+> **Not:** Core DB'nin ilk partitioned tablosu. Backoffice kullanıcı mesajlaşma sistemi için eklendi.
+
+### 2.3 core_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -73,7 +85,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `logs.dead_letter_messages` | `created_at` | `core_log/tables/logs/dead_letter_messages.sql` |
 | `backoffice.audit_logs` | `created_at` | `core_log/tables/backoffice/audit_logs.sql` |
 
-### 2.3 tenant_log (Daily, 30–90 gün retention)
+### 2.4 tenant_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -81,8 +93,9 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `affiliate_log.commission_calculations` | `created_at` | `tenant_log/tables/affiliate/commission_calculations.sql` |
 | `affiliate_log.report_generations` | `created_at` | `tenant_log/tables/affiliate/report_generations.sql` |
 | `kyc_log.player_kyc_provider_logs` | `created_at` | `tenant_log/tables/kyc/player_kyc_provider_logs.sql` |
+| `messaging_log.message_delivery_logs` | `created_at` | `tenant_log/tables/messaging/message_delivery_logs.sql` |
 
-### 2.4 tenant_report (Monthly, sınırsız retention)
+### 2.5 tenant_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -92,7 +105,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `game.game_hourly_stats` | `period_hour` | `tenant_report/tables/game/game_hourly_stats.sql` |
 | `game.game_performance_daily` | `report_date` | `tenant_report/tables/game/game_performance_daily.sql` |
 
-### 2.5 core_report (Monthly, sınırsız retention)
+### 2.6 core_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -102,15 +115,18 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `performance.provider_global_daily` | `report_date` | `core_report/tables/performance/provider_global_daily.sql` |
 | `performance.payment_global_daily` | `report_date` | `core_report/tables/performance/payment_global_daily.sql` |
 
-### 2.6 tenant (Monthly, sınırsız retention)
+### 2.7 tenant (Monthly, karma retention)
 
-| Tablo | Partition Key | Dosya |
-|-------|--------------|-------|
-| `transaction.transactions` | `created_at` | `tenant/tables/transaction/transactions.sql` |
+| Tablo | Partition Key | Retention | Dosya |
+|-------|--------------|-----------|-------|
+| `transaction.transactions` | `created_at` | Sınırsız | `tenant/tables/transaction/transactions.sql` |
+| `messaging.player_messages` | `created_at` | 180 gün | `tenant/tables/messaging/player_messages.sql` |
 
-> **FK Etkisi:** `transactions` tablosunun PK'sı `(id, created_at)` olduğundan, `transaction_workflows.transaction_id → transactions(id)` ve `transactions.related_transaction_id → transactions(id)` (self-reference) FK'ları kaldırılmıştır. Bütünlük application-level'da sağlanır. Değişiklik: `tenant/constraints/transaction.sql`
+> **FK Etkisi (transactions):** `transactions` tablosunun PK'sı `(id, created_at)` olduğundan, `transaction_workflows.transaction_id → transactions(id)` ve `transactions.related_transaction_id → transactions(id)` (self-reference) FK'ları kaldırılmıştır. Bütünlük application-level'da sağlanır. Değişiklik: `tenant/constraints/transaction.sql`
+>
+> **FK Etkisi (player_messages):** `player_messages` tablosunun PK'sı `(id, created_at)` olduğundan composite PK'dır. `campaign_id → message_campaigns(id)` FK'sı partitioned'dan regular tabloya gittiği için sorunsuz çalışır (PG 12+).
 
-### 2.7 tenant_affiliate (Monthly, sınırsız retention)
+### 2.8 tenant_affiliate (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -124,11 +140,10 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 > **Multi-column Range:** `player_stats_monthly` ve `affiliate_stats_monthly` tabloları tek bir tarih kolonu olmadığından `PARTITION BY RANGE (period_year, period_month)` kullanır.
 
-### 2.8 Partition Uygulanmayan Veritabanları
+### 2.9 Partition Uygulanmayan Veritabanları
 
 | DB | Sebep |
 |----|-------|
-| `core` | Sınırsız retention, referans verileri, düşük hacim |
 | `core_audit` | 5–10 yıl retention, ARCHIVE_COLD stratejisi |
 | `tenant_audit` | 5–10 yıl retention, ARCHIVE_COLD stratejisi |
 | `bonus` | Konfigürasyon verileri, düşük hacim |
@@ -238,15 +253,33 @@ Her deploy script'te (`deploy_{db}.sql`) şu sıra izlenir:
 
 ### 4.2 İlk Deploy Sonrası Durum
 
-`deploy_tenant.sql` çalıştırıldıktan sonra:
+**`deploy_core.sql` çalıştırıldıktan sonra:**
 
 ```
-transaction.transactions                  -- Ana partitioned tablo
+messaging.user_messages                   -- Ana partitioned tablo (180 gün retention)
+├── messaging.user_messages_y2026m02      -- Şubat 2026
+├── messaging.user_messages_y2026m03      -- Mart 2026
+├── messaging.user_messages_y2026m04      -- Nisan 2026
+├── messaging.user_messages_y2026m05      -- Mayıs 2026
+└── messaging.user_messages_default       -- Güvenlik ağı
+```
+
+**`deploy_tenant.sql` çalıştırıldıktan sonra:**
+
+```
+transaction.transactions                  -- Ana partitioned tablo (sınırsız retention)
 ├── transaction.transactions_y2026m02     -- Şubat 2026
 ├── transaction.transactions_y2026m03     -- Mart 2026
 ├── transaction.transactions_y2026m04     -- Nisan 2026
 ├── transaction.transactions_y2026m05     -- Mayıs 2026
 └── transaction.transactions_default      -- Güvenlik ağı
+
+messaging.player_messages                 -- Ana partitioned tablo (180 gün retention)
+├── messaging.player_messages_y2026m02    -- Şubat 2026
+├── messaging.player_messages_y2026m03    -- Mart 2026
+├── messaging.player_messages_y2026m04    -- Nisan 2026
+├── messaging.player_messages_y2026m05    -- Mayıs 2026
+└── messaging.player_messages_default     -- Güvenlik ağı
 ```
 
 ---
@@ -287,6 +320,7 @@ SELECT cron.schedule('tenant-maintenance',
 0 2 * * * psql -d tenant_001_log -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 
 # Monthly partition DB'leri - Her hafta Pazartesi 03:00
+0 3 * * 1 psql -d core -c "SELECT * FROM maintenance.run_maintenance();"
 0 3 * * 1 psql -d tenant_001 -c "SELECT * FROM maintenance.run_maintenance();"
 0 3 * * 1 psql -d tenant_001_report -c "SELECT * FROM maintenance.run_maintenance();"
 0 3 * * 1 psql -d tenant_001_affiliate -c "SELECT * FROM maintenance.run_maintenance();"
@@ -305,6 +339,7 @@ Backend scheduled job/worker üzerinden:
 
 | DB | Partition Tipi | Sıklık | Retention Param | Look-ahead Param |
 |----|---------------|--------|-----------------|------------------|
+| `core` | Monthly | Haftada 1 | 180 | 3 |
 | `core_log` | Daily | Her gün | 90 | 7 |
 | `tenant_log` | Daily | Her gün | 90 | 7 |
 | `tenant_report` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |

@@ -1,7 +1,7 @@
 -- ================================================================
 -- PARTITION_INFO: Partition durumunu raporlar
--- tenant_log veritabani icin monitoring ve health check
--- Her partitioned tablo icin ozet bilgi doner
+-- Core veritabanı için monitoring ve health check
+-- Her partitioned tablo için özet bilgi döner
 -- ================================================================
 
 DROP FUNCTION IF EXISTS maintenance.partition_info();
@@ -31,7 +31,7 @@ BEGIN
         JOIN pg_namespace pn ON pn.oid = pc.relnamespace
         JOIN pg_class cc ON cc.oid = i.inhrelid
         JOIN pg_namespace cn ON cn.oid = cc.relnamespace
-        WHERE pn.nspname IN ('affiliate_log', 'kyc_log', 'messaging_log')
+        WHERE pn.nspname IN ('messaging')
     ),
     summary AS (
         SELECT
@@ -56,4 +56,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in tenant_log. Shows count, size, oldest/newest partitions.';
+COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in core DB. Shows count, size, oldest/newest partitions.';

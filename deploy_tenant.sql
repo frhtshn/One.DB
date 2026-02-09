@@ -33,6 +33,9 @@ COMMENT ON SCHEMA bonus IS 'Bonus and promotion management';
 CREATE SCHEMA IF NOT EXISTS content;
 COMMENT ON SCHEMA content IS 'Content management system (CMS)';
 
+CREATE SCHEMA IF NOT EXISTS messaging;
+COMMENT ON SCHEMA messaging IS 'Player messaging and campaign management';
+
 CREATE SCHEMA IF NOT EXISTS maintenance;
 COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
 
@@ -145,6 +148,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/content/popup/popup_images.sql
 \i tenant/tables/content/popup/popup_schedules.sql
 
+-- MESSAGING TABLES
+\i tenant/tables/messaging/message_templates.sql
+\i tenant/tables/messaging/message_template_translations.sql
+\i tenant/tables/messaging/message_campaigns.sql
+\i tenant/tables/messaging/message_campaign_translations.sql
+\i tenant/tables/messaging/message_campaign_segments.sql
+\i tenant/tables/messaging/message_campaign_recipients.sql
+\i tenant/tables/messaging/player_messages.sql
+\i tenant/tables/messaging/player_message_preferences.sql
+
 -- VIEWS
 \i tenant/views/v_daily_base_rates.sql
 \i tenant/views/v_cross_rates.sql
@@ -153,6 +166,24 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- FUNCTIONS - Finance
 -- =============================================================================
 \i tenant/functions/finance/currency_rates_bulk_upsert.sql
+
+-- =============================================================================
+-- FUNCTIONS - Messaging
+-- =============================================================================
+\i tenant/functions/messaging/template_create.sql
+\i tenant/functions/messaging/template_update.sql
+\i tenant/functions/messaging/template_get.sql
+\i tenant/functions/messaging/template_list.sql
+\i tenant/functions/messaging/campaign_create.sql
+\i tenant/functions/messaging/campaign_update.sql
+\i tenant/functions/messaging/campaign_publish.sql
+\i tenant/functions/messaging/campaign_cancel.sql
+\i tenant/functions/messaging/campaign_get.sql
+\i tenant/functions/messaging/campaign_list.sql
+\i tenant/functions/messaging/player_message_send.sql
+\i tenant/functions/messaging/player_messages_list.sql
+\i tenant/functions/messaging/player_message_read.sql
+\i tenant/functions/messaging/player_message_delete.sql
 
 -- =============================================================================
 -- FUNCTIONS - Backoffice (Auth checked in Core DB)
@@ -176,6 +207,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/constraints/game.sql
 \i tenant/constraints/finance.sql
 \i tenant/constraints/content.sql
+\i tenant/constraints/messaging.sql
 
 -- =============================================================================
 -- INDEXES - Must be loaded LAST for optimal performance
@@ -189,6 +221,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/indexes/bonus.sql
 \i tenant/indexes/game.sql
 \i tenant/indexes/content.sql
+\i tenant/indexes/messaging.sql
 
 -- =============================================================================
 -- FUNCTIONS - MAINTENANCE (Partition yönetimi)
