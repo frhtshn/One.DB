@@ -35,13 +35,7 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- player_kyc_provider_logs -> player_kyc_cases
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kyc_provider_logs_case') THEN
-        ALTER TABLE kyc.player_kyc_provider_logs ADD CONSTRAINT fk_kyc_provider_logs_case
-            FOREIGN KEY (kyc_case_id) REFERENCES kyc.player_kyc_cases(id) ON DELETE CASCADE;
-    END IF;
-END $$;
+-- NOTE: player_kyc_provider_logs -> tenant_log DB (cross-DB FK uygulanamaz, app-level kontrol)
 
 -- player_limits -> players
 DO $$ BEGIN
