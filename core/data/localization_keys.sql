@@ -174,6 +174,14 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- Auth - Unlock Exceptions
 ('error.auth.unlock.failed', 'error', 'auth', 'Hesap kilidi acilamadi'),
 
+-- Auth - 2FA Exceptions
+('error.auth.2fa.invalid-code', 'error', 'auth', 'Gecersiz 2FA dogrulama kodu'),
+('error.auth.2fa.token-expired', 'error', 'auth', '2FA token suresi dolmus, tekrar login gerekli'),
+('error.auth.2fa.max-attempts', 'error', 'auth', 'Cok fazla basarisiz 2FA denemesi, tekrar login gerekli'),
+('error.auth.2fa.already-enabled', 'error', 'auth', '2FA zaten aktif'),
+('error.auth.2fa.not-enabled', 'error', 'auth', '2FA aktif degil'),
+('error.auth.2fa.setup-expired', 'error', 'auth', '2FA kurulum suresi dolmus'),
+
 -- Auth Success Messages
 ('success.auth.logout', 'success', 'auth', 'Cikis basarili mesaji'),
 ('success.auth.logout-all', 'success', 'auth', 'Tum oturumlar sonlandirildi mesaji'),
