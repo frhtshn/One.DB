@@ -253,6 +253,18 @@ SELECT u.id, r.id, t.id
 FROM security.users u, security.roles r, core.tenants t
 WHERE u.email = 'turkbet.mod@nucleo.io' AND r.code = 'moderator' AND t.tenant_code = 'turkbet_tr';
 
+-- turkbet.mod@nucleo.io → operator @ eurobet_eu
+INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+SELECT u.id, r.id, t.id
+FROM security.users u, security.roles r, core.tenants t
+WHERE u.email = 'turkbet.mod@nucleo.io' AND r.code = 'operator' AND t.tenant_code = 'eurobet_eu';
+
+-- turkbet.mod@nucleo.io → tenantadmin @ cyprus_main
+INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+SELECT u.id, r.id, t.id
+FROM security.users u, security.roles r, core.tenants t
+WHERE u.email = 'turkbet.mod@nucleo.io' AND r.code = 'tenantadmin' AND t.tenant_code = 'cyprus_main';
+
 -- turkbet.edit@nucleo.io → editor @ turkbet_tr
 INSERT INTO security.user_roles (user_id, role_id, tenant_id)
 SELECT u.id, r.id, t.id
@@ -292,6 +304,14 @@ WHERE u.email = 'turkbet.admin@nucleo.io' AND t.tenant_code = 'turkbet_tr';
 INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
 SELECT u.id, t.id FROM security.users u, core.tenants t
 WHERE u.email = 'turkbet.mod@nucleo.io' AND t.tenant_code = 'turkbet_tr';
+
+INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
+SELECT u.id, t.id FROM security.users u, core.tenants t
+WHERE u.email = 'turkbet.mod@nucleo.io' AND t.tenant_code = 'eurobet_eu';
+
+INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
+SELECT u.id, t.id FROM security.users u, core.tenants t
+WHERE u.email = 'turkbet.mod@nucleo.io' AND t.tenant_code = 'cyprus_main';
 
 INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
 SELECT u.id, t.id FROM security.users u, core.tenants t
@@ -895,7 +915,7 @@ END;
 -- | eurobet.eu@nucleo.io   | EUROBET     | tenantadmin@eurobet_eu       |
 -- | cyprus.admin@nucleo.io | CYPRUSPLAY  | tenantadmin@cyprus_main      |
 -- | turkbet.admin@nucleo.io| TURKBET     | tenantadmin@turkbet_tr       |
--- | turkbet.mod@nucleo.io  | TURKBET     | moderator@turkbet_tr         |
+-- | turkbet.mod@nucleo.io  | TURKBET     | moderator@turkbet_tr, operator@eurobet_eu, tenantadmin@cyprus_main |
 -- | turkbet.edit@nucleo.io | TURKBET     | editor@turkbet_tr            |
 -- | turkbet.op@nucleo.io   | TURKBET     | operator@turkbet_tr          |
 -- | eurobet.user@nucleo.io | EUROBET     | user@eurobet_eu              |
