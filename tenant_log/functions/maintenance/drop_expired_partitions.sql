@@ -39,7 +39,7 @@ BEGIN
         JOIN pg_namespace pn ON pn.oid = pc.relnamespace
         JOIN pg_class cc ON cc.oid = i.inhrelid
         JOIN pg_namespace cn ON cn.oid = cc.relnamespace
-        WHERE pn.nspname IN ('affiliate_log', 'kyc_log')
+        WHERE pn.nspname IN ('affiliate_log', 'kyc_log', 'messaging_log')
           AND cc.relname NOT LIKE '%_default'  -- Default partition'i atla
         ORDER BY cc.relname
     LOOP

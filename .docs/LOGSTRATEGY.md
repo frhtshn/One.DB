@@ -24,13 +24,14 @@ nasıl temizleneceğini tanımlar.
 | **finance**        | Finans gateway entegrasyon durumu                       | Daily           | 14–30 gün       | DROP partition    |
 | **finance_log**    | Tüm tenant'lara ait finance gateway logları             | Daily           | 14–30 gün       | DROP partition    |
 | **bonus**          | Bonus ve promosyon yapılandırması                       | ❌              | Sınırsız        | -                 |
-| **tenant**         | Business & history (transactions, game rounds, wallets) | Monthly / Daily | Sınırsız        | -                 |
-| **tenant_log**     | Tenant teknik & operasyonel log + KYC provider logları  | Daily           | 30–90 gün*      | DROP partition    |
+| **tenant**         | Business & history (transactions, player_messages, wallets) | Monthly    | Sınırsız**      | -                 |
+| **tenant_log**     | Tenant teknik & operasyonel log + KYC/messaging logları | Daily           | 30–90 gün*      | DROP partition    |
 | **tenant_audit**   | Tenant karar & yetkili aksiyon + KYC/AML audit          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
 | **tenant_report**  | Kiracıya özel raporlar ve istatistikler                 | Opsiyonel       | İş ihtiyacı     | -                 |
 | **tenant_affiliate**| Affiliate tracking ve komisyon yönetimi                 | Monthly         | Sınırsız        | -                 |
 
-> *KYC provider logları için retention 90+ güne uzatılabilir (compliance gereksinimleri)
+> \*KYC provider logları için retention 90+ güne uzatılabilir (compliance gereksinimleri)
+> \*\*`transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention (monthly partition ile yönetilir).
 
 ---
 
@@ -60,6 +61,8 @@ SELECT * FROM core.tenant_data_policies WHERE tenant_id = 123;
 | 2 (MGA)   | AML_FLAGS   | 3650 (10 yıl) | `ARCHIVE_COLD`    | AML uyarıları ve SAR    |
 | 2 (MGA)   | RISK_ASSESSMENTS | 1825 (5 yıl) | `ARCHIVE_COLD` | Risk değerlendirmeleri |
 | 2 (MGA)   | KYC_PROVIDER_LOGS | 90  | `DROP_PARTITION`   | KYC API logları         |
+| 2 (MGA)   | MESSAGING_DELIVERY_LOGS | 90 | `DROP_PARTITION` | Mesaj gönderim logları  |
+| 2 (MGA)   | PLAYER_MESSAGES | 180  | `DROP_PARTITION`   | Oyuncu inbox mesajları  |
 
 ### 2.2 Aksiyon Türleri
 
@@ -174,14 +177,18 @@ Karar ve değerlendirme kayıtları:
 
 ### 6.3 tenant_log DB (Operational Logs - 90+ gün)
 
-API call logları:
+API call ve gönderim logları:
 
-| Tablo | Açıklama | Veri Tipi |
-|-------|----------|-----------|
-| `kyc_log.player_kyc_provider_logs` | KYC provider API logları | KYC_PROVIDER_LOGS |
+| Tablo | Açıklama | Veri Tipi | Retention |
+|-------|----------|-----------|-----------|
+| `kyc_log.player_kyc_provider_logs` | KYC provider API logları | KYC_PROVIDER_LOGS | 90+ gün |
+| `messaging_log.message_delivery_logs` | Mesaj gönderim detay logları (email/SMS/local) | MESSAGING_DELIVERY_LOGS | 90 gün |
 
 > **Not:** KYC provider logları için retention süresi standart 30-90 günden **90+ güne** uzatılmıştır.
 > Bu, KYC dispute'larında geçmiş API yanıtlarına erişim sağlamak içindir.
+>
+> **Not:** Messaging delivery logları her gönderim denemesinin provider yanıtını, hata kodunu ve süresini kaydeder.
+> Worker servisi tarafından yazılır. Günlük partition ile yönetilir, 90 gün retention.
 
 ---
 

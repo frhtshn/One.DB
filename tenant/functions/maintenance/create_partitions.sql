@@ -28,7 +28,8 @@ DECLARE
 BEGIN
     FOR v_tbl IN
         SELECT * FROM (VALUES
-            ('transaction', 'transactions', 'created_at')
+            ('transaction', 'transactions',    'created_at'),
+            ('messaging',   'player_messages', 'created_at')
         ) AS t(schema_name, tbl_name, partition_key)
     LOOP
         FOR i IN 0..p_look_ahead_months LOOP

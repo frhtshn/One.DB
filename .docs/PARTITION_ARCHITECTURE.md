@@ -57,12 +57,14 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
 | `core_log` | Daily | 4 | 30–90 gün |
-| `tenant_log` | Daily | 4 | 30–90 gün |
+| `tenant_log` | Daily | 5 | 30–90 gün |
 | `tenant_report` | Monthly | 5 | Sınırsız |
 | `core_report` | Monthly | 5 | Sınırsız |
 | `tenant_affiliate` | Monthly | 7 | Sınırsız |
-| `tenant` | Monthly | 1 | Sınırsız |
-| **Toplam** | | **26** | |
+| `tenant` | Monthly | 2 | Sınırsız* |
+| **Toplam** | | **28** | |
+
+> \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
 
 ### 2.2 core_log (Daily, 30–90 gün retention)
 
@@ -81,6 +83,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `affiliate_log.commission_calculations` | `created_at` | `tenant_log/tables/affiliate/commission_calculations.sql` |
 | `affiliate_log.report_generations` | `created_at` | `tenant_log/tables/affiliate/report_generations.sql` |
 | `kyc_log.player_kyc_provider_logs` | `created_at` | `tenant_log/tables/kyc/player_kyc_provider_logs.sql` |
+| `messaging_log.message_delivery_logs` | `created_at` | `tenant_log/tables/messaging/message_delivery_logs.sql` |
 
 ### 2.4 tenant_report (Monthly, sınırsız retention)
 
@@ -102,13 +105,16 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `performance.provider_global_daily` | `report_date` | `core_report/tables/performance/provider_global_daily.sql` |
 | `performance.payment_global_daily` | `report_date` | `core_report/tables/performance/payment_global_daily.sql` |
 
-### 2.6 tenant (Monthly, sınırsız retention)
+### 2.6 tenant (Monthly, karma retention)
 
-| Tablo | Partition Key | Dosya |
-|-------|--------------|-------|
-| `transaction.transactions` | `created_at` | `tenant/tables/transaction/transactions.sql` |
+| Tablo | Partition Key | Retention | Dosya |
+|-------|--------------|-----------|-------|
+| `transaction.transactions` | `created_at` | Sınırsız | `tenant/tables/transaction/transactions.sql` |
+| `messaging.player_messages` | `created_at` | 180 gün | `tenant/tables/messaging/player_messages.sql` |
 
-> **FK Etkisi:** `transactions` tablosunun PK'sı `(id, created_at)` olduğundan, `transaction_workflows.transaction_id → transactions(id)` ve `transactions.related_transaction_id → transactions(id)` (self-reference) FK'ları kaldırılmıştır. Bütünlük application-level'da sağlanır. Değişiklik: `tenant/constraints/transaction.sql`
+> **FK Etkisi (transactions):** `transactions` tablosunun PK'sı `(id, created_at)` olduğundan, `transaction_workflows.transaction_id → transactions(id)` ve `transactions.related_transaction_id → transactions(id)` (self-reference) FK'ları kaldırılmıştır. Bütünlük application-level'da sağlanır. Değişiklik: `tenant/constraints/transaction.sql`
+>
+> **FK Etkisi (player_messages):** `player_messages` tablosunun PK'sı `(id, created_at)` olduğundan composite PK'dır. `campaign_id → message_campaigns(id)` FK'sı partitioned'dan regular tabloya gittiği için sorunsuz çalışır (PG 12+).
 
 ### 2.7 tenant_affiliate (Monthly, sınırsız retention)
 
@@ -241,12 +247,19 @@ Her deploy script'te (`deploy_{db}.sql`) şu sıra izlenir:
 `deploy_tenant.sql` çalıştırıldıktan sonra:
 
 ```
-transaction.transactions                  -- Ana partitioned tablo
+transaction.transactions                  -- Ana partitioned tablo (sınırsız retention)
 ├── transaction.transactions_y2026m02     -- Şubat 2026
 ├── transaction.transactions_y2026m03     -- Mart 2026
 ├── transaction.transactions_y2026m04     -- Nisan 2026
 ├── transaction.transactions_y2026m05     -- Mayıs 2026
 └── transaction.transactions_default      -- Güvenlik ağı
+
+messaging.player_messages                 -- Ana partitioned tablo (180 gün retention)
+├── messaging.player_messages_y2026m02    -- Şubat 2026
+├── messaging.player_messages_y2026m03    -- Mart 2026
+├── messaging.player_messages_y2026m04    -- Nisan 2026
+├── messaging.player_messages_y2026m05    -- Mayıs 2026
+└── messaging.player_messages_default     -- Güvenlik ağı
 ```
 
 ---

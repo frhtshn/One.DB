@@ -29,6 +29,7 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 - 💳 **Ödeme İşlemleri** - Finance provider'larla ödeme yönetimi
 - 👥 **Oyuncu Yönetimi** - Kayıt, cüzdan, işlemler
 - 🎁 **Bonus Sistemi** - Promosyon ve kampanyalar
+- 📨 **Mesajlaşma** - Kampanya, şablon ve oyuncu inbox (email/SMS/local)
 - 🤝 **Affiliate Sistemi** - Ortaklık ve komisyon yönetimi
 - 🏢 **Multi-Tenant** - Birden fazla markanın tek platformda çalışması
 - 🎨 **Theme Engine** - Tenant'ların kendi frontend ve navigasyonunu yönetebilmesi
@@ -207,12 +208,28 @@ nucleoDb/
 │   └── 📁 data/
 │
 ├── 📁 tenant/                    # Tenant şablon veritabanı
+│   ├── 📁 tables/
+│   │   ├── 📁 messaging/        # Kampanya, şablon, oyuncu inbox
+│   │   └── ...
+│   └── 📁 functions/
+│       ├── 📁 messaging/        # 14 messaging fonksiyonu
+│       ├── 📁 maintenance/      # Partition yönetimi
+│       └── ...
+│
+├── 📁 tenant_log/                # Tenant log veritabanı
+│   ├── 📁 tables/
+│   │   ├── 📁 messaging/        # message_delivery_logs (partitioned daily)
+│   │   └── ...
+│   └── 📁 functions/maintenance/ # Partition yönetimi
+│
 ├── 📁 tenant_affiliate/          # Tenant Affiliate plugin
+├── 📁 tenant_report/             # Tenant raporlama
 ├── 📁 bonus/                     # Bonus plugin (global)
 ├── 📁 core_log, core_audit...    # Diğer DB'ler
 │
 ├── 📄 deploy_core.sql            # Core deploy scripti
 ├── 📄 deploy_tenant.sql          # Tenant deploy scripti
+├── 📄 deploy_tenant_log.sql      # Tenant log deploy scripti
 └── ...
 ```
 
@@ -225,8 +242,9 @@ nucleoDb/
 1.  📦 **create_dbs.sql**: Veritabanlarını oluştur.
 2.  📦 **deploy_core.sql**: Core katmanını (Katalog, Tenant, Security, Theme Engine) deploy et.
 3.  📦 **deploy_bonus.sql**: Bonus kurallarını deploy et.
-4.  📦 **deploy_tenant.sql**: Tenant şablonunu deploy et.
-5.  📦 **deploy_tenant_affiliate.sql**: Affiliate şablonunu deploy et.
+4.  📦 **deploy_tenant.sql**: Tenant şablonunu deploy et (messaging dahil).
+5.  📦 **deploy_tenant_log.sql**: Tenant log şablonunu deploy et (messaging_log dahil).
+6.  📦 **deploy_tenant_affiliate.sql**: Affiliate şablonunu deploy et.
 
 ---
 
@@ -248,8 +266,9 @@ nucleoDb/
 | [DATABASE_ARCHITECTURE.md](DATABASE_ARCHITECTURE.md) | Detaylı veritabanı mimarisi, şemalar ve tablolar |
 | [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md)       | Stored procedure ve trigger referansı            |
 | [LOGSTRATEGY.md](LOGSTRATEGY.md)                     | Log, audit ve retention stratejisi               |
+| [PARTITION_ARCHITECTURE.md](PARTITION_ARCHITECTURE.md)| Partition yapısı ve yönetim fonksiyonları         |
 | [README.md](../README.md)                            | Kurulum ve deploy kılavuzu                       |
 
 ---
 
-_Son Güncelleme: 2026-01-28_
+_Son Güncelleme: 2026-02-09_
