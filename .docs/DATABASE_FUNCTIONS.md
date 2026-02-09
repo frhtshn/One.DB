@@ -287,6 +287,24 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`user_unlock(p_caller_id BIGINT, p_user_id BIGINT)`**: User unlock.
 - **`user_update(p_caller_id BIGINT, p_user_id BIGINT, p_first_name TEXT DEFAULT NULL, p_last_name TEXT DEFAULT NULL, p_email TEXT DEFAULT NULL, p_username TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL, p_two_factor_enabled BOOLEAN DEFAULT NULL, p_require_password_change BOOLEAN DEFAULT NULL, p_department_id BIGINT DEFAULT NULL)`**: User update. Optional `p_department_id` changes primary department.
 
+### Messaging Schema
+
+- **`user_broadcast_create(p_sender_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'announcement', p_priority VARCHAR(10) DEFAULT 'normal', p_company_id BIGINT DEFAULT NULL, p_tenant_id BIGINT DEFAULT NULL, p_department_id BIGINT DEFAULT NULL, p_role_id BIGINT DEFAULT NULL, p_expires_at TIMESTAMP DEFAULT NULL, p_created_by BIGINT DEFAULT NULL)`**: Creates a broadcast with filter-based recipient resolution. Filters (company/tenant/department/role) are AND-combined. Hybrid storage: subject/body only in broadcasts table. Returns broadcast ID.
+- **`user_broadcast_get(p_broadcast_id INTEGER)`**: Returns broadcast details as JSONB including sender info, filter columns and read rate percentage.
+- **`user_broadcast_list(p_company_id BIGINT DEFAULT NULL, p_tenant_id BIGINT DEFAULT NULL, p_message_type VARCHAR(30) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INT DEFAULT 0, p_limit INT DEFAULT 20)`**: Paginated broadcast list with company, tenant, type and search filters. Returns JSONB with total count and items.
+- **`user_broadcast_delete(p_broadcast_id INTEGER, p_deleted_by BIGINT DEFAULT NULL)`**: Soft deletes a broadcast record. Individual user_messages remain in recipients' inboxes.
+- **`user_message_send(p_sender_id BIGINT, p_recipient_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'direct', p_priority VARCHAR(10) DEFAULT 'normal', p_expires_at TIMESTAMP DEFAULT NULL)`**: Sends a direct message to a single user inbox. No broadcast infrastructure required. Returns message ID.
+- **`user_messages_list(p_user_id BIGINT, p_is_read BOOLEAN DEFAULT NULL, p_priority VARCHAR(10) DEFAULT NULL, p_offset INT DEFAULT 0, p_limit INT DEFAULT 20)`**: Lists user inbox messages with read/priority filters. Hybrid: broadcast subject/body resolved via JOIN. Excludes expired messages. Returns JSONB with total, unread_count and paginated items.
+- **`user_message_read(p_user_id BIGINT, p_message_id BIGINT)`**: Marks a message as read and updates broadcast read_count if applicable. Returns TRUE on success.
+- **`user_message_delete(p_user_id BIGINT, p_message_id BIGINT)`**: Soft deletes a message from user's inbox. Returns TRUE on success.
+
+### Maintenance Schema
+
+- **`create_partitions(p_look_ahead_months INT DEFAULT 3)`**: Creates monthly partitions for messaging.user_messages. Generates current month plus look-ahead months. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than retention period. user_messages: 180 days. Never drops current month.
+- **`partition_info()`**: Reports partition status for all partitioned tables in core DB messaging schema.
+- **`run_maintenance(p_look_ahead_months INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future partitions and drops expired ones in a single call.
+
 ### Triggers
 
 - **`trigger_menu_groups_updated_at`**: Trigger trigger_menu_groups_updated_at

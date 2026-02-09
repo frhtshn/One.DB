@@ -15,7 +15,7 @@ nasıl temizleneceğini tanımlar.
 
 | DB / Kategori      | Ne Tutulur                                              | Partition       | Varsayılan Süre | Olası Politikalar |
 | ------------------ | ------------------------------------------------------- | --------------- | --------------- | ----------------- |
-| **core**           | Platform domain (tenant, company, currency)             | ❌              | Sınırsız        | -                 |
+| **core**           | Platform domain + kullanıcı mesajlaşma                  | Monthly*        | Sınırsız        | DROP partition    |
 | **core_log**       | Core + gateway teknik log (ERROR / WARN / INFO)         | Daily           | 30–90 gün       | DROP partition    |
 | **core_audit**     | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl        | ❌ / ARCHIVE      |
 | **core_report**    | Merkezi raporlama ve BI verileri                        | Opsiyonel       | İş ihtiyacı     | -                 |
@@ -30,8 +30,9 @@ nasıl temizleneceğini tanımlar.
 | **tenant_report**  | Kiracıya özel raporlar ve istatistikler                 | Opsiyonel       | İş ihtiyacı     | -                 |
 | **tenant_affiliate**| Affiliate tracking ve komisyon yönetimi                 | Monthly         | Sınırsız        | -                 |
 
-> \*KYC provider logları için retention 90+ güne uzatılabilir (compliance gereksinimleri)
+> \*Core DB: `messaging.user_messages` tablosu Monthly partition (180 gün retention). Diğer core tabloları partitioned değildir, sınırsız retention.
 > \*\*`transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention (monthly partition ile yönetilir).
+> KYC provider logları için retention 90+ güne uzatılabilir (compliance gereksinimleri).
 
 ---
 

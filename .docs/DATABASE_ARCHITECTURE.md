@@ -53,7 +53,7 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 | #   | Veritabanı         | Amaç                                                      | Tenant Bağımsız | Partition | Retention   |
 | --- | ------------------ | --------------------------------------------------------- | --------------- | --------- | ----------- |
-| 1   | `core`             | Platform yapılandırması ve merkezi veriler                | ✅              | ❌        | Sınırsız    |
+| 1   | `core`             | Platform yapılandırması ve merkezi veriler                | ✅              | Monthly*  | Sınırsız    |
 | 2   | `core_log`         | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
 | 3   | `core_audit`       | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
 | 4   | `core_report`      | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
@@ -67,6 +67,8 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | 12  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
 | 13  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
 | 14  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
+
+> \* `core`: `messaging.user_messages` tablosu Monthly partition (180 gün retention) ile çalışır. Diğer tablolar partitioned değildir.
 
 ---
 
@@ -84,6 +86,8 @@ Core veritabanı, platformun merkezi konfigürasyon ve yönetim verilerini barı
 | `routing`      | Provider endpoint ve callback yönlendirmesi  |
 | `security`     | Kullanıcı, rol ve yetki yönetimi             |
 | `billing`      | Komisyon ve faturalandırma                   |
+| `messaging`    | Kullanıcı mesajlaşma ve broadcast sistemi    |
+| `maintenance`  | Partition yönetim fonksiyonları               |
 | `infra`        | PostgreSQL extension'ları                    |
 
 ---
@@ -249,6 +253,29 @@ Provider endpoint yönetimi.
 | `callback_routes`    | Callback yönlendirme kuralları |
 | `provider_callbacks` | Provider callback tanımları    |
 | `provider_endpoints` | Provider API endpoint'leri     |
+
+---
+
+### 4.7 messaging Şeması
+
+Backoffice kullanıcıları arası mesajlaşma sistemi. Broadcast (toplu) ve direct (birebir) mesaj desteği.
+
+**Klasör Yapısı:** `core/tables/messaging/`
+
+#### Broadcast
+
+| Tablo                      | Açıklama                                                      |
+| -------------------------- | ------------------------------------------------------------- |
+| `user_message_broadcasts`  | Toplu mesaj ana kaydı (filtre bilgisi, istatistik)            |
+
+#### User Inbox
+
+| Tablo                | Açıklama                                                          |
+| -------------------- | ----------------------------------------------------------------- |
+| `user_messages`      | Kullanıcı mesaj kutusu (**PARTITIONED** monthly, 180 gün)         |
+
+> **Akış:** Admin → `user_broadcast_create` (filtre: company/tenant/department/role AND kombinasyonu) → alıcılar çözümlenir → her alıcıya `user_messages` satırı yazılır. Hybrid: subject/body sadece broadcasts tablosunda saklanır.
+> **Direct mesaj:** Admin → `user_message_send` → tek `user_messages` satırı (broadcast_id = NULL, subject/body inline).
 
 ---
 
@@ -469,10 +496,11 @@ Tüm log veritabanları **`DROP PARTITION`** stratejisi ile temizlenir. Detaylar
 
 ## 9. Partition Yapısı
 
-Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 6 veritabanında toplam 28 tablo partitioned çalışır.
+Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 7 veritabanında toplam 29 tablo partitioned çalışır.
 
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
+| `core` | Monthly | 1 | 180 gün |
 | `core_log` | Daily | 4 | 30–90 gün |
 | `tenant_log` | Daily | 5 | 30–90 gün |
 | `tenant_report` | Monthly | 5 | Sınırsız |
@@ -481,6 +509,7 @@ Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITIO
 | `tenant` | Monthly | 2 | Sınırsız* |
 
 > \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
+> `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
 
 Her partitioned veritabanı `maintenance` şemasında 4 yönetim fonksiyonu içerir: `create_partitions`, `drop_expired_partitions`, `partition_info`, `run_maintenance`.
 
