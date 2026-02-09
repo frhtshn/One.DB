@@ -21,7 +21,6 @@ CREATE INDEX idx_content_type_trans_language ON content.content_type_translation
 -- contents
 CREATE INDEX idx_contents_type ON content.contents(content_type_id);
 CREATE UNIQUE INDEX idx_contents_slug_unique ON content.contents USING btree(slug);
-CREATE INDEX idx_contents_slug ON content.contents(slug);
 CREATE INDEX idx_contents_status ON content.contents(status);
 CREATE INDEX idx_contents_published ON content.contents(status, published_at) WHERE status = 'published';
 
@@ -60,7 +59,7 @@ CREATE INDEX idx_faq_item_trans_status ON content.faq_item_translations(faq_item
 -- promotions
 CREATE INDEX idx_promotions_active ON content.promotions(is_active);
 CREATE INDEX idx_promotions_dates ON content.promotions(start_date, end_date);
-CREATE INDEX idx_promotions_type ON content.promotions(promo_type);
+CREATE INDEX idx_promotions_type ON content.promotions(promotion_type_id);
 CREATE INDEX idx_promotions_featured ON content.promotions(is_featured) WHERE is_featured = TRUE;
 CREATE INDEX idx_promotions_bonus ON content.promotions(bonus_id) WHERE bonus_id IS NOT NULL;
 CREATE UNIQUE INDEX idx_promotions_code ON content.promotions USING btree(code);

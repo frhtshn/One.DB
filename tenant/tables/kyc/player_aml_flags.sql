@@ -108,11 +108,3 @@ CREATE TABLE kyc.player_aml_flags (
 
 COMMENT ON TABLE kyc.player_aml_flags IS 'AML alerts, suspicious activity tracking, and SAR management for anti-money laundering compliance';
 
--- Indexes
-CREATE INDEX idx_player_aml_player ON kyc.player_aml_flags(player_id);
-CREATE INDEX idx_player_aml_status ON kyc.player_aml_flags(status);
-CREATE INDEX idx_player_aml_type ON kyc.player_aml_flags(flag_type);
-CREATE INDEX idx_player_aml_severity ON kyc.player_aml_flags(severity);
-CREATE INDEX idx_player_aml_open ON kyc.player_aml_flags(status, severity) WHERE status IN ('open', 'investigating', 'escalated');
-CREATE INDEX idx_player_aml_assigned ON kyc.player_aml_flags(assigned_to) WHERE status IN ('open', 'investigating');
-CREATE INDEX idx_player_aml_sar ON kyc.player_aml_flags(sar_required) WHERE sar_required = true AND sar_filed_at IS NULL;

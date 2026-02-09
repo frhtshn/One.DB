@@ -20,9 +20,7 @@ CREATE INDEX IF NOT EXISTS idx_player_documents_case ON kyc.player_documents USI
 CREATE INDEX IF NOT EXISTS idx_player_documents_type ON kyc.player_documents USING btree(document_type);
 CREATE INDEX IF NOT EXISTS idx_player_documents_status ON kyc.player_documents USING btree(status);
 
--- player_kyc_provider_logs
-CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_case ON kyc.player_kyc_provider_logs USING btree(kyc_case_id);
-CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_provider ON kyc.player_kyc_provider_logs USING btree(provider_code);
+-- NOTE: player_kyc_provider_logs -> tenant_log DB (indexler tenant_log deploy'unda tanımlı)
 
 -- player_limits
 CREATE INDEX IF NOT EXISTS idx_player_limits_player ON kyc.player_limits USING btree(player_id);
@@ -48,9 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_player_limit_history_entity ON kyc.player_limit_h
 CREATE INDEX IF NOT EXISTS idx_player_limit_history_old_gin ON kyc.player_limit_history USING gin(old_value);
 CREATE INDEX IF NOT EXISTS idx_player_limit_history_new_gin ON kyc.player_limit_history USING gin(new_value);
 
--- player_kyc_provider_logs (request_payload, response_payload)
-CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_req_gin ON kyc.player_kyc_provider_logs USING gin(request_payload);
-CREATE INDEX IF NOT EXISTS idx_kyc_provider_logs_res_gin ON kyc.player_kyc_provider_logs USING gin(response_payload);
+-- NOTE: player_kyc_provider_logs GIN indexler -> tenant_log DB
 
 -- =============================================
 -- New KYC Tables Indexes (Jurisdiction, AML)

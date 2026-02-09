@@ -60,7 +60,3 @@ CREATE TABLE kyc.player_jurisdiction (
 
 COMMENT ON TABLE kyc.player_jurisdiction IS 'Tracks which jurisdiction/regulation applies to each player based on registration, verification, and current location';
 
--- Indexes
-CREATE INDEX idx_player_jurisdiction_country ON kyc.player_jurisdiction(verified_country_code);
-CREATE INDEX idx_player_jurisdiction_jid ON kyc.player_jurisdiction(jurisdiction_id);
-CREATE INDEX idx_player_jurisdiction_geo ON kyc.player_jurisdiction(geo_status);

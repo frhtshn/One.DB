@@ -18,7 +18,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_operation_types_code ON finance.operation_
 CREATE UNIQUE INDEX IF NOT EXISTS idx_transaction_types_code ON finance.transaction_types USING btree(code);
 
 -- payment_method_settings - Temel indexler
-CREATE INDEX IF NOT EXISTS idx_payment_method_settings_method ON finance.payment_method_settings USING btree(payment_method_id);
 CREATE INDEX IF NOT EXISTS idx_payment_method_settings_provider ON finance.payment_method_settings USING btree(provider_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_method_settings_method_unique ON finance.payment_method_settings USING btree(payment_method_id);
 

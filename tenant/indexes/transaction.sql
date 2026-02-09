@@ -9,7 +9,7 @@ CREATE INDEX IF NOT EXISTS idx_transactions_type ON transaction.transactions USI
 CREATE INDEX IF NOT EXISTS idx_transactions_source ON transaction.transactions USING btree(source);
 CREATE INDEX IF NOT EXISTS idx_transactions_created ON transaction.transactions USING btree(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_transactions_player_date ON transaction.transactions USING btree(player_id, created_at DESC);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_idempotency ON transaction.transactions USING btree(idempotency_key) WHERE idempotency_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_transactions_idempotency ON transaction.transactions USING btree(idempotency_key, created_at) WHERE idempotency_key IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_transactions_related ON transaction.transactions USING btree(related_transaction_id) WHERE related_transaction_id IS NOT NULL;
 
 -- Yeni alanlar için indexler

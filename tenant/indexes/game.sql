@@ -3,7 +3,6 @@
 -- =============================================
 
 -- game_settings - Temel indexler
-CREATE INDEX IF NOT EXISTS idx_game_settings_game ON game.game_settings USING btree(game_id);
 CREATE INDEX IF NOT EXISTS idx_game_settings_provider ON game.game_settings USING btree(provider_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_game_settings_game_unique ON game.game_settings USING btree(game_id);
 

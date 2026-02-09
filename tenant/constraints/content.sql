@@ -75,9 +75,7 @@ ALTER TABLE content.faq_item_translations
 ALTER TABLE content.faq_item_translations
     ADD CONSTRAINT chk_faq_item_trans_status CHECK (status IN ('draft', 'published'));
 
--- promotions
-ALTER TABLE content.promotions
-    ADD CONSTRAINT chk_promotions_type CHECK (promo_type IN ('general', 'welcome', 'deposit', 'cashback', 'freespin', 'tournament', 'vip', 'seasonal'));
+-- NOTE: promotions tipi artık promotion_types tablosunda FK ile yönetiliyor (promo_type CHECK kaldırıldı)
 
 -- promotion_translations
 ALTER TABLE content.promotion_translations
