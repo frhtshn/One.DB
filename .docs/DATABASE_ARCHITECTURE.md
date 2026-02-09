@@ -319,7 +319,30 @@ Dinamik site içeriği ve pazarlama materyalleri yönetimi. Çoklu dil desteği 
 | `slide/`     | `slide_placements`, `slide_categories`, `slide_category_translations`, `slides`, `slide_translations`, `slide_images`, `slide_schedules` |
 | `popup/`     | `popup_types`, `popup_type_translations`, `popups`, `popup_translations`, `popup_images`, `popup_schedules`                            |
 
-### 6.3 bonus Şeması
+### 6.3 finance Şeması
+
+Döviz kurları, ödeme metodu ayarları ve limit yönetimi.
+
+**Klasör Yapısı:** `tenant/tables/finance/`
+
+| Tablo                     | Açıklama                                              |
+| ------------------------- | ----------------------------------------------------- |
+| `operation_types`         | Cüzdan operasyon tipleri (CREDIT, DEBIT, LOCK, UNLOCK)|
+| `transaction_types`       | İşlem tipi tanımları (DEPOSIT, WITHDRAW, BET, WIN)    |
+| `currency_rates`          | Döviz kuru tarihçesi (audit/raporlama)                |
+| `currency_rates_latest`   | Güncel döviz kurları (hızlı erişim cache)             |
+| `payment_method_settings` | Tenant ödeme metodu yapılandırması                    |
+| `payment_method_limits`   | Para birimi bazlı ödeme limitleri ve ücretler         |
+| `payment_player_limits`   | Oyuncu bazlı işlem limitleri                          |
+
+**Views:**
+
+| View                 | Açıklama                                    |
+| -------------------- | ------------------------------------------- |
+| `v_daily_base_rates` | Günlük son kur değerleri                    |
+| `v_cross_rates`      | Çapraz kur hesaplaması (base rate'lerden)   |
+
+### 6.4 bonus Şeması
 
 Bonus kazanımları ve promosyon kullanımları.
 

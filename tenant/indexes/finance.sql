@@ -8,6 +8,9 @@ CREATE INDEX IF NOT EXISTS idx_currency_rates_target ON finance.currency_rates U
 CREATE INDEX IF NOT EXISTS idx_currency_rates_timestamp ON finance.currency_rates USING btree(rate_timestamp DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_currency_rates_lookup ON finance.currency_rates USING btree(provider, provider_base_currency, target_currency, rate_timestamp DESC);
 
+-- currency_rates_latest
+CREATE INDEX IF NOT EXISTS idx_currency_rates_latest_target ON finance.currency_rates_latest USING btree(target_currency);
+
 -- operation_types
 CREATE UNIQUE INDEX IF NOT EXISTS idx_operation_types_code ON finance.operation_types USING btree(code);
 

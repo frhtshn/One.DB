@@ -331,6 +331,10 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 > Authorization is handled in Core DB via `user_assert_access_tenant(caller_id, tenant_id)` before calling tenant functions.
 > This follows the cross-database security pattern: **Core DB (auth) → Tenant DB (business logic)**.
 
+### Finance Schema
+
+- **`currency_rates_bulk_upsert(p_provider VARCHAR(30), p_provider_base_currency CHAR(3), p_rates JSONB, p_rate_timestamp TIMESTAMP, p_fetched_at TIMESTAMP DEFAULT now())`**: Bulk upsert currency rates from CurrencyGrain. Inserts history into `currency_rates` and upserts latest into `currency_rates_latest` in a single transaction. Returns `inserted_count` and `upserted_count`. JSONB format: `[{"currency":"USD","rate":1.036},...]`.
+
 ### Content Schema
 
 > Functions will be documented here as they are implemented.

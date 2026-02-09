@@ -62,6 +62,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/finance/operation_types.sql
 \i tenant/tables/finance/transaction_types.sql
 \i tenant/tables/finance/currency_rates.sql
+\i tenant/tables/finance/currency_rates_latest.sql
 \i tenant/tables/finance/payment_method_settings.sql
 \i tenant/tables/finance/payment_method_limits.sql
 \i tenant/tables/finance/payment_player_limits.sql
@@ -147,6 +148,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- VIEWS
 \i tenant/views/v_daily_base_rates.sql
 \i tenant/views/v_cross_rates.sql
+
+-- =============================================================================
+-- FUNCTIONS - Finance
+-- =============================================================================
+\i tenant/functions/finance/currency_rates_bulk_upsert.sql
 
 -- =============================================================================
 -- FUNCTIONS - Backoffice (Auth checked in Core DB)
