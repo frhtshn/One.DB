@@ -41,7 +41,7 @@ BEGIN
         first_name, last_name, status, failed_login_count,
         is_locked, locked_until, last_login_at,
         password_changed_at, require_password_change,
-        language, timezone, currency
+        language, timezone, currency, two_factor_enabled
     INTO v_user
     FROM security.users
     WHERE email = p_email;
@@ -312,7 +312,8 @@ BEGIN
             'language', v_user.language,
             'timezone', v_user.timezone,
             'currency', v_user.currency,
-            'primaryDepartment', v_primary_department
+            'primaryDepartment', v_primary_department,
+            'twoFactorEnabled', v_user.two_factor_enabled
         ),
         'globalRoles', to_jsonb(v_platform_roles),
         'globalPermissions', v_global_permissions,
@@ -323,4 +324,4 @@ END;
 $$;
 
 COMMENT ON FUNCTION security.user_authenticate IS
-'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific. Includes primaryDepartment (JSONB multi-language name) in user object. Sifre suresi dolmussa requirePasswordChange=true doner.';
+'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific. Includes primaryDepartment (JSONB multi-language name) and twoFactorEnabled in user object. Sifre suresi dolmussa requirePasswordChange=true doner.';

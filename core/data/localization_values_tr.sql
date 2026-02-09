@@ -157,6 +157,14 @@ JOIN (VALUES
     -- Error Messages - Auth Unlock
     ('error.auth.unlock.failed', 'Hesap kilidi açılamadı'),
 
+    -- Error Messages - Auth 2FA
+    ('error.auth.2fa.invalid-code', 'Geçersiz doğrulama kodu'),
+    ('error.auth.2fa.token-expired', '2FA süresi doldu, lütfen tekrar giriş yapın'),
+    ('error.auth.2fa.max-attempts', 'Çok fazla başarısız deneme, lütfen tekrar giriş yapın'),
+    ('error.auth.2fa.already-enabled', '2FA zaten aktif'),
+    ('error.auth.2fa.not-enabled', '2FA aktif değil'),
+    ('error.auth.2fa.setup-expired', '2FA kurulum süresi doldu'),
+
     -- Success Messages - Auth
     ('success.auth.logout', 'Başarıyla çıkış yapıldı'),
     ('success.auth.logout-all', 'Tüm oturumlar sonlandırıldı'),

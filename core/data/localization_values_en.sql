@@ -160,6 +160,14 @@ JOIN (VALUES
     -- Error Messages - Auth Unlock
     ('error.auth.unlock.failed', 'Failed to unlock account'),
 
+    -- Error Messages - Auth 2FA
+    ('error.auth.2fa.invalid-code', 'Invalid verification code'),
+    ('error.auth.2fa.token-expired', '2FA token expired, please login again'),
+    ('error.auth.2fa.max-attempts', 'Too many failed attempts, please login again'),
+    ('error.auth.2fa.already-enabled', '2FA is already enabled'),
+    ('error.auth.2fa.not-enabled', '2FA is not enabled'),
+    ('error.auth.2fa.setup-expired', '2FA setup session expired'),
+
     -- Success Messages - Auth
     ('success.auth.logout', 'Logged out successfully'),
     ('success.auth.logout-all', 'All sessions terminated'),
