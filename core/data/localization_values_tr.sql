@@ -437,6 +437,16 @@ JOIN (VALUES
 
     -- Tenant Layout Errors
     ('error.tenant-layout.not-found', 'Layout bulunamadı'),
-    ('error.tenant-layout.no-filter', 'En az bir filtre parametresi gerekli')
+    ('error.tenant-layout.no-filter', 'En az bir filtre parametresi gerekli'),
+
+    -- Error Messages - Messaging
+    ('error.messaging.sender-id-required', 'Gönderen kullanıcı ID zorunludur'),
+    ('error.messaging.recipient-id-required', 'Alıcı kullanıcı ID zorunludur'),
+    ('error.messaging.subject-required', 'Mesaj konusu zorunludur'),
+    ('error.messaging.body-required', 'Mesaj içeriği zorunludur'),
+    ('error.messaging.broadcast-id-required', 'Broadcast ID zorunludur'),
+    ('error.messaging.broadcast-not-found', 'Broadcast bulunamadı'),
+    ('error.messaging.user-id-required', 'Kullanıcı ID zorunludur'),
+    ('error.messaging.invalid-parameters', 'Geçersiz parametreler')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

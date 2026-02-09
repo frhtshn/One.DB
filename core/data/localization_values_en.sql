@@ -435,6 +435,16 @@ JOIN (VALUES
 
     -- Tenant Layout Errors
     ('error.tenant-layout.not-found', 'Layout not found'),
-    ('error.tenant-layout.no-filter', 'At least one filter parameter is required')
+    ('error.tenant-layout.no-filter', 'At least one filter parameter is required'),
+
+    -- Error Messages - Messaging
+    ('error.messaging.sender-id-required', 'Sender ID is required'),
+    ('error.messaging.recipient-id-required', 'Recipient ID is required'),
+    ('error.messaging.subject-required', 'Message subject is required'),
+    ('error.messaging.body-required', 'Message body is required'),
+    ('error.messaging.broadcast-id-required', 'Broadcast ID is required'),
+    ('error.messaging.broadcast-not-found', 'Broadcast not found'),
+    ('error.messaging.user-id-required', 'User ID is required'),
+    ('error.messaging.invalid-parameters', 'Invalid parameters')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;
