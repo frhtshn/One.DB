@@ -123,9 +123,9 @@ BEGIN
     -- 7. SCOPE BAZLI ISLEM
     -- ================================================================
 
-    IF v_user.company_id = 0 AND 'superadmin' = ANY(v_platform_roles) THEN
+    IF v_user.company_id = 0 AND ('superadmin' = ANY(v_platform_roles) OR 'admin' = ANY(v_platform_roles)) THEN
         -- ============================================================
-        -- SUPERADMIN: Tenant işi yok, sadece global permission
+        -- SUPERADMIN/ADMIN: Tenant işi yok, sadece global permission
         -- ============================================================
         NULL; -- v_accessible_tenants ve v_tenant_permissions zaten bos
 
