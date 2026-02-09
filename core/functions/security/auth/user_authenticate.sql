@@ -123,42 +123,11 @@ BEGIN
     -- 7. SCOPE BAZLI ISLEM
     -- ================================================================
 
-    IF v_user.company_id = 0 AND ('superadmin' = ANY(v_platform_roles) OR 'admin' = ANY(v_platform_roles)) THEN
+    IF v_user.company_id = 0 AND v_is_platform_role THEN
         -- ============================================================
-        -- SUPERADMIN/ADMIN: Tenant işi yok, sadece global permission
+        -- PLATFORM ROLE: Tenant isi yok, sadece global permission
         -- ============================================================
         NULL; -- v_accessible_tenants ve v_tenant_permissions zaten bos
-
-    ELSIF v_is_platform_role THEN
-        -- ============================================================
-        -- PLATFORM (admin vb.): Tum veya izinli tenant'lar
-        -- ============================================================
-        IF v_has_allowed_tenants THEN
-            SELECT COALESCE(jsonb_agg(
-                jsonb_build_object(
-                    'id', t.id,
-                    'code', t.tenant_code,
-                    'name', t.tenant_name,
-                    'environment', t.environment
-                ) ORDER BY t.id
-            ), '[]'::jsonb)
-            INTO v_accessible_tenants
-            FROM core.tenants t
-            JOIN security.user_allowed_tenants uat ON t.id = uat.tenant_id
-            WHERE uat.user_id = v_user.id AND t.status = 1;
-        ELSE
-            SELECT COALESCE(jsonb_agg(
-                jsonb_build_object(
-                    'id', t.id,
-                    'code', t.tenant_code,
-                    'name', t.tenant_name,
-                    'environment', t.environment
-                ) ORDER BY t.id
-            ), '[]'::jsonb)
-            INTO v_accessible_tenants
-            FROM core.tenants t
-            WHERE t.status = 1;
-        END IF;
 
     ELSIF v_is_company_role THEN
         -- ============================================================
