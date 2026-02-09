@@ -10,7 +10,7 @@ LANGUAGE plpgsql
 STABLE
 AS $$
 BEGIN
-    IF NOT EXISTS(SELECT 1 FROM catalog.languages WHERE language_code = LOWER(p_code)) THEN
+    IF NOT EXISTS(SELECT 1 FROM catalog.languages l WHERE l.language_code = LOWER(p_code)) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.language.not-found';
     END IF;
 
