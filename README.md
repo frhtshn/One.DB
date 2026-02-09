@@ -225,53 +225,58 @@ Core veritabanı için 3 farklı deployment senaryosu bulunur:
 
 ---
 
-## Tenant Template Example
+## Yeni Tenant Provisioning (deploy_new_tenant.ps1)
 
-Aynı sunucuda template'den yeni tenant DB oluşturma:
+Yeni bir tenant oluşturmak için `deploy_new_tenant.ps1` script'i kullanılır. Bu script, tenant için gerekli **5 veritabanını** otomatik olarak oluşturur ve deploy eder:
 
-```sql
-CREATE DATABASE tenant_1 WITH TEMPLATE tenant;
+| Veritabanı | Deploy Dosyası | Açıklama |
+|---|---|---|
+| `tenant_{code}` | `deploy_tenant.sql` | Ana tenant: oyuncular, cüzdanlar, işlemler |
+| `tenant_log_{code}` | `deploy_tenant_log.sql` | Aktivite ve işlem logları |
+| `tenant_audit_{code}` | `deploy_tenant_audit.sql` | Denetim kayıtları |
+| `tenant_report_{code}` | `deploy_tenant_report.sql` | Raporlar ve istatistikler |
+| `tenant_affiliate_{code}` | `deploy_tenant_affiliate.sql` | Affiliate plugin verileri |
+
+**Temel Kullanım**
+
+```powershell
+# Yeni tenant oluştur (ör: tenant_acme, tenant_log_acme, ...)
+.\deploy_new_tenant.ps1 -TenantCode "acme"
+
+# Numerik kod ile
+.\deploy_new_tenant.ps1 -TenantCode "1"
 ```
 
----
+**Dry Run (Önce Kontrol)**
 
-## Cross-Server Tenant Migration (pg_dump / pg_restore)
-
-Farklı sunucuya tenant DB kopyalama (template aynı sunucuda çalışmadığında):
-
-### 1. Kaynak Sunucudan Dump Al
-
-```bash
-# Custom format (önerilen - sıkıştırılmış, paralel restore destekli)
-pg_dump -h SOURCE_HOST -p 5433 -U postgres -Fc tenant > tenant_template.dump
-
-# Veya plain SQL format
-pg_dump -h SOURCE_HOST -p 5433 -U postgres tenant > tenant_template.sql
+```powershell
+# Bağlantı ve dosya kontrolü yap, deploy etme
+.\deploy_new_tenant.ps1 -TenantCode "acme" -Dry
 ```
 
-### 2. Hedef Sunucuda DB Oluştur ve Restore Et
+**Mevcut DB'leri Atlama**
 
-```bash
-# Yeni DB oluştur
-createdb -h TARGET_HOST -p 5433 -U postgres tenant_1
-
-# Custom format restore
-pg_restore -h TARGET_HOST -p 5433 -U postgres -d tenant_1 tenant_template.dump
-
-# Veya plain SQL restore
-psql -h TARGET_HOST -p 5433 -U postgres -d tenant_1 -f tenant_template.sql
+```powershell
+# Zaten varolan DB'leri atla, eksikleri oluştur
+.\deploy_new_tenant.ps1 -TenantCode "acme" -SkipIfExists
 ```
 
-### 3. Tek Komutla Pipe (Aynı anda dump + restore)
+**Hata Durumunda Rollback**
 
-```bash
-pg_dump -h SOURCE_HOST -p 5433 -U postgres tenant | \
-psql -h TARGET_HOST -p 5433 -U postgres tenant_1
+Herhangi bir adımda hata oluşursa, o ana kadar oluşturulan tüm veritabanları otomatik olarak silinir (rollback).
+
+**Reset (Sil + Yeniden Oluştur)**
+
+```powershell
+# Tüm tenant DB'lerini sil ve sıfırdan oluştur
+.\deploy_new_tenant.ps1 -TenantCode "acme" -Reset
+
+# Önce ne olacağını gör
+.\deploy_new_tenant.ps1 -TenantCode "acme" -Reset -Dry
 ```
 
-### Paralel Restore (Büyük DB'ler için)
+**Provisioning Sonrası Adımlar**
 
-```bash
-# 4 paralel job ile hızlı restore
-pg_restore -h TARGET_HOST -p 5433 -U postgres -d tenant_1 -j 4 tenant_template.dump
-```
+1. Backend'de tenant kaydını oluştur (core DB)
+2. Tenant seed verilerini backend üzerinden yükle
+3. Connection string'i yapılandır
