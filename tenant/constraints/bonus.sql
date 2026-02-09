@@ -7,10 +7,7 @@ ALTER TABLE bonus.bonus_awards
     ADD CONSTRAINT fk_bonus_awards_player
     FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
 
--- bonus_awards -> transactions
-ALTER TABLE bonus.bonus_awards
-    ADD CONSTRAINT fk_bonus_awards_transaction
-    FOREIGN KEY (tenant_transaction_id) REFERENCES transaction.transactions(id);
+-- NOTE: bonus_awards -> transactions (partitioned tablo, FK uygulanamaz, app-level kontrol)
 
 -- promo_redemptions -> players
 ALTER TABLE bonus.promo_redemptions
