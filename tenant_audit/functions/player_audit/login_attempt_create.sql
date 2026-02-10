@@ -4,19 +4,19 @@
 -- GeoIP bilgileri ip-api.com'dan çözümlenmiş olarak gelir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS player_audit.login_attempt_create(BIGINT,VARCHAR,INET,VARCHAR,CHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
+DROP FUNCTION IF EXISTS player_audit.login_attempt_create(BIGINT,VARCHAR,INET,VARCHAR,BOOLEAN,CHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
 
 CREATE OR REPLACE FUNCTION player_audit.login_attempt_create(
     p_player_id      BIGINT,                 -- Player ID (başarılıysa, NULL olabilir)
     p_identifier     VARCHAR(300),            -- Denenen email/username (encrypted)
     p_ip_address     INET,                    -- IP adresi
-    p_user_agent     VARCHAR(500) DEFAULT NULL,  -- Tarayıcı bilgisi
+    p_user_agent     VARCHAR(500),            -- Tarayıcı bilgisi
+    p_is_successful  BOOLEAN,                 -- Başarılı mı?
     p_country_code   CHAR(2) DEFAULT NULL,    -- GeoIP ülke kodu
     p_city           VARCHAR(200) DEFAULT NULL,  -- GeoIP şehir
     p_is_proxy       BOOLEAN DEFAULT FALSE,   -- VPN/Proxy bayrağı
     p_is_hosting     BOOLEAN DEFAULT FALSE,   -- Datacenter bayrağı
     p_is_mobile      BOOLEAN DEFAULT FALSE,   -- Mobil bağlantı bayrağı
-    p_is_successful  BOOLEAN,                 -- Başarılı mı?
     p_failure_reason VARCHAR(50) DEFAULT NULL  -- Başarısızlık sebebi
 )
 RETURNS BIGINT
