@@ -58,6 +58,9 @@ CREATE UNIQUE INDEX idx_user_roles_unique_tenant
 -- Lookup index (performans - user_authenticate, user_permission_list)
 CREATE INDEX idx_user_roles_user_lookup ON security.user_roles USING btree(user_id, tenant_id);
 
+-- user_sessions.id (tek session lookup - revoke, belongs_to, update_activity)
+CREATE INDEX idx_user_sessions_id ON security.user_sessions USING btree(id);
+
 -- user_sessions.user_id -> users.id
 CREATE INDEX idx_user_sessions_user_id ON security.user_sessions USING btree(user_id);
 

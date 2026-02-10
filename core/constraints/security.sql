@@ -40,11 +40,6 @@ ALTER TABLE security.user_roles
     ADD CONSTRAINT fk_user_roles_tenant
     FOREIGN KEY (tenant_id) REFERENCES core.tenants(id) ON DELETE CASCADE;
 
--- user_sessions -> users
-ALTER TABLE security.user_sessions
-    ADD CONSTRAINT fk_user_sessions_user
-    FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE;
-
 -- user_permission_overrides -> tenants
 ALTER TABLE security.user_permission_overrides
     ADD CONSTRAINT fk_user_permission_overrides_tenant

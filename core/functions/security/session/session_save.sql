@@ -1,6 +1,8 @@
 -- ================================================================
 -- SESSION_SAVE: Yeni oturum kaydet veya güncelle
 -- GeoIP bilgileri ip-api.com'dan çözümlenmiş olarak gelir
+-- GÜNCELLENDİ: Partitioned tablo için UPDATE-then-INSERT pattern
+-- (ON CONFLICT partitioned tablolarda composite PK gerektirir)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.session_save(VARCHAR, BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TIMESTAMPTZ);
@@ -42,51 +44,57 @@ RETURNS VOID
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO security.user_sessions (
-        id, user_id, refresh_token_id, ip_address, user_agent, device_name, expires_at,
-        country, country_code, continent, continent_code,
-        region, region_name, city, district, zip,
-        lat, lon, timezone, utc_offset, currency,
-        isp, org, as_number, as_name, reverse_dns,
-        is_mobile, is_proxy, is_hosting
-    )
-    VALUES (
-        p_session_id, p_user_id, p_refresh_token_id, p_ip_address, p_user_agent, p_device_name, p_expires_at,
-        p_country, p_country_code, p_continent, p_continent_code,
-        p_region, p_region_name, p_city, p_district, p_zip,
-        p_lat, p_lon, p_timezone, p_utc_offset, p_currency,
-        p_isp, p_org, p_as_number, p_as_name, p_reverse_dns,
-        COALESCE(p_is_mobile, FALSE), COALESCE(p_is_proxy, FALSE), COALESCE(p_is_hosting, FALSE)
-    )
-    ON CONFLICT (id) DO UPDATE
+    -- Önce mevcut session'ı güncellemeyi dene
+    UPDATE security.user_sessions
     SET
-        refresh_token_id = EXCLUDED.refresh_token_id,
+        refresh_token_id = p_refresh_token_id,
         last_activity_at = NOW(),
-        ip_address       = EXCLUDED.ip_address,
-        user_agent       = EXCLUDED.user_agent,
-        country          = EXCLUDED.country,
-        country_code     = EXCLUDED.country_code,
-        continent        = EXCLUDED.continent,
-        continent_code   = EXCLUDED.continent_code,
-        region           = EXCLUDED.region,
-        region_name      = EXCLUDED.region_name,
-        city             = EXCLUDED.city,
-        district         = EXCLUDED.district,
-        zip              = EXCLUDED.zip,
-        lat              = EXCLUDED.lat,
-        lon              = EXCLUDED.lon,
-        timezone         = EXCLUDED.timezone,
-        utc_offset       = EXCLUDED.utc_offset,
-        currency         = EXCLUDED.currency,
-        isp              = EXCLUDED.isp,
-        org              = EXCLUDED.org,
-        as_number        = EXCLUDED.as_number,
-        as_name          = EXCLUDED.as_name,
-        reverse_dns      = EXCLUDED.reverse_dns,
-        is_mobile        = EXCLUDED.is_mobile,
-        is_proxy         = EXCLUDED.is_proxy,
-        is_hosting       = EXCLUDED.is_hosting;
+        ip_address       = p_ip_address,
+        user_agent       = p_user_agent,
+        country          = p_country,
+        country_code     = p_country_code,
+        continent        = p_continent,
+        continent_code   = p_continent_code,
+        region           = p_region,
+        region_name      = p_region_name,
+        city             = p_city,
+        district         = p_district,
+        zip              = p_zip,
+        lat              = p_lat,
+        lon              = p_lon,
+        timezone         = p_timezone,
+        utc_offset       = p_utc_offset,
+        currency         = p_currency,
+        isp              = p_isp,
+        org              = p_org,
+        as_number        = p_as_number,
+        as_name          = p_as_name,
+        reverse_dns      = p_reverse_dns,
+        is_mobile        = COALESCE(p_is_mobile, FALSE),
+        is_proxy         = COALESCE(p_is_proxy, FALSE),
+        is_hosting       = COALESCE(p_is_hosting, FALSE)
+    WHERE id = p_session_id;
+
+    -- Bulunamadıysa yeni kayıt ekle
+    IF NOT FOUND THEN
+        INSERT INTO security.user_sessions (
+            id, user_id, refresh_token_id, ip_address, user_agent, device_name, expires_at,
+            country, country_code, continent, continent_code,
+            region, region_name, city, district, zip,
+            lat, lon, timezone, utc_offset, currency,
+            isp, org, as_number, as_name, reverse_dns,
+            is_mobile, is_proxy, is_hosting
+        )
+        VALUES (
+            p_session_id, p_user_id, p_refresh_token_id, p_ip_address, p_user_agent, p_device_name, p_expires_at,
+            p_country, p_country_code, p_continent, p_continent_code,
+            p_region, p_region_name, p_city, p_district, p_zip,
+            p_lat, p_lon, p_timezone, p_utc_offset, p_currency,
+            p_isp, p_org, p_as_number, p_as_name, p_reverse_dns,
+            COALESCE(p_is_mobile, FALSE), COALESCE(p_is_proxy, FALSE), COALESCE(p_is_hosting, FALSE)
+        );
+    END IF;
 END;
 $$;
 
-COMMENT ON FUNCTION security.session_save IS 'Saves a new session or updates existing one with full GeoIP data';
+COMMENT ON FUNCTION security.session_save IS 'Saves a new session or updates existing one with full GeoIP data. Uses UPDATE-then-INSERT for partitioned table compatibility.';

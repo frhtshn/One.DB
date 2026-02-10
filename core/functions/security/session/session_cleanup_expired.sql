@@ -2,6 +2,7 @@
 -- SESSION_CLEANUP_EXPIRED - Expire/Revoked/Inactive Session Cleanup
 -- Called by SessionCleanupService
 -- PostgreSQL compatible, batch-safe version
+-- GÜNCELLENDİ: PK-based DELETE (partitioned tablo uyumlu)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.session_cleanup_expired(INT, INT, INT);
@@ -23,7 +24,7 @@ DECLARE
 BEGIN
     -- 1. Expired sessions
     WITH to_delete AS (
-        SELECT ctid
+        SELECT id, created_at
         FROM security.user_sessions
         WHERE is_revoked = FALSE
           AND expires_at < v_now
@@ -31,15 +32,16 @@ BEGIN
         LIMIT p_batch_size
     ),
     deleted AS (
-        DELETE FROM security.user_sessions
-        WHERE ctid IN (SELECT ctid FROM to_delete)
+        DELETE FROM security.user_sessions s
+        USING to_delete d
+        WHERE s.id = d.id AND s.created_at = d.created_at
         RETURNING 1
     )
     SELECT COUNT(*) INTO v_expired_deleted FROM deleted;
 
     -- 2. Old revoked sessions
     WITH to_delete AS (
-        SELECT ctid
+        SELECT id, created_at
         FROM security.user_sessions
         WHERE is_revoked = TRUE
           AND revoked_at < v_now - (p_revoked_retention_days || ' days')::INTERVAL
@@ -47,8 +49,9 @@ BEGIN
         LIMIT p_batch_size
     ),
     deleted AS (
-        DELETE FROM security.user_sessions
-        WHERE ctid IN (SELECT ctid FROM to_delete)
+        DELETE FROM security.user_sessions s
+        USING to_delete d
+        WHERE s.id = d.id AND s.created_at = d.created_at
         RETURNING 1
     )
     SELECT COUNT(*) INTO v_revoked_deleted FROM deleted;
@@ -56,7 +59,7 @@ BEGIN
     -- 3. Inactive sessions (not expired yet)
     IF p_inactivity_days > 0 THEN
         WITH to_delete AS (
-            SELECT ctid
+            SELECT id, created_at
             FROM security.user_sessions
             WHERE is_revoked = FALSE
               AND last_activity_at < v_now - (p_inactivity_days || ' days')::INTERVAL
@@ -65,8 +68,9 @@ BEGIN
             LIMIT p_batch_size
         ),
         deleted AS (
-            DELETE FROM security.user_sessions
-            WHERE ctid IN (SELECT ctid FROM to_delete)
+            DELETE FROM security.user_sessions s
+            USING to_delete d
+            WHERE s.id = d.id AND s.created_at = d.created_at
             RETURNING 1
         )
         SELECT COUNT(*) INTO v_inactive_deleted FROM deleted;
@@ -98,4 +102,4 @@ END;
 $$;
 
 COMMENT ON FUNCTION security.session_cleanup_expired
-IS 'Cleans up expired, old revoked, and inactive session records in batches (PostgreSQL compatible).';
+IS 'Cleans up expired, old revoked, and inactive session records in batches. Uses PK-based delete for partitioned table compatibility.';

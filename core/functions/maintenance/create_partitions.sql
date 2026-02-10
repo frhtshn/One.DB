@@ -29,7 +29,8 @@ BEGIN
     -- Core DB'deki partitioned tablolar
     FOR v_tbl IN
         SELECT * FROM (VALUES
-            ('messaging', 'user_messages', 'created_at')
+            ('messaging', 'user_messages', 'created_at'),
+            ('security', 'user_sessions', 'created_at')
         ) AS t(schema_name, tbl_name, partition_key)
     LOOP
         FOR i IN 0..p_look_ahead_months LOOP
@@ -78,4 +79,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.create_partitions(INT) IS 'Creates monthly partitions for core messaging tables. Look-ahead: current month + N months. Idempotent.';
+COMMENT ON FUNCTION maintenance.create_partitions(INT) IS 'Creates monthly partitions for core tables (messaging.user_messages, security.user_sessions). Look-ahead: current month + N months. Idempotent.';

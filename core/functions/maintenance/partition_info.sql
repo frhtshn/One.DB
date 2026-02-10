@@ -31,7 +31,7 @@ BEGIN
         JOIN pg_namespace pn ON pn.oid = pc.relnamespace
         JOIN pg_class cc ON cc.oid = i.inhrelid
         JOIN pg_namespace cn ON cn.oid = cc.relnamespace
-        WHERE pn.nspname IN ('messaging')
+        WHERE pn.nspname IN ('messaging', 'security')
     ),
     summary AS (
         SELECT
@@ -56,4 +56,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in core DB. Shows count, size, oldest/newest partitions.';
+COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in core DB (messaging, security). Shows count, size, oldest/newest partitions.';

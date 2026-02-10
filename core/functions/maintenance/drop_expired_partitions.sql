@@ -29,7 +29,8 @@ BEGIN
     -- Tablo bazlı retention tanımları
     FOR v_tbl IN
         SELECT * FROM (VALUES
-            ('messaging', 180)   -- 6 ay (kullanıcı mesajları)
+            ('messaging', 180),  -- 6 ay (kullanıcı mesajları)
+            ('security', 90)    -- 3 ay (kullanıcı oturumları)
         ) AS t(schema_name, default_retention)
     LOOP
         -- Override varsa onu kullan, yoksa tablo varsayılanı
@@ -78,4 +79,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.drop_expired_partitions(INT) IS 'Drops monthly partitions older than retention period. user_messages: 180 days. Override with p_retention_days. Never drops current month.';
+COMMENT ON FUNCTION maintenance.drop_expired_partitions(INT) IS 'Drops monthly partitions older than retention period. user_messages: 180 days, user_sessions: 90 days. Override with p_retention_days. Never drops current month.';
