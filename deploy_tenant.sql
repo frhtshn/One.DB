@@ -166,6 +166,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- FUNCTIONS - Finance
 -- =============================================================================
 \i tenant/functions/finance/currency_rates_bulk_upsert.sql
+\i tenant/functions/finance/currency_rates_latest_list.sql
 
 -- =============================================================================
 -- FUNCTIONS - Messaging

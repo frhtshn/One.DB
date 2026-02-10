@@ -11,9 +11,9 @@ DROP FUNCTION IF EXISTS finance.currency_rates_bulk_upsert(VARCHAR, CHAR, JSONB,
 CREATE OR REPLACE FUNCTION finance.currency_rates_bulk_upsert(
     p_provider               VARCHAR(30),                               -- Kur sağlayıcı (örn: 'currencylayer')
     p_provider_base_currency CHAR(3),                                   -- Sağlayıcı baz para birimi (örn: 'EUR')
-    p_rates                  JSONB,                                     -- Kur dizisi: [{"currency":"USD","rate":1.036},...]
-    p_rate_timestamp         TIMESTAMP WITHOUT TIME ZONE,               -- Kurun geçerli olduğu zaman (provider)
-    p_fetched_at             TIMESTAMP WITHOUT TIME ZONE DEFAULT now()  -- API'den çekilme zamanı
+    p_rates                  TEXT,                                      -- Kur dizisi: [{"currency":"USD","rate":1.036},...]
+    p_rate_timestamp         TIMESTAMPTZ,                               -- Kurun geçerli olduğu zaman (provider)
+    p_fetched_at             TIMESTAMPTZ DEFAULT now()                   -- API'den çekilme zamanı
 )
 RETURNS TABLE (
     inserted_count  INT,
@@ -24,6 +24,7 @@ AS $$
 DECLARE
     v_inserted INT := 0;
     v_upserted INT := 0;
+    v_rates    JSONB;
 BEGIN
     -- Parametre doğrulama
     IF p_provider IS NULL OR p_provider = '' THEN
@@ -34,7 +35,14 @@ BEGIN
         RAISE EXCEPTION 'error.currency-rates.base-currency-required';
     END IF;
 
-    IF p_rates IS NULL OR jsonb_array_length(p_rates) = 0 THEN
+    IF p_rates IS NULL OR p_rates = '' THEN
+        RAISE EXCEPTION 'error.currency-rates.rates-empty';
+    END IF;
+
+    -- TEXT -> JSONB cast
+    v_rates := p_rates::JSONB;
+
+    IF jsonb_array_length(v_rates) = 0 THEN
         RAISE EXCEPTION 'error.currency-rates.rates-empty';
     END IF;
 
@@ -59,7 +67,7 @@ BEGIN
         (r->>'rate')::NUMERIC(18,8),
         p_rate_timestamp,
         p_fetched_at
-    FROM jsonb_array_elements(p_rates) AS r
+    FROM jsonb_array_elements(v_rates) AS r
     ON CONFLICT (provider, provider_base_currency, target_currency, rate_timestamp)
     DO NOTHING;
 
@@ -79,11 +87,12 @@ BEGIN
         (r->>'currency')::CHAR(3),
         (r->>'rate')::NUMERIC(18,8),
         p_rate_timestamp
-    FROM jsonb_array_elements(p_rates) AS r
+    FROM jsonb_array_elements(v_rates) AS r
     ON CONFLICT (provider, provider_base_currency, target_currency)
     DO UPDATE SET
         rate           = EXCLUDED.rate,
-        rate_timestamp = EXCLUDED.rate_timestamp;
+        rate_timestamp = EXCLUDED.rate_timestamp
+    WHERE currency_rates_latest.rate_timestamp < EXCLUDED.rate_timestamp;
 
     GET DIAGNOSTICS v_upserted = ROW_COUNT;
 
@@ -91,4 +100,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION finance.currency_rates_bulk_upsert(VARCHAR, CHAR, JSONB, TIMESTAMP, TIMESTAMP) IS 'Bulk upsert currency rates from CurrencyGrain - inserts history and updates latest rates in a single transaction';
+COMMENT ON FUNCTION finance.currency_rates_bulk_upsert(VARCHAR, CHAR, TEXT, TIMESTAMPTZ, TIMESTAMPTZ) IS 'Bulk upsert currency rates from CurrencyGrain - inserts history and updates latest rates in a single transaction';

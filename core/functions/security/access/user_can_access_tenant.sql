@@ -41,6 +41,12 @@ BEGIN
         RETURN FALSE;
     END IF;
 
+    -- System call bypass (grain-to-grain, Reminder, HostedService)
+    -- -1 = SystemCallerId, C# tarafinda SystemConstants.SystemCallerId ile eslesir
+    IF p_caller_id = -1 THEN
+        RETURN TRUE;
+    END IF;
+
     -- Get caller access info
     SELECT * INTO v_access
     FROM security.user_get_access_level(p_caller_id);
