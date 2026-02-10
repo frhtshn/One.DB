@@ -4,7 +4,6 @@
 -- GeoIP bilgileri ip-api.com'dan çözümlenmiş olarak gelir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS backoffice.auth_audit_create(BIGINT,BIGINT,BIGINT,VARCHAR,TEXT,VARCHAR,VARCHAR,BOOLEAN,VARCHAR);
 DROP FUNCTION IF EXISTS backoffice.auth_audit_create(BIGINT,BIGINT,BIGINT,VARCHAR,TEXT,VARCHAR,VARCHAR,CHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
 
 CREATE OR REPLACE FUNCTION backoffice.auth_audit_create(
