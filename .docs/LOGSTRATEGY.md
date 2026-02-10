@@ -17,8 +17,8 @@ nasıl temizleneceğini tanımlar.
 | ------------------ | ------------------------------------------------------- | --------------- | --------------- | ----------------- |
 | **core**           | Platform domain + kullanıcı mesajlaşma                  | Monthly*        | Sınırsız        | DROP partition    |
 | **core_log**       | Core + gateway teknik log (ERROR / WARN / INFO)         | Daily           | 30–90 gün       | DROP partition    |
-| **core_audit**     | Platform kararları (tenant lifecycle, gateway enable)   | ❌              | 5–10 yıl        | ❌ / ARCHIVE      |
-| **core_report**    | Merkezi raporlama ve BI verileri                        | Opsiyonel       | İş ihtiyacı     | -                 |
+| **core_audit**     | Backoffice güvenlik denetim kayıtları                   | Daily           | 90 gün          | DROP partition    |
+| **core_report**    | Merkezi raporlama ve BI verileri                        | Monthly         | Sınırsız        | -                 |
 | **game**           | Oyun gateway entegrasyon durumu                         | Daily           | 14–30 gün       | DROP partition    |
 | **game_log**       | Tüm tenant'lara ait game gateway logları                | Daily           | 7–14 gün        | DROP partition    |
 | **finance**        | Finans gateway entegrasyon durumu                       | Daily           | 14–30 gün       | DROP partition    |
@@ -26,12 +26,13 @@ nasıl temizleneceğini tanımlar.
 | **bonus**          | Bonus ve promosyon yapılandırması                       | ❌              | Sınırsız        | -                 |
 | **tenant**         | Business & history (transactions, player_messages, wallets) | Monthly    | Sınırsız**      | -                 |
 | **tenant_log**     | Tenant teknik & operasyonel log + KYC/messaging logları | Daily           | 30–90 gün*      | DROP partition    |
-| **tenant_audit**   | Tenant karar & yetkili aksiyon + KYC/AML audit          | ❌ / Yearly     | 5–10 yıl        | ❌ / ARCHIVE      |
-| **tenant_report**  | Kiracıya özel raporlar ve istatistikler                 | Opsiyonel       | İş ihtiyacı     | -                 |
+| **tenant_audit**   | Tenant audit kayıtları (player_audit + affiliate_audit) | Hybrid*         | 365 gün–5 yıl   | DROP partition    |
+| **tenant_report**  | Kiracıya özel raporlar ve istatistikler                 | Monthly         | Sınırsız        | -                 |
 | **tenant_affiliate**| Affiliate tracking ve komisyon yönetimi                 | Monthly         | Sınırsız        | -                 |
 
-> \*Core DB: `messaging.user_messages` tablosu Monthly partition (180 gün retention). Diğer core tabloları partitioned değildir, sınırsız retention.
-> \*\*`transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention (monthly partition ile yönetilir).
+> \* Core DB: `messaging.user_messages` Monthly partition (180 gün) + `security.user_sessions` Monthly partition (90 gün). Diğer core tabloları partitioned değildir, sınırsız retention.
+> \*\* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention (monthly partition ile yönetilir).
+> \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily (365 gün), `player_audit.login_sessions` Monthly (5 yıl). Diğer tablolar (affiliate_audit, kyc_audit) partitioned değildir.
 > KYC provider logları için retention 90+ güne uzatılabilir (compliance gereksinimleri).
 
 ---

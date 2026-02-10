@@ -55,8 +55,8 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | --- | ------------------ | --------------------------------------------------------- | --------------- | --------- | ----------- |
 | 1   | `core`             | Platform yapılandırması ve merkezi veriler                | ✅              | Monthly*  | Sınırsız    |
 | 2   | `core_log`         | Merkezi teknik log kayıtları                              | ✅              | Daily     | 30–90 gün   |
-| 3   | `core_audit`       | Platform karar ve değişiklik audit                        | ✅              | ❌        | 5–10 yıl    |
-| 4   | `core_report`      | Merkezi raporlama ve BI verileri                          | ✅              | Opsiyonel | İş ihtiyacı |
+| 3   | `core_audit`       | Backoffice güvenlik denetim kayıtları                     | ✅              | Daily     | 90 gün      |
+| 4   | `core_report`      | Merkezi raporlama ve BI verileri                          | ✅              | Monthly   | Sınırsız    |
 | 5   | `game`             | Oyun gateway entegrasyon durumu                           | ✅              | Daily     | 14–30 gün   |
 | 6   | `game_log`         | Oyun gateway teknik logları                               | ✅              | Daily     | 7–14 gün    |
 | 7   | `finance`          | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
@@ -65,10 +65,10 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | 10  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
 | 11  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
 | 12  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`, `player_audit`)  | ❌              | Hybrid*   | 1–5 yıl     |
-| 13  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
+| 13  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Monthly   | Sınırsız    |
 | 14  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
 
-> \* `core`: `messaging.user_messages` tablosu Monthly partition (180 gün retention) ile çalışır. Diğer tablolar partitioned değildir.
+> \* `core`: `messaging.user_messages` Monthly partition (180 gün) + `security.user_sessions` Monthly partition (90 gün).
 > \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily partition (365 gün), `player_audit.login_sessions` Monthly partition (5 yıl). Diğer tablolar (affiliate_audit, kyc_audit) partitioned değildir.
 
 ---
@@ -502,22 +502,23 @@ Tüm log veritabanları **`DROP PARTITION`** stratejisi ile temizlenir. Detaylar
 
 ## 9. Partition Yapısı
 
-Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 8 veritabanında toplam 31 tablo partitioned çalışır.
+Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 9 veritabanında toplam 33 tablo partitioned çalışır.
 
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
-| `core` | Monthly | 1 | 180 gün |
+| `core` | Monthly | 2 | 90–180 gün |
+| `core_audit` | Daily | 1 | 90 gün |
 | `core_log` | Daily | 4 | 30–90 gün |
-| `tenant_log` | Daily | 5 | 30–90 gün |
-| `tenant_report` | Monthly | 5 | Sınırsız |
 | `core_report` | Monthly | 5 | Sınırsız |
-| `tenant_affiliate` | Monthly | 7 | Sınırsız |
 | `tenant` | Monthly | 2 | Sınırsız* |
+| `tenant_log` | Daily | 5 | 30–90 gün |
 | `tenant_audit` | Hybrid | 2 | 365 gün / 5 yıl |
+| `tenant_report` | Monthly | 5 | Sınırsız |
+| `tenant_affiliate` | Monthly | 7 | Sınırsız |
 
-> \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
-> `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
-> `tenant_audit` Hybrid: `player_audit.login_attempts` Daily (365 gün), `player_audit.login_sessions` Monthly (5 yıl).
+> \* `core` Monthly: `messaging.user_messages` (180 gün) + `security.user_sessions` (90 gün).
+> \* `tenant` Monthly: `transaction.transactions` (sınırsız) + `messaging.player_messages` (180 gün).
+> \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily (365 gün), `player_audit.login_sessions` Monthly (5 yıl).
 
 Her partitioned veritabanı `maintenance` şemasında 4 yönetim fonksiyonu içerir: `create_partitions`, `drop_expired_partitions`, `partition_info`, `run_maintenance`.
 

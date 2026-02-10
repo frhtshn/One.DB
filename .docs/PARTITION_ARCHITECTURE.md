@@ -56,19 +56,19 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
-| `core` | Monthly | 1 | 180 gün |
+| `core` | Monthly | 2 | 90–180 gün |
 | `core_audit` | Daily | 1 | 90 gün |
 | `core_log` | Daily | 4 | 30–90 gün |
+| `tenant` | Monthly | 2 | Sınırsız* |
 | `tenant_log` | Daily | 5 | 30–90 gün |
 | `tenant_report` | Monthly | 5 | Sınırsız |
 | `core_report` | Monthly | 5 | Sınırsız |
 | `tenant_affiliate` | Monthly | 7 | Sınırsız |
-| `tenant` | Monthly | 2 | Sınırsız* |
 | `tenant_audit` | Hybrid (Daily+Monthly) | 2 | 365 gün / 5 yıl |
-| **Toplam** | | **32** | |
+| **Toplam** | | **33** | |
 
-> \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
-> `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
+> \* `core` Monthly: `messaging.user_messages` (180 gün) + `security.user_sessions` (90 gün).
+> \* `tenant` Monthly: `transaction.transactions` (sınırsız) + `messaging.player_messages` (180 gün).
 
 ### 2.2 core_audit (Daily, 90 gün retention)
 
@@ -78,15 +78,16 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 > **Not:** Backoffice kullanıcı güvenlik olay kayıtları (login, logout, şifre değişikliği). GeoIP verileri ile zenginleştirilmiş. Yüksek hacim nedeniyle daily partition tercih edildi.
 
-### 2.4 core (Monthly, 180 gün retention)
+### 2.3 core (Monthly, 90–180 gün retention)
 
 | Tablo | Partition Key | Retention | Dosya |
 |-------|--------------|-----------|-------|
 | `messaging.user_messages` | `created_at` | 180 gün | `core/tables/messaging/user_messages.sql` |
+| `security.user_sessions` | `created_at` | 90 gün | `core/tables/security/user_sessions.sql` |
 
-> **Not:** Core DB'nin ilk partitioned tablosu. Backoffice kullanıcı mesajlaşma sistemi için eklendi.
+> **Not:** Backoffice kullanıcı mesajlaşma sistemi ve oturum yönetimi. `user_sessions` UPDATE-then-INSERT pattern ile çalışır, GeoIP verileri ile zenginleştirilmiştir.
 
-### 2.5 core_log (Daily, 30–90 gün retention)
+### 2.4 core_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -95,7 +96,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `logs.dead_letter_messages` | `created_at` | `core_log/tables/logs/dead_letter_messages.sql` |
 | `backoffice.audit_logs` | `created_at` | `core_log/tables/backoffice/audit_logs.sql` |
 
-### 2.6 tenant_log (Daily, 30–90 gün retention)
+### 2.5 tenant_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -105,7 +106,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `kyc_log.player_kyc_provider_logs` | `created_at` | `tenant_log/tables/kyc/player_kyc_provider_logs.sql` |
 | `messaging_log.message_delivery_logs` | `created_at` | `tenant_log/tables/messaging/message_delivery_logs.sql` |
 
-### 2.7 tenant_report (Monthly, sınırsız retention)
+### 2.6 tenant_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -115,7 +116,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `game.game_hourly_stats` | `period_hour` | `tenant_report/tables/game/game_hourly_stats.sql` |
 | `game.game_performance_daily` | `report_date` | `tenant_report/tables/game/game_performance_daily.sql` |
 
-### 2.8 core_report (Monthly, sınırsız retention)
+### 2.7 core_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -125,7 +126,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `performance.provider_global_daily` | `report_date` | `core_report/tables/performance/provider_global_daily.sql` |
 | `performance.payment_global_daily` | `report_date` | `core_report/tables/performance/payment_global_daily.sql` |
 
-### 2.9 tenant (Monthly, karma retention)
+### 2.8 tenant (Monthly, karma retention)
 
 | Tablo | Partition Key | Retention | Dosya |
 |-------|--------------|-----------|-------|
@@ -136,7 +137,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 >
 > **FK Etkisi (player_messages):** `player_messages` tablosunun PK'sı `(id, created_at)` olduğundan composite PK'dır. `campaign_id → message_campaigns(id)` FK'sı partitioned'dan regular tabloya gittiği için sorunsuz çalışır (PG 12+).
 
-### 2.10 tenant_affiliate (Monthly, sınırsız retention)
+### 2.9 tenant_affiliate (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -150,7 +151,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 > **Multi-column Range:** `player_stats_monthly` ve `affiliate_stats_monthly` tabloları tek bir tarih kolonu olmadığından `PARTITION BY RANGE (period_year, period_month)` kullanır.
 
-### 2.11 tenant_audit (Hybrid: Daily + Monthly)
+### 2.10 tenant_audit (Hybrid: Daily + Monthly)
 
 | Tablo | Partition Tipi | Partition Key | Retention | Dosya |
 |-------|---------------|--------------|-----------|-------|
@@ -160,7 +161,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 > **Hybrid partition:** tenant_audit, tek DB'de hem daily hem monthly partition stratejisi barındıran ilk veritabanıdır. `create_partitions()` fonksiyonu her iki stratejiyi ayrı parametrelerle yönetir (`p_look_ahead_days` + `p_look_ahead_months`).
 > Diğer tenant_audit tabloları (`affiliate_audit`, `kyc_audit`) partitioned **değildir** (düşük hacim, long retention).
 
-### 2.12 Partition Uygulanmayan Veritabanları
+### 2.11 Partition Uygulanmayan Veritabanları
 
 | DB | Sebep |
 |----|-------|
@@ -280,6 +281,13 @@ messaging.user_messages                   -- Ana partitioned tablo (180 gün ret
 ├── messaging.user_messages_y2026m04      -- Nisan 2026
 ├── messaging.user_messages_y2026m05      -- Mayıs 2026
 └── messaging.user_messages_default       -- Güvenlik ağı
+
+security.user_sessions                    -- Ana partitioned tablo (90 gün retention)
+├── security.user_sessions_y2026m02       -- Şubat 2026
+├── security.user_sessions_y2026m03       -- Mart 2026
+├── security.user_sessions_y2026m04       -- Nisan 2026
+├── security.user_sessions_y2026m05       -- Mayıs 2026
+└── security.user_sessions_default        -- Güvenlik ağı
 ```
 
 **`deploy_tenant.sql` çalıştırıldıktan sonra:**

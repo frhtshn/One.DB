@@ -146,6 +146,7 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`tenant_cryptocurrency_mapping_list()`**: Lists all active tenant-cryptocurrency mappings for CryptoRateSyncGrain batch processing. System grain function (no auth).
 - **`tenant_cryptocurrency_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_symbol VARCHAR(20), p_is_enabled BOOLEAN DEFAULT TRUE)`**: Assigns or updates a cryptocurrency for a tenant. Checks caller permissions.
 - **`tenant_currency_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Tenant currency list.
+- **`tenant_currency_mapping_list()`**: Lists all active tenant-currency mappings for CurrencyRateSyncGrain batch processing. System grain function (no auth).
 - **`tenant_currency_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_currency_code CHAR(3), p_is_enabled BOOLEAN DEFAULT TRUE)`**: Tenant currency upsert.
 - **`tenant_delete(p_caller_id BIGINT, p_id BIGINT)`**: Tenant delete.
 - **`tenant_get(p_caller_id BIGINT, p_id BIGINT)`**: Tenant get.
@@ -273,15 +274,19 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`session_revoke_all(p_user_id BIGINT, p_reason VARCHAR(200) DEFAULT 'User requested logout all', p_except_session_id VARCHAR(50) DEFAULT NULL)`**: Session revoke all.
 - **`session_save(p_session_id VARCHAR(50), p_user_id BIGINT, p_refresh_token_id VARCHAR(100), p_ip_address VARCHAR(50), p_user_agent VARCHAR(500), p_device_name VARCHAR(100), p_expires_at TIMESTAMPTZ, p_country VARCHAR(100) DEFAULT NULL, p_country_code CHAR(2) DEFAULT NULL, p_continent VARCHAR(100) DEFAULT NULL, p_continent_code CHAR(2) DEFAULT NULL, p_region VARCHAR(100) DEFAULT NULL, p_region_name VARCHAR(200) DEFAULT NULL, p_city VARCHAR(200) DEFAULT NULL, p_district VARCHAR(200) DEFAULT NULL, p_zip VARCHAR(20) DEFAULT NULL, p_lat DECIMAL(9,6) DEFAULT NULL, p_lon DECIMAL(9,6) DEFAULT NULL, p_timezone VARCHAR(100) DEFAULT NULL, p_utc_offset INTEGER DEFAULT NULL, p_currency VARCHAR(10) DEFAULT NULL, p_isp VARCHAR(300) DEFAULT NULL, p_org VARCHAR(300) DEFAULT NULL, p_as_number VARCHAR(200) DEFAULT NULL, p_as_name VARCHAR(300) DEFAULT NULL, p_reverse_dns VARCHAR(300) DEFAULT NULL, p_is_mobile BOOLEAN DEFAULT FALSE, p_is_proxy BOOLEAN DEFAULT FALSE, p_is_hosting BOOLEAN DEFAULT FALSE)`**: Session save with full GeoIP data. Uses UPDATE-then-INSERT for partitioned table compatibility.
 - **`session_update_activity(p_session_id VARCHAR(50))`**: Updates session last activity timestamp. Called when refresh token is used.
+- **`user_2fa_get_secret(p_user_id BIGINT)`**: Returns user 2FA secret for TOTP verification in Grain. Returns NULL if user not found or 2FA is not enabled.
+- **`user_2fa_set(p_user_id BIGINT, p_enabled BOOLEAN, p_secret VARCHAR(255) DEFAULT NULL)`**: Sets 2FA status for a user. Enable: p_enabled=true with p_secret. Disable: p_enabled=false (secret auto-cleared). Raises P0404 if user not found.
 - **`user_authenticate(p_email VARCHAR(255))`**: User authenticate. Returns user info with `requirePasswordChange` (true if password expired or flag set), `passwordChangedAt`, and `primaryDepartment` (JSONB multi-language name).
 - **`user_check_email_exists(p_email TEXT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check email exists.
 - **`user_check_username_exists(p_username TEXT, p_company_id BIGINT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check username exists.
 - **`user_create(p_caller_id BIGINT, p_email TEXT, p_username TEXT, p_password TEXT, p_first_name TEXT, p_last_name TEXT, p_company_id BIGINT, p_language CHAR(2) DEFAULT NULL, p_timezone VARCHAR(50) DEFAULT NULL, p_currency CHAR(3) DEFAULT NULL, p_department_id BIGINT DEFAULT NULL)`**: User create. Optional `p_department_id` assigns user to department as primary.
 - **`user_delete(p_caller_id BIGINT, p_user_id BIGINT)`**: User delete.
 - **`user_get(p_caller_id BIGINT, p_user_id BIGINT)`**: User get. Includes `departments` array (JSONB multi-language departmentName/parentName, isPrimary).
+- **`user_get_password_hash(p_user_id BIGINT)`**: Returns user password hash for Argon2id verification in Grain. Returns NULL if user not found.
 - **`user_list(p_caller_id BIGINT, p_company_id BIGINT, p_tenant_id BIGINT DEFAULT NULL, p_page INT DEFAULT 1, p_page_size INT DEFAULT 10, p_search TEXT DEFAULT NULL, p_status SMALLINT DEFAULT NULL, p_sort_by TEXT DEFAULT 'id', p_sort_order TEXT DEFAULT 'ASC')`**: User list. Includes `primaryDepartment` (JSONB multi-language name) per user.
 - **`user_login_failed_increment(p_user_id BIGINT, p_lock_threshold INT DEFAULT 5, p_lock_duration_minutes INT DEFAULT 30)`**: User login failed increment.
 - **`user_login_failed_reset(p_user_id BIGINT)`**: User login failed reset.
+- **`user_password_history_list(p_user_id BIGINT)`**: Returns last N password hashes for history validation in Grain (Argon2id Verify). N is determined by company_password_policy.history_count (default: 3).
 - **`user_permission_list(p_user_id BIGINT, p_tenant_id BIGINT DEFAULT NULL)`**: User permission list.
 - **`user_permission_override_list(p_caller_id BIGINT, p_user_id BIGINT, p_tenant_id BIGINT DEFAULT NULL)`**: User permission override list.
 - **`user_permission_override_load(p_user_id BIGINT, p_tenant_id BIGINT DEFAULT NULL)`**: User permission override load.
@@ -318,9 +323,9 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 
 ### Maintenance Schema
 
-- **`create_partitions(p_look_ahead_months INT DEFAULT 3)`**: Creates monthly partitions for messaging.user_messages. Generates current month plus look-ahead months. Idempotent.
-- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than retention period. user_messages: 180 days. Never drops current month.
-- **`partition_info()`**: Reports partition status for all partitioned tables in core DB messaging schema.
+- **`create_partitions(p_look_ahead_months INT DEFAULT 3)`**: Creates monthly partitions for core tables (messaging.user_messages, security.user_sessions). Generates current month plus look-ahead months. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than per-table retention period. user_messages: 180 days, user_sessions: 90 days. Never drops current month.
+- **`partition_info()`**: Reports partition status for all partitioned tables in core DB (messaging, security schemas).
 - **`run_maintenance(p_look_ahead_months INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future partitions and drops expired ones in a single call.
 
 ### Triggers
