@@ -448,6 +448,9 @@ JOIN (VALUES
     ('error.messaging.draft-not-found', 'Draft not found or deleted'),
     ('error.messaging.draft-not-found-or-published', 'Draft not found or already published'),
     ('error.messaging.draft-already-published', 'Draft has already been published'),
-    ('error.messaging.draft-not-published', 'Draft is not published, cannot recall')
+    ('error.messaging.draft-not-published', 'Draft is not published, cannot recall'),
+    ('error.messaging.cannot-send-to-self', 'Cannot send a message to yourself'),
+    ('error.messaging.recipient-not-found', 'Recipient not found or inactive'),
+    ('error.messaging.no-recipients', 'No recipients matched the specified filters')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

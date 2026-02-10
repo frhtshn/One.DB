@@ -450,6 +450,9 @@ JOIN (VALUES
     ('error.messaging.draft-not-found', 'Draft bulunamadı veya silinmiş'),
     ('error.messaging.draft-not-found-or-published', 'Draft bulunamadı veya zaten yayınlanmış'),
     ('error.messaging.draft-already-published', 'Draft zaten yayınlanmış'),
-    ('error.messaging.draft-not-published', 'Draft yayınlanmamış, geri alınamaz')
+    ('error.messaging.draft-not-published', 'Draft yayınlanmamış, geri alınamaz'),
+    ('error.messaging.cannot-send-to-self', 'Kendinize mesaj gönderemezsiniz'),
+    ('error.messaging.recipient-not-found', 'Alıcı bulunamadı veya aktif değil'),
+    ('error.messaging.no-recipients', 'Belirtilen filtrelerle eşleşen alıcı bulunamadı')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

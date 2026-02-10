@@ -2,6 +2,7 @@
 -- ADMIN_MESSAGE_RECALL: Yayınlanan mesajları geri çeker
 -- draft_id ile bağlı tüm user_messages'ları soft delete eder
 -- Sadece published durumundaki draft'lar recall edilebilir
+-- Draft status → cancelled olarak güncellenir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS messaging.admin_message_recall(INTEGER);
@@ -43,8 +44,14 @@ BEGIN
 
     GET DIAGNOSTICS v_affected = ROW_COUNT;
 
+    -- Draft status'ü cancelled olarak güncelle
+    UPDATE messaging.user_message_drafts
+    SET status = 'cancelled',
+        updated_at = NOW()
+    WHERE id = p_draft_id;
+
     RETURN v_affected;
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_recall(INTEGER) IS 'Recall a published message. Soft deletes all user_messages linked to the draft. Only published drafts can be recalled. Returns number of affected messages.';
+COMMENT ON FUNCTION messaging.admin_message_recall(INTEGER) IS 'Recall a published message. Soft deletes all user_messages linked to the draft and sets draft status to cancelled. Only published drafts can be recalled. Returns number of affected messages.';

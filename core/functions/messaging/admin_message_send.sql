@@ -1,6 +1,8 @@
 -- ================================================================
 -- ADMIN_MESSAGE_SEND: Tek kullanıcıya doğrudan mesaj gönderir
 -- Admin → User birebir mesaj senaryosu
+-- Kendine gönderim engeli ve alıcı varlık/aktiflik kontrolü var
+-- Sender scope kontrolü: alıcının company'sine erişim doğrulaması
 -- ================================================================
 
 DROP FUNCTION IF EXISTS messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP);
@@ -19,6 +21,7 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
     v_message_id BIGINT;
+    v_recipient_company_id BIGINT;
 BEGIN
     -- Zorunlu alan kontrolleri
     IF p_sender_id IS NULL THEN
@@ -37,6 +40,23 @@ BEGIN
         RAISE EXCEPTION 'error.messaging.body-required';
     END IF;
 
+    -- Kendine mesaj gönderim engeli
+    IF p_sender_id = p_recipient_id THEN
+        RAISE EXCEPTION 'error.messaging.cannot-send-to-self';
+    END IF;
+
+    -- Alıcı varlık ve aktiflik kontrolü + company bilgisini al
+    SELECT company_id INTO v_recipient_company_id
+    FROM security.users
+    WHERE id = p_recipient_id AND status = 1;
+
+    IF v_recipient_company_id IS NULL THEN
+        RAISE EXCEPTION 'error.messaging.recipient-not-found';
+    END IF;
+
+    -- Scope kontrolü: sender alıcının company'sine erişebilir mi?
+    PERFORM security.user_assert_access_company(p_sender_id, v_recipient_company_id);
+
     -- Mesaj oluştur
     INSERT INTO messaging.user_messages (
         recipient_id, sender_id, subject, body,
@@ -51,4 +71,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP) IS 'Send a direct message to a single user inbox.';
+COMMENT ON FUNCTION messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP) IS 'Send a direct message to a single user inbox. Validates recipient exists/active, prevents self-messaging, and validates sender access to recipient company scope.';

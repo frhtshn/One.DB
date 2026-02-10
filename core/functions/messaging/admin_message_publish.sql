@@ -5,12 +5,15 @@
 -- tenant_ids array ile çoklu tenant destekler
 -- Her alıcı için ayrı mesaj satırı oluşturur (draft_id ile)
 -- Draft status → published, total_recipients güncellenir
+-- 0 alıcı çözümlenirse exception fırlatır (yayınlamaz)
+-- Caller scope kontrolü: draft'ın company_id ve tenant_ids erişim doğrulaması
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.admin_message_publish(INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_message_publish(BIGINT, INTEGER);
 
 CREATE OR REPLACE FUNCTION messaging.admin_message_publish(
-    p_draft_id INTEGER  -- Yayınlanacak draft ID
+    p_caller_id BIGINT,   -- İşlemi yapan kullanıcı ID
+    p_draft_id  INTEGER   -- Yayınlanacak draft ID
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -20,6 +23,10 @@ DECLARE
     v_recipient_count INTEGER;
     v_has_tenant_filter BOOLEAN;
 BEGIN
+    IF p_caller_id IS NULL THEN
+        RAISE EXCEPTION 'error.messaging.sender-id-required';
+    END IF;
+
     IF p_draft_id IS NULL THEN
         RAISE EXCEPTION 'error.messaging.draft-id-required';
     END IF;
@@ -37,6 +44,17 @@ BEGIN
     -- Sadece draft/scheduled yayınlanabilir
     IF v_draft.status NOT IN ('draft', 'scheduled') THEN
         RAISE EXCEPTION 'error.messaging.draft-already-published';
+    END IF;
+
+    -- Scope kontrolü: caller draft'ın hedef company'sine erişebilir mi?
+    IF v_draft.company_id IS NOT NULL THEN
+        PERFORM security.user_assert_access_company(p_caller_id, v_draft.company_id);
+    END IF;
+
+    -- Scope kontrolü: caller draft'ın hedef tenant'larına erişebilir mi?
+    IF v_draft.tenant_ids IS NOT NULL AND array_length(v_draft.tenant_ids, 1) > 0 THEN
+        PERFORM security.user_assert_access_tenant(p_caller_id, tid)
+        FROM unnest(v_draft.tenant_ids) AS tid;
     END IF;
 
     -- Tenant filtresi aktif mi kontrol et
@@ -102,6 +120,11 @@ BEGIN
 
     GET DIAGNOSTICS v_recipient_count = ROW_COUNT;
 
+    -- 0 alıcı kontrolü: filtreler hiç alıcı çözümleyemediyse yayınlama
+    IF v_recipient_count = 0 THEN
+        RAISE EXCEPTION 'error.messaging.no-recipients';
+    END IF;
+
     -- Draft'ı published olarak güncelle
     UPDATE messaging.user_message_drafts
     SET status = 'published',
@@ -114,4 +137,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_publish(INTEGER) IS 'Publish a draft message. Reads content and filters from draft, resolves recipients using AND-combined filters (company/tenant_ids[]/department/role), creates individual user_messages with draft_id link. tenant_ids array supports multi-tenant targeting. Updates draft status to published. Returns recipient count.';
+COMMENT ON FUNCTION messaging.admin_message_publish(BIGINT, INTEGER) IS 'Publish a draft message with caller scope validation. Validates caller access to draft company_id and tenant_ids. Resolves recipients using AND-combined filters. Raises error if no recipients matched. Returns recipient count.';

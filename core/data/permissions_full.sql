@@ -13,11 +13,11 @@
 -- ================================================================
 -- PERMISSIONS - FULL LIST (UPSERT)
 -- ================================================================
--- Toplam: 168 permission
+-- Toplam: 175 permission
 -- Kategoriler:
 --   platform (6), company (13), tenant (21), catalog (9),
 --   player (32), game (16), finance (21), bonus (22),
---   affiliate (12), report (7), audit (9)
+--   affiliate (12), report (7), messaging (7), audit (9)
 -- ================================================================
 
 INSERT INTO security.permissions (code, name, description, category, status) VALUES
@@ -261,6 +261,17 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('report.export', 'Export Reports', 'Export reports to file', 'report', 1),
 
 -- ================================================================
+-- MESSAGING SCOPE (7) - TenantAdmin+
+-- ================================================================
+('messaging.draft.create', 'Create Message Draft', 'Create message draft with filters and scheduling', 'messaging', 1),
+('messaging.draft.update', 'Update Message Draft', 'Update message draft content and filters', 'messaging', 1),
+('messaging.draft.delete', 'Delete Message Draft', 'Delete message draft (soft delete)', 'messaging', 1),
+('messaging.draft.view', 'View Message Drafts', 'View and list message drafts with stats', 'messaging', 1),
+('messaging.publish', 'Publish Message', 'Publish draft message to resolved recipients', 'messaging', 1),
+('messaging.recall', 'Recall Message', 'Recall published message from all recipients', 'messaging', 1),
+('messaging.send', 'Send Direct Message', 'Send direct message to a single user', 'messaging', 1),
+
+-- ================================================================
 -- AUDIT SCOPE (9) - TenantAdmin+
 -- ================================================================
 ('audit.list', 'Audit Log List', 'List audit logs', 'audit', 1),
@@ -294,6 +305,7 @@ DECLARE
     v_bonus INT;
     v_affiliate INT;
     v_report INT;
+    v_messaging INT;
     v_audit INT;
 BEGIN
     SELECT COUNT(*) INTO v_total FROM security.permissions;
@@ -307,6 +319,7 @@ BEGIN
     SELECT COUNT(*) INTO v_bonus FROM security.permissions WHERE category = 'bonus';
     SELECT COUNT(*) INTO v_affiliate FROM security.permissions WHERE category = 'affiliate';
     SELECT COUNT(*) INTO v_report FROM security.permissions WHERE category = 'report';
+    SELECT COUNT(*) INTO v_messaging FROM security.permissions WHERE category = 'messaging';
     SELECT COUNT(*) INTO v_audit FROM security.permissions WHERE category = 'audit';
 
     RAISE NOTICE '================================================';
@@ -322,6 +335,7 @@ BEGIN
     RAISE NOTICE 'Bonus:      %', v_bonus;
     RAISE NOTICE 'Affiliate:  %', v_affiliate;
     RAISE NOTICE 'Report:     %', v_report;
+    RAISE NOTICE 'Messaging:  %', v_messaging;
     RAISE NOTICE 'Audit:      %', v_audit;
     RAISE NOTICE '------------------------------------------------';
     RAISE NOTICE 'TOTAL:      %', v_total;

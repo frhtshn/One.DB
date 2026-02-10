@@ -2,12 +2,13 @@
 -- ADMIN_MESSAGE_DRAFT_CREATE: Mesaj taslağı oluşturur
 -- scheduled_at verilirse status otomatik 'scheduled' olur
 -- tenant_ids array olarak çoklu tenant destekler
--- Yetki kontrolü backend'de yapılır
+-- Caller scope kontrolü: company_id ve tenant_ids erişim doğrulaması
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.admin_message_draft_create(BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT);
+DROP FUNCTION IF EXISTS messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT);
 
 CREATE OR REPLACE FUNCTION messaging.admin_message_draft_create(
+    p_caller_id     BIGINT,                           -- İşlemi yapan kullanıcı ID
     p_sender_id     BIGINT,                           -- Gönderen admin ID
     p_subject       VARCHAR(500),                     -- Mesaj konusu
     p_body          TEXT,                              -- Mesaj içeriği (HTML)
@@ -19,7 +20,7 @@ CREATE OR REPLACE FUNCTION messaging.admin_message_draft_create(
     p_role_id       BIGINT DEFAULT NULL,              -- Rol filtresi
     p_scheduled_at  TIMESTAMP DEFAULT NULL,           -- Zamanlama (NULL = draft)
     p_expires_at    TIMESTAMP DEFAULT NULL,           -- Mesaj süre sonu
-    p_created_by    BIGINT DEFAULT NULL               -- Oluşturan (NULL ise sender_id)
+    p_created_by    BIGINT DEFAULT NULL               -- Oluşturan (NULL ise caller_id)
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -29,7 +30,7 @@ DECLARE
     v_status VARCHAR(20);
 BEGIN
     -- Zorunlu alan kontrolleri
-    IF p_sender_id IS NULL THEN
+    IF p_caller_id IS NULL THEN
         RAISE EXCEPTION 'error.messaging.sender-id-required';
     END IF;
 
@@ -39,6 +40,17 @@ BEGIN
 
     IF p_body IS NULL OR p_body = '' THEN
         RAISE EXCEPTION 'error.messaging.body-required';
+    END IF;
+
+    -- Scope kontrolü: caller hedef company'ye erişebilir mi?
+    IF p_company_id IS NOT NULL THEN
+        PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
+    END IF;
+
+    -- Scope kontrolü: caller hedef tenant'lara erişebilir mi?
+    IF p_tenant_ids IS NOT NULL AND array_length(p_tenant_ids, 1) > 0 THEN
+        PERFORM security.user_assert_access_tenant(p_caller_id, tid)
+        FROM unnest(p_tenant_ids) AS tid;
     END IF;
 
     -- Status belirleme: scheduled_at varsa → scheduled, yoksa → draft
@@ -51,10 +63,10 @@ BEGIN
         status, scheduled_at, expires_at,
         created_by
     ) VALUES (
-        p_sender_id, p_subject, p_body, p_message_type, p_priority,
+        COALESCE(p_sender_id, p_caller_id), p_subject, p_body, p_message_type, p_priority,
         p_company_id, p_tenant_ids, p_department_id, p_role_id,
         v_status, p_scheduled_at, p_expires_at,
-        COALESCE(p_created_by, p_sender_id)
+        COALESCE(p_created_by, p_caller_id)
     )
     RETURNING id INTO v_draft_id;
 
@@ -62,4 +74,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_draft_create(BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT) IS 'Create a message draft. If scheduled_at is provided, status is set to scheduled. tenant_ids supports multi-tenant targeting. Returns draft ID.';
+COMMENT ON FUNCTION messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT) IS 'Create a message draft with caller scope validation. Validates caller access to company_id and tenant_ids. Returns draft ID.';

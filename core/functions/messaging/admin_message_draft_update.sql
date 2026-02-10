@@ -3,11 +3,13 @@
 -- Sadece draft veya scheduled durumundakiler güncellenebilir
 -- NULL parametreler mevcut değeri korur (partial update)
 -- tenant_ids array olarak çoklu tenant destekler
+-- Caller scope kontrolü: company_id ve tenant_ids erişim doğrulaması
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.admin_message_draft_update(INTEGER, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP);
+DROP FUNCTION IF EXISTS messaging.admin_message_draft_update(BIGINT, INTEGER, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP);
 
 CREATE OR REPLACE FUNCTION messaging.admin_message_draft_update(
+    p_caller_id     BIGINT,                           -- İşlemi yapan kullanıcı ID
     p_draft_id      INTEGER,                          -- Güncellenecek draft ID
     p_subject       VARCHAR(500) DEFAULT NULL,        -- Mesaj konusu (NULL = değiştirme)
     p_body          TEXT DEFAULT NULL,                 -- Mesaj içeriği (NULL = değiştirme)
@@ -26,8 +28,23 @@ AS $$
 DECLARE
     v_updated INTEGER;
 BEGIN
+    IF p_caller_id IS NULL THEN
+        RAISE EXCEPTION 'error.messaging.sender-id-required';
+    END IF;
+
     IF p_draft_id IS NULL THEN
         RAISE EXCEPTION 'error.messaging.draft-id-required';
+    END IF;
+
+    -- Scope kontrolü: caller hedef company'ye erişebilir mi?
+    IF p_company_id IS NOT NULL THEN
+        PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
+    END IF;
+
+    -- Scope kontrolü: caller hedef tenant'lara erişebilir mi?
+    IF p_tenant_ids IS NOT NULL AND array_length(p_tenant_ids, 1) > 0 THEN
+        PERFORM security.user_assert_access_tenant(p_caller_id, tid)
+        FROM unnest(p_tenant_ids) AS tid;
     END IF;
 
     -- Sadece draft/scheduled durumundakiler güncellenebilir
@@ -58,4 +75,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_draft_update(INTEGER, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP) IS 'Update a message draft. Only draft/scheduled status can be updated. NULL parameters keep current values (except filter fields which are always overwritten). tenant_ids supports multi-tenant targeting. Returns TRUE on success.';
+COMMENT ON FUNCTION messaging.admin_message_draft_update(BIGINT, INTEGER, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP) IS 'Update a message draft with caller scope validation. Validates caller access to company_id and tenant_ids. Only draft/scheduled status can be updated. Returns TRUE on success.';

@@ -477,6 +477,9 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.draft-not-found', 'error', 'messaging', 'Draft bulunamadi veya silinmis'),
 ('error.messaging.draft-not-found-or-published', 'error', 'messaging', 'Draft bulunamadi veya yayinlanmis'),
 ('error.messaging.draft-already-published', 'error', 'messaging', 'Draft zaten yayinlanmis'),
-('error.messaging.draft-not-published', 'error', 'messaging', 'Draft yayinlanmamis, geri alinamaz')
+('error.messaging.draft-not-published', 'error', 'messaging', 'Draft yayinlanmamis, geri alinamaz'),
+('error.messaging.cannot-send-to-self', 'error', 'messaging', 'Kendine mesaj gonderilemez'),
+('error.messaging.recipient-not-found', 'error', 'messaging', 'Alici bulunamadi veya aktif degil'),
+('error.messaging.no-recipients', 'error', 'messaging', 'Filtreler hic alici cozumleyemedi')
 
 ON CONFLICT DO NOTHING;

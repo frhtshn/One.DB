@@ -26,7 +26,7 @@ CROSS JOIN security.permissions p
 WHERE r.code = 'superadmin';
 
 -- ================================================================
--- 3. ADMIN: company.* + tenant.* + catalog.* + audit.* + report.*
+-- 3. ADMIN: company.* + tenant.* + catalog.* + messaging.* + audit.* + report.*
 -- ================================================================
 -- Level 90 - System administrator
 -- Platform.* HARİÇ tüm yetkiler
@@ -36,7 +36,7 @@ SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'admin'
-  AND p.category IN ('company', 'tenant', 'catalog', 'audit', 'report');
+  AND p.category IN ('company', 'tenant', 'catalog', 'messaging', 'audit', 'report');
 
 -- ================================================================
 -- 4. COMPANYADMIN: tenant.* + audit.* + report.* (kısıtlı)
@@ -50,7 +50,7 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'companyadmin'
   AND (
-    p.category IN ('tenant', 'audit')
+    p.category IN ('tenant', 'messaging', 'audit')
     OR p.code IN (
       'report.dashboard.view',
       'report.player.view',
@@ -77,6 +77,12 @@ WHERE r.code = 'tenantadmin'
     OR p.code = 'tenant.content.list'
     OR p.code = 'tenant.content.manage'
     OR p.code = 'tenant.presentation.manage'
+    -- Messaging (draft + publish + send, recall hariç)
+    OR p.code IN (
+      'messaging.draft.create', 'messaging.draft.update',
+      'messaging.draft.delete', 'messaging.draft.view',
+      'messaging.publish', 'messaging.send'
+    )
     -- Player management (full)
     OR p.category = 'player'
     -- Game management (view + settings)
@@ -107,8 +113,10 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'moderator'
   AND (
+    -- Messaging (view + direct send)
+    p.code IN ('messaging.draft.view', 'messaging.send')
     -- Player management (most permissions)
-    p.code IN (
+    OR p.code IN (
       'player.list', 'player.view', 'player.edit', 'player.tags.manage',
       'player.block', 'player.unblock', 'player.password.reset',
       'player.wallet.view', 'player.kyc.list', 'player.kyc.view',
@@ -167,6 +175,8 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'operator'
   AND p.code IN (
+    -- Messaging (direct send only)
+    'messaging.send',
     -- Player (view + KYC + communication)
     'player.list', 'player.view',
     'player.wallet.view', 'player.transaction.view',
