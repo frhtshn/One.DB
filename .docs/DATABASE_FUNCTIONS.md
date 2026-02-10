@@ -13,6 +13,11 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`data_retention_policy_list(p_jurisdiction_id INT DEFAULT NULL, p_data_category VARCHAR(50) DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Data retention policy list with filters.
 - **`data_retention_policy_lookup(p_jurisdiction_id INT DEFAULT NULL)`**: Data retention policy lightweight lookup for dropdowns.
 - **`data_retention_policy_update(p_id INT, p_data_category VARCHAR(50) DEFAULT NULL, p_retention_days INT DEFAULT NULL, p_legal_reference VARCHAR(100) DEFAULT NULL, p_description VARCHAR(255) DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Data retention policy update (COALESCE pattern).
+- **`cryptocurrency_delete(p_symbol VARCHAR(20))`**: Soft deletes a cryptocurrency by setting is_active to false. Checks for tenant usage first.
+- **`cryptocurrency_get(p_symbol VARCHAR(20))`**: Gets details of a specific cryptocurrency by symbol. Raises P0404 if not found.
+- **`cryptocurrency_list()`**: Lists all cryptocurrencies including inactive ones (for admin usage).
+- **`cryptocurrency_update(p_symbol VARCHAR(20), p_name VARCHAR(100), p_name_full VARCHAR(200), p_max_supply NUMERIC(30,8), p_icon_url VARCHAR(500), p_is_active BOOLEAN, p_sort_order INT)`**: Updates cryptocurrency details (name, icon, active status, sort order).
+- **`cryptocurrency_upsert(p_symbol VARCHAR(20), p_name VARCHAR(100), p_name_full VARCHAR(200) DEFAULT NULL, p_max_supply NUMERIC(30,8) DEFAULT NULL, p_icon_url VARCHAR(500) DEFAULT NULL)`**: Upserts a cryptocurrency from Coinlayer /list sync. Creates if new, updates if symbol exists. Returns INT.
 - **`currency_create(p_code CHAR(3), p_name VARCHAR(100), p_symbol VARCHAR(10) DEFAULT NULL, p_numeric_code SMALLINT DEFAULT NULL)`**: Currency create.
 - **`currency_delete(p_code CHAR(3))`**: Currency delete.
 - **`currency_get(p_code CHAR(3))`**: Currency get.
@@ -137,6 +142,9 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`platform_setting_list(p_category VARCHAR DEFAULT NULL, p_environment VARCHAR DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL)`**: Lists platform service configurations with optional filters.
 - **`platform_setting_update(p_id BIGINT, p_category VARCHAR, p_setting_value TEXT, p_is_active BOOLEAN, p_description VARCHAR DEFAULT NULL)`**: Updates an existing platform service configuration.
 - **`tenant_create(p_caller_id BIGINT, p_company_id BIGINT, p_tenant_code VARCHAR, p_tenant_name VARCHAR, p_environment VARCHAR DEFAULT 'prod', p_base_currency CHAR(3) DEFAULT NULL, p_default_language CHAR(2) DEFAULT NULL, p_default_country CHAR(2) DEFAULT NULL, p_timezone VARCHAR DEFAULT NULL, p_supported_currencies VARCHAR[] DEFAULT NULL, -- Array of currency codes p_supported_languages VARCHAR[] DEFAULT NULL -- Array of language codes)`**: Tenant create.
+- **`tenant_cryptocurrency_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Lists all assigned cryptocurrencies for a tenant with catalog details. Returns JSONB. Checks caller permissions.
+- **`tenant_cryptocurrency_mapping_list()`**: Lists all active tenant-cryptocurrency mappings for CryptoRateSyncGrain batch processing. System grain function (no auth).
+- **`tenant_cryptocurrency_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_symbol VARCHAR(20), p_is_enabled BOOLEAN DEFAULT TRUE)`**: Assigns or updates a cryptocurrency for a tenant. Checks caller permissions.
 - **`tenant_currency_list(p_caller_id BIGINT, p_tenant_id BIGINT)`**: Tenant currency list.
 - **`tenant_currency_upsert(p_caller_id BIGINT, p_tenant_id BIGINT, p_currency_code CHAR(3), p_is_enabled BOOLEAN DEFAULT TRUE)`**: Tenant currency upsert.
 - **`tenant_delete(p_caller_id BIGINT, p_id BIGINT)`**: Tenant delete.
@@ -384,6 +392,8 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 
 ### Finance Schema
 
+- **`crypto_rates_bulk_upsert(p_provider VARCHAR(30), p_base_currency VARCHAR(10), p_rates TEXT, p_rate_timestamp TIMESTAMPTZ, p_fetched_at TIMESTAMPTZ DEFAULT now())`**: Bulk upsert crypto rates from CryptoGrain. Inserts history into `crypto_rates` (ON CONFLICT DO NOTHING) and upserts latest into `crypto_rates_latest` in a single transaction. Returns `inserted_count` and `upserted_count`. JSON format: `[{"symbol":"BTC","rate":97432.50,"change_24h":1200,"change_pct_24h":1.25,...}]`.
+- **`crypto_rates_latest_list(p_base_currency VARCHAR(10))`**: Lists latest crypto rates for a given base currency with 24h/7d change data. Used by CryptoRateGrain on Redis cache miss.
 - **`currency_rates_bulk_upsert(p_provider VARCHAR(30), p_provider_base_currency CHAR(3), p_rates JSONB, p_rate_timestamp TIMESTAMP, p_fetched_at TIMESTAMP DEFAULT now())`**: Bulk upsert currency rates from CurrencyGrain. Inserts history into `currency_rates` and upserts latest into `currency_rates_latest` in a single transaction. Returns `inserted_count` and `upserted_count`. JSONB format: `[{"currency":"USD","rate":1.036},...]`.
 
 ### Content Schema

@@ -53,6 +53,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/reference/currencies.sql
 \i core/tables/catalog/reference/languages.sql
 \i core/tables/catalog/reference/timezones.sql
+\i core/tables/catalog/reference/cryptocurrencies.sql
 
 -- Geo (IP çözümleme cache)
 \i core/tables/catalog/geo/ip_geo_cache.sql
@@ -103,6 +104,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/configuration/platform_settings.sql
 \i core/tables/core/configuration/tenant_settings.sql
 \i core/tables/core/configuration/tenant_currencies.sql
+\i core/tables/core/configuration/tenant_cryptocurrencies.sql
 \i core/tables/core/configuration/tenant_languages.sql
 \i core/tables/core/configuration/tenant_jurisdictions.sql
 \i core/tables/core/configuration/tenant_data_policies.sql
@@ -229,6 +231,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/tenant_currencies/tenant_currency_list.sql
 \i core/functions/core/tenant_currencies/tenant_currency_mapping_list.sql
 
+-- Tenant Configs - Cryptocurrencies
+\i core/functions/core/tenant_cryptocurrencies/tenant_cryptocurrency_upsert.sql
+\i core/functions/core/tenant_cryptocurrencies/tenant_cryptocurrency_list.sql
+\i core/functions/core/tenant_cryptocurrencies/tenant_cryptocurrency_mapping_list.sql
+
 -- Tenant Configs - Languages
 \i core/functions/core/tenant_languages/tenant_language_upsert.sql
 \i core/functions/core/tenant_languages/tenant_language_list.sql
@@ -253,6 +260,13 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/currencies/currency_create.sql
 \i core/functions/catalog/currencies/currency_update.sql
 \i core/functions/catalog/currencies/currency_delete.sql
+
+-- Cryptocurrency Functions
+\i core/functions/catalog/cryptocurrencies/cryptocurrency_upsert.sql
+\i core/functions/catalog/cryptocurrencies/cryptocurrency_list.sql
+\i core/functions/catalog/cryptocurrencies/cryptocurrency_get.sql
+\i core/functions/catalog/cryptocurrencies/cryptocurrency_update.sql
+\i core/functions/catalog/cryptocurrencies/cryptocurrency_delete.sql
 
 -- Language Functions
 \i core/functions/catalog/languages/language_list.sql

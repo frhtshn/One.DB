@@ -66,6 +66,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/finance/transaction_types.sql
 \i tenant/tables/finance/currency_rates.sql
 \i tenant/tables/finance/currency_rates_latest.sql
+\i tenant/tables/finance/crypto_rates.sql
+\i tenant/tables/finance/crypto_rates_latest.sql
 \i tenant/tables/finance/payment_method_settings.sql
 \i tenant/tables/finance/payment_method_limits.sql
 \i tenant/tables/finance/payment_player_limits.sql
@@ -167,6 +169,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 \i tenant/functions/finance/currency_rates_bulk_upsert.sql
 \i tenant/functions/finance/currency_rates_latest_list.sql
+\i tenant/functions/finance/crypto_rates_bulk_upsert.sql
+\i tenant/functions/finance/crypto_rates_latest_list.sql
 
 -- =============================================================================
 -- FUNCTIONS - Messaging

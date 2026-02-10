@@ -17,6 +17,12 @@ CREATE INDEX IF NOT EXISTS idx_tenant_currencies_tenant_id ON core.tenant_curren
 -- tenant_currencies (unique lookup)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_currencies_tenant_currency ON core.tenant_currencies USING btree(tenant_id, currency_code);
 
+-- tenant_cryptocurrencies.tenant_id -> tenants.id
+CREATE INDEX IF NOT EXISTS idx_tenant_cryptocurrencies_tenant_id ON core.tenant_cryptocurrencies USING btree(tenant_id);
+
+-- tenant_cryptocurrencies (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_cryptocurrencies_tenant_symbol ON core.tenant_cryptocurrencies USING btree(tenant_id, symbol);
+
 -- tenant_games.tenant_id -> tenants.id
 CREATE INDEX IF NOT EXISTS idx_tenant_games_tenant_id ON core.tenant_games USING btree(tenant_id);
 

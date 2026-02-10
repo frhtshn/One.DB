@@ -24,6 +24,14 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- crypto_rates unique constraint (dedup: aynı provider+base+symbol+timestamp atla)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_crypto_rates_lookup') THEN
+        ALTER TABLE finance.crypto_rates ADD CONSTRAINT uq_crypto_rates_lookup
+            UNIQUE (provider, base_currency, symbol, rate_timestamp);
+    END IF;
+END $$;
+
 -- payment_player_limits unique constraint
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_payment_player_limits_player_method') THEN

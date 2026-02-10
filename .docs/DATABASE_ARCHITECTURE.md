@@ -103,6 +103,7 @@ Referans dataları içerir. **Read-only** karakterlidir. Mantıksal gruplara ayr
 | --------------------- | -------------------------------- |
 | `countries`           | Ülke listesi ve kodları          |
 | `currencies`          | Para birimi tanımları (ISO 4217) |
+| `cryptocurrencies`    | Kripto para birimi kataloğu (Coinlayer /list sync) |
 | `languages`           | Desteklenen diller               |
 | `timezones`           | Saat dilimi referans kataloğu    |
 | `localization_keys`   | Lokalizasyon anahtar tanımları   |
@@ -170,8 +171,9 @@ Tenant ve şirket yönetimi.
 | Tablo                  | Açıklama                                              |
 | ---------------------- | ----------------------------------------------------- |
 | `platform_settings`    | Platform seviyesi dış servis ayarları (şifreli config) |
-| `tenant_currencies`    | Tenant'a tanımlı para birimleri                       |
-| `tenant_languages`     | Tenant'a tanımlı diller                               |
+| `tenant_currencies`        | Tenant'a tanımlı para birimleri                       |
+| `tenant_cryptocurrencies`  | Tenant'a tanımlı kripto para birimleri                |
+| `tenant_languages`         | Tenant'a tanımlı diller                               |
 | `tenant_settings`      | Tenant özel konfigürasyonları                         |
 | `tenant_jurisdictions` | Tenant lisans/jurisdiction eşleştirmeleri             |
 
@@ -362,6 +364,8 @@ Döviz kurları, ödeme metodu ayarları ve limit yönetimi.
 | `transaction_types`       | İşlem tipi tanımları (DEPOSIT, WITHDRAW, BET, WIN)    |
 | `currency_rates`          | Döviz kuru tarihçesi (audit/raporlama)                |
 | `currency_rates_latest`   | Güncel döviz kurları (hızlı erişim cache)             |
+| `crypto_rates`            | Kripto kur tarihçesi (CryptoManager gRPC, audit/raporlama) |
+| `crypto_rates_latest`     | Güncel kripto kurları (hızlı erişim, change verileri) |
 | `payment_method_settings` | Tenant ödeme metodu yapılandırması                    |
 | `payment_method_limits`   | Para birimi bazlı ödeme limitleri ve ücretler         |
 | `payment_player_limits`   | Oyuncu bazlı işlem limitleri                          |

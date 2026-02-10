@@ -111,3 +111,8 @@ CREATE INDEX IF NOT EXISTS idx_kyc_level_req_verif_gin ON catalog.kyc_level_requ
 CREATE INDEX IF NOT EXISTS idx_ip_geo_cache_expires ON catalog.ip_geo_cache USING btree(expires_at);
 CREATE INDEX IF NOT EXISTS idx_ip_geo_cache_country ON catalog.ip_geo_cache USING btree(country_code) WHERE country_code IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_ip_geo_cache_proxy ON catalog.ip_geo_cache USING btree(is_proxy) WHERE is_proxy = true;
+
+-- cryptocurrencies indexes
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cryptocurrencies_symbol ON catalog.cryptocurrencies USING btree(symbol);
+CREATE INDEX IF NOT EXISTS idx_cryptocurrencies_active ON catalog.cryptocurrencies USING btree(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_cryptocurrencies_sort ON catalog.cryptocurrencies USING btree(sort_order, symbol) WHERE is_active = true;

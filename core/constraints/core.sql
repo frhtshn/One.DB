@@ -57,6 +57,30 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- tenant_cryptocurrencies -> tenants
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_cryptocurrencies_tenant') THEN
+        ALTER TABLE core.tenant_cryptocurrencies ADD CONSTRAINT fk_tenant_cryptocurrencies_tenant
+            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    END IF;
+END $$;
+
+-- tenant_cryptocurrencies -> cryptocurrencies
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_cryptocurrencies_symbol') THEN
+        ALTER TABLE core.tenant_cryptocurrencies ADD CONSTRAINT fk_tenant_cryptocurrencies_symbol
+            FOREIGN KEY (symbol) REFERENCES catalog.cryptocurrencies(symbol);
+    END IF;
+END $$;
+
+-- tenant_cryptocurrencies unique constraint
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_cryptocurrencies') THEN
+        ALTER TABLE core.tenant_cryptocurrencies ADD CONSTRAINT uq_tenant_cryptocurrencies
+            UNIQUE (tenant_id, symbol);
+    END IF;
+END $$;
+
 -- tenant_games -> tenants
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_games_tenant') THEN

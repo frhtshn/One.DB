@@ -11,6 +11,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_currency_rates_lookup ON finance.currency_
 -- currency_rates_latest
 CREATE INDEX IF NOT EXISTS idx_currency_rates_latest_target ON finance.currency_rates_latest USING btree(target_currency);
 
+-- crypto_rates
+CREATE INDEX IF NOT EXISTS idx_crypto_rates_provider ON finance.crypto_rates USING btree(provider);
+CREATE INDEX IF NOT EXISTS idx_crypto_rates_symbol ON finance.crypto_rates USING btree(symbol);
+CREATE INDEX IF NOT EXISTS idx_crypto_rates_timestamp ON finance.crypto_rates USING btree(rate_timestamp DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_crypto_rates_lookup ON finance.crypto_rates USING btree(provider, base_currency, symbol, rate_timestamp DESC);
+
+-- crypto_rates_latest
+CREATE INDEX IF NOT EXISTS idx_crypto_rates_latest_symbol ON finance.crypto_rates_latest USING btree(symbol);
+
 -- operation_types
 CREATE UNIQUE INDEX IF NOT EXISTS idx_operation_types_code ON finance.operation_types USING btree(code);
 
