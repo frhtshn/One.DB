@@ -25,12 +25,28 @@ BEGIN
                 'ipAddress', s.ip_address::TEXT,
                 'userAgent', s.user_agent,
                 'deviceFingerprint', s.device_fingerprint,
+                'country', s.country,
                 'countryCode', s.country_code,
+                'continent', s.continent,
+                'continentCode', s.continent_code,
                 'region', s.region,
+                'regionName', s.region_name,
                 'city', s.city,
+                'district', s.district,
+                'zip', s.zip,
+                'lat', s.lat,
+                'lon', s.lon,
+                'timezone', s.timezone,
+                'utcOffset', s.utc_offset,
+                'currency', s.currency,
+                'isp', s.isp,
+                'org', s.org,
+                'asNumber', s.as_number,
+                'asName', s.as_name,
+                'reverseDns', s.reverse_dns,
+                'isMobile', s.is_mobile,
                 'isProxy', s.is_proxy,
                 'isHosting', s.is_hosting,
-                'isMobile', s.is_mobile,
                 'loginAt', s.login_at,
                 'lastActivityAt', s.last_activity_at,
                 'logoutAt', s.logout_at,
@@ -50,4 +66,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION player_audit.login_session_list IS 'Lists player sessions with GeoIP data. Can filter active-only.';
+COMMENT ON FUNCTION player_audit.login_session_list IS 'Lists player sessions with full GeoIP data. Can filter active-only.';

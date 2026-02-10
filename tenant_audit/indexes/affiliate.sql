@@ -10,12 +10,20 @@ CREATE INDEX IF NOT EXISTS idx_aff_login_sessions_login ON affiliate_audit.login
 CREATE INDEX IF NOT EXISTS idx_aff_login_sessions_active ON affiliate_audit.login_sessions USING btree(user_id, is_active) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_aff_login_sessions_ip ON affiliate_audit.login_sessions USING btree(ip_address);
 
+-- login_sessions GeoIP
+CREATE INDEX IF NOT EXISTS idx_aff_login_sessions_country ON affiliate_audit.login_sessions USING btree(country_code) WHERE country_code IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_aff_login_sessions_proxy ON affiliate_audit.login_sessions USING btree(is_proxy) WHERE is_proxy = true;
+
 -- login_attempts
 CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_email ON affiliate_audit.login_attempts USING btree(email);
 CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_ip ON affiliate_audit.login_attempts USING btree(ip_address);
 CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_time ON affiliate_audit.login_attempts USING btree(attempted_at DESC);
 CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_failed ON affiliate_audit.login_attempts USING btree(ip_address, attempted_at) WHERE is_successful = false;
 CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_email_failed ON affiliate_audit.login_attempts USING btree(email, attempted_at) WHERE is_successful = false;
+
+-- login_attempts GeoIP
+CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_country ON affiliate_audit.login_attempts USING btree(country_code) WHERE country_code IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_aff_login_attempts_proxy ON affiliate_audit.login_attempts USING btree(is_proxy) WHERE is_proxy = true;
 
 -- user_actions
 CREATE INDEX IF NOT EXISTS idx_aff_user_actions_affiliate ON affiliate_audit.user_actions USING btree(affiliate_id);

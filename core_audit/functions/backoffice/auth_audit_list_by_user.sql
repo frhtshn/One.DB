@@ -27,11 +27,28 @@ BEGIN
                 'eventData', a.event_data,
                 'ipAddress', a.ip_address,
                 'userAgent', a.user_agent,
+                'country', a.country,
                 'countryCode', a.country_code,
+                'continent', a.continent,
+                'continentCode', a.continent_code,
+                'region', a.region,
+                'regionName', a.region_name,
                 'city', a.city,
+                'district', a.district,
+                'zip', a.zip,
+                'lat', a.lat,
+                'lon', a.lon,
+                'timezone', a.timezone,
+                'utcOffset', a.utc_offset,
+                'currency', a.currency,
+                'isp', a.isp,
+                'org', a.org,
+                'asNumber', a.as_number,
+                'asName', a.as_name,
+                'reverseDns', a.reverse_dns,
+                'isMobile', a.is_mobile,
                 'isProxy', a.is_proxy,
                 'isHosting', a.is_hosting,
-                'isMobile', a.is_mobile,
                 'success', a.success,
                 'errorMessage', a.error_message,
                 'createdAt', a.created_at
@@ -48,4 +65,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_list_by_user IS 'Retrieves auth audit logs for a user as JSONB array with GeoIP data';
+COMMENT ON FUNCTION backoffice.auth_audit_list_by_user IS 'Retrieves auth audit logs for a user as JSONB array with full GeoIP data';

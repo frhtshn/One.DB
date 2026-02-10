@@ -14,12 +14,28 @@ CREATE TABLE security.user_sessions (
     ip_address VARCHAR(50),                                -- IP adresi
     user_agent VARCHAR(500),                               -- User Agent
     device_name VARCHAR(100),                              -- Cihaz adı
+    country VARCHAR(100),                                  -- GeoIP ülke adı
     country_code CHAR(2),                                  -- GeoIP ülke kodu
-    region VARCHAR(100),                                   -- GeoIP bölge
+    continent VARCHAR(100),                                -- GeoIP kıta adı
+    continent_code CHAR(2),                                -- GeoIP kıta kodu
+    region VARCHAR(100),                                   -- GeoIP bölge kısa kodu
+    region_name VARCHAR(200),                              -- GeoIP bölge tam adı
     city VARCHAR(200),                                     -- GeoIP şehir
+    district VARCHAR(200),                                 -- GeoIP ilçe/semt
+    zip VARCHAR(20),                                       -- GeoIP posta kodu
+    lat DECIMAL(9,6),                                      -- GeoIP enlem
+    lon DECIMAL(9,6),                                      -- GeoIP boylam
+    timezone VARCHAR(100),                                 -- GeoIP timezone
+    utc_offset INTEGER,                                    -- GeoIP UTC offset (saniye)
+    currency VARCHAR(10),                                  -- GeoIP para birimi kodu
+    isp VARCHAR(300),                                      -- GeoIP internet servis sağlayıcı
+    org VARCHAR(300),                                      -- GeoIP organizasyon adı
+    as_number VARCHAR(200),                                -- GeoIP AS numarası
+    as_name VARCHAR(300),                                  -- GeoIP AS organizasyon adı
+    reverse_dns VARCHAR(300),                              -- GeoIP reverse DNS
+    is_mobile BOOLEAN NOT NULL DEFAULT FALSE,              -- Mobil bağlantı bayrağı
     is_proxy BOOLEAN NOT NULL DEFAULT FALSE,               -- VPN/Proxy bayrağı
     is_hosting BOOLEAN NOT NULL DEFAULT FALSE,             -- Datacenter bayrağı
-    is_mobile BOOLEAN NOT NULL DEFAULT FALSE,              -- Mobil bağlantı bayrağı
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
     last_activity_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),   -- Son aktivite zamanı
     expires_at TIMESTAMPTZ NOT NULL,                       -- Geçerlilik bitiş zamanı
