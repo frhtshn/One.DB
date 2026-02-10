@@ -34,15 +34,15 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
                                  │
                  ┌───────────────┼───────────────┐
                  ▼               ▼               ▼
-          ┌────────────┐   ┌────────────┐   ┌────────────┐
-          │ tenant_001 │   │ tenant_002 │   │ tenant_XXX │
-          │ (Oyuncular │   │ (Oyuncular │   │ (Oyuncular │
-          │  Cüzdanlar)│   │  Cüzdanlar)│   │  Cüzdanlar)│
-          ├────────────┤   ├────────────┤   ├────────────┤
-          │tenant_log  │   │tenant_log  │   │tenant_log  │
-          │tenant_audit│   │tenant_audit│   │tenant_audit│
-          │t_affiliate │   │t_affiliate │   │t_affiliate │
-          └────────────┘   └────────────┘   └────────────┘
+          ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+          │  tenant_001  │  │  tenant_002  │  │  tenant_XXX  │
+          │  (Oyuncular  │  │  (Oyuncular  │  │  (Oyuncular  │
+          │   Cüzdanlar) │  │   Cüzdanlar) │  │   Cüzdanlar) │
+          ├──────────────┤  ├──────────────┤  ├──────────────┤
+          │tenant_log_001│  │tenant_log_002│  │tenant_log_XXX│
+          │tenant_aud_001│  │tenant_aud_002│  │tenant_aud_XXX│
+          │tenant_aff_001│  │tenant_aff_002│  │tenant_aff_XXX│
+          └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 > Her tenant için ayrı bir veritabanı klonlanır. Core veritabanı tüm tenantlar arasında paylaşılır.

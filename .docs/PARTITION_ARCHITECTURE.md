@@ -344,13 +344,13 @@ SELECT cron.schedule('tenant-maintenance',
 # Daily partition DB'leri - Her gün 02:00
 0 2 * * * psql -d core_audit -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 0 2 * * * psql -d core_log -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
-0 2 * * * psql -d tenant_001_log -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
+0 2 * * * psql -d tenant_log_001 -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 
 # Monthly partition DB'leri - Her hafta Pazartesi 03:00
 0 3 * * 1 psql -d core -c "SELECT * FROM maintenance.run_maintenance();"
 0 3 * * 1 psql -d tenant_001 -c "SELECT * FROM maintenance.run_maintenance();"
-0 3 * * 1 psql -d tenant_001_report -c "SELECT * FROM maintenance.run_maintenance();"
-0 3 * * 1 psql -d tenant_001_affiliate -c "SELECT * FROM maintenance.run_maintenance();"
+0 3 * * 1 psql -d tenant_report_001 -c "SELECT * FROM maintenance.run_maintenance();"
+0 3 * * 1 psql -d tenant_affiliate_001 -c "SELECT * FROM maintenance.run_maintenance();"
 0 3 * * 1 psql -d core_report -c "SELECT * FROM maintenance.run_maintenance();"
 ```
 

@@ -70,10 +70,10 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 ┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────┐
 │   CORE DATABASES    │   │  GATEWAY DATABASES  │   │  TENANT DATABASES   │
 │  core               │   │  game, game_log     │   │ tenant_XXX          │
-│  core_log           │   │  finance,finance_log│   │ tenant_XXX_log      │
-│  core_audit         │   │  bonus              │   │ tenant_XXX_audit    │
-│  core_report        │   │                     │   │ tenant_XXX_report   │
-│                     │   │                     │   │ tenant_XXX_affiliate│
+│  core_log           │   │  finance,finance_log│   │ tenant_log_XXX      │
+│  core_audit         │   │  bonus              │   │ tenant_audit_XXX    │
+│  core_report        │   │                     │   │ tenant_report_XXX   │
+│                     │   │                     │   │ tenant_affiliate_XXX│
 └─────────────────────┘   └─────────────────────┘   └─────────────────────┘
 ```
 
@@ -107,15 +107,15 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
                                      │
                  ┌───────────────────┼───────────────────┐
                  ▼                   ▼                   ▼
-          ┌────────────┐      ┌────────────┐      ┌────────────┐
-          │ tenant_001 │      │ tenant_002 │      │ tenant_XXX │
-          │ (Oyuncular)│      │ (Oyuncular)│      │ (Oyuncular)│
-          ├────────────┤      ├────────────┤      ├────────────┤
-          │tenant_log  │      │tenant_log  │      │tenant_log  │
-          │tenant_audit│      │tenant_audit│      │tenant_audit│
-          │tenant_rep. │      │tenant_rep. │      │tenant_rep. │
-          │t_affiliate │      │t_affiliate │      │t_affiliate │
-          └────────────┘      └────────────┘      └────────────┘
+          ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+          │  tenant_001  │    │  tenant_002  │    │  tenant_XXX  │
+          │  (Oyuncular) │    │  (Oyuncular) │    │  (Oyuncular) │
+          ├──────────────┤    ├──────────────┤    ├──────────────┤
+          │tenant_log_001│    │tenant_log_002│    │tenant_log_XXX│
+          │tenant_aud_001│    │tenant_aud_002│    │tenant_aud_XXX│
+          │tenant_rep_001│    │tenant_rep_002│    │tenant_rep_XXX│
+          │tenant_aff_001│    │tenant_aff_002│    │tenant_aff_XXX│
+          └──────────────┘    └──────────────┘    └──────────────┘
 ```
 
 ---
@@ -199,7 +199,7 @@ CORE DATABASE
 
 ### 3.3 Tenant Veritabanı (Oyuncu Verileri)
 
-Her tenant (marka) için `tenant` şablon DB'si klonlanarak `tenant_<code>` formatında oluşturulur.
+Her tenant (marka) için `tenant` şablon DB'si klonlanarak `tenant_<tenantid>` formatında oluşturulur.
 
 ```
 TENANT DATABASE (per tenant)
@@ -227,12 +227,12 @@ TENANT DATABASE (per tenant)
 Nucleo, her tenant için **fiziksel olarak ayrı veritabanları** kullanır. Bu model tam veri izolasyonu sağlar.
 
 ```
-Tenant "eurobet_eu" kaydı yapıldığında:
-├── tenant_eurobet_eu           → Ana iş verileri
-├── tenant_eurobet_eu_log       → Operasyonel loglar
-├── tenant_eurobet_eu_audit     → Audit kayıtları
-├── tenant_eurobet_eu_report    → Raporlar
-└── tenant_eurobet_eu_affiliate → Affiliate tracking
+Tenant kaydı yapıldığında (örn: tenant_id = 5):
+├── tenant_5           → Ana iş verileri
+├── tenant_log_5       → Operasyonel loglar
+├── tenant_audit_5     → Audit kayıtları
+├── tenant_report_5    → Raporlar
+└── tenant_affiliate_5 → Affiliate tracking
 ```
 
 ### 4.2 Cross-DB İletişim
