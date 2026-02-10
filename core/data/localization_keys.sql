@@ -471,9 +471,12 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.recipient-id-required', 'error', 'messaging', 'Alici kullanici ID zorunlu'),
 ('error.messaging.subject-required', 'error', 'messaging', 'Mesaj konusu zorunlu'),
 ('error.messaging.body-required', 'error', 'messaging', 'Mesaj icerigi zorunlu'),
-('error.messaging.broadcast-id-required', 'error', 'messaging', 'Broadcast ID zorunlu'),
-('error.messaging.broadcast-not-found', 'error', 'messaging', 'Broadcast bulunamadi'),
 ('error.messaging.user-id-required', 'error', 'messaging', 'Kullanici ID zorunlu'),
-('error.messaging.invalid-parameters', 'error', 'messaging', 'Gecersiz parametreler')
+('error.messaging.invalid-parameters', 'error', 'messaging', 'Gecersiz parametreler'),
+('error.messaging.draft-id-required', 'error', 'messaging', 'Draft ID zorunlu'),
+('error.messaging.draft-not-found', 'error', 'messaging', 'Draft bulunamadi veya silinmis'),
+('error.messaging.draft-not-found-or-published', 'error', 'messaging', 'Draft bulunamadi veya yayinlanmis'),
+('error.messaging.draft-already-published', 'error', 'messaging', 'Draft zaten yayinlanmis'),
+('error.messaging.draft-not-published', 'error', 'messaging', 'Draft yayinlanmamis, geri alinamaz')
 
 ON CONFLICT DO NOTHING;

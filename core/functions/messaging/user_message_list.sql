@@ -1,14 +1,13 @@
 -- ================================================================
--- USER_MESSAGES_LIST: Kullanıcı inbox listesi
+-- USER_MESSAGE_LIST: Kullanıcı inbox listesi
 -- Okundu/okunmadı ve öncelik filtreleri
 -- Süresi dolmuş mesajlar hariç tutulur
 -- Sayfalama, toplam ve okunmamış sayısı dahil
--- Hybrid: broadcast mesajlarında subject/body broadcasts tablosundan okunur
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.user_messages_list(BIGINT, BOOLEAN, VARCHAR, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.user_message_list(BIGINT, BOOLEAN, VARCHAR, INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.user_messages_list(
+CREATE OR REPLACE FUNCTION messaging.user_message_list(
     p_user_id   BIGINT,                        -- Kullanıcı ID
     p_is_read   BOOLEAN DEFAULT NULL,          -- Okundu filtresi (NULL = tümü)
     p_priority  VARCHAR(10) DEFAULT NULL,      -- Öncelik filtresi
@@ -44,26 +43,25 @@ BEGIN
       AND (p_is_read IS NULL OR m.is_read = p_is_read)
       AND (p_priority IS NULL OR m.priority = p_priority);
 
-    -- Sayfalı sonuçlar (hybrid: broadcast içeriği broadcasts tablosundan)
+    -- Sayfalı sonuçlar
     SELECT COALESCE(jsonb_agg(row_data), '[]'::JSONB) INTO v_items
     FROM (
         SELECT jsonb_build_object(
             'id', m.id,
             'sender_id', m.sender_id,
             'sender_name', u.first_name || ' ' || u.last_name,
-            'broadcast_id', m.broadcast_id,
-            'subject', COALESCE(m.subject, b.subject),
-            'body', COALESCE(m.body, b.body),
+            'subject', m.subject,
+            'body', m.body,
             'message_type', m.message_type,
             'priority', m.priority,
             'is_read', m.is_read,
             'read_at', m.read_at,
+            'draft_id', m.draft_id,
             'expires_at', m.expires_at,
             'created_at', m.created_at
         ) AS row_data
         FROM messaging.user_messages m
         LEFT JOIN security.users u ON u.id = m.sender_id
-        LEFT JOIN messaging.user_message_broadcasts b ON b.id = m.broadcast_id
         WHERE m.recipient_id = p_user_id
           AND m.is_deleted = FALSE
           AND (m.expires_at IS NULL OR m.expires_at > NOW())
@@ -84,4 +82,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.user_messages_list(BIGINT, BOOLEAN, VARCHAR, INTEGER, INTEGER) IS 'List user inbox messages with read/unread and priority filters. Hybrid: broadcast subject/body resolved via JOIN. Returns paginated results with total and unread counts. Excludes expired messages.';
+COMMENT ON FUNCTION messaging.user_message_list(BIGINT, BOOLEAN, VARCHAR, INTEGER, INTEGER) IS 'List user inbox messages with read/unread and priority filters. Returns paginated results with total and unread counts. Excludes expired messages.';

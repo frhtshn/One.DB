@@ -442,9 +442,12 @@ JOIN (VALUES
     ('error.messaging.recipient-id-required', 'Recipient ID is required'),
     ('error.messaging.subject-required', 'Message subject is required'),
     ('error.messaging.body-required', 'Message body is required'),
-    ('error.messaging.broadcast-id-required', 'Broadcast ID is required'),
-    ('error.messaging.broadcast-not-found', 'Broadcast not found'),
     ('error.messaging.user-id-required', 'User ID is required'),
-    ('error.messaging.invalid-parameters', 'Invalid parameters')
+    ('error.messaging.invalid-parameters', 'Invalid parameters'),
+    ('error.messaging.draft-id-required', 'Draft ID is required'),
+    ('error.messaging.draft-not-found', 'Draft not found or deleted'),
+    ('error.messaging.draft-not-found-or-published', 'Draft not found or already published'),
+    ('error.messaging.draft-already-published', 'Draft has already been published'),
+    ('error.messaging.draft-not-published', 'Draft is not published, cannot recall')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

@@ -86,7 +86,7 @@ Core veritabanı, platformun merkezi konfigürasyon ve yönetim verilerini barı
 | `routing`      | Provider endpoint ve callback yönlendirmesi  |
 | `security`     | Kullanıcı, rol ve yetki yönetimi             |
 | `billing`      | Komisyon ve faturalandırma                   |
-| `messaging`    | Kullanıcı mesajlaşma ve broadcast sistemi    |
+| `messaging`    | Kullanıcı mesajlaşma sistemi                 |
 | `maintenance`  | Partition yönetim fonksiyonları               |
 | `infra`        | PostgreSQL extension'ları                    |
 
@@ -258,24 +258,18 @@ Provider endpoint yönetimi.
 
 ### 4.7 messaging Şeması
 
-Backoffice kullanıcıları arası mesajlaşma sistemi. Broadcast (toplu) ve direct (birebir) mesaj desteği.
+Backoffice kullanıcıları arası mesajlaşma sistemi. Draft yönetimi, toplu (publish) ve birebir (direct) mesaj desteği.
 
 **Klasör Yapısı:** `core/tables/messaging/`
 
-#### Broadcast
+| Tablo                  | Açıklama                                                          |
+| ---------------------- | ----------------------------------------------------------------- |
+| `user_message_drafts`  | Admin mesaj taslakları ve yönetimi (NOT partitioned)              |
+| `user_messages`        | Kullanıcı mesaj kutusu (**PARTITIONED** monthly, 180 gün)         |
 
-| Tablo                      | Açıklama                                                      |
-| -------------------------- | ------------------------------------------------------------- |
-| `user_message_broadcasts`  | Toplu mesaj ana kaydı (filtre bilgisi, istatistik)            |
-
-#### User Inbox
-
-| Tablo                | Açıklama                                                          |
-| -------------------- | ----------------------------------------------------------------- |
-| `user_messages`      | Kullanıcı mesaj kutusu (**PARTITIONED** monthly, 180 gün)         |
-
-> **Akış:** Admin → `user_broadcast_create` (filtre: company/tenant/department/role AND kombinasyonu) → alıcılar çözümlenir → her alıcıya `user_messages` satırı yazılır. Hybrid: subject/body sadece broadcasts tablosunda saklanır.
-> **Direct mesaj:** Admin → `user_message_send` → tek `user_messages` satırı (broadcast_id = NULL, subject/body inline).
+> **Draft akışı:** Admin → `admin_message_draft_create` → (opsiyonel zamanlama) → `admin_message_publish(draft_id)` → alıcılar çözümlenir → her alıcıya ayrı `user_messages` satırı (draft_id ile bağlı). Geri çekme: `admin_message_recall(draft_id)`.
+> **Status akışı:** `draft → scheduled → published`, `draft → published`, `draft/scheduled → cancelled`
+> **Direct mesaj:** Admin → `admin_message_send` → tek `user_messages` satırı (draft ile ilgisi yok).
 
 ---
 

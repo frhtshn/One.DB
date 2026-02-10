@@ -27,7 +27,7 @@ CREATE SCHEMA IF NOT EXISTS outbox;
 COMMENT ON SCHEMA outbox IS 'Transactional outbox pattern for cache invalidation and event publishing';
 
 CREATE SCHEMA IF NOT EXISTS messaging;
-COMMENT ON SCHEMA messaging IS 'User messaging and broadcast system';
+COMMENT ON SCHEMA messaging IS 'User messaging system';
 
 CREATE SCHEMA IF NOT EXISTS maintenance;
 COMMENT ON SCHEMA maintenance IS 'Partition management functions';
@@ -174,7 +174,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/outbox/outbox_messages.sql
 
 -- MESSAGING TABLES
-\i core/tables/messaging/user_message_broadcasts.sql
+\i core/tables/messaging/user_message_drafts.sql
 \i core/tables/messaging/user_messages.sql
 
 -- DATA SEEDING
@@ -551,13 +551,18 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/outbox/outbox_stats.sql
 \i core/functions/outbox/outbox_cleanup.sql
 
--- Messaging Functions
-\i core/functions/messaging/user_broadcast_create.sql
-\i core/functions/messaging/user_broadcast_get.sql
-\i core/functions/messaging/user_broadcast_list.sql
-\i core/functions/messaging/user_broadcast_delete.sql
-\i core/functions/messaging/user_message_send.sql
-\i core/functions/messaging/user_messages_list.sql
+-- Messaging Functions - Admin (Draft Yönetimi, Publish, Recall, Send)
+\i core/functions/messaging/admin_message_draft_create.sql
+\i core/functions/messaging/admin_message_draft_update.sql
+\i core/functions/messaging/admin_message_draft_get.sql
+\i core/functions/messaging/admin_message_draft_list.sql
+\i core/functions/messaging/admin_message_draft_delete.sql
+\i core/functions/messaging/admin_message_draft_cancel.sql
+\i core/functions/messaging/admin_message_publish.sql
+\i core/functions/messaging/admin_message_recall.sql
+\i core/functions/messaging/admin_message_send.sql
+-- Messaging Functions - User (Inbox)
+\i core/functions/messaging/user_message_list.sql
 \i core/functions/messaging/user_message_read.sql
 \i core/functions/messaging/user_message_delete.sql
 

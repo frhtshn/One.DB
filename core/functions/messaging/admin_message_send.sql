@@ -1,12 +1,11 @@
 -- ================================================================
--- USER_MESSAGE_SEND: Tek kullanıcıya doğrudan mesaj gönderir
--- Broadcast altyapısı gerektirmez (broadcast_id = NULL)
+-- ADMIN_MESSAGE_SEND: Tek kullanıcıya doğrudan mesaj gönderir
 -- Admin → User birebir mesaj senaryosu
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.user_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP);
+DROP FUNCTION IF EXISTS messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP);
 
-CREATE OR REPLACE FUNCTION messaging.user_message_send(
+CREATE OR REPLACE FUNCTION messaging.admin_message_send(
     p_sender_id     BIGINT,                      -- Gönderen kullanıcı ID
     p_recipient_id  BIGINT,                      -- Alıcı kullanıcı ID
     p_subject       VARCHAR(500),                -- Mesaj konusu
@@ -52,4 +51,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.user_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP) IS 'Send a direct message to a single user inbox. No broadcast infrastructure required.';
+COMMENT ON FUNCTION messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP) IS 'Send a direct message to a single user inbox.';

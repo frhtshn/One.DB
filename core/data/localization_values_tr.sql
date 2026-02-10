@@ -444,9 +444,12 @@ JOIN (VALUES
     ('error.messaging.recipient-id-required', 'Alıcı kullanıcı ID zorunludur'),
     ('error.messaging.subject-required', 'Mesaj konusu zorunludur'),
     ('error.messaging.body-required', 'Mesaj içeriği zorunludur'),
-    ('error.messaging.broadcast-id-required', 'Broadcast ID zorunludur'),
-    ('error.messaging.broadcast-not-found', 'Broadcast bulunamadı'),
     ('error.messaging.user-id-required', 'Kullanıcı ID zorunludur'),
-    ('error.messaging.invalid-parameters', 'Geçersiz parametreler')
+    ('error.messaging.invalid-parameters', 'Geçersiz parametreler'),
+    ('error.messaging.draft-id-required', 'Draft ID zorunludur'),
+    ('error.messaging.draft-not-found', 'Draft bulunamadı veya silinmiş'),
+    ('error.messaging.draft-not-found-or-published', 'Draft bulunamadı veya zaten yayınlanmış'),
+    ('error.messaging.draft-already-published', 'Draft zaten yayınlanmış'),
+    ('error.messaging.draft-not-published', 'Draft yayınlanmamış, geri alınamaz')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;
