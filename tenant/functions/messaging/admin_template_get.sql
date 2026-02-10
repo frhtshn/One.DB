@@ -1,12 +1,12 @@
 -- ================================================================
--- TEMPLATE_GET: Şablon detaylarını getirme
+-- ADMIN_TEMPLATE_GET: Şablon detaylarını getirme
 -- Şablon ve çevirileriyle birlikte döner
 -- JSON formatında zengin yanıt
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.template_get(INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_template_get(INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.template_get(
+CREATE OR REPLACE FUNCTION messaging.admin_template_get(
     p_template_id       INTEGER             -- Şablon ID
 )
 RETURNS JSONB
@@ -48,4 +48,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.template_get(INTEGER) IS 'Get template details with translations as a single JSON response';
+COMMENT ON FUNCTION messaging.admin_template_get(INTEGER) IS 'Get template details with translations as a single JSON response';

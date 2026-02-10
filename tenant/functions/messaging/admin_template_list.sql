@@ -1,11 +1,11 @@
 -- ================================================================
--- TEMPLATE_LIST: Şablon listesi (filtreleme destekli)
+-- ADMIN_TEMPLATE_LIST: Şablon listesi (filtreleme destekli)
 -- Kanal ve durum bazlı filtreleme, sayfalama desteği
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.template_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_template_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.template_list(
+CREATE OR REPLACE FUNCTION messaging.admin_template_list(
     p_channel_type      VARCHAR(10) DEFAULT NULL,  -- Kanal filtresi
     p_status            VARCHAR(20) DEFAULT NULL,  -- Durum filtresi
     p_search            VARCHAR(200) DEFAULT NULL,  -- Ad arama
@@ -59,4 +59,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.template_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) IS 'List message templates with channel, status, and search filters. Returns paginated results with total count.';
+COMMENT ON FUNCTION messaging.admin_template_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) IS 'List message templates with channel, status, and search filters. Returns paginated results with total count.';

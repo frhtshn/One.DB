@@ -1,12 +1,12 @@
 -- ================================================================
--- CAMPAIGN_CANCEL: Zamanlanmış kampanyayı iptal etme
+-- ADMIN_CAMPAIGN_CANCEL: Zamanlanmış kampanyayı iptal etme
 -- Sadece draft veya scheduled durumundaki kampanyalar iptal edilebilir
 -- Processing durumundaki kampanya iptal edilemez
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.campaign_cancel(INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_campaign_cancel(INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.campaign_cancel(
+CREATE OR REPLACE FUNCTION messaging.admin_campaign_cancel(
     p_campaign_id       INTEGER,            -- Kampanya ID
     p_cancelled_by      INTEGER DEFAULT NULL -- İptal eden kullanıcı
 )
@@ -40,4 +40,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.campaign_cancel(INTEGER, INTEGER) IS 'Cancel a draft or scheduled campaign. Processing campaigns cannot be cancelled.';
+COMMENT ON FUNCTION messaging.admin_campaign_cancel(INTEGER, INTEGER) IS 'Cancel a draft or scheduled campaign. Processing campaigns cannot be cancelled.';

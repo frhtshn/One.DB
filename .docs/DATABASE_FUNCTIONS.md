@@ -386,23 +386,25 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 
 ### Messaging Schema
 
-#### Campaign Functions
-- **`campaign_create(p_name VARCHAR(200), p_channel_type VARCHAR(10), p_template_id INTEGER DEFAULT NULL, p_scheduled_at TIMESTAMP DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_segments JSONB DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Create a new message campaign with translations and targeting segments in a single transaction. Returns INTEGER.
-- **`campaign_update(p_campaign_id INTEGER, p_name VARCHAR(200) DEFAULT NULL, p_channel_type VARCHAR(10) DEFAULT NULL, p_template_id INTEGER DEFAULT NULL, p_scheduled_at TIMESTAMP DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_segments JSONB DEFAULT NULL, p_updated_by INTEGER DEFAULT NULL)`**: Update a draft/scheduled campaign with new details, translations, and segments. Returns BOOLEAN.
-- **`campaign_publish(p_campaign_id INTEGER, p_published_by INTEGER DEFAULT NULL)`**: Publish a draft campaign - sets to scheduled if future date, processing if immediate. Backend pushes to RabbitMQ after this call. Returns BOOLEAN.
-- **`campaign_cancel(p_campaign_id INTEGER, p_cancelled_by INTEGER DEFAULT NULL)`**: Cancel a draft or scheduled campaign. Processing campaigns cannot be cancelled. Returns BOOLEAN.
-- **`campaign_get(p_campaign_id INTEGER)`**: Get campaign details with translations and segments as a single JSON response. Returns JSONB.
-- **`campaign_list(p_channel_type VARCHAR(10) DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List campaigns with channel, status, and search filters. Returns paginated results with total count. Returns JSONB.
+#### Admin Campaign Functions
+- **`admin_campaign_create(p_name VARCHAR(200), p_channel_type VARCHAR(10), p_template_id INTEGER DEFAULT NULL, p_scheduled_at TIMESTAMP DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_segments JSONB DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Create a new message campaign with translations and targeting segments in a single transaction. Returns INTEGER.
+- **`admin_campaign_update(p_campaign_id INTEGER, p_name VARCHAR(200) DEFAULT NULL, p_channel_type VARCHAR(10) DEFAULT NULL, p_template_id INTEGER DEFAULT NULL, p_scheduled_at TIMESTAMP DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_segments JSONB DEFAULT NULL, p_updated_by INTEGER DEFAULT NULL)`**: Update a draft/scheduled campaign with new details, translations, and segments. Returns BOOLEAN.
+- **`admin_campaign_publish(p_campaign_id INTEGER, p_published_by INTEGER DEFAULT NULL)`**: Publish a draft campaign - sets to scheduled if future date, processing if immediate. Backend pushes to RabbitMQ after this call. Returns BOOLEAN.
+- **`admin_campaign_cancel(p_campaign_id INTEGER, p_cancelled_by INTEGER DEFAULT NULL)`**: Cancel a draft or scheduled campaign. Processing campaigns cannot be cancelled. Returns BOOLEAN.
+- **`admin_campaign_get(p_campaign_id INTEGER)`**: Get campaign details with translations and segments as a single JSON response. Returns JSONB.
+- **`admin_campaign_list(p_channel_type VARCHAR(10) DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List campaigns with channel, status, and search filters. Returns paginated results with total count. Returns JSONB.
 
-#### Template Functions
-- **`template_create(p_code VARCHAR(50), p_name VARCHAR(200), p_channel_type VARCHAR(10), p_description TEXT DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Create a new message template with multilingual translations in a single transaction. Returns INTEGER.
-- **`template_update(p_template_id INTEGER, p_name VARCHAR(200) DEFAULT NULL, p_description TEXT DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_updated_by INTEGER DEFAULT NULL)`**: Update a message template with new details and translations. Returns BOOLEAN.
-- **`template_get(p_template_id INTEGER)`**: Get template details with translations as a single JSON response. Returns JSONB.
-- **`template_list(p_channel_type VARCHAR(10) DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List message templates with channel, status, and search filters. Returns paginated results with total count. Returns JSONB.
+#### Admin Template Functions
+- **`admin_template_create(p_code VARCHAR(50), p_name VARCHAR(200), p_channel_type VARCHAR(10), p_description TEXT DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Create a new message template with multilingual translations in a single transaction. Returns INTEGER.
+- **`admin_template_update(p_template_id INTEGER, p_name VARCHAR(200) DEFAULT NULL, p_description TEXT DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_translations JSONB DEFAULT NULL, p_updated_by INTEGER DEFAULT NULL)`**: Update a message template with new details and translations. Returns BOOLEAN.
+- **`admin_template_get(p_template_id INTEGER)`**: Get template details with translations as a single JSON response. Returns JSONB.
+- **`admin_template_list(p_channel_type VARCHAR(10) DEFAULT NULL, p_status VARCHAR(20) DEFAULT NULL, p_search VARCHAR(200) DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List message templates with channel, status, and search filters. Returns paginated results with total count. Returns JSONB.
+
+#### Admin Player Message Functions
+- **`admin_player_message_send(p_player_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'system', p_campaign_id INTEGER DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Send a single message to a player inbox. Used by system services (automated notifications) and BO users (manual direct messages). Returns BIGINT.
 
 #### Player Message Functions
-- **`player_message_send(p_player_id BIGINT, p_subject VARCHAR(500), p_body TEXT, p_message_type VARCHAR(30) DEFAULT 'system', p_campaign_id INTEGER DEFAULT NULL, p_created_by INTEGER DEFAULT NULL)`**: Send a single message to a player inbox. Used by system services (automated notifications) and BO users (manual direct messages). Returns BIGINT.
-- **`player_messages_list(p_player_id BIGINT, p_is_read BOOLEAN DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List player inbox messages with read/unread filter. Returns paginated results with total and unread counts. Returns JSONB.
+- **`player_message_list(p_player_id BIGINT, p_is_read BOOLEAN DEFAULT NULL, p_offset INTEGER DEFAULT 0, p_limit INTEGER DEFAULT 20)`**: List player inbox messages with read/unread filter. Returns paginated results with total and unread counts. Returns JSONB.
 - **`player_message_read(p_player_id BIGINT, p_message_id BIGINT)`**: Mark a player message as read. Only the owning player can mark their messages. Returns BOOLEAN.
 - **`player_message_delete(p_player_id BIGINT, p_message_id BIGINT)`**: Soft delete a player message from inbox. Only the owning player can delete their messages. Data is preserved for audit. Returns BOOLEAN.
 

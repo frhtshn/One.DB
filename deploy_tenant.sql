@@ -170,18 +170,18 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 -- FUNCTIONS - Messaging
 -- =============================================================================
-\i tenant/functions/messaging/template_create.sql
-\i tenant/functions/messaging/template_update.sql
-\i tenant/functions/messaging/template_get.sql
-\i tenant/functions/messaging/template_list.sql
-\i tenant/functions/messaging/campaign_create.sql
-\i tenant/functions/messaging/campaign_update.sql
-\i tenant/functions/messaging/campaign_publish.sql
-\i tenant/functions/messaging/campaign_cancel.sql
-\i tenant/functions/messaging/campaign_get.sql
-\i tenant/functions/messaging/campaign_list.sql
-\i tenant/functions/messaging/player_message_send.sql
-\i tenant/functions/messaging/player_messages_list.sql
+\i tenant/functions/messaging/admin_template_create.sql
+\i tenant/functions/messaging/admin_template_update.sql
+\i tenant/functions/messaging/admin_template_get.sql
+\i tenant/functions/messaging/admin_template_list.sql
+\i tenant/functions/messaging/admin_campaign_create.sql
+\i tenant/functions/messaging/admin_campaign_update.sql
+\i tenant/functions/messaging/admin_campaign_publish.sql
+\i tenant/functions/messaging/admin_campaign_cancel.sql
+\i tenant/functions/messaging/admin_campaign_get.sql
+\i tenant/functions/messaging/admin_campaign_list.sql
+\i tenant/functions/messaging/admin_player_message_send.sql
+\i tenant/functions/messaging/player_message_list.sql
 \i tenant/functions/messaging/player_message_read.sql
 \i tenant/functions/messaging/player_message_delete.sql
 

@@ -1,13 +1,13 @@
 -- ================================================================
--- PLAYER_MESSAGE_SEND: Oyuncuya tekil mesaj gönderme
+-- ADMIN_PLAYER_MESSAGE_SEND: Oyuncuya tekil mesaj gönderme
 -- Sistem otomatik mesajları (transaction, kyc, welcome vb.)
 -- veya BO kullanıcı tarafından manuel gönderim
 -- Kampanya altyapısı gerektirmez, doğrudan player_messages'a yazar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.player_message_send(BIGINT, VARCHAR, TEXT, VARCHAR, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_player_message_send(BIGINT, VARCHAR, TEXT, VARCHAR, INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.player_message_send(
+CREATE OR REPLACE FUNCTION messaging.admin_player_message_send(
     p_player_id         BIGINT,                 -- Hedef oyuncu ID
     p_subject           VARCHAR(500),            -- Mesaj konusu
     p_body              TEXT,                     -- Mesaj içeriği (HTML)
@@ -50,4 +50,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.player_message_send(BIGINT, VARCHAR, TEXT, VARCHAR, INTEGER, INTEGER) IS 'Send a single message to a player inbox. Used by system services (automated notifications) and BO users (manual direct messages).';
+COMMENT ON FUNCTION messaging.admin_player_message_send(BIGINT, VARCHAR, TEXT, VARCHAR, INTEGER, INTEGER) IS 'Send a single message to a player inbox. Used by system services (automated notifications) and BO users (manual direct messages).';

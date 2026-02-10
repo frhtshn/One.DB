@@ -1,12 +1,12 @@
 -- ================================================================
--- TEMPLATE_CREATE: Yeni mesaj şablonu oluşturma
+-- ADMIN_TEMPLATE_CREATE: Yeni mesaj şablonu oluşturma
 -- Şablon ve çevirilerini tek işlemde yazar
 -- Varsayılan durum: draft
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.template_create(VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_template_create(VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.template_create(
+CREATE OR REPLACE FUNCTION messaging.admin_template_create(
     p_code              VARCHAR(50),        -- Benzersiz şablon kodu
     p_name              VARCHAR(200),       -- Şablon adı
     p_channel_type      VARCHAR(10),        -- Kanal tipi: email, sms, local
@@ -65,4 +65,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.template_create(VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB, INTEGER) IS 'Create a new message template with multilingual translations in a single transaction';
+COMMENT ON FUNCTION messaging.admin_template_create(VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB, INTEGER) IS 'Create a new message template with multilingual translations in a single transaction';

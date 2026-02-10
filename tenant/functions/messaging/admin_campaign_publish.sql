@@ -1,13 +1,13 @@
 -- ================================================================
--- CAMPAIGN_PUBLISH: Kampanyayı yayınlama
+-- ADMIN_CAMPAIGN_PUBLISH: Kampanyayı yayınlama
 -- Draft veya scheduled durumundan scheduled/processing'e geçirir
 -- scheduled_at varsa scheduled, yoksa processing durumuna alır
 -- Backend bu fonksiyon sonrası RabbitMQ'ya iş bırakır
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.campaign_publish(INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_campaign_publish(INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.campaign_publish(
+CREATE OR REPLACE FUNCTION messaging.admin_campaign_publish(
     p_campaign_id       INTEGER,            -- Kampanya ID
     p_published_by      INTEGER DEFAULT NULL -- Yayınlayan kullanıcı
 )
@@ -52,4 +52,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.campaign_publish(INTEGER, INTEGER) IS 'Publish a draft campaign - sets to scheduled if future date, processing if immediate. Backend pushes to RabbitMQ after this call.';
+COMMENT ON FUNCTION messaging.admin_campaign_publish(INTEGER, INTEGER) IS 'Publish a draft campaign - sets to scheduled if future date, processing if immediate. Backend pushes to RabbitMQ after this call.';

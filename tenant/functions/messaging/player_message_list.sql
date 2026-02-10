@@ -1,13 +1,13 @@
 -- ================================================================
--- PLAYER_MESSAGES_LIST: Oyuncu mesaj kutusunu listele
+-- PLAYER_MESSAGE_LIST: Oyuncu mesaj kutusunu listele
 -- Silinmemiş mesajları tarih sırasına göre getirir
 -- Okunma durumuna göre filtreleme desteği
 -- Okunmamış sayısı da döner
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.player_messages_list(BIGINT, BOOLEAN, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.player_message_list(BIGINT, BOOLEAN, INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.player_messages_list(
+CREATE OR REPLACE FUNCTION messaging.player_message_list(
     p_player_id         BIGINT,             -- Oyuncu ID
     p_is_read           BOOLEAN DEFAULT NULL, -- NULL = tümü, TRUE = okunmuş, FALSE = okunmamış
     p_offset            INTEGER DEFAULT 0,    -- Sayfalama: başlangıç
@@ -69,4 +69,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.player_messages_list(BIGINT, BOOLEAN, INTEGER, INTEGER) IS 'List player inbox messages with read/unread filter. Returns paginated results with total and unread counts.';
+COMMENT ON FUNCTION messaging.player_message_list(BIGINT, BOOLEAN, INTEGER, INTEGER) IS 'List player inbox messages with read/unread filter. Returns paginated results with total and unread counts.';

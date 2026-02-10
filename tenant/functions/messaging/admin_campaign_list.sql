@@ -1,12 +1,12 @@
 -- ================================================================
--- CAMPAIGN_LIST: Kampanya listesi (filtreleme destekli)
+-- ADMIN_CAMPAIGN_LIST: Kampanya listesi (filtreleme destekli)
 -- Kanal, durum ve arama bazlı filtreleme
 -- Sayfalama desteği (offset/limit)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.campaign_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_campaign_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.campaign_list(
+CREATE OR REPLACE FUNCTION messaging.admin_campaign_list(
     p_channel_type      VARCHAR(10) DEFAULT NULL,  -- Kanal filtresi
     p_status            VARCHAR(20) DEFAULT NULL,  -- Durum filtresi
     p_search            VARCHAR(200) DEFAULT NULL,  -- Ad arama
@@ -65,4 +65,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.campaign_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) IS 'List campaigns with channel, status, and search filters. Returns paginated results with total count.';
+COMMENT ON FUNCTION messaging.admin_campaign_list(VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) IS 'List campaigns with channel, status, and search filters. Returns paginated results with total count.';

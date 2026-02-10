@@ -1,12 +1,12 @@
 -- ================================================================
--- TEMPLATE_UPDATE: Şablon bilgilerini güncelleme
+-- ADMIN_TEMPLATE_UPDATE: Şablon bilgilerini güncelleme
 -- Şablon ve çevirilerini günceller
 -- Çeviriler sıfırlanıp yeniden yazılır
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.template_update(INTEGER, VARCHAR, TEXT, VARCHAR, JSONB, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_template_update(INTEGER, VARCHAR, TEXT, VARCHAR, JSONB, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.template_update(
+CREATE OR REPLACE FUNCTION messaging.admin_template_update(
     p_template_id       INTEGER,            -- Şablon ID
     p_name              VARCHAR(200) DEFAULT NULL, -- Şablon adı
     p_description       TEXT DEFAULT NULL,          -- Açıklama
@@ -60,4 +60,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.template_update(INTEGER, VARCHAR, TEXT, VARCHAR, JSONB, INTEGER) IS 'Update a message template with new details and translations';
+COMMENT ON FUNCTION messaging.admin_template_update(INTEGER, VARCHAR, TEXT, VARCHAR, JSONB, INTEGER) IS 'Update a message template with new details and translations';

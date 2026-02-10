@@ -406,8 +406,8 @@ Kampanya bazlı toplu mesajlaşma, tekrar kullanılabilir şablonlar ve oyuncu i
 | `player_messages`            | Oyuncu yerel mesaj kutusu (**PARTITIONED** monthly, 180 gün) |
 | `player_message_preferences` | Oyuncu kanal tercihleri (opt-in/opt-out)                  |
 
-> **Akış:** BO operatör → `campaign_create` → `campaign_publish` → RabbitMQ → Worker alıcıları çözer → email/SMS gönderir + local kanal için `player_messages`'a yazar.
-> **Tekil mesaj:** Sistem servisleri veya BO kullanıcı → `player_message_send` → doğrudan `player_messages`'a yazar (kampanya altyapısı gerektirmez).
+> **Akış:** BO operatör → `admin_campaign_create` → `admin_campaign_publish` → RabbitMQ → Worker alıcıları çözer → email/SMS gönderir + local kanal için `player_messages`'a yazar.
+> **Tekil mesaj:** Sistem servisleri veya BO kullanıcı → `admin_player_message_send` → doğrudan `player_messages`'a yazar (kampanya altyapısı gerektirmez).
 
 ---
 

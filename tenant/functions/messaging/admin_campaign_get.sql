@@ -1,12 +1,12 @@
 -- ================================================================
--- CAMPAIGN_GET: Kampanya detaylarını getirme
+-- ADMIN_CAMPAIGN_GET: Kampanya detaylarını getirme
 -- Kampanya, çeviriler ve segmentlerle birlikte döner
 -- JSON formatında zengin yanıt
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.campaign_get(INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_campaign_get(INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.campaign_get(
+CREATE OR REPLACE FUNCTION messaging.admin_campaign_get(
     p_campaign_id       INTEGER             -- Kampanya ID
 )
 RETURNS JSONB
@@ -64,4 +64,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.campaign_get(INTEGER) IS 'Get campaign details with translations and segments as a single JSON response';
+COMMENT ON FUNCTION messaging.admin_campaign_get(INTEGER) IS 'Get campaign details with translations and segments as a single JSON response';

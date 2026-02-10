@@ -1,12 +1,12 @@
 -- ================================================================
--- CAMPAIGN_CREATE: Yeni mesaj kampanyası oluşturma
+-- ADMIN_CAMPAIGN_CREATE: Yeni mesaj kampanyası oluşturma
 -- Kampanya detayları, çeviri ve segment bilgilerini tek işlemde yazar
 -- Varsayılan durum: draft
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.campaign_create(VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_campaign_create(VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.campaign_create(
+CREATE OR REPLACE FUNCTION messaging.admin_campaign_create(
     p_name              VARCHAR(200),       -- Kampanya adı
     p_channel_type      VARCHAR(10),        -- Kanal tipi: email, sms, local
     p_template_id       INTEGER DEFAULT NULL, -- Şablon ID (opsiyonel)
@@ -78,4 +78,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.campaign_create(VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER) IS 'Create a new message campaign with translations and targeting segments in a single transaction';
+COMMENT ON FUNCTION messaging.admin_campaign_create(VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER) IS 'Create a new message campaign with translations and targeting segments in a single transaction';

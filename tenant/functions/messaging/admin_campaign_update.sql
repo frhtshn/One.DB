@@ -1,12 +1,12 @@
 -- ================================================================
--- CAMPAIGN_UPDATE: Kampanya bilgilerini güncelleme
+-- ADMIN_CAMPAIGN_UPDATE: Kampanya bilgilerini güncelleme
 -- Sadece draft durumundaki kampanyalar güncellenebilir
 -- Çeviri ve segmentler sıfırlanıp yeniden yazılır
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.campaign_update(INTEGER, VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_campaign_update(INTEGER, VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER);
 
-CREATE OR REPLACE FUNCTION messaging.campaign_update(
+CREATE OR REPLACE FUNCTION messaging.admin_campaign_update(
     p_campaign_id       INTEGER,            -- Kampanya ID
     p_name              VARCHAR(200) DEFAULT NULL, -- Kampanya adı
     p_channel_type      VARCHAR(10) DEFAULT NULL,  -- Kanal tipi
@@ -86,4 +86,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.campaign_update(INTEGER, VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER) IS 'Update a draft/scheduled campaign with new details, translations, and segments';
+COMMENT ON FUNCTION messaging.admin_campaign_update(INTEGER, VARCHAR, VARCHAR, INTEGER, TIMESTAMP, JSONB, JSONB, INTEGER) IS 'Update a draft/scheduled campaign with new details, translations, and segments';
