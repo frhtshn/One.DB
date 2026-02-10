@@ -2,6 +2,7 @@
 -- AUTH_AUDIT_FAILED_LOGINS: Kullanıcı için başarısız giriş denemelerini getirir
 -- Bu fonksiyon, kaba kuvvet saldırılarını tespit etmek için kullanılır
 -- GeoIP bilgileri ile zenginleştirilmiş
+-- Partitioned tablo: created_at filtresi ile partition pruning aktif
 -- ================================================================
 
 DROP FUNCTION IF EXISTS backoffice.auth_audit_failed_logins(BIGINT,INT);

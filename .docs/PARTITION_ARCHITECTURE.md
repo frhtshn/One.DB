@@ -57,6 +57,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
 | `core` | Monthly | 1 | 180 gün |
+| `core_audit` | Daily | 1 | 90 gün |
 | `core_log` | Daily | 4 | 30–90 gün |
 | `tenant_log` | Daily | 5 | 30–90 gün |
 | `tenant_report` | Monthly | 5 | Sınırsız |
@@ -64,12 +65,20 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `tenant_affiliate` | Monthly | 7 | Sınırsız |
 | `tenant` | Monthly | 2 | Sınırsız* |
 | `tenant_audit` | Hybrid (Daily+Monthly) | 2 | 365 gün / 5 yıl |
-| **Toplam** | | **31** | |
+| **Toplam** | | **32** | |
 
 > \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
 > `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
 
-### 2.2 core (Monthly, 180 gün retention)
+### 2.2 core_audit (Daily, 90 gün retention)
+
+| Tablo | Partition Key | Retention | Dosya |
+|-------|--------------|-----------|-------|
+| `backoffice.auth_audit_log` | `created_at` | 90 gün | `core_audit/tables/backoffice/auth_audit_log.sql` |
+
+> **Not:** Backoffice kullanıcı güvenlik olay kayıtları (login, logout, şifre değişikliği). GeoIP verileri ile zenginleştirilmiş. Yüksek hacim nedeniyle daily partition tercih edildi.
+
+### 2.4 core (Monthly, 180 gün retention)
 
 | Tablo | Partition Key | Retention | Dosya |
 |-------|--------------|-----------|-------|
@@ -77,7 +86,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 > **Not:** Core DB'nin ilk partitioned tablosu. Backoffice kullanıcı mesajlaşma sistemi için eklendi.
 
-### 2.3 core_log (Daily, 30–90 gün retention)
+### 2.5 core_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -86,7 +95,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `logs.dead_letter_messages` | `created_at` | `core_log/tables/logs/dead_letter_messages.sql` |
 | `backoffice.audit_logs` | `created_at` | `core_log/tables/backoffice/audit_logs.sql` |
 
-### 2.4 tenant_log (Daily, 30–90 gün retention)
+### 2.6 tenant_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -96,7 +105,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `kyc_log.player_kyc_provider_logs` | `created_at` | `tenant_log/tables/kyc/player_kyc_provider_logs.sql` |
 | `messaging_log.message_delivery_logs` | `created_at` | `tenant_log/tables/messaging/message_delivery_logs.sql` |
 
-### 2.5 tenant_report (Monthly, sınırsız retention)
+### 2.7 tenant_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -106,7 +115,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `game.game_hourly_stats` | `period_hour` | `tenant_report/tables/game/game_hourly_stats.sql` |
 | `game.game_performance_daily` | `report_date` | `tenant_report/tables/game/game_performance_daily.sql` |
 
-### 2.6 core_report (Monthly, sınırsız retention)
+### 2.8 core_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -116,7 +125,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `performance.provider_global_daily` | `report_date` | `core_report/tables/performance/provider_global_daily.sql` |
 | `performance.payment_global_daily` | `report_date` | `core_report/tables/performance/payment_global_daily.sql` |
 
-### 2.7 tenant (Monthly, karma retention)
+### 2.9 tenant (Monthly, karma retention)
 
 | Tablo | Partition Key | Retention | Dosya |
 |-------|--------------|-----------|-------|
@@ -127,7 +136,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 >
 > **FK Etkisi (player_messages):** `player_messages` tablosunun PK'sı `(id, created_at)` olduğundan composite PK'dır. `campaign_id → message_campaigns(id)` FK'sı partitioned'dan regular tabloya gittiği için sorunsuz çalışır (PG 12+).
 
-### 2.8 tenant_affiliate (Monthly, sınırsız retention)
+### 2.10 tenant_affiliate (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
@@ -141,7 +150,7 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 > **Multi-column Range:** `player_stats_monthly` ve `affiliate_stats_monthly` tabloları tek bir tarih kolonu olmadığından `PARTITION BY RANGE (period_year, period_month)` kullanır.
 
-### 2.9 tenant_audit (Hybrid: Daily + Monthly)
+### 2.11 tenant_audit (Hybrid: Daily + Monthly)
 
 | Tablo | Partition Tipi | Partition Key | Retention | Dosya |
 |-------|---------------|--------------|-----------|-------|
@@ -151,11 +160,10 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 > **Hybrid partition:** tenant_audit, tek DB'de hem daily hem monthly partition stratejisi barındıran ilk veritabanıdır. `create_partitions()` fonksiyonu her iki stratejiyi ayrı parametrelerle yönetir (`p_look_ahead_days` + `p_look_ahead_months`).
 > Diğer tenant_audit tabloları (`affiliate_audit`, `kyc_audit`) partitioned **değildir** (düşük hacim, long retention).
 
-### 2.10 Partition Uygulanmayan Veritabanları
+### 2.12 Partition Uygulanmayan Veritabanları
 
 | DB | Sebep |
 |----|-------|
-| `core_audit` | 5–10 yıl retention, ARCHIVE_COLD stratejisi |
 | `bonus` | Konfigürasyon verileri, düşük hacim |
 | `game`, `finance`, `game_log`, `finance_log` | Henüz tablo oluşturulmadı |
 
@@ -326,6 +334,7 @@ SELECT cron.schedule('tenant-maintenance',
 
 ```bash
 # Daily partition DB'leri - Her gün 02:00
+0 2 * * * psql -d core_audit -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 0 2 * * * psql -d core_log -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 0 2 * * * psql -d tenant_001_log -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 
@@ -350,6 +359,7 @@ Backend scheduled job/worker üzerinden:
 | DB | Partition Tipi | Sıklık | Retention Param | Look-ahead Param |
 |----|---------------|--------|-----------------|------------------|
 | `core` | Monthly | Haftada 1 | 180 | 3 |
+| `core_audit` | Daily | Her gün | 90 | 7 |
 | `core_log` | Daily | Her gün | 90 | 7 |
 | `tenant_log` | Daily | Her gün | 90 | 7 |
 | `tenant_report` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |

@@ -1,9 +1,10 @@
 -- =============================================
 -- Core Audit Schema Indexes
 -- Performans indexleri - fonksiyonlara göre optimize edildi
+-- Partitioned tablo: indexler her partition'a otomatik uygulanır
 -- =============================================
 
--- auth_audit_log
+-- auth_audit_log (daily partitioned by created_at)
 
 -- User lookup (auth_audit_list_by_user, auth_audit_failed_logins)
 CREATE INDEX IF NOT EXISTS idx_auth_audit_user_id ON backoffice.auth_audit_log USING btree(user_id);
@@ -17,9 +18,6 @@ CREATE INDEX IF NOT EXISTS idx_auth_audit_failed_logins ON backoffice.auth_audit
 
 -- Event type + date range (auth_audit_list_by_type with date filter)
 CREATE INDEX IF NOT EXISTS idx_auth_audit_type_date ON backoffice.auth_audit_log USING btree(event_type, created_at DESC);
-
--- Time-based queries and cleanup
-CREATE INDEX IF NOT EXISTS idx_auth_audit_created_at ON backoffice.auth_audit_log USING btree(created_at DESC);
 
 -- Company/Tenant filtering (admin queries)
 CREATE INDEX IF NOT EXISTS idx_auth_audit_company ON backoffice.auth_audit_log USING btree(company_id) WHERE company_id IS NOT NULL;
@@ -43,4 +41,3 @@ CREATE INDEX IF NOT EXISTS idx_auth_audit_country ON backoffice.auth_audit_log U
 
 -- Proxy/VPN detection (fraud investigation)
 CREATE INDEX IF NOT EXISTS idx_auth_audit_proxy ON backoffice.auth_audit_log USING btree(is_proxy) WHERE is_proxy = true;
-

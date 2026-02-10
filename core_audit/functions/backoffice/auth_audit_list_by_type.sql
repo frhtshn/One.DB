@@ -1,6 +1,7 @@
 -- ================================================================
 -- AUTH_AUDIT_LIST_BY_TYPE: Olay türüne göre kimlik denetim loglarını getirir
 -- Bu fonksiyon, belirli bir olay türüne ait kimlik denetim loglarını JSONB formatında döndürür
+-- Partitioned tablo: tarih filtresi ile partition pruning aktif
 -- ================================================================
 
 DROP FUNCTION IF EXISTS backoffice.auth_audit_list_by_type(VARCHAR(50),TIMESTAMPTZ,TIMESTAMPTZ,INT);

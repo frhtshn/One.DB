@@ -2,6 +2,7 @@
 -- AUTH_AUDIT_CREATE: Kimlik denetim log kaydı ekler
 -- Bu fonksiyon bir kimlik denetim logu oluşturur ve BIGINT döner
 -- GeoIP bilgileri ip-api.com'dan çözümlenmiş olarak gelir
+-- Partitioned tablo: created_at üzerinden otomatik partition pruning
 -- ================================================================
 
 DROP FUNCTION IF EXISTS backoffice.auth_audit_create(BIGINT,BIGINT,BIGINT,VARCHAR,TEXT,VARCHAR,VARCHAR,CHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
@@ -42,7 +43,7 @@ BEGIN
         COALESCE(p_is_proxy, FALSE), COALESCE(p_is_hosting, FALSE), COALESCE(p_is_mobile, FALSE),
         p_success, p_error_message
     )
-    RETURNING backoffice.auth_audit_log.id INTO v_id;
+    RETURNING id INTO v_id;
 
     RETURN v_id;
 END;

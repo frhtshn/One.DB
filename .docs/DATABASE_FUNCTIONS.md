@@ -330,6 +330,13 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`auth_audit_list_by_type(p_event_type VARCHAR(50), p_from_date TIMESTAMPTZ DEFAULT NULL, p_to_date TIMESTAMPTZ DEFAULT NULL, p_limit INT DEFAULT 100)`**: Auth audit list by type.
 - **`auth_audit_list_by_user(p_user_id BIGINT, p_limit INT DEFAULT 50)`**: Auth audit list by user.
 
+### Maintenance Schema
+
+- **`create_partitions(p_look_ahead_days INT DEFAULT 7)`**: Creates daily partitions for core_audit tables. Look-ahead: today + N days. Idempotent.
+- **`drop_expired_partitions(p_retention_days INT DEFAULT 90)`**: Drops daily partitions older than retention period. Never drops current day partition. Safety-first design.
+- **`partition_info()`**: Reports partition status for all partitioned tables in core_audit. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_retention_days INT DEFAULT 90, p_look_ahead_days INT DEFAULT 7)`**: Main maintenance function for cron jobs. Creates future partitions and drops expired ones in a single call.
+
 ## Core Log Database
 
 ### Backoffice Schema

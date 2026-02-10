@@ -5,6 +5,9 @@ BEGIN;
 CREATE SCHEMA IF NOT EXISTS backoffice;
 COMMENT ON SCHEMA backoffice IS 'Backoffice audit logs';
 
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management functions';
+
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
@@ -31,7 +34,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core_audit/functions/backoffice/auth_audit_list_by_type.sql
 \i core_audit/functions/backoffice/auth_audit_failed_logins.sql
 
+-- MAINTENANCE FUNCTIONS (Partition yönetimi)
+\i core_audit/functions/maintenance/create_partitions.sql
+\i core_audit/functions/maintenance/drop_expired_partitions.sql
+\i core_audit/functions/maintenance/partition_info.sql
+\i core_audit/functions/maintenance/run_maintenance.sql
+
 -- INDEXES (Performans indexleri - en sonda yükle)
 \i core_audit/indexes/backoffice.sql
+
+-- INITIAL PARTITION SETUP (Bugün + 7 gün ileri)
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

@@ -1,6 +1,7 @@
 -- ================================================================
 -- AUTH_AUDIT_LIST_BY_USER: Kullanıcıya göre kimlik denetim loglarını getirir
 -- Bu fonksiyon, belirli bir kullanıcıya ait kimlik denetim loglarını JSONB formatında döndürür
+-- Partitioned tablo: tüm partition'lar taranır (user_id index ile)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS backoffice.auth_audit_list_by_user(BIGINT,INT);
