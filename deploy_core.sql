@@ -54,6 +54,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/reference/languages.sql
 \i core/tables/catalog/reference/timezones.sql
 
+-- Geo (IP çözümleme cache)
+\i core/tables/catalog/geo/ip_geo_cache.sql
+
 -- Provider (Sağlayıcı yönetimi)
 \i core/tables/catalog/provider/provider_types.sql
 \i core/tables/catalog/provider/providers.sql
@@ -265,6 +268,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- Operation Type Functions
 \i core/functions/catalog/transaction/operation_type_list.sql
+
+-- Geo Functions (IP çözümleme cache)
+\i core/functions/catalog/geo/ip_geo_cache_upsert.sql
+\i core/functions/catalog/geo/ip_geo_cache_get.sql
+\i core/functions/catalog/geo/ip_geo_cache_cleanup.sql
 
 -- Localization Functions
 -- Localization Functions

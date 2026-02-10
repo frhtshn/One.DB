@@ -70,6 +70,12 @@ CREATE INDEX idx_user_sessions_expires ON security.user_sessions USING btree(exp
 -- user_sessions (revoked cleanup - session_cleanup_expired function)
 CREATE INDEX idx_user_sessions_revoked ON security.user_sessions USING btree(is_revoked, revoked_at) WHERE is_revoked = true;
 
+-- user_sessions GeoIP ülke kodu (güvenlik analizi)
+CREATE INDEX IF NOT EXISTS idx_user_sessions_country ON security.user_sessions USING btree(country_code) WHERE country_code IS NOT NULL;
+
+-- user_sessions Proxy/VPN tespiti (fraud investigation)
+CREATE INDEX IF NOT EXISTS idx_user_sessions_proxy ON security.user_sessions USING btree(is_proxy) WHERE is_proxy = true;
+
 -- user_permission_overrides.user_id -> users.id
 CREATE INDEX idx_user_permission_overrides_user_id ON security.user_permission_overrides USING btree(user_id);
 

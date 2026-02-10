@@ -63,7 +63,8 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `core_report` | Monthly | 5 | Sınırsız |
 | `tenant_affiliate` | Monthly | 7 | Sınırsız |
 | `tenant` | Monthly | 2 | Sınırsız* |
-| **Toplam** | | **29** | |
+| `tenant_audit` | Hybrid (Daily+Monthly) | 2 | 365 gün / 5 yıl |
+| **Toplam** | | **31** | |
 
 > \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
 > `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
@@ -140,12 +141,21 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 
 > **Multi-column Range:** `player_stats_monthly` ve `affiliate_stats_monthly` tabloları tek bir tarih kolonu olmadığından `PARTITION BY RANGE (period_year, period_month)` kullanır.
 
-### 2.9 Partition Uygulanmayan Veritabanları
+### 2.9 tenant_audit (Hybrid: Daily + Monthly)
+
+| Tablo | Partition Tipi | Partition Key | Retention | Dosya |
+|-------|---------------|--------------|-----------|-------|
+| `player_audit.login_attempts` | Daily | `attempted_at` | 365 gün | `tenant_audit/tables/player_audit/login_attempts.sql` |
+| `player_audit.login_sessions` | Monthly | `created_at` | 1825 gün (5 yıl) | `tenant_audit/tables/player_audit/login_sessions.sql` |
+
+> **Hybrid partition:** tenant_audit, tek DB'de hem daily hem monthly partition stratejisi barındıran ilk veritabanıdır. `create_partitions()` fonksiyonu her iki stratejiyi ayrı parametrelerle yönetir (`p_look_ahead_days` + `p_look_ahead_months`).
+> Diğer tenant_audit tabloları (`affiliate_audit`, `kyc_audit`) partitioned **değildir** (düşük hacim, long retention).
+
+### 2.10 Partition Uygulanmayan Veritabanları
 
 | DB | Sebep |
 |----|-------|
 | `core_audit` | 5–10 yıl retention, ARCHIVE_COLD stratejisi |
-| `tenant_audit` | 5–10 yıl retention, ARCHIVE_COLD stratejisi |
 | `bonus` | Konfigürasyon verileri, düşük hacim |
 | `game`, `finance`, `game_log`, `finance_log` | Henüz tablo oluşturulmadı |
 
@@ -346,6 +356,7 @@ Backend scheduled job/worker üzerinden:
 | `core_report` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
 | `tenant_affiliate` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
 | `tenant` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
+| `tenant_audit` | Hybrid | Her gün | 365 (daily) / 1825 (monthly) | 7 gün / 3 ay |
 
 ### 5.4 Monitoring Sorguları
 

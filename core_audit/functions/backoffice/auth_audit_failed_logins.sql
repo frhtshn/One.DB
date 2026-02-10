@@ -1,6 +1,7 @@
 -- ================================================================
 -- AUTH_AUDIT_FAILED_LOGINS: Kullanıcı için başarısız giriş denemelerini getirir
 -- Bu fonksiyon, kaba kuvvet saldırılarını tespit etmek için kullanılır
+-- GeoIP bilgileri ile zenginleştirilmiş
 -- ================================================================
 
 DROP FUNCTION IF EXISTS backoffice.auth_audit_failed_logins(BIGINT,INT);
@@ -26,6 +27,11 @@ BEGIN
                 jsonb_build_object(
                     'ipAddress', a.ip_address,
                     'userAgent', a.user_agent,
+                    'countryCode', a.country_code,
+                    'city', a.city,
+                    'isProxy', a.is_proxy,
+                    'isHosting', a.is_hosting,
+                    'isMobile', a.is_mobile,
                     'errorMessage', a.error_message,
                     'createdAt', a.created_at
                 )
@@ -43,4 +49,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_failed_logins IS 'Gets failed login attempts for brute-force detection';
+COMMENT ON FUNCTION backoffice.auth_audit_failed_logins IS 'Gets failed login attempts with GeoIP data for brute-force detection';

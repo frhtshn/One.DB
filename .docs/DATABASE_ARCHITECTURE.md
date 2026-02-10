@@ -64,11 +64,12 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 | 9   | `bonus`            | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
 | 10  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
 | 11  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
-| 12  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`)  | ❌              | Yearly    | 5–10 yıl    |
+| 12  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`, `player_audit`)  | ❌              | Hybrid*   | 1–5 yıl     |
 | 13  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Opsiyonel | İş ihtiyacı |
 | 14  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
 
 > \* `core`: `messaging.user_messages` tablosu Monthly partition (180 gün retention) ile çalışır. Diğer tablolar partitioned değildir.
+> \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily partition (365 gün), `player_audit.login_sessions` Monthly partition (5 yıl). Diğer tablolar (affiliate_audit, kyc_audit) partitioned değildir.
 
 ---
 
@@ -137,6 +138,12 @@ Referans dataları içerir. **Read-only** karakterlidir. Mantıksal gruplara ayr
 | `ui_positions`              | Sayfa üzerindeki slot alanları (header vs.)    |
 | `navigation_templates`      | Hazır navigasyon şablonları (Casino/Spor vb.)  |
 | `navigation_template_items` | Şablon içeriğindeki menü öğeleri (Master Data) |
+
+#### Geo (IP Resolution Cache)
+
+| Tablo               | Açıklama                                   |
+| ------------------- | ------------------------------------------ |
+| `ip_geo_cache`      | ip-api.com çözümleme cache (TTL 30 gün, INET PK) |
 
 #### Transaction Definitions
 
@@ -491,7 +498,7 @@ Tüm log veritabanları **`DROP PARTITION`** stratejisi ile temizlenir. Detaylar
 
 ## 9. Partition Yapısı
 
-Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 7 veritabanında toplam 29 tablo partitioned çalışır.
+Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITION BY RANGE` + `DEFAULT` partition). 8 veritabanında toplam 31 tablo partitioned çalışır.
 
 | DB | Strateji | Tablo Sayısı | Retention |
 |----|----------|-------------|-----------|
@@ -502,9 +509,11 @@ Partitioned tablolar **kendi tablo dosyasında inline** tanımlıdır (`PARTITIO
 | `core_report` | Monthly | 5 | Sınırsız |
 | `tenant_affiliate` | Monthly | 7 | Sınırsız |
 | `tenant` | Monthly | 2 | Sınırsız* |
+| `tenant_audit` | Hybrid | 2 | 365 gün / 5 yıl |
 
 > \* `transaction.transactions`: Sınırsız retention. `messaging.player_messages`: 180 gün retention.
 > `core`: `messaging.user_messages`: 180 gün retention (kullanıcı mesajları).
+> `tenant_audit` Hybrid: `player_audit.login_attempts` Daily (365 gün), `player_audit.login_sessions` Monthly (5 yıl).
 
 Her partitioned veritabanı `maintenance` şemasında 4 yönetim fonksiyonu içerir: `create_partitions`, `drop_expired_partitions`, `partition_info`, `run_maintenance`.
 

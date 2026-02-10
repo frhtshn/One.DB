@@ -102,6 +102,9 @@ This document lists all stored procedures, functions, and triggers defined in th
 - **`theme_lookup()`**: Theme lookup.
 - **`theme_update(p_id INT, p_code VARCHAR(50) DEFAULT NULL, p_name VARCHAR(100) DEFAULT NULL, p_description TEXT DEFAULT NULL, p_version VARCHAR(20) DEFAULT NULL, p_thumbnail_url VARCHAR(255) DEFAULT NULL, p_default_config JSONB DEFAULT NULL, p_is_active BOOLEAN DEFAULT NULL, p_is_premium BOOLEAN DEFAULT NULL)`**: Theme update.
 - **`timezone_list()`**: Timezone list.
+- **`ip_geo_cache_upsert(p_ip_address INET, p_country VARCHAR(100), p_country_code CHAR(2), p_region VARCHAR(100), p_region_name VARCHAR(200), p_city VARCHAR(200), p_zip VARCHAR(20), p_lat DECIMAL(9,6), p_lon DECIMAL(9,6), p_timezone VARCHAR(100), p_isp VARCHAR(300), p_org VARCHAR(300), p_as_number VARCHAR(200), p_is_mobile BOOLEAN, p_is_proxy BOOLEAN, p_is_hosting BOOLEAN, p_ttl_days INT DEFAULT 30)`**: Upserts IP geo cache entry with configurable TTL. Returns VOID.
+- **`ip_geo_cache_get(p_ip_address INET)`**: Returns cached geo data as JSONB if cache hit and not expired, NULL otherwise.
+- **`ip_geo_cache_cleanup(p_expired_days INT DEFAULT 0)`**: Deletes expired IP geo cache entries. Returns deleted count as INT.
 - **`transaction_type_list()`**: Transaction type list.
 - **`ui_position_create(p_code VARCHAR(50), p_name VARCHAR(100), p_is_global BOOLEAN DEFAULT FALSE)`**: Ui position create.
 - **`ui_position_delete(p_id INT)`**: Ui position delete.
@@ -260,7 +263,7 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`session_list(p_user_id BIGINT)`**: Session list.
 - **`session_revoke(p_session_id VARCHAR(50), p_reason VARCHAR(200) DEFAULT 'User requested')`**: Session revoke.
 - **`session_revoke_all(p_user_id BIGINT, p_reason VARCHAR(200) DEFAULT 'User requested logout all', p_except_session_id VARCHAR(50) DEFAULT NULL)`**: Session revoke all.
-- **`session_save(p_session_id VARCHAR(50), p_user_id BIGINT, p_refresh_token_id VARCHAR(100), p_ip_address VARCHAR(50), p_user_agent VARCHAR(500), p_device_name VARCHAR(100), p_expires_at TIMESTAMPTZ)`**: Session save.
+- **`session_save(p_session_id VARCHAR(50), p_user_id BIGINT, p_refresh_token_id VARCHAR(100), p_ip_address VARCHAR(50), p_user_agent VARCHAR(500), p_device_name VARCHAR(100), p_expires_at TIMESTAMPTZ, p_country_code CHAR(2) DEFAULT NULL, p_region VARCHAR(100) DEFAULT NULL, p_city VARCHAR(200) DEFAULT NULL, p_is_proxy BOOLEAN DEFAULT FALSE, p_is_hosting BOOLEAN DEFAULT FALSE, p_is_mobile BOOLEAN DEFAULT FALSE)`**: Session save with GeoIP data.
 - **`session_update_activity(p_session_id VARCHAR(50))`**: Updates session last activity timestamp. Called when refresh token is used.
 - **`user_authenticate(p_email VARCHAR(255))`**: User authenticate. Returns user info with `requirePasswordChange` (true if password expired or flag set), `passwordChangedAt`, and `primaryDepartment` (JSONB multi-language name).
 - **`user_check_email_exists(p_email TEXT, p_exclude_user_id BIGINT DEFAULT NULL)`**: User check email exists.
@@ -322,7 +325,7 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 
 ### Backoffice Schema
 
-- **`auth_audit_create(p_user_id BIGINT, p_company_id BIGINT, p_tenant_id BIGINT, p_event_type VARCHAR(50), p_event_data TEXT DEFAULT NULL, p_ip_address VARCHAR(50) DEFAULT NULL, p_user_agent VARCHAR(500) DEFAULT NULL, p_success BOOLEAN DEFAULT TRUE, p_error_message VARCHAR(500) DEFAULT NULL)`**: Auth audit create.
+- **`auth_audit_create(p_user_id BIGINT, p_company_id BIGINT, p_tenant_id BIGINT, p_event_type VARCHAR(50), p_event_data TEXT DEFAULT NULL, p_ip_address VARCHAR(50) DEFAULT NULL, p_user_agent VARCHAR(500) DEFAULT NULL, p_country_code CHAR(2) DEFAULT NULL, p_city VARCHAR(200) DEFAULT NULL, p_is_proxy BOOLEAN DEFAULT FALSE, p_is_hosting BOOLEAN DEFAULT FALSE, p_is_mobile BOOLEAN DEFAULT FALSE, p_success BOOLEAN DEFAULT TRUE, p_error_message VARCHAR(500) DEFAULT NULL)`**: Auth audit create with GeoIP data.
 - **`auth_audit_failed_logins(p_user_id BIGINT, p_hours INT DEFAULT 1)`**: Auth audit failed logins.
 - **`auth_audit_list_by_type(p_event_type VARCHAR(50), p_from_date TIMESTAMPTZ DEFAULT NULL, p_to_date TIMESTAMPTZ DEFAULT NULL, p_limit INT DEFAULT 100)`**: Auth audit list by type.
 - **`auth_audit_list_by_user(p_user_id BIGINT, p_limit INT DEFAULT 50)`**: Auth audit list by user.
@@ -434,6 +437,29 @@ These functions provide centralized access control for IDOR (Insecure Direct Obj
 - **`drop_expired_partitions(p_retention_days INT DEFAULT NULL)`**: Drops monthly partitions older than retention period. Default ~100 years (business data). Never drops current month.
 - **`partition_info()`**: Reports partition status for all partitioned tables in tenant_report. Shows count, size, oldest/newest partitions.
 - **`run_maintenance(p_months_ahead INT DEFAULT 3, p_retention_days INT DEFAULT NULL)`**: Main maintenance function for cron jobs. Creates future monthly partitions and drops expired ones in a single call.
+
+## Tenant Audit Database
+
+### Player Audit Schema
+
+#### Login Attempts
+- **`login_attempt_create(p_player_id BIGINT, p_identifier VARCHAR(300), p_ip_address INET, p_user_agent VARCHAR(500), p_country_code CHAR(2) DEFAULT NULL, p_city VARCHAR(200) DEFAULT NULL, p_is_proxy BOOLEAN DEFAULT FALSE, p_is_hosting BOOLEAN DEFAULT FALSE, p_is_mobile BOOLEAN DEFAULT FALSE, p_is_successful BOOLEAN, p_failure_reason VARCHAR(50) DEFAULT NULL)`**: Records a player login attempt with GeoIP data. Returns BIGINT.
+- **`login_attempt_list(p_player_id BIGINT, p_limit INT DEFAULT 50)`**: Lists login attempts for a player. Returns JSONB array.
+- **`login_attempt_failed_list(p_player_id BIGINT, p_hours INT DEFAULT 1)`**: Returns failed attempts within time window for brute-force detection. Returns JSONB with failedCount and attempts.
+
+#### Login Sessions
+- **`login_session_create(p_session_token UUID, p_player_id BIGINT, p_ip_address INET, p_user_agent VARCHAR(500), p_device_fingerprint VARCHAR(64) DEFAULT NULL, p_country_code CHAR(2) DEFAULT NULL, p_region VARCHAR(100) DEFAULT NULL, p_city VARCHAR(200) DEFAULT NULL, p_is_proxy BOOLEAN DEFAULT FALSE, p_is_hosting BOOLEAN DEFAULT FALSE, p_is_mobile BOOLEAN DEFAULT FALSE)`**: Creates a player login session. Returns BIGINT.
+- **`login_session_update_activity(p_session_token UUID)`**: Updates last activity timestamp for active session. Returns VOID.
+- **`login_session_end(p_session_token UUID, p_logout_type VARCHAR(20) DEFAULT 'MANUAL')`**: Ends a player session. Returns BOOLEAN.
+- **`login_session_list(p_player_id BIGINT, p_active_only BOOLEAN DEFAULT FALSE, p_limit INT DEFAULT 50)`**: Lists player sessions with optional active-only filter. Returns JSONB array.
+- **`login_session_end_all(p_player_id BIGINT, p_logout_type VARCHAR(20) DEFAULT 'FORCED', p_exclude_token UUID DEFAULT NULL)`**: Ends all active sessions, optionally excluding one. Returns INT (count).
+
+### Maintenance Schema
+
+- **`create_partitions(p_look_ahead_days INT DEFAULT 7, p_look_ahead_months INT DEFAULT 3)`**: Creates partitions for tenant_audit tables. Hybrid: daily for login_attempts, monthly for login_sessions. Idempotent.
+- **`drop_expired_partitions(p_daily_retention_days INT DEFAULT 365, p_monthly_retention_days INT DEFAULT 1825)`**: Drops expired partitions. Daily tables: 365 days. Monthly tables: 5 years. Never drops active partitions.
+- **`partition_info()`**: Reports partition status for all partitioned tables in tenant_audit player_audit schema. Shows count, size, oldest/newest partitions.
+- **`run_maintenance(p_daily_retention_days INT DEFAULT 365, p_monthly_retention_days INT DEFAULT 1825, p_look_ahead_days INT DEFAULT 7, p_look_ahead_months INT DEFAULT 3)`**: Main maintenance function for cron jobs. Supports hybrid daily+monthly partition strategies.
 
 ## Tenant Affiliate Database
 

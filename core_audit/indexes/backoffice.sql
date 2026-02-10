@@ -38,3 +38,9 @@ CREATE INDEX IF NOT EXISTS idx_auth_audit_ip ON backoffice.auth_audit_log USING 
 -- backoffice.auth_audit_log (event_data)
 CREATE INDEX IF NOT EXISTS idx_auth_audit_event_data_gin ON backoffice.auth_audit_log USING gin(event_data);
 
+-- GeoIP country code lookup (security investigation by country)
+CREATE INDEX IF NOT EXISTS idx_auth_audit_country ON backoffice.auth_audit_log USING btree(country_code) WHERE country_code IS NOT NULL;
+
+-- Proxy/VPN detection (fraud investigation)
+CREATE INDEX IF NOT EXISTS idx_auth_audit_proxy ON backoffice.auth_audit_log USING btree(is_proxy) WHERE is_proxy = true;
+

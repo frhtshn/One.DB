@@ -114,6 +114,7 @@ C:\Projects\Git\nucleoDb
 | `catalog` | payment | payment_methods |
 | `catalog` | provider | provider_settings, provider_types, providers |
 | `catalog` | reference | countries, currencies, languages, timezones |
+| `catalog` | geo | ip_geo_cache |
 | `catalog` | transaction | operation_types, transaction_types |
 | `catalog` | uikit | navigation_template_items, navigation_templates, themes, ui_positions, widgets |
 | `core` | configuration | tenant_currencies, tenant_data_policies, tenant_jurisdictions, tenant_languages, tenant_settings |

@@ -1,5 +1,6 @@
 -- ================================================================
 -- SESSION_LIST: Kullanıcının aktif oturumlarını listele
+-- GeoIP bilgileri ile birlikte döner
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.session_list(BIGINT);
@@ -12,6 +13,12 @@ RETURNS TABLE (
     ip_address VARCHAR(50),
     user_agent VARCHAR(500),
     device_name VARCHAR(100),
+    country_code CHAR(2),
+    region VARCHAR(100),
+    city VARCHAR(200),
+    is_proxy BOOLEAN,
+    is_hosting BOOLEAN,
+    is_mobile BOOLEAN,
     created_at TIMESTAMPTZ,
     last_activity_at TIMESTAMPTZ,
     expires_at TIMESTAMPTZ
@@ -25,6 +32,12 @@ BEGIN
         s.ip_address,
         s.user_agent,
         s.device_name,
+        s.country_code,
+        s.region,
+        s.city,
+        s.is_proxy,
+        s.is_hosting,
+        s.is_mobile,
         s.created_at,
         s.last_activity_at,
         s.expires_at
@@ -36,4 +49,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.session_list IS 'Lists active sessions for a user';
+COMMENT ON FUNCTION security.session_list IS 'Lists active sessions for a user with GeoIP data';

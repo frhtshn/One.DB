@@ -28,6 +28,11 @@ BEGIN
                 'eventData', a.event_data,
                 'ipAddress', a.ip_address,
                 'userAgent', a.user_agent,
+                'countryCode', a.country_code,
+                'city', a.city,
+                'isProxy', a.is_proxy,
+                'isHosting', a.is_hosting,
+                'isMobile', a.is_mobile,
                 'success', a.success,
                 'errorMessage', a.error_message,
                 'createdAt', a.created_at
@@ -46,4 +51,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_list_by_type IS 'Retrieves auth audit logs by event type as JSONB array';
+COMMENT ON FUNCTION backoffice.auth_audit_list_by_type IS 'Retrieves auth audit logs by event type as JSONB array with GeoIP data';

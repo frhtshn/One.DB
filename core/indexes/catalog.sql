@@ -106,3 +106,8 @@ CREATE INDEX IF NOT EXISTS idx_kyc_level_req_active ON catalog.kyc_level_require
 -- catalog.kyc_level_requirements JSONB columns
 CREATE INDEX IF NOT EXISTS idx_kyc_level_req_docs_gin ON catalog.kyc_level_requirements USING gin(required_documents) WHERE required_documents IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_kyc_level_req_verif_gin ON catalog.kyc_level_requirements USING gin(required_verifications) WHERE required_verifications IS NOT NULL;
+
+-- ip_geo_cache indexes
+CREATE INDEX IF NOT EXISTS idx_ip_geo_cache_expires ON catalog.ip_geo_cache USING btree(expires_at);
+CREATE INDEX IF NOT EXISTS idx_ip_geo_cache_country ON catalog.ip_geo_cache USING btree(country_code) WHERE country_code IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_ip_geo_cache_proxy ON catalog.ip_geo_cache USING btree(is_proxy) WHERE is_proxy = true;
