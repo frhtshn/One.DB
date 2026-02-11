@@ -1,6 +1,9 @@
 # Claude Code
 .claude/
+.mcp.json
 
 # Windows reserved device names
 nul
 .docs/CURRENCY_RATE_SYNC.md
+
+.scripts/
