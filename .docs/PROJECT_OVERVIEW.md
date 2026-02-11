@@ -205,7 +205,7 @@ Her tenant (marka) için `tenant` şablon DB'si klonlanarak `tenant_<tenantid>` 
 TENANT DATABASE (per tenant)
 ├── auth         → Oyuncu kimlik, kategori, şifre yönetimi
 ├── profile      → Oyuncu profil ve kimlik bilgileri
-├── wallet       → Cüzdan bakiyeleri ve snapshot'ları
+├── wallet       → Cüzdan bakiyeleri ve snapshot'ları (fiat + kripto)
 ├── transaction  → Finansal işlemler ve workflow'lar (monthly partitioned)
 ├── finance      → Döviz/kripto kurları, ödeme limitleri, player limitleri
 ├── game         → Oyun limitleri ve ayarları
@@ -310,7 +310,10 @@ nucleoDb/
 ├── .docs/                       # Proje dokümantasyonu
 │   ├── PROJECT_OVERVIEW.md      # Bu dosya
 │   ├── DATABASE_ARCHITECTURE.md # Detaylı DB mimarisi
-│   ├── DATABASE_FUNCTIONS.md    # Fonksiyon referansı
+│   ├── DATABASE_FUNCTIONS.md    # Fonksiyon referansı (index)
+│   ├── FUNCTIONS_CORE.md        # Core katmanı fonksiyonları
+│   ├── FUNCTIONS_TENANT.md      # Tenant katmanı fonksiyonları
+│   ├── FUNCTIONS_GATEWAY.md     # Gateway katmanı fonksiyonları
 │   ├── PARTITION_ARCHITECTURE.md# Partition yapısı
 │   └── LOGSTRATEGY.md           # Log/audit stratejisi
 │
@@ -361,7 +364,7 @@ nucleoDb/
 │   │   ├── player_profile/     # Oyuncu profil
 │   │   ├── finance/            # Kur, kripto kur, ödeme ayarları
 │   │   ├── transaction/        # Finansal işlemler (monthly partitioned)
-│   │   ├── wallet/             # Cüzdan bakiyeleri
+│   │   ├── wallet/             # Cüzdan bakiyeleri (fiat + kripto)
 │   │   ├── game/               # Oyun limitleri
 │   │   ├── kyc/                # KYC süreçleri
 │   │   ├── bonus/              # Bonus kazanımları
@@ -469,7 +472,7 @@ Veritabanları aşağıdaki sırada deploy edilmelidir:
 
 1. Fonksiyon dosyası: `{db}/functions/{schema}/{domain}/{fonksiyon_adi}.sql`
 2. Deploy script'e `\i` satırı ekle
-3. `DATABASE_FUNCTIONS.md` güncelle
+3. İlgili fonksiyon dosyasını güncelle (`FUNCTIONS_CORE.md`, `FUNCTIONS_TENANT.md` veya `FUNCTIONS_GATEWAY.md`)
 
 ### 8.3 Partition Ekleme
 
@@ -560,7 +563,7 @@ Tüm login ve oturum olayları 22 GeoIP alanı ile zenginleştirilir (ip-api.com
 | Doküman | Açıklama |
 |---------|----------|
 | [DATABASE_ARCHITECTURE.md](DATABASE_ARCHITECTURE.md) | Detaylı veritabanı mimarisi, şemalar ve tablolar |
-| [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md) | Stored procedure ve trigger referansı |
+| [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md) | Fonksiyon referansı (index → [Core](FUNCTIONS_CORE.md) · [Tenant](FUNCTIONS_TENANT.md) · [Gateway](FUNCTIONS_GATEWAY.md)) |
 | [LOGSTRATEGY.md](LOGSTRATEGY.md) | Log, audit ve retention stratejisi |
 | [PARTITION_ARCHITECTURE.md](PARTITION_ARCHITECTURE.md) | Partition yapısı ve yönetim fonksiyonları |
 | [README.md](../README.md) | Kurulum ve deploy kılavuzu |

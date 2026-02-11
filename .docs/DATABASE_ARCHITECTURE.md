@@ -41,6 +41,7 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
           ├──────────────┤  ├──────────────┤  ├──────────────┤
           │tenant_log_001│  │tenant_log_002│  │tenant_log_XXX│
           │tenant_aud_001│  │tenant_aud_002│  │tenant_aud_XXX│
+          │tenant_rep_001│  │tenant_rep_002│  │tenant_rep_XXX│
           │tenant_aff_001│  │tenant_aff_002│  │tenant_aff_XXX│
           └──────────────┘  └──────────────┘  └──────────────┘
 ```
@@ -377,7 +378,26 @@ Döviz kurları, ödeme metodu ayarları ve limit yönetimi.
 | `v_daily_base_rates` | Günlük son kur değerleri                    |
 | `v_cross_rates`      | Çapraz kur hesaplaması (base rate'lerden)   |
 
-### 6.4 bonus Şeması
+### 6.4 wallet Şeması
+
+Oyuncu cüzdan yönetimi. Fiat (TRY, EUR, USD) ve kripto (BTC, ETH, SOL) para birimlerini destekler.
+
+**Klasör Yapısı:** `tenant/tables/wallet/`
+
+| Tablo               | Açıklama                                              |
+| ------------------- | ----------------------------------------------------- |
+| `wallets`           | Oyuncu cüzdanları (fiat + kripto, tip bazlı)          |
+| `wallet_snapshots`  | Cüzdan anlık bakiye görüntüsü (1:1, performans için) |
+
+> **Cüzdan Tipleri:** `REAL` (gerçek para), `BONUS` (bonus bakiye), `LOCKED` (kilitli bakiye), `COIN` (kripto cüzdan).
+>
+> **Para Birimi Ayrımı:** `currency_type` alanı ile fiat (1) ve crypto (2) ayrımı yapılır. `currency_code varchar(20)` hem fiat kodlarını (TRY, EUR) hem kripto sembollerini (BTC, ETH, SOL) destekler.
+>
+> **Unique Constraint:** `(player_id, wallet_type, currency_code)` — bir oyuncunun aynı tip+currency kombinasyonunda birden fazla cüzdanı olamaz.
+
+---
+
+### 6.5 bonus Şeması
 
 Bonus kazanımları ve promosyon kullanımları.
 
@@ -388,7 +408,7 @@ Bonus kazanımları ve promosyon kullanımları.
 | `awards/`      | `bonus_awards`     | Oyuncuya verilen bonuslar   |
 | `redemptions/` | `promo_redemptions`| Promosyon kod kullanımları  |
 
-### 6.5 messaging Şeması
+### 6.6 messaging Şeması
 
 Kampanya bazlı toplu mesajlaşma, tekrar kullanılabilir şablonlar ve oyuncu inbox yönetimi. 3 kanal desteklenir: **email**, **SMS**, **local message box**.
 
