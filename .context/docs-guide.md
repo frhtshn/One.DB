@@ -6,12 +6,21 @@ Bu rehber, veritabanı değişikliklerinde hangi dosyaların güncellenmesi gere
 
 ## Dokümantasyon Dosyaları
 
+### Mimari Dökümanlar
 | Dosya | Amaç | Ne Zaman Güncellenir |
 |-------|------|---------------------|
-| `.docs/DATABASE_ARCHITECTURE.md` | Şema ve tablo yapısı | Tablo/şema ekleme, silme, değiştirme |
-| `.docs/DATABASE_FUNCTIONS.md` | Fonksiyon ve trigger listesi | Fonksiyon/trigger ekleme, silme |
 | `.docs/PROJECT_OVERVIEW.md` | Mimari genel bakış | Büyük yapısal değişiklikler |
+| `.docs/DATABASE_ARCHITECTURE.md` | Şema ve tablo yapısı | Tablo/şema ekleme, silme, değiştirme |
+| `.docs/PARTITION_ARCHITECTURE.md` | Partition yapısı ve yönetimi | Partition tabloları veya retention değişiklikleri |
 | `.docs/LOGSTRATEGY.md` | Retention politikaları | Log/audit tabloları veya politika değişiklikleri |
+
+### Fonksiyon Referansları
+| Dosya | Amaç | Ne Zaman Güncellenir |
+|-------|------|---------------------|
+| `.docs/DATABASE_FUNCTIONS.md` | Fonksiyon referansı (index) | Fonksiyon/trigger ekleme, silme (yönlendirme dosyası) |
+| `.docs/FUNCTIONS_CORE.md` | Core katmanı fonksiyonları | Core, core_log, core_audit, core_report fonksiyon değişiklikleri |
+| `.docs/FUNCTIONS_TENANT.md` | Tenant katmanı fonksiyonları | Tenant, tenant_log, tenant_audit, tenant_report, tenant_affiliate fonksiyon değişiklikleri |
+| `.docs/FUNCTIONS_GATEWAY.md` | Gateway & plugin fonksiyonları | Game, finance, bonus fonksiyon değişiklikleri |
 
 ---
 
@@ -113,9 +122,14 @@ COMMENT ON SCHEMA yeni_sema IS 'Şema açıklaması';
 │ 1. SQL dosyası: <db>/functions/<şema>/<kategori>/<fonksiyon>.sql│
 │ 2. Deploy script: FUNCTIONS bölümüne \i satırı ekle             │
 │ 3. Index kontrolü: Gerekirse <db>/indexes/<şema>.sql güncelle   │
-│ 4. Dokümantasyon: .docs/DATABASE_FUNCTIONS.md                   │
+│ 4. Dokümantasyon: İlgili FUNCTIONS_*.md dosyasını güncelle      │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+**Hangi Döküman?**
+- Core/core_log/core_audit/core_report → `.docs/FUNCTIONS_CORE.md`
+- Tenant/tenant_log/tenant_audit/tenant_report/tenant_affiliate → `.docs/FUNCTIONS_TENANT.md`
+- Game/game_log/finance/finance_log/bonus → `.docs/FUNCTIONS_GATEWAY.md`
 
 **Fonksiyon Dosya Şablonu:**
 ```sql
@@ -156,7 +170,7 @@ COMMENT ON FUNCTION schema.function_name IS 'Fonksiyon açıklaması';
 │ 1. Trigger fonksiyonu: <db>/functions/triggers/ (gerekirse)     │
 │ 2. Trigger tanımı: <db>/triggers/<şema>_triggers.sql            │
 │ 3. Deploy script: TRIGGERS bölümüne ekle                        │
-│ 4. Dokümantasyon: .docs/DATABASE_FUNCTIONS.md                   │
+│ 4. Dokümantasyon: İlgili FUNCTIONS_*.md dosyasını güncelle      │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -287,7 +301,15 @@ COMMIT;
 
 ---
 
-## DATABASE_FUNCTIONS.md Yapısı
+## Fonksiyon Döküman Yapısı
+
+Fonksiyon referansları 3 ayrı dosyaya bölünmüştür. `DATABASE_FUNCTIONS.md` yönlendirme (index) dosyasıdır.
+
+| Dosya | Kapsam |
+|-------|--------|
+| `FUNCTIONS_CORE.md` | core, core_log, core_audit, core_report |
+| `FUNCTIONS_TENANT.md` | tenant, tenant_log, tenant_audit, tenant_report, tenant_affiliate |
+| `FUNCTIONS_GATEWAY.md` | game, game_log, finance, finance_log, bonus |
 
 ```markdown
 ## <Veritabanı> Database
@@ -308,10 +330,10 @@ COMMIT;
 Fonksiyon dokümantasyonunu otomatik güncellemek için:
 
 ```bash
-python .claude/scripts/scan_functions.py
+python .context/scripts/scan_functions.py
 ```
 
-Bu script tüm `*/functions/` ve `*/triggers/` klasörlerini tarar ve `.docs/DATABASE_FUNCTIONS.md` dosyasını yeniden oluşturur.
+Bu script tüm `*/functions/` ve `*/triggers/` klasörlerini tarar ve fonksiyon dökümanlarını yeniden oluşturur.
 
 ---
 
@@ -322,6 +344,6 @@ Her değişiklik sonrası kontrol et:
 - [ ] SQL dosyası doğru konumda mı?
 - [ ] Deploy script güncellendi mi?
 - [ ] `.docs/DATABASE_ARCHITECTURE.md` güncellendi mi? (tablo/şema için)
-- [ ] `.docs/DATABASE_FUNCTIONS.md` güncellendi mi? (fonksiyon/trigger için)
+- [ ] İlgili `FUNCTIONS_*.md` güncellendi mi? (fonksiyon/trigger için)
 - [ ] Index ihtiyacı değerlendirildi mi?
 - [ ] FK/Constraint gerekli mi?

@@ -155,7 +155,10 @@ Fonksiyon/trigger ekleme, değiştirme veya silme sonrasında dokümantasyonun g
    - `.sql` dosyalarından şema, fonksiyon adı, parametreler ve açıklamaları çıkar
 
 2. **Güncelleme**
-   - `.docs/DATABASE_FUNCTIONS.md` dosyasını güncelle
+   - İlgili fonksiyon dökümanını güncelle:
+     - Core/core_log/core_audit/core_report → `.docs/FUNCTIONS_CORE.md`
+     - Tenant/tenant_log/tenant_audit/tenant_report/tenant_affiliate → `.docs/FUNCTIONS_TENANT.md`
+     - Game/game_log/finance/finance_log/bonus → `.docs/FUNCTIONS_GATEWAY.md`
    - Format:
      ```markdown
      ## Core Veritabanı
@@ -164,9 +167,9 @@ Fonksiyon/trigger ekleme, değiştirme veya silme sonrasında dokümantasyonun g
      ```
 
 3. **Alternatif: Script Kullan**
-   - `.claude/scripts/scan_functions.py` scripti çalıştırılabilir:
+   - `.context/scripts/scan_functions.py` scripti çalıştırılabilir:
      ```bash
-     python .claude/scripts/scan_functions.py
+     python .context/scripts/scan_functions.py
      ```
 
 ---
@@ -254,8 +257,8 @@ Detaylı format ve şablonlar için: [docs-guide.md](docs-guide.md)
 |------------|---------------|--------------------------|----------------------|
 | Tablo ekleme | ✅ | ✅ | ❌ |
 | Şema ekleme | ✅ | ✅ | ❌ |
-| Fonksiyon ekleme | ✅ | ❌ | ✅ |
-| Trigger ekleme | ✅ | ❌ | ✅ |
+| Fonksiyon ekleme | ✅ | ❌ | ✅ (FUNCTIONS_*.md) |
+| Trigger ekleme | ✅ | ❌ | ✅ (FUNCTIONS_*.md) |
 | Index ekleme | ✅ | ❌ | ❌ |
 | FK/Constraint ekleme | ✅ | ❌ | ❌ |
 | Veritabanı ekleme | `create_dbs.sql` | ✅ | ❌ |

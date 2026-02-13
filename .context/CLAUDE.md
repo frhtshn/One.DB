@@ -290,10 +290,18 @@ Nucleo.DB/
 9. `deploy_tenant_affiliate.sql`
 
 ## Önemli Dokümantasyon
-- `.docs/PROJECT_OVERVIEW.md` - Mimari genel bakış
-- `.docs/DATABASE_ARCHITECTURE.md` - Şema detayları
-- `.docs/DATABASE_FUNCTIONS.md` - Stored procedure referansı
-- `.docs/LOGSTRATEGY.md` - Log/audit retention politikaları
+
+### Mimari
+- `.docs/PROJECT_OVERVIEW.md` - Proje genel bakış, sistem mimarisi ve veri akışı
+- `.docs/DATABASE_ARCHITECTURE.md` - Veritabanı mimarisi, şemalar ve tablolar
+- `.docs/PARTITION_ARCHITECTURE.md` - Partition yapısı ve yönetim fonksiyonları
+- `.docs/LOGSTRATEGY.md` - Log, audit ve retention stratejisi
+
+### Fonksiyon Referansları
+- `.docs/DATABASE_FUNCTIONS.md` - Fonksiyon referansı (index)
+- `.docs/FUNCTIONS_CORE.md` - Core katmanı fonksiyonları
+- `.docs/FUNCTIONS_TENANT.md` - Tenant katmanı fonksiyonları
+- `.docs/FUNCTIONS_GATEWAY.md` - Gateway & plugin fonksiyonları
 
 ## Beta Sunucu
 - Host: 207.180.241.230

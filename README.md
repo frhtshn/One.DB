@@ -24,10 +24,6 @@ Detaylı mimari ve yapı dokümantasyonu `.docs/` klasöründedir.
 | [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md)         | Veritabanı mimarisi, şemalar ve tablolar                     |
 | [PARTITION_ARCHITECTURE.md](.docs/PARTITION_ARCHITECTURE.md)       | Partition yapısı ve yönetim fonksiyonları                     |
 | [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                             | Log, audit ve retention stratejisi                           |
-| [PROVISIONING_ARCHITECTURE.md](.docs/PROVISIONING_ARCHITECTURE.md) | Whitelabel provisioning yaşam döngüsü ve servis mimarisi     |
-| [GAME_ARCHITECTURE.md](.docs/GAME_ARCHITECTURE.md)                 | Oyun yaşam döngüsü mimarisi (gateway → tenant)               |
-| [FINANCE_ARCHITECTURE.md](.docs/FINANCE_ARCHITECTURE.md)           | Ödeme yaşam döngüsü mimarisi (gateway → tenant)              |
-| [SHADOW_MODE_ARCHITECTURE.md](.docs/SHADOW_MODE_ARCHITECTURE.md)   | Provider entegrasyonları için shadow mode (staged rollout)    |
 
 ### Fonksiyon Referansları
 
