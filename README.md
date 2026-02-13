@@ -14,15 +14,30 @@ Bu extension'larla db'ye bağlanılır. Daha sonra bir script yazıldığında "
 
 ## Dokümantasyon
 
-Detaylı mimari ve yapı dokümantasyonu için:
+Detaylı mimari ve yapı dokümantasyonu `.docs/` klasöründedir.
 
-| Dosya                                                      | Açıklama                                 |
-| ---------------------------------------------------------- | ---------------------------------------- |
-| [PROJECT_OVERVIEW.md](.docs/PROJECT_OVERVIEW.md)           | **Proje genel bakış ve büyük resim**     |
-| [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md) | Veritabanı mimarisi, şemalar ve tablolar |
-| [DATABASE_FUNCTIONS.md](.docs/DATABASE_FUNCTIONS.md)       | Stored procedures ve trigger referansı   |
-| [PARTITION_ARCHITECTURE.md](.docs/PARTITION_ARCHITECTURE.md) | Partition yapısı ve yönetim fonksiyonları |
-| [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                     | Log, audit ve retention stratejisi       |
+### Mimari
+
+| Dosya                                                              | Açıklama                                                     |
+| ------------------------------------------------------------------ | ------------------------------------------------------------ |
+| [PROJECT_OVERVIEW.md](.docs/PROJECT_OVERVIEW.md)                   | **Proje genel bakış, sistem mimarisi ve veri akışı**         |
+| [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md)         | Veritabanı mimarisi, şemalar ve tablolar                     |
+| [PARTITION_ARCHITECTURE.md](.docs/PARTITION_ARCHITECTURE.md)       | Partition yapısı ve yönetim fonksiyonları                     |
+| [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                             | Log, audit ve retention stratejisi                           |
+| [PROVISIONING_ARCHITECTURE.md](.docs/PROVISIONING_ARCHITECTURE.md) | Whitelabel provisioning yaşam döngüsü ve servis mimarisi     |
+| [GAME_ARCHITECTURE.md](.docs/GAME_ARCHITECTURE.md)                 | Oyun yaşam döngüsü mimarisi (gateway → tenant)               |
+| [FINANCE_ARCHITECTURE.md](.docs/FINANCE_ARCHITECTURE.md)           | Ödeme yaşam döngüsü mimarisi (gateway → tenant)              |
+| [SHADOW_MODE_ARCHITECTURE.md](.docs/SHADOW_MODE_ARCHITECTURE.md)   | Provider entegrasyonları için shadow mode (staged rollout)    |
+
+### Fonksiyon Referansları
+
+| Dosya                                                      | Açıklama                                                  |
+| ---------------------------------------------------------- | --------------------------------------------------------- |
+| [DATABASE_FUNCTIONS.md](.docs/DATABASE_FUNCTIONS.md)       | Stored procedure ve trigger referansı (index)             |
+| [FUNCTIONS_CORE.md](.docs/FUNCTIONS_CORE.md)               | Core katmanı fonksiyon ve trigger'ları                    |
+| [FUNCTIONS_TENANT.md](.docs/FUNCTIONS_TENANT.md)           | Tenant katmanı fonksiyon ve trigger'ları                  |
+| [FUNCTIONS_GATEWAY.md](.docs/FUNCTIONS_GATEWAY.md)         | Gateway & plugin (game, finance, bonus) fonksiyonları     |
+
 
 ---
 
