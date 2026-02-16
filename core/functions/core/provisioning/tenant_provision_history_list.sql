@@ -64,8 +64,8 @@ BEGIN
         COUNT(*) FILTER (WHERE pl.status = 'failed')::INTEGER AS failed_steps,
         COALESCE(SUM(pl.duration_ms), 0)::BIGINT AS total_duration_ms,
         -- En son güncellenen adım
-        (ARRAY_AGG(pl.step_name ORDER BY pl.step_order DESC))[1] FILTER (WHERE pl.status != 'pending') AS last_step,
-        (ARRAY_AGG(pl.status ORDER BY pl.step_order DESC))[1] FILTER (WHERE pl.status != 'pending') AS last_status
+        (ARRAY_AGG(pl.step_name ORDER BY pl.step_order DESC) FILTER (WHERE pl.status != 'pending'))[1] AS last_step,
+        (ARRAY_AGG(pl.status ORDER BY pl.step_order DESC) FILTER (WHERE pl.status != 'pending'))[1] AS last_status
     FROM core.tenant_provisioning_log pl
     WHERE pl.tenant_id = p_tenant_id
     GROUP BY pl.provision_run_id

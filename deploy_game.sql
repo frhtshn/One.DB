@@ -8,6 +8,9 @@ COMMENT ON SCHEMA game IS 'Game gateway integration - provider and game catalog'
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
+CREATE SCHEMA IF NOT EXISTS catalog;
+COMMENT ON SCHEMA catalog IS 'Payment provider and method catalog';
+
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
 DROP SCHEMA IF EXISTS user_management CASCADE;

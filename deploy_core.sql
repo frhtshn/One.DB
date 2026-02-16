@@ -63,15 +63,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/catalog/provider/providers.sql
 \i core/tables/catalog/provider/provider_settings.sql
 
--- Game (Oyun kataloğu)
-\i core/tables/catalog/game/games.sql
-
 -- Localization (Dil/çeviri yönetimi)
 \i core/tables/catalog/localization/localization_keys.sql
 \i core/tables/catalog/localization/localization_values.sql
-
--- Payment (Ödeme yönetimi)
-\i core/tables/catalog/payment/payment_methods.sql
 
 -- Transaction (İşlem tipleri)
 \i core/tables/catalog/transaction/operation_types.sql

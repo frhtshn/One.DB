@@ -53,13 +53,15 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
--- AUTH TABLES
 \i tenant/tables/player_auth/players.sql
 \i tenant/tables/player_auth/player_categories.sql
 \i tenant/tables/player_auth/player_classification.sql
 \i tenant/tables/player_auth/player_credentials.sql
 \i tenant/tables/player_auth/player_groups.sql
 \i tenant/tables/player_auth/player_password_history.sql
+
+-- Shadow Testers Table
+\i tenant/tables/auth/shadow_testers.sql
 
 -- FINANCE TABLES
 \i tenant/tables/finance/operation_types.sql

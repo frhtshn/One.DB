@@ -46,12 +46,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_log/tables/affiliate/report_generations.sql
 \i tenant_log/tables/affiliate/commission_calculations.sql
 
--- =============================================================================
--- BONUS LOG TABLES
--- Bonus işlem ve aktivite logları
--- =============================================================================
--- \i tenant_log/tables/bonus/transaction_logs.sql
--- \i tenant_log/tables/bonus/rule_execution_logs.sql
+\i tenant_log/tables/bonus_log/bonus_evaluation_logs.sql
 
 -- =============================================================================
 -- KYC LOG TABLES

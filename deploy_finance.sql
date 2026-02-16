@@ -1,12 +1,14 @@
 SET client_encoding = 'UTF8';
 BEGIN;
 
--- CREATE SCHEMAS
 CREATE SCHEMA IF NOT EXISTS finance;
 COMMENT ON SCHEMA finance IS 'Finance gateway integration - payment method and provider catalog';
 
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
+
+CREATE SCHEMA IF NOT EXISTS catalog;
+COMMENT ON SCHEMA catalog IS 'Payment provider and method catalog';
 
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
