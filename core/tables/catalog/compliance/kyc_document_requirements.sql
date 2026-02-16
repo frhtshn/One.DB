@@ -43,6 +43,9 @@ CREATE TABLE catalog.kyc_document_requirements (
     -- Sıralama
     display_order int DEFAULT 0,
 
+    -- Durum
+    is_active boolean NOT NULL DEFAULT true,
+
     created_at timestamp NOT NULL DEFAULT now(),
     updated_at timestamp NOT NULL DEFAULT now()
 

@@ -9,6 +9,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_permission_set(BIGINT, VARCHAR, BOOLEAN, BIGINT, VARCHAR, BIGINT, TIMESTAMPTZ);
+DROP FUNCTION IF EXISTS security.user_permission_set(BIGINT, VARCHAR, BOOLEAN, BIGINT, VARCHAR, BIGINT, TIMESTAMPTZ, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_set(
     p_user_id BIGINT,
@@ -17,7 +18,8 @@ CREATE OR REPLACE FUNCTION security.user_permission_set(
     p_tenant_id BIGINT DEFAULT NULL,
     p_reason VARCHAR(500) DEFAULT NULL,
     p_assigned_by BIGINT DEFAULT NULL,
-    p_expires_at TIMESTAMPTZ DEFAULT NULL
+    p_expires_at TIMESTAMPTZ DEFAULT NULL,
+    p_context_id BIGINT DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -176,12 +178,13 @@ BEGIN
     -- 3. PERMISSION SET İŞLEMİ
     -- ========================================
 
-    -- Mevcut override var mı?
+    -- Mevcut override var mı? (context_id dahil — aynı user+permission+tenant+context combo)
     SELECT upo.id INTO v_existing_id
     FROM security.user_permission_overrides upo
     WHERE upo.user_id = p_user_id
       AND upo.permission_id = v_permission_id
-      AND COALESCE(upo.tenant_id, -1) = COALESCE(p_tenant_id, -1);
+      AND COALESCE(upo.tenant_id, -1) = COALESCE(p_tenant_id, -1)
+      AND COALESCE(upo.context_id, -1) = COALESCE(p_context_id, -1);
 
     IF v_existing_id IS NOT NULL THEN
         -- Güncelle
@@ -202,10 +205,10 @@ BEGIN
     ELSE
         -- Yeni kayıt
         INSERT INTO security.user_permission_overrides (
-            user_id, permission_id, tenant_id, is_granted,
+            user_id, permission_id, tenant_id, context_id, is_granted,
             reason, assigned_by, expires_at
         ) VALUES (
-            p_user_id, v_permission_id, p_tenant_id, p_is_granted,
+            p_user_id, v_permission_id, p_tenant_id, p_context_id, p_is_granted,
             p_reason, p_assigned_by, p_expires_at
         )
         RETURNING id INTO v_existing_id;

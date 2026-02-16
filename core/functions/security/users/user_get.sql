@@ -146,6 +146,7 @@ BEGIN
         'language', u.language,
         'timezone', u.timezone,
         'currency', u.currency,
+        'country', u.country,
         'lastLoginAt', u.last_login_at,
         'passwordChangedAt', u.password_changed_at,
         'requirePasswordChange', u.require_password_change,

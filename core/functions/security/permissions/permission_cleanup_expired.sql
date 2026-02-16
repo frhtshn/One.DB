@@ -11,8 +11,11 @@ AS $$
 DECLARE
     v_deleted_count INT;
 BEGIN
+    -- Sadece manuel override'lari temizle (template override'lari permission_template_cleanup_expired halleder)
     DELETE FROM security.user_permission_overrides
-    WHERE expires_at IS NOT NULL AND expires_at <= NOW();
+    WHERE expires_at IS NOT NULL
+      AND expires_at <= NOW()
+      AND template_assignment_id IS NULL;
 
     GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
     RETURN v_deleted_count;

@@ -52,10 +52,12 @@ BEGIN
     INTO v_has_platform_role;
 
     -- Tenant bazlı rolleri ve accessible tenant ID'lerini tek sorguda al (tenant_id IS NOT NULL)
+    -- En yüksek rol seviyesine göre sıralı (ilk tenant = en yetkili tenant)
     WITH tenant_role_data AS (
         SELECT
             ur.tenant_id,
-            ARRAY_AGG(DISTINCT r.code) as roles
+            ARRAY_AGG(DISTINCT r.code) as roles,
+            MAX(r.level) as max_level
         FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
         WHERE ur.user_id = p_user_id AND ur.tenant_id IS NOT NULL
@@ -63,9 +65,26 @@ BEGIN
     )
     SELECT
         COALESCE(jsonb_object_agg(tenant_id::text, to_jsonb(roles)), '{}'::jsonb),
-        COALESCE(ARRAY_AGG(tenant_id), '{}')
+        COALESCE(ARRAY_AGG(tenant_id ORDER BY max_level DESC), '{}')
     INTO v_tenant_roles, v_accessible_tenant_ids
     FROM tenant_role_data;
+
+    -- CompanyAdmin: company'sine ait tüm tenant'lara erişir (user_get_access_level pattern'i)
+    -- Sıralı listeye sadece eksik olanları sona ekle (APPEND, sıralamayı korur)
+    IF NOT v_has_platform_role AND v_global_roles IS NOT NULL AND 'companyadmin' = ANY(v_global_roles) THEN
+        v_accessible_tenant_ids := COALESCE(v_accessible_tenant_ids, '{}') || ARRAY(
+            SELECT t.id FROM core.tenants t
+            WHERE t.company_id = v_user_record.company_id AND t.status = 1
+              AND t.id != ALL(COALESCE(v_accessible_tenant_ids, '{}'))
+        );
+    -- Diğer non-platform roller: user_allowed_tenants'ı da dahil et
+    ELSIF NOT v_has_platform_role THEN
+        v_accessible_tenant_ids := COALESCE(v_accessible_tenant_ids, '{}') || ARRAY(
+            SELECT uat.tenant_id FROM security.user_allowed_tenants uat
+            WHERE uat.user_id = p_user_id
+              AND uat.tenant_id != ALL(COALESCE(v_accessible_tenant_ids, '{}'))
+        );
+    END IF;
 
     -- Role-based permission'ları al (global roller + belirtilen tenant rolleri)
     SELECT ARRAY_AGG(DISTINCT p.code)
@@ -92,23 +111,25 @@ BEGIN
           AND (p_tenant_id IS NULL OR ur.tenant_id = p_tenant_id)
     );
 
-    -- User-level GRANTED overrides (is_granted=true)
+    -- User-level GRANTED overrides (is_granted=true, sadece global — context-scoped dahil edilmez)
     SELECT ARRAY_AGG(DISTINCT p.code)
     INTO v_granted_overrides
     FROM security.user_permission_overrides up
     JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
     WHERE up.user_id = p_user_id
         AND up.is_granted = TRUE
+        AND up.context_id IS NULL
         AND (up.tenant_id IS NULL OR up.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
         AND (up.expires_at IS NULL OR up.expires_at > NOW());
 
-    -- User-level DENIED overrides (is_granted=false)
+    -- User-level DENIED overrides (is_granted=false, sadece global — context-scoped dahil edilmez)
     SELECT ARRAY_AGG(DISTINCT p.code)
     INTO v_denied_overrides
     FROM security.user_permission_overrides up
     JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
     WHERE up.user_id = p_user_id
         AND up.is_granted = FALSE
+        AND up.context_id IS NULL
         AND (up.tenant_id IS NULL OR up.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
         AND (up.expires_at IS NULL OR up.expires_at > NOW());
 

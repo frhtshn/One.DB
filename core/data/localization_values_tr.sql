@@ -84,6 +84,8 @@ JOIN (VALUES
     -- Error Messages - Forbidden
     ('error.forbidden.resource', '{0} kaynağına erişim için yetkiniz yok. Gerekli yetki: {1}'),
     ('error.tenant.access-denied', 'Tenant {0} için erişim izniniz yok'),
+    ('error.tenant.mismatch', 'Farklı bir tenant için izin değişikliği yapılamaz'),
+    ('error.tenant.scope-missing', 'Tenant kapsam parametresi bulunamadı'),
     ('error.access.company-scope-denied', 'Şirket kapsamı dışında işlem yapılamaz'),
     ('error.access.tenant-scope-denied', 'Tenant kapsamı dışında işlem yapılamaz'),
     ('error.access.hierarchy-violation', 'Hiyerarşi ihlali - yetkisiz işlem'),
@@ -453,6 +455,7 @@ JOIN (VALUES
     ('error.messaging.draft-not-published', 'Draft yayınlanmamış, geri alınamaz'),
     ('error.messaging.cannot-send-to-self', 'Kendinize mesaj gönderemezsiniz'),
     ('error.messaging.recipient-not-found', 'Alıcı bulunamadı veya aktif değil'),
-    ('error.messaging.no-recipients', 'Belirtilen filtrelerle eşleşen alıcı bulunamadı')
+    ('error.messaging.no-recipients', 'Belirtilen filtrelerle eşleşen alıcı bulunamadı'),
+    ('error.field.unauthorized-modification', 'Bu alanı değiştirme yetkiniz bulunmamaktadır')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

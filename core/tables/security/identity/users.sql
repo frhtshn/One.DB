@@ -27,6 +27,7 @@ CREATE TABLE security.users (
     language CHAR(2),                                      -- Tercih edilen dil
     timezone VARCHAR(50),                                  -- Zaman dilimi (örn: Europe/Istanbul)
     currency CHAR(3),                                      -- Tercih edilen para birimi (ISO 4217)
+    country CHAR(2),                                       -- Tercih edilen ülke kodu (ISO 3166-1 alpha-2)
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Kayıt oluşturma zamanı
     created_by BIGINT,                                     -- Oluşturan kullanıcı
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Son güncelleme zamanı

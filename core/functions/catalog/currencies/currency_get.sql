@@ -10,7 +10,7 @@ LANGUAGE plpgsql
 STABLE
 AS $$
 BEGIN
-    IF NOT EXISTS(SELECT 1 FROM catalog.currencies WHERE currency_code = UPPER(p_code)) THEN
+    IF NOT EXISTS(SELECT 1 FROM catalog.currencies c WHERE c.currency_code = UPPER(p_code)) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.currency.not-found';
     END IF;
 

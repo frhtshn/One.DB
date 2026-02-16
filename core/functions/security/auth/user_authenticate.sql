@@ -41,7 +41,7 @@ BEGIN
         first_name, last_name, status, failed_login_count,
         is_locked, locked_until, last_login_at,
         password_changed_at, require_password_change,
-        language, timezone, currency, two_factor_enabled
+        language, timezone, currency, country, two_factor_enabled
     INTO v_user
     FROM security.users
     WHERE email = p_email;
@@ -281,6 +281,7 @@ BEGIN
             'language', v_user.language,
             'timezone', v_user.timezone,
             'currency', v_user.currency,
+            'country', v_user.country,
             'primaryDepartment', v_primary_department,
             'twoFactorEnabled', v_user.two_factor_enabled
         ),

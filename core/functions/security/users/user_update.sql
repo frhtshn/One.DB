@@ -13,7 +13,7 @@
 -- p_department_id verilirse primary departman değiştirilir
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN, BIGINT);
+DROP FUNCTION IF EXISTS security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), CHAR(2), BOOLEAN, BOOLEAN, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_update(
     p_caller_id BIGINT,
@@ -26,6 +26,7 @@ CREATE OR REPLACE FUNCTION security.user_update(
     p_language CHAR(2) DEFAULT NULL,
     p_timezone VARCHAR(50) DEFAULT NULL,
     p_currency CHAR(3) DEFAULT NULL,
+    p_country CHAR(2) DEFAULT NULL,
     p_two_factor_enabled BOOLEAN DEFAULT NULL,
     p_require_password_change BOOLEAN DEFAULT NULL,
     p_department_id BIGINT DEFAULT NULL           -- Primary departmanı değiştir
@@ -96,11 +97,6 @@ BEGIN
 
     IF v_target_company_id IS NULL THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
-    END IF;
-
-    -- Silinmiş kullanıcı güncellenemez
-    IF v_target_status = -1 THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.user.update.is-deleted';
     END IF;
 
     -- ========================================
@@ -195,6 +191,7 @@ BEGIN
         language = COALESCE(p_language, language),
         timezone = COALESCE(p_timezone, timezone),
         currency = COALESCE(p_currency, currency),
+        country = COALESCE(p_country, country),
         two_factor_enabled = COALESCE(p_two_factor_enabled, two_factor_enabled),
         require_password_change = COALESCE(p_require_password_change, require_password_change),
         updated_at = NOW(),
@@ -224,9 +221,9 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), BOOLEAN, BOOLEAN, BIGINT) IS
+COMMENT ON FUNCTION security.user_update(BIGINT, BIGINT, TEXT, TEXT, TEXT, TEXT, SMALLINT, CHAR(2), VARCHAR(50), CHAR(3), CHAR(2), BOOLEAN, BOOLEAN, BIGINT) IS
 'Updates user with IDOR protection.
 p_department_id: optional, changes primary department (validates same company + active).
 Access: Self (always), Platform Admin (all), CompanyAdmin (own company + hierarchy), TenantAdmin (own tenants + hierarchy).
-Locked callers and deleted targets are rejected.
+Locked callers are rejected. Deleted targets can be restored via status update.
 p_require_password_change: Admins can force user to change password on next login.';

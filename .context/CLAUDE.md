@@ -218,7 +218,7 @@ Nucleo.DB/
 │   └── data/                      # Seed data
 │       ├── transaction_types.sql  # ↳ Transaction types (ID ile)
 │       ├── operation_types.sql    # ↳ Operation types (ID ile)
-│       ├── permissions_full.sql   # ↳ 168 permissions
+│       ├── permissions_full.sql   # ↳ 99 permissions
 │       ├── role_permissions_full.sql
 │       └── staging_seed.sql
 │

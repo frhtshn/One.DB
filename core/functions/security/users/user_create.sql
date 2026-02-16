@@ -7,7 +7,7 @@
 -- p_department_id verilirse kullanıcı o departmana primary olarak atanır
 -- ================================================================
 
-DROP FUNCTION IF EXISTS security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), BIGINT);
+DROP FUNCTION IF EXISTS security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), CHAR(2), BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_create(
     p_caller_id BIGINT,
@@ -20,6 +20,7 @@ CREATE OR REPLACE FUNCTION security.user_create(
     p_language CHAR(2) DEFAULT NULL,
     p_timezone VARCHAR(50) DEFAULT NULL,
     p_currency CHAR(3) DEFAULT NULL,
+    p_country CHAR(2) DEFAULT NULL,
     p_department_id BIGINT DEFAULT NULL       -- Atanacak departman (primary olarak)
 )
 RETURNS BIGINT
@@ -73,6 +74,7 @@ BEGIN
         language,
         timezone,
         currency,
+        country,
         status,
         password_changed_at,
         require_password_change,
@@ -90,6 +92,7 @@ BEGIN
         p_language,
         p_timezone,
         p_currency,
+        p_country,
         1,
         NOW(),
         TRUE,  -- Yeni kullanıcı ilk girişte şifresini değiştirmeli
@@ -109,7 +112,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), BIGINT) IS
+COMMENT ON FUNCTION security.user_create(BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, BIGINT, CHAR(2), VARCHAR(50), CHAR(3), CHAR(2), BIGINT) IS
 'Creates a new user with IDOR protection.
 p_department_id: optional, assigns user to department as primary.
 Department must belong to same company and be active.

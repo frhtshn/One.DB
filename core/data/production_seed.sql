@@ -75,10 +75,10 @@ INSERT INTO security.roles (code, name, description, level, status, is_platform_
 -- Hash: zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=
 -- WARNING: Change this password immediately after first login!
 
-INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency) VALUES
+INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency, country) VALUES
 (0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin',
  'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
- 1, 'en', 'Europe/Istanbul', 'EUR');
+ 1, 'en', 'Europe/Istanbul', 'EUR', 'MT');
 
 -- ================================================================
 -- 5. GLOBAL ROLE ASSIGNMENT

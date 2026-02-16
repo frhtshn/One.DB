@@ -28,7 +28,6 @@ BEGIN
             'code', mg.code,
             'title', mg_lk.localization_key,
             'order', mg.order_index,
-            'permission', mg.required_permission,
             'isActive', mg.is_active
         ),
         'createdAt', m.created_at,
@@ -42,7 +41,12 @@ BEGIN
                 'id', s.id,
                 'code', s.code,
                 'title', COALESCE(slk.localization_key, s.title_localization_key),
+                'route', s.route,
                 'order', s.order_index,
+                'permission', s.required_permission,
+                'menuId', s.menu_id,
+                'createdAt', s.created_at,
+                'updatedAt', s.updated_at,
                 'isActive', s.is_active
             ))
             FROM presentation.submenus s
@@ -54,6 +58,8 @@ BEGIN
                 'id', p.id,
                 'code', p.code,
                 'title', COALESCE(plk.localization_key, p.title_localization_key),
+                'route', p.route,
+                'permission', p.required_permission,
                 'order', p.order_index,
                 'isActive', p.is_active
             ))

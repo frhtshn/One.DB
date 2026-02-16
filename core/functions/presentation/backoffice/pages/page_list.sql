@@ -1,6 +1,6 @@
 -- ================================================================
--- PAGE_LIST: Sayfa Listesi
--- Menü veya alt menüye göre aktif sayfaları listeler.
+-- PAGE_LIST: Sayfa Listesi (Admin)
+-- Menü veya alt menüye göre tüm sayfaları (aktif + pasif) listeler.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.page_list CASCADE;
@@ -34,15 +34,13 @@ BEGIN
     FROM presentation.pages p
     LEFT JOIN catalog.localization_keys lk ON lk.localization_key = p.title_localization_key
     WHERE (p_menu_id IS NULL OR p.menu_id = p_menu_id)
-      AND (p_submenu_id IS NULL OR p.submenu_id = p_submenu_id)
-      AND p.is_active;
+      AND (p_submenu_id IS NULL OR p.submenu_id = p_submenu_id);
 
     SELECT COUNT(1)
     INTO v_total_count
     FROM presentation.pages p
     WHERE (p_menu_id IS NULL OR p.menu_id = p_menu_id)
-      AND (p_submenu_id IS NULL OR p.submenu_id = p_submenu_id)
-      AND p.is_active;
+      AND (p_submenu_id IS NULL OR p.submenu_id = p_submenu_id);
 
     RETURN jsonb_build_object(
         'items', v_items,

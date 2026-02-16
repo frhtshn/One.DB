@@ -2,16 +2,17 @@
 -- NUCLEO PLATFORM - CORE STAGING DEPLOYMENT
 -- ============================================================================
 -- Staging/Development ortamı için tam deployment.
--- Tek dosyada: Core + Staging Seed verileri
+-- Tek dosyada: Core + Seed verileri
 -- ============================================================================
 -- Çalıştırma: psql -U postgres -d nucleo -f deploy_core_staging.sql
 -- ============================================================================
 -- İÇERİK:
 -- 1. Core Deployment (schemas, tables, functions, triggers, constraints)
 -- 2. Menu Localization (key + values)
--- 3. Staging Seed Data (companies, tenants, users, menus)
--- 4. Permissions (UPSERT - 168 permissions)
+-- 3. Test Seed Data (companies, tenants, users, settings, compliance)
+-- 4. Permissions (UPSERT)
 -- 5. Role-Permission Mappings (role bazlı permission atamaları)
+-- 6. Presentation Seed (menu groups, menus, submenus, pages, tabs, contexts)
 -- ============================================================================
 -- UYARI: Bu dosya TÜM verileri siler ve yeniden oluşturur!
 -- SADECE staging/dev ortamlarında kullanın - PRODUCTION'DA KULLANMAYIN!
@@ -28,21 +29,21 @@
 -- 2. MENU LOCALIZATION
 -- ============================================================================
 -- Menu localization key'leri ve çevirileri
--- staging_seed.sql'den ÖNCE çalıştırılmalı (menüler localization'a bağlı)
+-- Diğer seed dosyalarından ÖNCE çalıştırılmalı (menüler localization'a bağlı)
 
 \i core/data/staging_seed_menu_localization.sql
 
 -- ============================================================================
--- 3. STAGING SEED DATA
+-- 3. TEST SEED DATA
 -- ============================================================================
--- Test şirketleri, tenant'lar, kullanıcılar ve menü yapısı
+-- Test şirketleri, tenant'lar, kullanıcılar, ayarlar, compliance
 
 \i core/data/staging_seed.sql
 
 -- ============================================================================
 -- 4. PERMISSIONS
 -- ============================================================================
--- 168 permission tanımı (UPSERT - güvenli tekrar çalıştırılabilir)
+-- Permission tanımları (UPSERT - güvenli tekrar çalıştırılabilir)
 
 \i core/data/permissions_full.sql
 
@@ -52,6 +53,13 @@
 -- Her rol için permission atamaları (roles ve permissions'dan sonra çalışmalı)
 
 \i core/data/role_permissions_full.sql
+
+-- ============================================================================
+-- 6. PRESENTATION SEED
+-- ============================================================================
+-- Menu yapısı (localization + permissions'a depend — en son çalışmalı)
+
+\i core/data/seed_presentation.sql
 
 -- ============================================================================
 -- DEPLOYMENT TAMAMLANDI

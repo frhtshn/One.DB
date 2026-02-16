@@ -1,12 +1,14 @@
 -- ================================================================
 -- KYC_DOCUMENT_REQUIREMENT_LIST: KYC belge gereksinimlerini listeler
--- Jurisdiction bazlı filtreleme
+-- Jurisdiction bazlı ve aktiflik durumuna göre filtreleme
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_list(INT);
+DROP FUNCTION IF EXISTS catalog.kyc_document_requirement_list(INT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION catalog.kyc_document_requirement_list(
-    p_jurisdiction_id INT DEFAULT NULL
+    p_jurisdiction_id INT DEFAULT NULL,
+    p_is_active BOOLEAN DEFAULT NULL
 )
 RETURNS TABLE(
     id INT,
@@ -21,6 +23,7 @@ RETURNS TABLE(
     expires_after_days INT,
     verification_method VARCHAR(30),
     display_order INT,
+    is_active BOOLEAN,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 )
@@ -43,13 +46,15 @@ BEGIN
         kdr.expires_after_days,
         kdr.verification_method,
         kdr.display_order,
+        kdr.is_active,
         kdr.created_at,
         kdr.updated_at
     FROM catalog.kyc_document_requirements kdr
     JOIN catalog.jurisdictions j ON j.id = kdr.jurisdiction_id
     WHERE (p_jurisdiction_id IS NULL OR kdr.jurisdiction_id = p_jurisdiction_id)
+      AND (p_is_active IS NULL OR kdr.is_active = p_is_active)
     ORDER BY j.name, kdr.display_order, kdr.document_type;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.kyc_document_requirement_list IS 'Lists KYC document requirements. Optional jurisdiction filter.';
+COMMENT ON FUNCTION catalog.kyc_document_requirement_list IS 'Lists KYC document requirements. Optional jurisdiction and is_active filters.';

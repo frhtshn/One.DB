@@ -6,6 +6,7 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_permission_set_with_outbox(BIGINT, VARCHAR, BOOLEAN, BIGINT, VARCHAR, BIGINT, TIMESTAMPTZ, TEXT);
+DROP FUNCTION IF EXISTS security.user_permission_set_with_outbox(BIGINT, VARCHAR, BOOLEAN, BIGINT, VARCHAR, BIGINT, TIMESTAMPTZ, BIGINT, TEXT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_set_with_outbox(
     p_user_id BIGINT,
@@ -15,6 +16,7 @@ CREATE OR REPLACE FUNCTION security.user_permission_set_with_outbox(
     p_reason VARCHAR(500) DEFAULT NULL,
     p_assigned_by BIGINT DEFAULT NULL,
     p_expires_at TIMESTAMPTZ DEFAULT NULL,
+    p_context_id BIGINT DEFAULT NULL,
     p_outbox_messages TEXT DEFAULT '[]'  -- Dapper text olarak gönderir, içerde JSONB'ye cast edilir
 )
 RETURNS JSONB
@@ -37,7 +39,8 @@ BEGIN
         p_tenant_id,
         p_reason,
         p_assigned_by,
-        p_expires_at
+        p_expires_at,
+        p_context_id
     );
 
     -- 2. Outbox mesajlarını ekle (aynı transaction'da)
@@ -79,4 +82,5 @@ $$;
 COMMENT ON FUNCTION security.user_permission_set_with_outbox IS
 'Grants/Denies permission with transactional outbox pattern.
 Creates outbox messages for cache invalidation and event publishing in same transaction.
-Guarantees atomicity between DB changes and external system calls.';
+Guarantees atomicity between DB changes and external system calls.
+Supports context-scoped overrides via p_context_id (NULL = global).';

@@ -13,7 +13,7 @@
 -- 2. Production Seed Data
 --    - Overwrites generic Security/Company data with Production constraints
 --    - Sets up Roles and the Nucleo Company with SuperAdmin user
--- 3. Permissions (UPSERT - 168 permissions)
+-- 3. Permissions (UPSERT - 99 permissions)
 -- 4. Role-Permission Mappings (role bazlı permission atamaları)
 -- ============================================================================
 -- WARNING: This script TRUNCATES critical tables (Users, Companies, Roles)!

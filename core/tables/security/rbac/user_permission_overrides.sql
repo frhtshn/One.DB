@@ -11,11 +11,13 @@ CREATE TABLE security.user_permission_overrides (
     user_id BIGINT NOT NULL,                               -- Kullanıcı ID (FK: security.users)
     permission_id BIGINT NOT NULL,                         -- Yetki ID (FK: security.permissions)
     tenant_id BIGINT,                                      -- Tenant ID (FK: core.tenants - opsiyonel)
+    context_id BIGINT,                                     -- Context ID (FK: presentation.contexts - NULL = global override)
     is_granted BOOLEAN NOT NULL DEFAULT TRUE,              -- Verildi (True) / Yasaklandı (False)
     reason VARCHAR(500),                                   -- Sebep
     assigned_by BIGINT,                                    -- Atayan kullanıcı (FK: security.users)
     assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- Atanma zamanı
-    expires_at TIMESTAMPTZ                                 -- Geçerlilik bitiş (opsiyonel)
+    expires_at TIMESTAMPTZ,                                -- Geçerlilik bitiş (opsiyonel)
+    template_assignment_id BIGINT NULL                      -- Template atama ID (NULL=manuel override)
 );
 
-COMMENT ON TABLE security.user_permission_overrides IS 'User specific permission overrides to grant or deny specific permissions regardless of roles';
+COMMENT ON TABLE security.user_permission_overrides IS 'User specific permission overrides to grant or deny specific permissions regardless of roles. context_id NULL = global override, context_id NOT NULL = context-scoped override';

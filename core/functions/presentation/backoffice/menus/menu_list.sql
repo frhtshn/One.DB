@@ -1,6 +1,6 @@
 -- ================================================================
--- MENU_LIST: Menü Listesi
--- Belirli bir gruba ait aktif menüleri listeler.
+-- MENU_LIST: Menü Listesi (Admin)
+-- Belirli bir gruba ait tüm menüleri (aktif + pasif) listeler.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.menu_list(BIGINT) CASCADE;
@@ -27,7 +27,7 @@ BEGIN
         'updatedAt', m.updated_at,
         'isActive', m.is_active,
         'submenuCount', (
-            SELECT COUNT(1) FROM presentation.submenus s WHERE s.menu_id = m.id AND s.is_active
+            SELECT COUNT(1) FROM presentation.submenus s WHERE s.menu_id = m.id
         ),
         'submenus', '[]'::jsonb, -- to be filled by frontend or join if needed
         'pages', '[]'::jsonb    -- to be filled by frontend or join if needed
@@ -35,14 +35,12 @@ BEGIN
     INTO v_items
     FROM presentation.menus m
     LEFT JOIN catalog.localization_keys lk ON lk.localization_key = m.title_localization_key
-    WHERE m.menu_group_id = p_menu_group_id
-      AND m.is_active;
+    WHERE m.menu_group_id = p_menu_group_id;
 
     SELECT COUNT(1)
     INTO v_total_count
     FROM presentation.menus m
-    WHERE m.menu_group_id = p_menu_group_id
-      AND m.is_active;
+    WHERE m.menu_group_id = p_menu_group_id;
 
     RETURN jsonb_build_object(
         'items', v_items,

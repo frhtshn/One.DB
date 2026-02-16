@@ -1,202 +1,214 @@
 -- ================================================================
 -- NUCLEO PLATFORM - ROLE PERMISSIONS MAPPING
 -- ================================================================
--- Role-Permission ilişkilendirme dosyası.
--- permissions_full.sql'den SONRA çalıştırılmalı.
+-- Convention: PERMISSION_CONVENTION.md Section 10 (source of truth)
+-- Role-Permission iliskilendirme dosyasi.
+-- permissions_full.sql'den SONRA calistirilmalidir.
 -- ================================================================
--- Çalıştırma: psql -U postgres -d nucleo -f core/data/role_permissions_full.sql
+-- Calistirma: psql -U postgres -d nucleo -f core/data/role_permissions_full.sql
 -- ================================================================
--- DELETE + INSERT: Mevcut mappingleri temizler, yeniden oluşturur.
+-- DELETE + INSERT: Mevcut mappingleri temizler, yeniden olusturur.
 -- ================================================================
 
 -- ================================================================
--- 1. MEVCUT MAPPINGLERI TEMİZLE
+-- 1. MEVCUT MAPPINGLERI TEMIZLE
 -- ================================================================
 DELETE FROM security.role_permissions;
 
 -- ================================================================
--- 2. SUPERADMIN: TÜM PERMISSIONS (168)
+-- 2. SUPERADMIN (Level 100) — BYPASS
 -- ================================================================
--- Level 100 - Platform owner, full access
-
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'superadmin';
+-- Permission atamasi YAPILMAZ. Kod tarafinda otomatik gecis:
+-- PolicyEvaluator: if (context.IsSuperAdmin) return PolicyResult.Allow();
+-- role_permissions tablosunda 0 satir.
 
 -- ================================================================
--- 3. ADMIN: company.* + tenant.* + catalog.* + messaging.* + audit.* + report.*
+-- 3. ADMIN (Level 90) — 53 API + 13 field(edit) = 66
 -- ================================================================
--- Level 90 - System administrator
--- Platform.* HARİÇ tüm yetkiler
+-- Platform haric TUM scope'lara erisim. Tenant sub-entity yazma dahil.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'admin'
-  AND p.category IN ('company', 'tenant', 'catalog', 'messaging', 'audit', 'report');
+  AND p.code IN (
+    -- company (7)
+    'company.list', 'company.view', 'company.create', 'company.edit', 'company.delete',
+    'company.password-policy.view', 'company.password-policy.edit',
+    -- company.user (5)
+    'company.user.list', 'company.user.view', 'company.user.create', 'company.user.edit', 'company.user.delete',
+    -- tenant (14)
+    'tenant.list', 'tenant.view', 'tenant.create', 'tenant.edit', 'tenant.delete',
+    'tenant.setting.view', 'tenant.setting.edit',
+    'tenant.currency.list', 'tenant.currency.edit',
+    'tenant.cryptocurrency.list', 'tenant.cryptocurrency.edit',
+    'tenant.language.list', 'tenant.language.edit',
+    'tenant.presentation.manage',
+    -- tenant.user (5)
+    'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
+    -- RBAC (3)
+    'tenant.user-role.assign', 'tenant.user-permission.grant', 'tenant.user-permission.deny',
+    -- catalog (15)
+    'catalog.provider.list', 'catalog.provider.view', 'catalog.provider.create',
+    'catalog.provider.edit', 'catalog.provider.delete', 'catalog.provider.manage',
+    'catalog.payment.list', 'catalog.payment.view', 'catalog.payment.manage',
+    'catalog.currency.list', 'catalog.currency.manage',
+    'catalog.uikit.list', 'catalog.uikit.manage',
+    'catalog.compliance.list', 'catalog.compliance.manage',
+    -- audit (2)
+    'audit.list', 'audit.view',
+    -- template (2)
+    'company.permission-template.manage', 'tenant.permission-template.assign'
+  );
+
+-- ADMIN: Field protection (edit level — tam erisim, 13 alan)
+INSERT INTO security.role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM security.roles r
+CROSS JOIN security.permissions p
+WHERE r.code = 'admin'
+  AND p.category = 'field'
+  AND p.code LIKE 'field.%.edit';
 
 -- ================================================================
--- 4. COMPANYADMIN: tenant.* + audit.* + report.* (kısıtlı)
+-- 4. COMPANYADMIN (Level 80) — 18 API + 13 field(edit) = 31
 -- ================================================================
--- Level 80 - Company manager
--- Kendi company'sindeki tenant işlemleri
+-- Tenant okuma + sub-entity okuma + user yonetimi + RBAC + audit + template.
+-- Tenant CRUD (create/edit/delete) YAPAMAZ. Sub-entity yazma YAPAMAZ.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'companyadmin'
-  AND (
-    p.category IN ('tenant', 'messaging', 'audit')
-    OR p.code IN (
-      'report.dashboard.view',
-      'report.player.view',
-      'report.game.view',
-      'report.financial.view'
-    )
+  AND p.code IN (
+    -- tenant okuma (2)
+    'tenant.list', 'tenant.view',
+    -- tenant sub-entity okuma (4)
+    'tenant.setting.view',
+    'tenant.currency.list',
+    'tenant.cryptocurrency.list',
+    'tenant.language.list',
+    -- tenant.user (5)
+    'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
+    -- RBAC (3)
+    'tenant.user-role.assign', 'tenant.user-permission.grant', 'tenant.user-permission.deny',
+    -- audit (2)
+    'audit.list', 'audit.view',
+    -- template (2)
+    'company.permission-template.manage', 'tenant.permission-template.assign'
   );
 
+-- COMPANYADMIN: Field protection (edit level — tam erisim, 13 alan)
+INSERT INTO security.role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM security.roles r
+CROSS JOIN security.permissions p
+WHERE r.code = 'companyadmin'
+  AND p.category = 'field'
+  AND p.code LIKE 'field.%.edit';
+
 -- ================================================================
--- 5. TENANTADMIN: tenant.user.* + tenant.settings.* + player.* (kısıtlı) + audit.*
+-- 5. TENANTADMIN (Level 70) — 12 API + 13 field(view) = 25
 -- ================================================================
--- Level 70 - Tenant manager
--- Kendi tenant'ındaki tüm operasyonlar
+-- User yonetimi + RBAC + presentation + audit + template atama.
+-- Tenant list/view YOK. Sub-entity okuma YOK.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'tenantadmin'
-  AND (
-    -- Tenant user management
-    p.code LIKE 'tenant.user.%'
-    OR p.code = 'tenant.settings.edit'
-    OR p.code = 'tenant.content.list'
-    OR p.code = 'tenant.content.manage'
-    OR p.code = 'tenant.presentation.manage'
-    -- Messaging (draft + publish + send, recall hariç)
-    OR p.code IN (
-      'messaging.draft.create', 'messaging.draft.update',
-      'messaging.draft.delete', 'messaging.draft.view',
-      'messaging.publish', 'messaging.send'
-    )
-    -- Player management (full)
-    OR p.category = 'player'
-    -- Game management (view + settings)
-    OR p.code IN ('game.list', 'game.view', 'game.settings.edit', 'game.category.list')
-    -- Finance (view + approve)
-    OR p.code IN (
-      'finance.transaction.list', 'finance.deposit.list', 'finance.deposit.view',
-      'finance.withdrawal.list', 'finance.withdrawal.view',
-      'finance.deposit.approve', 'finance.deposit.reject',
-      'finance.withdrawal.approve', 'finance.withdrawal.reject'
-    )
-    -- Bonus (view)
-    OR p.code IN ('bonus.list', 'bonus.view', 'bonus.campaign.list', 'bonus.campaign.view')
-    -- Audit (full)
-    OR p.category = 'audit'
-    -- Reports (view)
-    OR p.code IN ('report.dashboard.view', 'report.player.view', 'report.game.view')
+  AND p.code IN (
+    -- tenant presentation (1)
+    'tenant.presentation.manage',
+    -- tenant.user (5)
+    'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
+    -- RBAC (3)
+    'tenant.user-role.assign', 'tenant.user-permission.grant', 'tenant.user-permission.deny',
+    -- audit (2)
+    'audit.list', 'audit.view',
+    -- template (1)
+    'tenant.permission-template.assign'
   );
 
+-- TENANTADMIN: Field protection (view level — acik okuma, 13 alan)
+INSERT INTO security.role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM security.roles r
+CROSS JOIN security.permissions p
+WHERE r.code = 'tenantadmin'
+  AND p.category = 'field'
+  AND p.code LIKE 'field.%.view';
+
 -- ================================================================
--- 6. MODERATOR: player.* (edit) + finance.* (view)
+-- 6. MODERATOR (Level 60) — 2 API + 13 field(view) = 15
 -- ================================================================
--- Level 60 - Player moderator, player editing and KYC
+-- Audit erisimi. Player/finance API endpoint'leri eklendikce genisleyecek.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'moderator'
-  AND (
-    -- Messaging (view + direct send)
-    p.code IN ('messaging.draft.view', 'messaging.send')
-    -- Player management (most permissions)
-    OR p.code IN (
-      'player.list', 'player.view', 'player.edit', 'player.tags.manage',
-      'player.block', 'player.unblock', 'player.password.reset',
-      'player.wallet.view', 'player.kyc.list', 'player.kyc.view',
-      'player.kyc.approve', 'player.kyc.reject', 'player.kyc.request',
-      'player.transaction.view', 'player.gaming.view',
-      'player.bonus.view', 'player.rg.view', 'player.limits.view',
-      'player.communication.view', 'player.communication.send',
-      'player.audit.view', 'player.action.view'
-    )
-    -- Finance (view only)
-    OR p.code IN (
-      'finance.transaction.list', 'finance.deposit.list', 'finance.deposit.view',
-      'finance.withdrawal.list', 'finance.withdrawal.view',
-      'finance.adjustment.list'
-    )
-    -- Affiliate (view)
-    OR p.code IN ('affiliate.list', 'affiliate.view', 'affiliate.players.view')
-    -- Reports (player only)
-    OR p.code = 'report.player.view'
-    -- Presentation management
-    OR p.code = 'tenant.presentation.manage'
+  AND p.code IN (
+    -- audit (2)
+    'audit.list', 'audit.view'
   );
 
+-- MODERATOR: Field protection (view level — acik okuma, 13 alan)
+INSERT INTO security.role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM security.roles r
+CROSS JOIN security.permissions p
+WHERE r.code = 'moderator'
+  AND p.category = 'field'
+  AND p.code LIKE 'field.%.view';
+
 -- ================================================================
--- 7. EDITOR: game.* + bonus.* + tenant.content.*
+-- 7. EDITOR (Level 50) — 1 API + 13 field(mask) = 14
 -- ================================================================
--- Level 50 - Content editor, banner/slider/game management
+-- Presentation yonetimi. Game/bonus/content API endpoint'leri eklendikce genisleyecek.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'editor'
-  AND (
-    -- Game management (full except risk)
-    p.code IN (
-      'game.provider.list', 'game.provider.view',
-      'game.list', 'game.view', 'game.enable', 'game.disable',
-      'game.settings.edit', 'game.stats.view', 'game.order.manage',
-      'game.category.list', 'game.category.manage', 'game.lobby.manage'
-    )
-    -- Bonus management (full)
-    OR p.category = 'bonus'
-    -- Tenant content
-    OR p.code IN ('tenant.content.list', 'tenant.content.manage', 'tenant.presentation.manage')
+  AND p.code IN (
+    -- tenant presentation (1)
+    'tenant.presentation.manage'
   );
 
--- ================================================================
--- 8. OPERATOR: player.list/view + player.kyc.* + communication
--- ================================================================
--- Level 40 - Customer service, player viewing and KYC
+-- EDITOR: Field protection (mask level — maskeli okuma, 13 alan)
+INSERT INTO security.role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM security.roles r
+CROSS JOIN security.permissions p
+WHERE r.code = 'editor'
+  AND p.category = 'field'
+  AND p.code LIKE 'field.%.mask';
 
+-- ================================================================
+-- 8. OPERATOR (Level 40) — 0 API + 13 field(mask) = 13
+-- ================================================================
+-- Player API endpoint'leri eklendikce genisleyecek.
+
+-- OPERATOR: Field protection (mask level — maskeli okuma, 13 alan)
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'operator'
-  AND p.code IN (
-    -- Messaging (direct send only)
-    'messaging.send',
-    -- Player (view + KYC + communication)
-    'player.list', 'player.view',
-    'player.wallet.view', 'player.transaction.view',
-    'player.kyc.list', 'player.kyc.view', 'player.kyc.request',
-    'player.bonus.view', 'player.gaming.view',
-    'player.communication.view', 'player.communication.send',
-    'player.audit.view'
-  );
+  AND p.category = 'field'
+  AND p.code LIKE 'field.%.mask';
 
 -- ================================================================
--- 9. USER: audit.list (minimum permission)
+-- 9. USER (Level 10) — 0 permission
 -- ================================================================
--- Level 10 - Standard user, view only
-
-INSERT INTO security.role_permissions (role_id, permission_id)
-SELECT r.id, p.id
-FROM security.roles r
-CROSS JOIN security.permissions p
-WHERE r.code = 'user'
-  AND p.code IN ('audit.list');
+-- Minimum erisim. Sadece login olabilir.
+-- role_permissions tablosunda 0 satir.
 
 -- ================================================================
 -- VALIDATION
@@ -242,17 +254,43 @@ BEGIN
     RAISE NOTICE '================================================';
     RAISE NOTICE 'ROLE-PERMISSION MAPPING COMPLETED';
     RAISE NOTICE '================================================';
-    RAISE NOTICE 'superadmin:   % permissions', v_superadmin;
-    RAISE NOTICE 'admin:        % permissions', v_admin;
-    RAISE NOTICE 'companyadmin: % permissions', v_companyadmin;
-    RAISE NOTICE 'tenantadmin:  % permissions', v_tenantadmin;
-    RAISE NOTICE 'moderator:    % permissions', v_moderator;
-    RAISE NOTICE 'editor:       % permissions', v_editor;
-    RAISE NOTICE 'operator:     % permissions', v_operator;
-    RAISE NOTICE 'user:         % permissions', v_user;
+    RAISE NOTICE 'superadmin:   % (expected: 0 — bypass)', v_superadmin;
+    RAISE NOTICE 'admin:        % (expected: 66 = 53 API + 13 field)', v_admin;
+    RAISE NOTICE 'companyadmin: % (expected: 31 = 18 API + 13 field)', v_companyadmin;
+    RAISE NOTICE 'tenantadmin:  % (expected: 25 = 12 API + 13 field)', v_tenantadmin;
+    RAISE NOTICE 'moderator:    % (expected: 15 = 2 API + 13 field)', v_moderator;
+    RAISE NOTICE 'editor:       % (expected: 14 = 1 API + 13 field)', v_editor;
+    RAISE NOTICE 'operator:     % (expected: 13 = 0 API + 13 field)', v_operator;
+    RAISE NOTICE 'user:         % (expected: 0)', v_user;
     RAISE NOTICE '------------------------------------------------';
-    RAISE NOTICE 'TOTAL:        % mappings', v_total;
+    RAISE NOTICE 'TOTAL:        % (expected: 164)', v_total;
     RAISE NOTICE '================================================';
+
+    -- Strict validation
+    IF v_superadmin != 0 THEN
+        RAISE WARNING 'SuperAdmin permission atamasi olmamali! Gercek: %', v_superadmin;
+    END IF;
+    IF v_admin != 66 THEN
+        RAISE WARNING 'Admin permission sayisi hatali! Beklenen: 66, Gercek: %', v_admin;
+    END IF;
+    IF v_companyadmin != 31 THEN
+        RAISE WARNING 'CompanyAdmin permission sayisi hatali! Beklenen: 31, Gercek: %', v_companyadmin;
+    END IF;
+    IF v_tenantadmin != 25 THEN
+        RAISE WARNING 'TenantAdmin permission sayisi hatali! Beklenen: 25, Gercek: %', v_tenantadmin;
+    END IF;
+    IF v_moderator != 15 THEN
+        RAISE WARNING 'Moderator permission sayisi hatali! Beklenen: 15, Gercek: %', v_moderator;
+    END IF;
+    IF v_editor != 14 THEN
+        RAISE WARNING 'Editor permission sayisi hatali! Beklenen: 14, Gercek: %', v_editor;
+    END IF;
+    IF v_operator != 13 THEN
+        RAISE WARNING 'Operator permission sayisi hatali! Beklenen: 13, Gercek: %', v_operator;
+    END IF;
+    IF v_user != 0 THEN
+        RAISE WARNING 'User permission atamasi olmamali! Gercek: %', v_user;
+    END IF;
 END $$;
 
 -- Summary query

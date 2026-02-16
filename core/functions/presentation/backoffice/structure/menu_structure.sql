@@ -30,10 +30,11 @@ BEGIN
         UNION ALL
         SELECT 'tabs', id, updated_at FROM presentation.tabs WHERE is_active = true
         UNION ALL
-        SELECT 'contexts', id, updated_at FROM presentation.contexts
+        SELECT 'contexts', id, updated_at FROM presentation.contexts WHERE is_active = true
     ) AS all_items;
 
     -- Ana yapiyi olustur: menuGroups > menus > submenus > pages > tabs/contexts
+    -- standalonePages: menu_id ve submenu_id NULL olan sayfalar (dashboard, detail pages)
     SELECT jsonb_build_object(
         'version', COALESCE(v_version, 'initial'),
         'generatedAt', NOW(),
@@ -85,7 +86,7 @@ BEGIN
                                         ORDER BY p.id
                                     ), '[]'::JSONB)
                                     FROM presentation.pages p
-                                    WHERE p.menu_id = m.id AND p.is_active = true
+                                    WHERE p.menu_id = m.id AND p.submenu_id IS NULL AND p.is_active = true
                                 )
                             )
                             ORDER BY m.order_index
@@ -98,6 +99,15 @@ BEGIN
             ), '[]'::JSONB)
             FROM presentation.menu_groups mg
             WHERE mg.is_active = true
+        ),
+        'standalonePages', (
+            -- Menu'ye baglanmamis sayfalar (dashboard, detail pages)
+            SELECT COALESCE(jsonb_agg(
+                presentation.build_page_json(p.id)
+                ORDER BY p.id
+            ), '[]'::JSONB)
+            FROM presentation.pages p
+            WHERE p.menu_id IS NULL AND p.submenu_id IS NULL AND p.is_active = true
         )
     )
     INTO v_result;

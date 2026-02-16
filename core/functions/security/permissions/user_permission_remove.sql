@@ -9,12 +9,14 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_permission_remove(BIGINT, BIGINT, VARCHAR, BIGINT);
+DROP FUNCTION IF EXISTS security.user_permission_remove(BIGINT, BIGINT, VARCHAR, BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_remove(
     p_caller_id BIGINT,
     p_user_id BIGINT,
     p_permission_code VARCHAR(100),
-    p_tenant_id BIGINT DEFAULT NULL
+    p_tenant_id BIGINT DEFAULT NULL,
+    p_context_id BIGINT DEFAULT NULL
 )
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -173,7 +175,8 @@ BEGIN
     DELETE FROM security.user_permission_overrides upo
     WHERE upo.user_id = p_user_id
       AND upo.permission_id = v_permission_id
-      AND COALESCE(upo.tenant_id, -1) = COALESCE(p_tenant_id, -1);
+      AND COALESCE(upo.tenant_id, -1) = COALESCE(p_tenant_id, -1)
+      AND COALESCE(upo.context_id, -1) = COALESCE(p_context_id, -1);
 
     GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
 

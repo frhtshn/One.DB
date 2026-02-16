@@ -5,9 +5,10 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.ip_geo_cache_upsert(INET,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,INT);
+DROP FUNCTION IF EXISTS catalog.ip_geo_cache_upsert(TEXT,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,INT);
 
 CREATE OR REPLACE FUNCTION catalog.ip_geo_cache_upsert(
-    p_ip_address      INET,               -- Sorgulanan IP adresi
+    p_ip_address      TEXT,                -- Sorgulanan IP adresi
     p_country         VARCHAR(100),        -- Ülke adı
     p_country_code    CHAR(2),             -- ISO ülke kodu
     p_continent       VARCHAR(100),        -- Kıta adı
@@ -45,7 +46,7 @@ BEGIN
         resolved_at, expires_at
     )
     VALUES (
-        p_ip_address, p_country, p_country_code, p_continent, p_continent_code,
+        p_ip_address::INET, p_country, p_country_code, p_continent, p_continent_code,
         p_region, p_region_name, p_city, p_district, p_zip,
         p_lat, p_lon, p_timezone, p_utc_offset, p_currency,
         p_isp, p_org, p_as_number, p_as_name, p_reverse_dns,

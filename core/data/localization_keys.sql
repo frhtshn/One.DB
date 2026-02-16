@@ -95,6 +95,8 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- Forbidden Exceptions
 ('error.forbidden.resource', 'error', 'forbidden', 'Kaynak erisim yetkisi yok. Args: {0}=resource, {1}=permission'),
 ('error.tenant.access-denied', 'error', 'tenant', 'Tenant erisim engellendi. Args: {0}=tenantId'),
+('error.tenant.mismatch', 'error', 'tenant', 'Tenant uyusmazligi - farkli tenant icin islem yapilamaz'),
+('error.tenant.scope-missing', 'error', 'tenant', 'Tenant kapsam parametresi bulunamadi'),
 ('error.access.company-scope-denied', 'error', 'access', 'Sirket kapsami disinda islem yapilamaz'),
 ('error.access.tenant-scope-denied', 'error', 'access', 'Tenant kapsami disinda islem yapilamaz'),
 ('error.access.hierarchy-violation', 'error', 'access', 'Hiyerarsi ihlali - yetkisiz islem'),
@@ -480,6 +482,9 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.draft-not-published', 'error', 'messaging', 'Draft yayinlanmamis, geri alinamaz'),
 ('error.messaging.cannot-send-to-self', 'error', 'messaging', 'Kendine mesaj gonderilemez'),
 ('error.messaging.recipient-not-found', 'error', 'messaging', 'Alici bulunamadi veya aktif degil'),
-('error.messaging.no-recipients', 'error', 'messaging', 'Filtreler hic alici cozumleyemedi')
+('error.messaging.no-recipients', 'error', 'messaging', 'Filtreler hic alici cozumleyemedi'),
+
+-- Protected Field System
+('error.field.unauthorized-modification', 'error', 'field', 'Korunmali alani degistirme yetkisi yok')
 
 ON CONFLICT DO NOTHING;

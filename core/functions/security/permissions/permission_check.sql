@@ -1,7 +1,8 @@
 -- ================================================================
--- PERMISSION_CHECK: Kullanıcının belirli bir permission'a sahip olup olmadığını kontrol et
--- Override desteği eklendi
+-- PERMISSION_CHECK: Kullanicinin belirli bir permission'a sahip olup olmadigini kontrol et
+-- Override destegi + manage fallback
 -- Unified user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
+-- Manage fallback: field scope haric, son segment 'manage' ile degistirilip kontrol edilir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.permission_check(BIGINT, VARCHAR, BIGINT);
@@ -18,6 +19,7 @@ DECLARE
     v_permission_id BIGINT;
     v_has_permission BOOLEAN := FALSE;
     v_is_denied BOOLEAN := FALSE;
+    v_manage_code VARCHAR(100);
 BEGIN
     -- Permission ID'yi al
     SELECT p.id INTO v_permission_id
@@ -85,10 +87,19 @@ BEGIN
         ) INTO v_has_permission;
     END IF;
 
+    -- 4. Manage fallback (field scope'unda calismaz — waterfall kullanilir)
+    IF NOT v_has_permission AND LEFT(p_permission_code, 6) != 'field.' THEN
+        v_manage_code := regexp_replace(p_permission_code, '\.[^.]+$', '.manage');
+        IF v_manage_code != p_permission_code THEN
+            RETURN security.permission_check(p_user_id, v_manage_code, p_tenant_id);
+        END IF;
+    END IF;
+
     RETURN v_has_permission;
 END;
 $$;
 
 COMMENT ON FUNCTION security.permission_check IS
 'Checks if a user has a specific permission.
-Priority: 1) Deny override (blocks), 2) Grant override, 3) Global roles (tenant_id IS NULL), 4) Tenant roles (tenant_id = value)';
+Priority: 1) Deny override (blocks), 2) Grant override, 3) Global roles (tenant_id IS NULL), 4) Tenant roles (tenant_id = value).
+Manage fallback: If specific permission not found, checks {scope}.{entity}.manage (field scope haric).';

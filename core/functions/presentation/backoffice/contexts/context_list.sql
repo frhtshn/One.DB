@@ -1,6 +1,6 @@
 -- ================================================================
--- CONTEXT_LIST: Context Listesi
--- Belirli bir sayfaya ait context'leri listeler.
+-- CONTEXT_LIST: Context Listesi (Admin)
+-- Belirli bir sayfaya ait tüm context'leri (aktif + pasif) listeler.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.context_list CASCADE;
@@ -18,25 +18,25 @@ BEGIN
     SELECT COALESCE(jsonb_agg(jsonb_build_object(
         'id', c.id,
         'pageId', c.page_id,
+        'tabId', c.tab_id,
         'code', c.code,
         'type', c.context_type,
         'label', c.label_localization_key,
         'permissionEdit', c.permission_edit,
         'permissionReadonly', c.permission_readonly,
         'permissionMask', c.permission_mask,
+        'isActive', c.is_active,
         'createdAt', c.created_at,
         'updatedAt', c.updated_at
     )), '[]'::jsonb)
     INTO v_items
     FROM presentation.contexts c
-    WHERE c.page_id = p_page_id
-        AND c.is_active;
+    WHERE c.page_id = p_page_id;
 
     SELECT COUNT(1)
     INTO v_total_count
     FROM presentation.contexts c
-    WHERE c.page_id = p_page_id
-        AND c.is_active;
+    WHERE c.page_id = p_page_id;
 
     RETURN jsonb_build_object(
         'items', v_items,

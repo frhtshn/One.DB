@@ -1,6 +1,6 @@
 -- ================================================================
--- TAB_LIST: Sekme Listesi
--- Belirli bir sayfaya ait aktif sekmeleri listeler.
+-- TAB_LIST: Sekme Listesi (Admin)
+-- Belirli bir sayfaya ait tüm sekmeleri (aktif + pasif) listeler.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.tab_list CASCADE;
@@ -29,14 +29,12 @@ BEGIN
     INTO v_items
     FROM presentation.tabs t
     LEFT JOIN catalog.localization_keys lk ON lk.localization_key = t.title_localization_key
-    WHERE t.page_id = p_page_id
-      AND t.is_active;
+    WHERE t.page_id = p_page_id;
 
     SELECT COUNT(1)
     INTO v_total_count
     FROM presentation.tabs t
-    WHERE t.page_id = p_page_id
-      AND t.is_active;
+    WHERE t.page_id = p_page_id;
 
     RETURN jsonb_build_object(
         'items', v_items,

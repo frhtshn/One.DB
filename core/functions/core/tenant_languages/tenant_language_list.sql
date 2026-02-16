@@ -38,7 +38,7 @@ BEGIN
             'code', tl.language_code,
             'name', l.language_name,
             'isEnabled', tl.is_enabled,
-            'isDefault', (tl.language_code = v_default_language),
+            'isDefault', COALESCE((tl.language_code = v_default_language), false),
             'createdAt', tl.created_at,
             'updatedAt', tl.updated_at
         ) ORDER BY (tl.language_code = v_default_language) DESC, tl.is_enabled DESC, l.language_name

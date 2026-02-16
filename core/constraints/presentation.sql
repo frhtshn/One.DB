@@ -52,11 +52,11 @@ END $$;
 
 
 -- Check Constraints
--- pages parent check
+-- pages parent check (menu_id + submenu_id ayni anda dolu olamaz, ikisi NULL olabilir = standalone page)
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_pages_parent') THEN
         ALTER TABLE presentation.pages ADD CONSTRAINT chk_pages_parent
-            CHECK ((menu_id IS NOT NULL AND submenu_id IS NULL) OR (menu_id IS NULL AND submenu_id IS NOT NULL));
+            CHECK (menu_id IS NULL OR submenu_id IS NULL);
     END IF;
 END $$;
 
@@ -64,7 +64,7 @@ END $$;
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_contexts_type') THEN
         ALTER TABLE presentation.contexts ADD CONSTRAINT chk_contexts_type
-            CHECK (context_type IN ('field', 'action', 'section', 'button'));
+            CHECK (context_type IN ('input', 'select', 'toggle', 'button', 'table', 'action', 'stat'));
     END IF;
 END $$;
 

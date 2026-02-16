@@ -5,12 +5,13 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS core.tenant_setting_upsert(BIGINT, BIGINT, VARCHAR, JSONB, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS core.tenant_setting_upsert(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION core.tenant_setting_upsert(
     p_caller_id BIGINT,
     p_tenant_id BIGINT,
     p_key VARCHAR,
-    p_value JSONB,
+    p_value TEXT,
     p_description VARCHAR DEFAULT NULL,
     p_category VARCHAR DEFAULT 'General'
 )
@@ -42,7 +43,7 @@ BEGIN
     ) VALUES (
         p_tenant_id,
         p_key,
-        p_value,
+        p_value::jsonb,
         p_description,
         p_category,
         NOW()
@@ -56,4 +57,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_setting_upsert(BIGINT, BIGINT, VARCHAR, JSONB, VARCHAR, VARCHAR) IS 'Inserts or updates a tenant configuration setting. Checks caller permissions.';
+COMMENT ON FUNCTION core.tenant_setting_upsert(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR) IS 'Inserts or updates a tenant configuration setting. Checks caller permissions.';

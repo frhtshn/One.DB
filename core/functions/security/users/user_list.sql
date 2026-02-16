@@ -156,7 +156,7 @@ BEGIN
         'WITH filtered_users AS (
             SELECT u.id, u.company_id, u.first_name, u.last_name, u.email, u.username,
                    u.status, u.is_locked, u.two_factor_enabled, u.language, u.timezone,
-                   u.currency, u.last_login_at, u.password_changed_at, u.require_password_change,
+                   u.currency, u.country, u.last_login_at, u.password_changed_at, u.require_password_change,
                    u.created_at
             FROM security.users u
             WHERE u.company_id = $1
@@ -223,6 +223,7 @@ BEGIN
                 ''language'', fu.language,
                 ''timezone'', fu.timezone,
                 ''currency'', fu.currency,
+                ''country'', fu.country,
                 ''lastLoginAt'', fu.last_login_at,
                 ''passwordChangedAt'', fu.password_changed_at,
                 ''requirePasswordChange'', fu.require_password_change,

@@ -5,9 +5,10 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.ip_geo_cache_get(INET);
+DROP FUNCTION IF EXISTS catalog.ip_geo_cache_get(TEXT);
 
 CREATE OR REPLACE FUNCTION catalog.ip_geo_cache_get(
-    p_ip_address INET    -- Sorgulanacak IP adresi
+    p_ip_address TEXT    -- Sorgulanacak IP adresi
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -43,7 +44,7 @@ BEGIN
         'expiresAt',      c.expires_at
     ) INTO v_result
     FROM catalog.ip_geo_cache c
-    WHERE c.ip_address = p_ip_address
+    WHERE c.ip_address = p_ip_address::INET
       AND c.expires_at > NOW();
 
     -- Süresi dolmuş veya kayıt yoksa NULL döner

@@ -103,3 +103,27 @@ CREATE INDEX idx_user_allowed_tenants_lookup ON security.user_allowed_tenants US
 -- user_password_history (son şifreleri hızlı çekmek için)
 CREATE INDEX idx_user_password_history_lookup ON security.user_password_history USING btree(user_id, changed_at DESC);
 
+-- user_permission_overrides (context-scoped override lookup - Faz 2)
+CREATE INDEX idx_upo_context_id ON security.user_permission_overrides USING btree(context_id) WHERE context_id IS NOT NULL;
+
+-- user_permission_overrides (template assignment kaynak takibi - Faz 3)
+CREATE INDEX idx_upo_template_assignment_id ON security.user_permission_overrides USING btree(template_assignment_id) WHERE template_assignment_id IS NOT NULL;
+
+-- permission_templates (platform-level code unique)
+CREATE UNIQUE INDEX uix_pt_platform_code ON security.permission_templates(code) WHERE company_id IS NULL AND deleted_at IS NULL;
+
+-- permission_templates (company-scoped code unique)
+CREATE UNIQUE INDEX uix_pt_company_code ON security.permission_templates(company_id, code) WHERE company_id IS NOT NULL AND deleted_at IS NULL;
+
+-- permission_templates (company lookup)
+CREATE INDEX idx_pt_company_id ON security.permission_templates USING btree(company_id) WHERE company_id IS NOT NULL;
+
+-- permission_template_assignments (user lookup)
+CREATE INDEX idx_pta_user_id ON security.permission_template_assignments USING btree(user_id);
+
+-- permission_template_assignments (template lookup)
+CREATE INDEX idx_pta_template_id ON security.permission_template_assignments USING btree(template_id);
+
+-- permission_template_assignments (duplicate assignment kontrolü - unique active)
+CREATE UNIQUE INDEX uix_pta_active ON security.permission_template_assignments(user_id, template_id) WHERE removed_at IS NULL;
+

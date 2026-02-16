@@ -8,6 +8,7 @@ DROP FUNCTION IF EXISTS presentation.context_update CASCADE;
 CREATE OR REPLACE FUNCTION presentation.context_update(
     p_id BIGINT,
     p_page_id BIGINT DEFAULT NULL,
+    p_tab_id BIGINT DEFAULT NULL,
     p_code VARCHAR DEFAULT NULL,
     p_type VARCHAR DEFAULT NULL,
     p_label VARCHAR DEFAULT NULL,
@@ -27,6 +28,7 @@ BEGIN
     -- Partial update with soft status change
     UPDATE presentation.contexts SET
         page_id = COALESCE(p_page_id, page_id),
+        tab_id = COALESCE(p_tab_id, tab_id),
         code = COALESCE(p_code, code),
         context_type = COALESCE(p_type, context_type),
         label_localization_key = COALESCE(p_label, label_localization_key),

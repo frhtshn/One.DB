@@ -99,3 +99,73 @@ ALTER TABLE security.company_password_policy
 ALTER TABLE security.company_password_policy
     ADD CONSTRAINT chk_company_password_policy_expiry CHECK (expiry_days >= 0),
     ADD CONSTRAINT chk_company_password_policy_history CHECK (history_count >= 0 AND history_count <= 10);
+
+-- user_permission_overrides -> contexts (Faz 2: context-scoped overrides)
+ALTER TABLE security.user_permission_overrides
+    ADD CONSTRAINT fk_user_permission_overrides_context
+    FOREIGN KEY (context_id) REFERENCES presentation.contexts(id);
+
+-- user_permission_overrides -> template_assignments (Faz 3: template kaynak takibi)
+ALTER TABLE security.user_permission_overrides
+    ADD CONSTRAINT fk_user_permission_overrides_template_assignment
+    FOREIGN KEY (template_assignment_id) REFERENCES security.permission_template_assignments(id);
+
+-- permission_templates -> companies
+ALTER TABLE security.permission_templates
+    ADD CONSTRAINT fk_permission_templates_company
+    FOREIGN KEY (company_id) REFERENCES core.companies(id);
+
+-- permission_templates -> created_by
+ALTER TABLE security.permission_templates
+    ADD CONSTRAINT fk_permission_templates_created_by
+    FOREIGN KEY (created_by) REFERENCES security.users(id);
+
+-- permission_templates -> updated_by
+ALTER TABLE security.permission_templates
+    ADD CONSTRAINT fk_permission_templates_updated_by
+    FOREIGN KEY (updated_by) REFERENCES security.users(id);
+
+-- permission_templates -> deleted_by
+ALTER TABLE security.permission_templates
+    ADD CONSTRAINT fk_permission_templates_deleted_by
+    FOREIGN KEY (deleted_by) REFERENCES security.users(id);
+
+-- permission_template_items -> templates
+ALTER TABLE security.permission_template_items
+    ADD CONSTRAINT fk_permission_template_items_template
+    FOREIGN KEY (template_id) REFERENCES security.permission_templates(id) ON DELETE CASCADE;
+
+-- permission_template_items -> permissions
+ALTER TABLE security.permission_template_items
+    ADD CONSTRAINT fk_permission_template_items_permission
+    FOREIGN KEY (permission_id) REFERENCES security.permissions(id);
+
+-- permission_template_items -> added_by
+ALTER TABLE security.permission_template_items
+    ADD CONSTRAINT fk_permission_template_items_added_by
+    FOREIGN KEY (added_by) REFERENCES security.users(id);
+
+-- permission_template_assignments -> users
+ALTER TABLE security.permission_template_assignments
+    ADD CONSTRAINT fk_permission_template_assignments_user
+    FOREIGN KEY (user_id) REFERENCES security.users(id);
+
+-- permission_template_assignments -> templates
+ALTER TABLE security.permission_template_assignments
+    ADD CONSTRAINT fk_permission_template_assignments_template
+    FOREIGN KEY (template_id) REFERENCES security.permission_templates(id);
+
+-- permission_template_assignments -> tenants
+ALTER TABLE security.permission_template_assignments
+    ADD CONSTRAINT fk_permission_template_assignments_tenant
+    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+
+-- permission_template_assignments -> assigned_by
+ALTER TABLE security.permission_template_assignments
+    ADD CONSTRAINT fk_permission_template_assignments_assigned_by
+    FOREIGN KEY (assigned_by) REFERENCES security.users(id);
+
+-- permission_template_assignments -> removed_by
+ALTER TABLE security.permission_template_assignments
+    ADD CONSTRAINT fk_permission_template_assignments_removed_by
+    FOREIGN KEY (removed_by) REFERENCES security.users(id);

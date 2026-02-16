@@ -31,13 +31,30 @@ BEGIN
         'title', v_page.title_localization_key,
         'permission', v_page.required_permission,
         'tabs', (
+            -- Tab'lar ve altindaki context'ler
             SELECT COALESCE(jsonb_agg(
                 jsonb_build_object(
                     'id', t.id,
                     'code', t.code,
                     'title', t.title_localization_key,
                     'order', t.order_index,
-                    'permission', t.required_permission
+                    'permission', t.required_permission,
+                    'contexts', (
+                        SELECT COALESCE(jsonb_agg(
+                            jsonb_build_object(
+                                'id', c.id,
+                                'code', c.code,
+                                'type', c.context_type,
+                                'label', c.label_localization_key,
+                                'permissionEdit', c.permission_edit,
+                                'permissionReadonly', c.permission_readonly,
+                                'permissionMask', c.permission_mask
+                            )
+                            ORDER BY c.id
+                        ), '[]'::JSONB)
+                        FROM presentation.contexts c
+                        WHERE c.tab_id = t.id AND c.is_active = true
+                    )
                 )
                 ORDER BY t.order_index
             ), '[]'::JSONB)
@@ -45,6 +62,7 @@ BEGIN
             WHERE t.page_id = p_page_id AND t.is_active = true
         ),
         'contexts', (
+            -- Tab'siz (dogrudan sayfaya bagli) context'ler
             SELECT COALESCE(jsonb_agg(
                 jsonb_build_object(
                     'id', c.id,
@@ -58,7 +76,7 @@ BEGIN
                 ORDER BY c.id
             ), '[]'::JSONB)
             FROM presentation.contexts c
-            WHERE c.page_id = p_page_id
+            WHERE c.page_id = p_page_id AND c.tab_id IS NULL AND c.is_active = true
         )
     );
 END;

@@ -149,6 +149,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/rbac/user_roles.sql
 \i core/tables/security/rbac/user_allowed_tenants.sql
 \i core/tables/security/rbac/user_permission_overrides.sql
+\i core/tables/security/rbac/permission_templates.sql
+\i core/tables/security/rbac/permission_template_items.sql
+\i core/tables/security/rbac/permission_template_assignments.sql
 
 -- Secrets (Hassas veriler)
 \i core/tables/security/secrets/secrets_provider.sql
@@ -187,6 +190,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/data/timezones.sql
 \i core/data/countries.sql
 \i core/data/currencies.sql
+\i core/data/cryptocurrencies.sql
 \i core/data/languages.sql
 \i core/data/transaction_types.sql
 \i core/data/operation_types.sql
@@ -469,6 +473,21 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/permissions/user_permission_set.sql
 \i core/functions/security/permissions/user_permission_set_with_outbox.sql
 \i core/functions/security/permissions/user_permission_remove.sql
+\i core/functions/security/permissions/user_context_overrides_load.sql
+
+-- Permission Template Functions
+\i core/functions/security/permissions/permission_template_create.sql
+\i core/functions/security/permissions/permission_template_update.sql
+\i core/functions/security/permissions/permission_template_delete.sql
+\i core/functions/security/permissions/permission_template_get.sql
+\i core/functions/security/permissions/permission_template_list.sql
+\i core/functions/security/permissions/permission_template_item_set.sql
+\i core/functions/security/permissions/permission_template_assign.sql
+\i core/functions/security/permissions/permission_template_unassign.sql
+\i core/functions/security/permissions/permission_template_clone.sql
+\i core/functions/security/permissions/permission_template_from_user.sql
+\i core/functions/security/permissions/permission_template_assignment_list.sql
+\i core/functions/security/permissions/permission_template_cleanup_expired.sql
 
 -- Role Functions
 \i core/functions/security/roles/is_system_role.sql

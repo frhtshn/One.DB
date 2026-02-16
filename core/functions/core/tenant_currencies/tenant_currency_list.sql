@@ -39,7 +39,7 @@ BEGIN
             'name', c.currency_name,
             'symbol', c.symbol,
             'isEnabled', tc.is_enabled,
-            'isBase', (tc.currency_code = v_base_currency),
+            'isBase', COALESCE((tc.currency_code = v_base_currency), false),
             'createdAt', tc.created_at,
             'updatedAt', tc.updated_at
         ) ORDER BY (tc.currency_code = v_base_currency) DESC, tc.is_enabled DESC, c.currency_name

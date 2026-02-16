@@ -1,6 +1,6 @@
 -- ================================================================
--- MENU_GROUP_LIST: Menü Grubu Listesi
--- Tüm grupları sıralı olarak döner.
+-- MENU_GROUP_LIST: Menü Grubu Listesi (Admin)
+-- Tüm grupları (aktif + pasif) sıralı olarak döner.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.menu_group_list();
@@ -16,8 +16,7 @@ BEGIN
     -- Total count
     SELECT COUNT(*)
     INTO v_total_count
-    FROM presentation.menu_groups
-    WHERE is_active;
+    FROM presentation.menu_groups;
 
     -- Items listesi
     SELECT COALESCE(jsonb_agg(
@@ -38,8 +37,7 @@ BEGIN
         ) ORDER BY mg.order_index
     ), '[]'::jsonb)
     INTO v_items
-    FROM presentation.menu_groups mg
-    WHERE mg.is_active;
+    FROM presentation.menu_groups mg;
 
     RETURN jsonb_build_object(
         'items', v_items,

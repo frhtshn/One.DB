@@ -11,10 +11,18 @@ CREATE OR REPLACE FUNCTION presentation.tab_delete(
 RETURNS VOID
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    v_is_active BOOLEAN;
 BEGIN
     -- Sekme var mı kontrol et
-    IF NOT EXISTS (SELECT 1 FROM presentation.tabs WHERE id = p_tab_id AND is_active) THEN
+    SELECT is_active INTO v_is_active FROM presentation.tabs WHERE id = p_tab_id;
+
+    IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tab.not-found';
+    END IF;
+
+    IF v_is_active = FALSE THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.tab.delete.already-deleted';
     END IF;
 
     -- Soft delete işlemi

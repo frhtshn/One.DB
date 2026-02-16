@@ -1,6 +1,6 @@
 -- ================================================================
--- SUBMENU_LIST: Alt Menü Listesi
--- Belirli bir menüye ait aktif alt menüleri listeler.
+-- SUBMENU_LIST: Alt Menü Listesi (Admin)
+-- Belirli bir menüye ait tüm alt menüleri (aktif + pasif) listeler.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS presentation.submenu_list CASCADE;
@@ -31,14 +31,12 @@ BEGIN
     INTO v_items
     FROM presentation.submenus s
     LEFT JOIN catalog.localization_keys lk ON lk.localization_key = s.title_localization_key
-    WHERE s.menu_id = p_menu_id
-      AND s.is_active;
+    WHERE s.menu_id = p_menu_id;
 
     SELECT COUNT(1)
     INTO v_total_count
     FROM presentation.submenus s
-    WHERE s.menu_id = p_menu_id
-      AND s.is_active;
+    WHERE s.menu_id = p_menu_id;
 
     RETURN jsonb_build_object(
         'items', v_items,

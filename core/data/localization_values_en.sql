@@ -84,6 +84,8 @@ JOIN (VALUES
     -- Error Messages - Forbidden
     ('error.forbidden.resource', 'You do not have permission to access {0}. Required permission: {1}'),
     ('error.tenant.access-denied', 'Access denied for tenant {0}'),
+    ('error.tenant.mismatch', 'Cannot modify permissions for a different tenant'),
+    ('error.tenant.scope-missing', 'Tenant scope parameter not found'),
     ('error.access.company-scope-denied', 'Operation not allowed outside company scope'),
     ('error.access.tenant-scope-denied', 'Operation not allowed outside tenant scope'),
     ('error.access.hierarchy-violation', 'Hierarchy violation - unauthorized operation'),
@@ -451,6 +453,7 @@ JOIN (VALUES
     ('error.messaging.draft-not-published', 'Draft is not published, cannot recall'),
     ('error.messaging.cannot-send-to-self', 'Cannot send a message to yourself'),
     ('error.messaging.recipient-not-found', 'Recipient not found or inactive'),
-    ('error.messaging.no-recipients', 'No recipients matched the specified filters')
+    ('error.messaging.no-recipients', 'No recipients matched the specified filters'),
+    ('error.field.unauthorized-modification', 'You do not have permission to modify this field')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

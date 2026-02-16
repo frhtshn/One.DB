@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION presentation.context_create(
     p_page_id BIGINT,
     p_code VARCHAR,
     p_type VARCHAR,
+    p_tab_id BIGINT DEFAULT NULL,
     p_label VARCHAR DEFAULT NULL,
     p_permission_edit VARCHAR DEFAULT NULL,
     p_permission_readonly VARCHAR DEFAULT NULL,
@@ -25,6 +26,7 @@ BEGIN
     -- Insert
     INSERT INTO presentation.contexts (
         page_id,
+        tab_id,
         code,
         context_type,
         label_localization_key,
@@ -33,6 +35,7 @@ BEGIN
         permission_mask
     ) VALUES (
         p_page_id,
+        p_tab_id,
         p_code,
         p_type,
         p_label,
