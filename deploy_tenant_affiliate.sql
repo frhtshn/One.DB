@@ -59,8 +59,8 @@ END $$;
 \i tenant_affiliate/tables/commission/commission_plans.sql
 DO $$
 BEGIN
-	IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'commission' AND table_name = 'commissions') THEN
-		RAISE EXCEPTION 'commission.commissions tablosu oluşturulamadı!';
+	IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'commission' AND table_name = 'commission_plans') THEN
+		RAISE EXCEPTION 'commission.commission_plans tablosu oluşturulamadı!';
 	END IF;
 END $$;
 \i tenant_affiliate/tables/commission/commission_tiers.sql
