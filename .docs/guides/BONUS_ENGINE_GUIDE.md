@@ -6,13 +6,30 @@ Bonus sistemi **JSON-driven generic rule engine** mimarisi kullanır. Eski MSSQL
 
 ## Büyük Resim
 
+```mermaid
+flowchart TD
+    subgraph bonus["Bonus DB (Shared)"]
+        B1["bonus.bonus_types\nbonus.bonus_rules"]
+        B2["campaign.campaigns\npromotion.promo_codes"]
+    end
+    subgraph tenant["Tenant DB (Per-tenant)"]
+        T1["bonus.bonus_awards\nbonus.promo_redemptions"]
+    end
+    subgraph tenant_log["Tenant Log DB"]
+        L1["bonus_log.bonus_evaluation_logs\n(daily partition, 90 gün)"]
+    end
+    BO["BO Admin"] --> B1
+    BO --> B2
+    B1 -- "rule referansı\n(backend cross-DB)" --> T1
+    W["Backend / Worker"] --> T1
+    W --> L1
+```
+
 | Veritabanı | Tablolar | Erişim | Açıklama |
 |------------|----------|--------|----------|
 | **Bonus DB** (Shared) | `bonus.bonus_types`, `bonus.bonus_rules`, `campaign.campaigns`, `promotion.promo_codes` | BO Admin | Kural tanımları (shared, tüm tenant'lar için ortak yapılandırma) |
 | **Tenant DB** (Per-tenant) | `bonus.bonus_awards`, `bonus.promo_redemptions` | Backend/Worker | Oyuncu bazlı bonus kazanımları ve promosyon kullanımları (izole) |
 | **Tenant Log DB** | `bonus_log.bonus_evaluation_logs` | Worker | Değerlendirme audit trail (daily partition, 90 gün retention) |
-
-> Bonus DB → Tenant DB yönünde **rule referansı** vardır (backend cross-DB okuma ile).
 
 ---
 
