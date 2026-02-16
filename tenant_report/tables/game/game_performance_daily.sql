@@ -13,7 +13,7 @@ CREATE TABLE game.game_performance_daily (
     -- Kırılımlar
     game_id bigint,                                        -- Oyun ID (NULL ise Provider toplamıdır)
     provider_id bigint NOT NULL,                           -- Sağlayıcı ID
-    currency char(3) NOT NULL,
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyun Metrikleri
     total_rounds bigint DEFAULT 0,                         -- Toplam spin/el sayısı

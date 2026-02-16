@@ -12,7 +12,7 @@ CREATE TABLE tracking.affiliate_stats_monthly (
     affiliate_id bigint NOT NULL,                          -- Affiliate ID
     period_year smallint NOT NULL,                         -- Yıl
     period_month smallint NOT NULL,                        -- Ay (1-12)
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyuncu Metrikleri
     total_signups int NOT NULL DEFAULT 0,                  -- Toplam kayıt sayısı

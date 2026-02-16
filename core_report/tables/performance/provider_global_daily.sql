@@ -10,7 +10,7 @@ CREATE TABLE performance.provider_global_daily (
     id bigserial,
     report_date date NOT NULL,
     provider_id bigint NOT NULL,
-    currency char(3) NOT NULL,
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     total_bet numeric(18, 8) DEFAULT 0,
     total_win numeric(18, 8) DEFAULT 0,

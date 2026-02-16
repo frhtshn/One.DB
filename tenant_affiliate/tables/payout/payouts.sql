@@ -13,7 +13,7 @@ CREATE TABLE payout.payouts (
     affiliate_id bigint NOT NULL,                          -- Affiliate ID (FK: affiliate.affiliates)
     payout_request_id bigint,                              -- Talep ID (NULL = otomatik ödeme)
     amount numeric(18,2) NOT NULL,                         -- Ödeme tutarı
-    currency char(3) NOT NULL,                             -- Para birimi (TRY, EUR, USD)
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
     period_start date NOT NULL,                            -- Komisyon dönemi başlangıç
     period_end date NOT NULL,                              -- Komisyon dönemi bitiş
     commission_count int NOT NULL DEFAULT 0,               -- Dahil edilen komisyon sayısı

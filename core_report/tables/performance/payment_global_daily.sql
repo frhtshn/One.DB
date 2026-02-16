@@ -12,7 +12,7 @@ CREATE TABLE performance.payment_global_daily (
 
     -- Metod Bilgisi
     method_id bigint NOT NULL,                             -- Ödeme Metodu ID (core.catalog)
-    currency char(3) NOT NULL,
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Hacimler
     deposit_volume numeric(18, 8) DEFAULT 0,

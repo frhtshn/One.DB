@@ -17,7 +17,7 @@ CREATE TABLE affiliate_log.commission_calculations (
     total_commissions int NOT NULL DEFAULT 0,              -- Oluşturulan komisyon sayısı
     total_direct_amount numeric(18,2) NOT NULL DEFAULT 0,  -- Toplam direkt komisyon
     total_network_amount numeric(18,2) NOT NULL DEFAULT 0, -- Toplam network komisyon
-    base_currency char(3) NOT NULL,                        -- Hesaplama para birimi
+    base_currency varchar(20) NOT NULL,                     -- Hesaplama para birimi (Fiat: TRY, Crypto: BTC)
     calculation_started_at timestamp without time zone NOT NULL, -- Başlangıç zamanı
     calculation_ended_at timestamp without time zone,      -- Bitiş zamanı
     duration_seconds int,                                  -- Süre (saniye)

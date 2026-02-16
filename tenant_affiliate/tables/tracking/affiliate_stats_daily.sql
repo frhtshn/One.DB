@@ -11,7 +11,7 @@ CREATE TABLE tracking.affiliate_stats_daily (
     id bigserial,                              -- Benzersiz kayıt kimliği
     affiliate_id bigint NOT NULL,                          -- Affiliate ID
     stats_date date NOT NULL,                              -- İstatistik tarihi
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyuncu Metrikleri
     new_signups int NOT NULL DEFAULT 0,                    -- Yeni kayıt sayısı

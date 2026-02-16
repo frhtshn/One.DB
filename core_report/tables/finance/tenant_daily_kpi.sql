@@ -11,7 +11,7 @@ CREATE TABLE finance.tenant_daily_kpi (
     report_date date NOT NULL,                             -- Rapor tarihi
     company_id bigint NOT NULL,                            -- Company ID (Hızlı filtreleme için)
     tenant_id bigint NOT NULL,                             -- Tenant ID
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyun Performansı
     total_bet numeric(18, 8) DEFAULT 0,

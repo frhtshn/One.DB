@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS finance.system_hourly_kpi CASCADE;
 CREATE TABLE finance.system_hourly_kpi (
     id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Operasyonel Metrikler
     unique_active_players int DEFAULT 0,                   -- O saatteki tekil aktif oyuncu (UAP)

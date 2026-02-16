@@ -17,7 +17,7 @@ CREATE TABLE commission.commission_tiers (
     range_to numeric(18,2),                                -- Üst limit (NULL = sınırsız)
     rate numeric(5,2) NOT NULL,                            -- RevShare: yüzde oranı, CPA: sabit tutar
     rate_type varchar(10) NOT NULL DEFAULT 'PERCENT',      -- PERCENT veya FIXED
-    currency char(3),                                      -- Sabit tutar için para birimi
+    currency varchar(20),                                   -- Sabit tutar için para birimi (Fiat: TRY, Crypto: BTC)
     is_active boolean NOT NULL DEFAULT true,               -- Kademe aktif mi?
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone

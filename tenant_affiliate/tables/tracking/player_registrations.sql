@@ -50,7 +50,7 @@ CREATE TABLE tracking.player_registrations (
     is_ftd_completed boolean NOT NULL DEFAULT false,       -- FTD yaptı mı?
     ftd_at timestamp without time zone,                    -- FTD zamanı
     ftd_amount numeric(18,2),                              -- FTD tutarı
-    ftd_currency char(3),                                  -- FTD para birimi
+    ftd_currency varchar(20),                               -- FTD para birimi (Fiat: TRY, Crypto: BTC)
     click_to_ftd_seconds int,                              -- Tıklamadan FTD'ye geçen süre
     register_to_ftd_seconds int,                           -- Kayıttan FTD'ye geçen süre
 

@@ -100,6 +100,12 @@ Referans dataları içerir. **Read-only** karakterlidir. Mantıksal gruplara ayr
 | `localization_keys`   | Lokalizasyon anahtar tanımları   |
 | `localization_values` | Lokalizasyon çevirileri          |
 
+> **Para Birimi Tip Standardı:**
+> - **Fiat katalog:** `catalog.currencies` → `CHAR(3)` PK (ISO 4217: TRY, EUR, USD)
+> - **Kripto katalog:** `catalog.cryptocurrencies` → `VARCHAR(20)` symbol (BTC, ETH, USDT)
+> - **Birleşik kullanım:** Fiat+Kripto birlikte kullanılan tablolarda `varchar(20)` kullanılır. Bu pattern tenant (`wallets.currency_code`), report, affiliate ve log DB'lerindeki tüm currency kolonlarında geçerlidir.
+> - **Sadece fiat:** Core billing tabloları (`character(3)`) ve `core.tenant_currencies` yalnızca fiat para birimlerini barındırır.
+
 #### Provider & Game Catalyst
 
 | Tablo               | Açıklama                         |

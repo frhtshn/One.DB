@@ -14,7 +14,7 @@ CREATE TABLE finance.player_hourly_stats (
     -- Temel Bilgiler
     player_id bigint NOT NULL,                             -- Oyuncu ID
     wallet_id bigint NOT NULL,                             -- Cüzdan ID
-    currency char(3) NOT NULL,                             -- Para birimi (Performans için denormalize)
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC) - Performans için denormalize
 
     -- Bakiyeler
     balance_start numeric(18, 8) NOT NULL DEFAULT 0,       -- Dönem başı bakiye

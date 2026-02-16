@@ -39,7 +39,7 @@ CREATE TABLE commission.commissions (
     -- Dönem
     period_start date NOT NULL,                            -- Dönem başlangıç tarihi
     period_end date NOT NULL,                              -- Dönem bitiş tarihi
-    currency char(3) NOT NULL,                             -- Para birimi (TRY, EUR, USD)
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Negatif Bakiye Mahsubu
     carryforward_deduction numeric(18,2) DEFAULT 0,        -- Önceki dönemden mahsup edilen

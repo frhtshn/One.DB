@@ -16,7 +16,7 @@ CREATE TABLE tracking.transaction_events (
     -- Transaction Detayları
     transaction_type varchar(30) NOT NULL,                 -- BET, WIN, DEPOSIT, WITHDRAWAL, BONUS, etc.
     amount numeric(18,2) NOT NULL,                         -- İşlem tutarı
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyun Bilgisi (BET/WIN için)
     game_id bigint,                                        -- Oyun ID

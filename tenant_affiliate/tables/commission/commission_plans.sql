@@ -20,7 +20,7 @@ CREATE TABLE commission.commission_plans (
     -- CPA Ayarları (Cost Per Acquisition)
     cpa_enabled boolean NOT NULL DEFAULT false,            -- CPA aktif mi?
     cpa_amount numeric(18,2) DEFAULT 0,                    -- FTD başına sabit tutar
-    cpa_currency char(3),                                  -- CPA para birimi
+    cpa_currency varchar(20),                               -- CPA para birimi (Fiat: TRY, Crypto: BTC)
     cpa_qualifying_deposit numeric(18,2),                  -- Minimum qualifying deposit
 
     -- Hybrid Ayarları
@@ -28,7 +28,7 @@ CREATE TABLE commission.commission_plans (
     hybrid_cpa_percent numeric(5,2),                       -- Hybrid modda CPA yüzdesi (örn: 50 = yarısı)
 
     -- Genel Ayarlar
-    base_currency char(3) NOT NULL,                        -- Baz para birimi (TRY, EUR, USD)
+    base_currency varchar(20) NOT NULL,                     -- Baz para birimi (Fiat: TRY, Crypto: BTC)
     min_payout_amount numeric(18,2) DEFAULT 100,           -- Minimum ödeme tutarı
     payment_terms_days smallint DEFAULT 30,                -- Ödeme vadesi (gün)
 

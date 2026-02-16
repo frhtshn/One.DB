@@ -13,7 +13,7 @@ CREATE TABLE billing.monthly_invoices (
 
     company_id bigint NOT NULL,
     tenant_id bigint NOT NULL,
-    currency char(3) NOT NULL,
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Gelir Kalemleri
     gross_revenue numeric(18, 8) DEFAULT 0,                -- Toplam GGR

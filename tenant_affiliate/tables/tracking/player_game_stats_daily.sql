@@ -15,7 +15,7 @@ CREATE TABLE tracking.player_game_stats_daily (
     game_date date NOT NULL,                               -- İstatistik tarihi
     game_id bigint NOT NULL,                               -- Oyun ID (game_settings.game_id)
     provider_id bigint NOT NULL,                           -- Provider ID
-    currency char(3) NOT NULL,                             -- Oyuncunun para birimi
+    currency varchar(20) NOT NULL,                          -- Oyuncunun para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyun Metrikleri
     bet_count int NOT NULL DEFAULT 0,                      -- Bahis sayısı

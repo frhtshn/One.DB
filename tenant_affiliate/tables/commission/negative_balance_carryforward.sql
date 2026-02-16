@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS commission.negative_balance_carryforward CASCADE;
 CREATE TABLE commission.negative_balance_carryforward (
     id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
     affiliate_id bigint NOT NULL,                          -- Affiliate ID
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Kaynak Dönem (negatif NGR'ın oluştuğu dönem)
     source_year smallint NOT NULL,                         -- Kaynak yıl

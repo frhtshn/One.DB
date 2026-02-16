@@ -12,7 +12,7 @@ CREATE TABLE tracking.player_finance_stats_daily (
     player_id bigint NOT NULL,                             -- Oyuncu ID
     affiliate_id bigint NOT NULL,                          -- O günkü affiliate ID (snapshot)
     stats_date date NOT NULL,                              -- İstatistik tarihi
-    currency char(3) NOT NULL,                             -- Oyuncunun para birimi
+    currency varchar(20) NOT NULL,                          -- Oyuncunun para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Depozit Metrikleri
     deposit_count int NOT NULL DEFAULT 0,                  -- Depozit sayısı

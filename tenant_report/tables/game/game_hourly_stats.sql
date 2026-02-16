@@ -14,7 +14,7 @@ CREATE TABLE game.game_hourly_stats (
     -- Temel Bilgiler
     player_id bigint NOT NULL,                             -- Oyuncu ID
     wallet_id bigint NOT NULL,                             -- Cüzdan ID
-    currency char(3) NOT NULL,                             -- Para birimi
+    currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Agregasyon (Tüm oyunların toplamı)
     total_bet numeric(18, 8) DEFAULT 0,

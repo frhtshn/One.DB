@@ -72,6 +72,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 -- CONSTRAINTS
 -- =============================================================================
+\i tenant_log/constraints/kyc.sql
 \i tenant_log/constraints/messaging.sql
 \i tenant_log/constraints/game_log.sql
 
@@ -79,7 +80,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- INDEXES
 -- =============================================================================
 \i tenant_log/indexes/affiliate.sql
--- \i tenant_log/indexes/bonus.sql
+\i tenant_log/indexes/bonus_log.sql
 \i tenant_log/indexes/kyc.sql
 \i tenant_log/indexes/messaging.sql
 \i tenant_log/indexes/game_log.sql

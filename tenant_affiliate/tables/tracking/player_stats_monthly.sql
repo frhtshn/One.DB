@@ -13,7 +13,7 @@ CREATE TABLE tracking.player_stats_monthly (
     affiliate_id bigint NOT NULL,                          -- Affiliate ID (ay boyunca değişmişse son değer)
     period_year smallint NOT NULL,                         -- Yıl
     period_month smallint NOT NULL,                        -- Ay (1-12)
-    currency char(3) NOT NULL,                             -- Oyuncunun para birimi
+    currency varchar(20) NOT NULL,                          -- Oyuncunun para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Depozit Metrikleri
     deposit_count int NOT NULL DEFAULT 0,                  -- Depozit sayısı
