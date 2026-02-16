@@ -1,5 +1,7 @@
 SET client_encoding = 'UTF8';
 
+\set ON_ERROR_STOP on
+
 BEGIN;
 
 -- CREATE SCHEMAS
@@ -38,8 +40,13 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
--- AFFILIATE TABLES
 \i tenant_affiliate/tables/affiliate/affiliates.sql
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'affiliate' AND table_name = 'affiliates') THEN
+		RAISE EXCEPTION 'affiliate.affiliates tablosu oluşturulamadı!';
+	END IF;
+END $$;
 \i tenant_affiliate/tables/affiliate/affiliate_network.sql
 \i tenant_affiliate/tables/affiliate/affiliate_users.sql
 
@@ -49,8 +56,13 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_affiliate/tables/campaign/attribution_models.sql
 \i tenant_affiliate/tables/campaign/affiliate_campaigns.sql
 
--- COMMISSION TABLES
 \i tenant_affiliate/tables/commission/commission_plans.sql
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'commission' AND table_name = 'commissions') THEN
+		RAISE EXCEPTION 'commission.commissions tablosu oluşturulamadı!';
+	END IF;
+END $$;
 \i tenant_affiliate/tables/commission/commission_tiers.sql
 \i tenant_affiliate/tables/commission/network_commission_rules.sql
 \i tenant_affiliate/tables/commission/network_commission_splits.sql
@@ -59,9 +71,20 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_affiliate/tables/commission/negative_balance_carryforward.sql
 \i tenant_affiliate/tables/commission/commissions.sql
 
--- PAYOUT TABLES
 \i tenant_affiliate/tables/payout/payout_requests.sql
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'payout' AND table_name = 'payout_requests') THEN
+		RAISE EXCEPTION 'payout.payout_requests tablosu oluşturulamadı!';
+	END IF;
+END $$;
 \i tenant_affiliate/tables/payout/payouts.sql
+DO $$
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'payout' AND table_name = 'payouts') THEN
+		RAISE EXCEPTION 'payout.payouts tablosu oluşturulamadı!';
+	END IF;
+END $$;
 \i tenant_affiliate/tables/payout/payout_commissions.sql
 
 -- TRACKING TABLES
