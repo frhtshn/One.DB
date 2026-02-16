@@ -55,17 +55,17 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 
 ```mermaid
 flowchart TD
-    BO["Backoffice Application\n(Yönetim Paneli)"]
-    BE["Backend (.NET + Orleans + gRPC)\nREST API · Orleans Grains · gRPC Services"]
+    BO["Backoffice Application"]
+    BE["Backend (.NET + Orleans + gRPC)"]
     BO --> BE
     subgraph core["Core Databases"]
-        CD["core\ncore_log\ncore_audit\ncore_report"]
+        CD["core · core_log · core_audit · core_report"]
     end
     subgraph gateway["Gateway Databases"]
-        GD["game · game_log\nfinance · finance_log\nbonus"]
+        GD["game · game_log · finance · finance_log · bonus"]
     end
     subgraph tenant["Tenant Databases"]
-        TD2["tenant_XXX\ntenant_log_XXX\ntenant_audit_XXX\ntenant_report_XXX\ntenant_affiliate_XXX"]
+        TD2["tenant_XXX + log/audit/report/affiliate"]
     end
     BE --> CD
     BE --> GD
@@ -77,20 +77,20 @@ flowchart TD
 ```mermaid
 flowchart TD
     subgraph core["CORE (Merkezi Yapı)"]
-        C["Companies · Tenants · Users/Roles\nCatalog Data · Theme Market · Messaging"]
+        C["Companies · Tenants · Users/Roles · Catalog"]
     end
-    subgraph core_subs["Core Alt Veritabanları"]
-        CL["CORE_LOG\nTeknik Loglar\n30-90 gün"]
-        CA["CORE_AUDIT\nDenetim Kayıtları\n90 gün"]
-        CR["CORE_REPORT\nMerkezi Raporlar\nSınırsız"]
+    subgraph core_subs["Core Alt DB'ler"]
+        CL["CORE_LOG<br/>30-90 gün"]
+        CA["CORE_AUDIT<br/>90 gün"]
+        CR["CORE_REPORT<br/>Sınırsız"]
     end
-    subgraph gw["Gateway & Plugin Veritabanları"]
+    subgraph gw["Gateway & Plugin"]
         GW["game · game_log · finance · finance_log · bonus"]
     end
-    subgraph tenants["Tenant Veritabanları (per-tenant)"]
-        T1["tenant_001\ntenant_log_001\ntenant_aud_001\ntenant_rep_001\ntenant_aff_001"]
-        T2["tenant_002\ntenant_log_002\ntenant_aud_002\ntenant_rep_002\ntenant_aff_002"]
-        TX["tenant_XXX\n..."]
+    subgraph tenants["Tenant (per-tenant)"]
+        T1["tenant_001 + log/aud/rep/aff"]
+        T2["tenant_002 + log/aud/rep/aff"]
+        TX["tenant_XXX + ..."]
     end
     C --> CL
     C --> CA
@@ -246,11 +246,11 @@ Yeni tenant oluşturulduğunda:
 ```mermaid
 flowchart TD
     CL["Coinlayer API"] -- "gRPC" --> CM["CryptoManager Service"]
-    CU["CurrencyLayer API"] -- "HTTP" --> BE["Backend\n(CurrencyGrain / CryptoGrain)"]
+    CU["CurrencyLayer API"] -- "HTTP" --> BE["Backend<br/>(CurrencyGrain / CryptoGrain)"]
     CM --> BE
-    BE -- "cryptocurrency_upsert()\n(katalog sync)" --> Core["Core DB"]
-    BE -- "crypto_rates_bulk_upsert()\n(kur yazma)" --> T1["Tenant_001 DB"]
-    BE -- "crypto_rates_bulk_upsert()\n(kur yazma)" --> T2["Tenant_002 DB"]
+    BE -- "cryptocurrency_upsert()" --> Core["Core DB<br/>(katalog sync)"]
+    BE -- "crypto_rates_bulk_upsert()" --> T1["Tenant_001 DB"]
+    BE -- "crypto_rates_bulk_upsert()" --> T2["Tenant_002 DB"]
 ```
 
 **Akış:**
@@ -269,10 +269,10 @@ flowchart TD
     L["Kullanıcı/Oyuncu Login"] --> BE["Backend"]
     BE -- "22 alan" --> IP["ip-api.com"]
     IP --> BE
-    BE --> G1["Core DB: catalog.ip_geo_cache\n(TTL 30 gün, cache hit)"]
-    BE --> G2["Core DB: security.user_sessions\n(backoffice oturum + geo)"]
-    BE --> G3["Core Audit DB: backoffice.auth_audit_log\n(denetim + geo)"]
-    BE --> G4["Tenant Audit DB: player_audit.login_attempts/sessions\n(oyuncu + geo)"]
+    BE --> G1["Core: ip_geo_cache<br/>(TTL 30 gün)"]
+    BE --> G2["Core: user_sessions<br/>(backoffice + geo)"]
+    BE --> G3["Core Audit: auth_audit_log<br/>(denetim + geo)"]
+    BE --> G4["Tenant Audit: login_attempts<br/>(oyuncu + geo)"]
 ```
 
 ---
@@ -500,8 +500,8 @@ Tenant DB fonksiyonları auth kontrolü **yapmaz**. Yetkilendirme Core DB'de, i�
 
 ```mermaid
 flowchart LR
-    R["Backend Request"] --> A["1. Core DB:\nsecurity.user_assert_access_tenant\n(P0403 → işlem durur)"]
-    A -- "Başarılı" --> B["2. Tenant DB:\nİş fonksiyonu çağrılır\n(auth-agnostic)"]
+    R["Backend Request"] --> A["1. Core DB:<br/>user_assert_access_tenant<br/>(P0403 → işlem durur)"]
+    A -- "Başarılı" --> B["2. Tenant DB:<br/>İş fonksiyonu (auth-agnostic)"]
 ```
 
 ### 9.4 GeoIP ile Güvenlik İzleme

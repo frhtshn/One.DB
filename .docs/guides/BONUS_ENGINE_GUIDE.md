@@ -9,18 +9,18 @@ Bonus sistemi **JSON-driven generic rule engine** mimarisi kullanır. Eski MSSQL
 ```mermaid
 flowchart TD
     subgraph bonus["Bonus DB (Shared)"]
-        B1["bonus.bonus_types\nbonus.bonus_rules"]
-        B2["campaign.campaigns\npromotion.promo_codes"]
+        B1["bonus.bonus_types<br/>bonus.bonus_rules"]
+        B2["campaign.campaigns<br/>promotion.promo_codes"]
     end
     subgraph tenant["Tenant DB (Per-tenant)"]
-        T1["bonus.bonus_awards\nbonus.promo_redemptions"]
+        T1["bonus.bonus_awards<br/>bonus.promo_redemptions"]
     end
     subgraph tenant_log["Tenant Log DB"]
-        L1["bonus_log.bonus_evaluation_logs\n(daily partition, 90 gün)"]
+        L1["bonus_log.bonus_evaluation_logs<br/>(daily partition, 90 gün)"]
     end
     BO["BO Admin"] --> B1
     BO --> B2
-    B1 -- "rule referansı\n(backend cross-DB)" --> T1
+    B1 -- "rule referansı (cross-DB)" --> T1
     W["Backend / Worker"] --> T1
     W --> L1
 ```

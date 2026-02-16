@@ -9,14 +9,14 @@ Oyun entegrasyonu **bounded context** mimarisi kullanır. **Game DB oyun katalo�
 ```mermaid
 flowchart TD
     subgraph core["Core DB (Shared)"]
-        C1["catalog.providers\n(tüm provider master)"]
-        C2["core.tenant_providers\ncore.tenant_games"]
+        C1["catalog.providers<br/>(tüm provider master)"]
+        C2["core.tenant_providers<br/>core.tenant_games"]
     end
     subgraph game["Game DB (Shared)"]
-        G1["catalog.game_providers\ncatalog.games\ncatalog.game_currency_limits"]
+        G1["catalog.game_providers<br/>catalog.games<br/>catalog.game_currency_limits"]
     end
     subgraph tenant["Tenant DB (Per-tenant)"]
-        T1["game.game_settings\ngame.game_limits"]
+        T1["game.game_settings<br/>game.game_limits"]
     end
     C1 -- "Backend sync" --> G1
     C2 -- "Backend sync" --> T1
@@ -40,7 +40,7 @@ Core DB eskiden hem provider hem game tablosunu tutuyordu. Sorunları:
 
 ```mermaid
 flowchart LR
-    A["Core DB: catalog.providers\n(GAME tipli)"] -- "game.game_provider_sync(p_sync_data)" --> B["Game DB: catalog.game_providers\n(hafif kopya, aynı ID'ler)"]
+    A["Core DB: catalog.providers<br/>(GAME tipli)"] -- "game.game_provider_sync()" --> B["Game DB: catalog.game_providers<br/>(hafif kopya, aynı ID'ler)"]
 ```
 
 - **Aynı ID'ler kullanılır** — `BIGINT PK`, serial değil. Cross-DB consistency sağlanır

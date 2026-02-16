@@ -19,16 +19,16 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ```mermaid
 flowchart TD
-    subgraph core["CORE (Shared)\nMerkezi: Şirketler, Tenantlar, Katalog, Routing"]
+    subgraph core["CORE (Shared)"]
         CD["core · core_log · core_audit · core_report"]
     end
-    subgraph gw["Gateway & Plugin Veritabanları\nGame, Finance & Bonus Provider Entegrasyonu"]
+    subgraph gw["Gateway & Plugin"]
         GD["game · game_log · finance · finance_log · bonus"]
     end
     subgraph tenants["Tenant Veritabanları (per-tenant)"]
-        T1["tenant_001\ntenant_log · tenant_aud\ntenant_rep · tenant_aff"]
-        T2["tenant_002\ntenant_log · tenant_aud\ntenant_rep · tenant_aff"]
-        TX["tenant_XXX\n..."]
+        T1["tenant_001 + log/aud/rep/aff"]
+        T2["tenant_002 + log/aud/rep/aff"]
+        TX["tenant_XXX + ..."]
     end
     CD --> GD
     GD --> T1

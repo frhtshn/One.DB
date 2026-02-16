@@ -454,13 +454,13 @@ core.catalog.data_retention_policies
 
 ```mermaid
 flowchart TD
-    J["Backend Scheduled Job"] --> S1["1. Core DB'den tenant listesini çek\n(core.tenants + jurisdiction_id)"]
-    S1 --> S2["2. Core DB'den retention kurallarını çek\ncatalog.data_retention_policies\nWHERE jurisdiction_id = tenant_jurisdiction"]
+    J["Backend Scheduled Job"] --> S1["1. Tenant listesini çek<br/>(core.tenants + jurisdiction_id)"]
+    S1 --> S2["2. Retention kurallarını çek<br/>(catalog.data_retention_policies)"]
     S2 --> S3["3. Her tenant için retention uygula"]
-    S3 --> TL["tenant_log DB\nrun_maintenance(kyc_retention, 7)"]
-    S3 --> TD2["tenant DB\nrun_maintenance(transaction_retention, 3)"]
-    S3 --> TA["tenant_affiliate DB\nrun_maintenance(affiliate_retention, 3)"]
-    TL --> S4["4. Sonuçları logla, alert gönder"]
+    S3 --> TL["tenant_log DB<br/>run_maintenance(kyc_retention, 7)"]
+    S3 --> TD2["tenant DB<br/>run_maintenance(transaction_retention, 3)"]
+    S3 --> TA["tenant_affiliate DB<br/>run_maintenance(affiliate_retention, 3)"]
+    TL --> S4["4. Logla + alert gönder"]
     TD2 --> S4
     TA --> S4
 ```

@@ -9,14 +9,14 @@
 ```mermaid
 flowchart TD
     subgraph core["Core DB (Shared)"]
-        C1["catalog.providers\n(tüm provider master)"]
-        C2["core.tenant_providers\ncore.tenant_payment_methods\ncore.tenant_provider_limits"]
+        C1["catalog.providers<br/>(tüm provider master)"]
+        C2["core.tenant_providers<br/>core.tenant_payment_methods<br/>core.tenant_provider_limits"]
     end
     subgraph finance["Finance DB (Shared)"]
-        F1["catalog.payment_providers\ncatalog.payment_methods\ncatalog.payment_method_currency_limits"]
+        F1["catalog.payment_providers<br/>catalog.payment_methods<br/>catalog.payment_method_currency_limits"]
     end
     subgraph tenant["Tenant DB (Per-tenant)"]
-        T1["finance.payment_method_settings\nfinance.payment_method_limits\nfinance.payment_player_limits"]
+        T1["finance.payment_method_settings<br/>finance.payment_method_limits<br/>finance.payment_player_limits"]
     end
     C1 -- "Backend sync" --> F1
     C2 -- "Backend sync" --> T1
@@ -39,7 +39,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A["Core DB: catalog.providers\n(PAYMENT tipli)"] -- "finance.payment_provider_sync(p_sync_data)" --> B["Finance DB: catalog.payment_providers\n(hafif kopya, aynı ID'ler)"]
+    A["Core DB: catalog.providers<br/>(PAYMENT tipli)"] -- "finance.payment_provider_sync()" --> B["Finance DB: catalog.payment_providers<br/>(hafif kopya, aynı ID'ler)"]
 ```
 
 - **Aynı ID'ler kullanılır** — `BIGINT PK`, serial değil. Cross-DB consistency sağlanır

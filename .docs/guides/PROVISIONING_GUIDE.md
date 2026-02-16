@@ -8,10 +8,10 @@ Yeni whitelabel (tenant) açılışından canlıya alınmasına kadar tam provis
 
 ```mermaid
 flowchart TD
-    BO["BO Admin (Yönetim Paneli)\n1. Company oluştur\n2. Tenant oluştur (draft)\n3. Ayarları gir\n4. Canlıya Al"]
+    BO["BO Admin<br/>1. Company oluştur<br/>2. Tenant oluştur (draft)<br/>3. Ayarları gir<br/>4. Canlıya Al"]
     BE["Backend (.NET)"]
-    PM["ProductionManager Service\n(11 adım)"]
-    HS["Hedef Sunucu\nPostgreSQL (3x) · Backend\nCallback · Frontend"]
+    PM["ProductionManager Service<br/>(11 adım)"]
+    HS["Hedef Sunucu<br/>PostgreSQL (3x) · Backend · Callback · Frontend"]
     BO --> BE -- "gRPC" --> PM --> HS
 ```
 
@@ -180,9 +180,9 @@ retry_count: deneme sayısı
 ```mermaid
 flowchart TD
     BO["BO Admin → Tenant Kapat"] --> S1
-    S1["1. tenant_decommission_start()\nstatus = decommissioned\ndecommissioned_at = NOW()"]
-    S1 --> S2["2. ProductionManager\nContainer durdur → DB backup → Container sil"]
-    S2 --> S3["3. tenant_decommission_complete()\nlog kaydı"]
+    S1["1. tenant_decommission_start()<br/>status = decommissioned"]
+    S1 --> S2["2. ProductionManager<br/>Container durdur → DB backup → Container sil"]
+    S2 --> S3["3. tenant_decommission_complete()<br/>log kaydı"]
 ```
 
 **Decommission sonrası:**
