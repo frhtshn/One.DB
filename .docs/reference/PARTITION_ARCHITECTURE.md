@@ -452,21 +452,17 @@ core.catalog.data_retention_policies
 
 ### 7.2 Çalışma Akışı
 
-```
-Backend Scheduled Job
-│
-├─ 1. Core DB'den tenant listesini çek (core.tenants + jurisdiction_id)
-├─ 2. Core DB'den jurisdiction bazlı retention kurallarını çek
-│     SELECT data_category, retention_days
-│     FROM catalog.data_retention_policies
-│     WHERE jurisdiction_id = :tenant_jurisdiction
-│
-├─ 3. Her tenant için ilgili DB'lere bağlan ve retention uygula:
-│     ├─ tenant_log DB  → run_maintenance(kyc_retention, 7)
-│     ├─ tenant DB      → run_maintenance(transaction_retention, 3)
-│     └─ tenant_affiliate DB → run_maintenance(affiliate_retention, 3)
-│
-└─ 4. Sonuçları logla, alert gönder
+```mermaid
+flowchart TD
+    J["Backend Scheduled Job"] --> S1["1. Core DB'den tenant listesini çek\n(core.tenants + jurisdiction_id)"]
+    S1 --> S2["2. Core DB'den retention kurallarını çek\ncatalog.data_retention_policies\nWHERE jurisdiction_id = tenant_jurisdiction"]
+    S2 --> S3["3. Her tenant için retention uygula"]
+    S3 --> TL["tenant_log DB\nrun_maintenance(kyc_retention, 7)"]
+    S3 --> TD2["tenant DB\nrun_maintenance(transaction_retention, 3)"]
+    S3 --> TA["tenant_affiliate DB\nrun_maintenance(affiliate_retention, 3)"]
+    TL --> S4["4. Sonuçları logla, alert gönder"]
+    TD2 --> S4
+    TA --> S4
 ```
 
 ### 7.3 Örnek Retention Süreleri

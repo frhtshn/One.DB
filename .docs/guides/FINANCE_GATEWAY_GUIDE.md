@@ -6,30 +6,20 @@
 
 ## Büyük Resim
 
-```
-Core DB (Shared)                    Finance DB (Shared)
-┌────────────────────────┐          ┌──────────────────────────┐
-│ catalog.providers      │──sync──> │ catalog.payment_         │
-│ (tüm provider master)  │          │   providers              │
-│                        │          │ catalog.payment_methods   │
-│ core.tenant_providers  │          │ catalog.payment_method_   │
-│ core.tenant_payment_   │          │   currency_limits        │
-│   methods              │          └──────────────────────────┘
-│ core.tenant_provider_  │
-│   limits               │
-└────────────────────────┘
-         │
-         │  Backend sync
-         ▼
-Tenant DB (Per-tenant)
-┌────────────────────────┐
-│ finance.payment_       │
-│   method_settings      │
-│ finance.payment_       │
-│   method_limits        │
-│ finance.payment_       │
-│   player_limits        │
-└────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph core["Core DB (Shared)"]
+        C1["catalog.providers\n(tüm provider master)"]
+        C2["core.tenant_providers\ncore.tenant_payment_methods\ncore.tenant_provider_limits"]
+    end
+    subgraph finance["Finance DB (Shared)"]
+        F1["catalog.payment_providers\ncatalog.payment_methods\ncatalog.payment_method_currency_limits"]
+    end
+    subgraph tenant["Tenant DB (Per-tenant)"]
+        T1["finance.payment_method_settings\nfinance.payment_method_limits\nfinance.payment_player_limits"]
+    end
+    C1 -- "Backend sync" --> F1
+    C2 -- "Backend sync" --> T1
 ```
 
 ---
@@ -47,12 +37,9 @@ Tenant DB (Per-tenant)
 
 ## Provider Sync Akışı
 
-```
-Core DB: catalog.providers (PAYMENT tipli)
-    │
-    │  Backend → finance.payment_provider_sync(p_sync_data TEXT)
-    ▼
-Finance DB: catalog.payment_providers (hafif kopya, aynı ID'ler)
+```mermaid
+flowchart LR
+    A["Core DB: catalog.providers\n(PAYMENT tipli)"] -- "finance.payment_provider_sync(p_sync_data)" --> B["Finance DB: catalog.payment_providers\n(hafif kopya, aynı ID'ler)"]
 ```
 
 - **Aynı ID'ler kullanılır** — `BIGINT PK`, serial değil. Cross-DB consistency sağlanır

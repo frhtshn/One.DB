@@ -6,23 +6,20 @@ Oyun entegrasyonu **bounded context** mimarisi kullanır. **Game DB oyun katalo�
 
 ## Büyük Resim
 
-```
-Core DB (Shared)                    Game DB (Shared)
-┌────────────────────────┐          ┌──────────────────────┐
-│ catalog.providers      │──sync──> │ catalog.game_        │
-│ (tüm provider master)  │          │   providers          │
-│                        │          │ catalog.games        │
-│ core.tenant_providers  │          │ catalog.game_        │
-│ core.tenant_games      │          │   currency_limits    │
-└────────────────────────┘          └──────────────────────┘
-         │
-         │  Backend sync
-         ▼
-Tenant DB (Per-tenant)
-┌────────────────────────┐
-│ game.game_settings     │
-│ game.game_limits       │
-└────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph core["Core DB (Shared)"]
+        C1["catalog.providers\n(tüm provider master)"]
+        C2["core.tenant_providers\ncore.tenant_games"]
+    end
+    subgraph game["Game DB (Shared)"]
+        G1["catalog.game_providers\ncatalog.games\ncatalog.game_currency_limits"]
+    end
+    subgraph tenant["Tenant DB (Per-tenant)"]
+        T1["game.game_settings\ngame.game_limits"]
+    end
+    C1 -- "Backend sync" --> G1
+    C2 -- "Backend sync" --> T1
 ```
 
 ---
@@ -41,12 +38,9 @@ Core DB eskiden hem provider hem game tablosunu tutuyordu. Sorunları:
 
 ## Provider Sync Akışı
 
-```
-Core DB: catalog.providers (GAME tipli)
-    │
-    │  Backend → game.game_provider_sync(p_sync_data TEXT)
-    ▼
-Game DB: catalog.game_providers (hafif kopya, aynı ID'ler)
+```mermaid
+flowchart LR
+    A["Core DB: catalog.providers\n(GAME tipli)"] -- "game.game_provider_sync(p_sync_data)" --> B["Game DB: catalog.game_providers\n(hafif kopya, aynı ID'ler)"]
 ```
 
 - **Aynı ID'ler kullanılır** — `BIGINT PK`, serial değil. Cross-DB consistency sağlanır
@@ -64,10 +58,10 @@ Oyun kataloğu iki yoldan doldurulur:
 | Gateway otomatik sync | Provider API | API'si olan provider'lar (Pragmatic, Evolution) |
 | BO admin import | CSV/Excel veya manuel CRUD | API'si olmayan provider'lar |
 
-```
-Provider API ──> Gateway ──> game.game_bulk_upsert(p_catalog_data TEXT)
-                                   │
-BO Admin ──> Backend ──> game.game_upsert(p_catalog_data TEXT)
+```mermaid
+flowchart LR
+    P["Provider API"] --> GW["Gateway"] --> BU["game.game_bulk_upsert(p_catalog_data)"]
+    BO["BO Admin"] --> BE["Backend"] --> SU["game.game_upsert(p_catalog_data)"]
 ```
 
 ---

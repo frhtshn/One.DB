@@ -6,20 +6,13 @@ Bonus sistemi **JSON-driven generic rule engine** mimarisi kullanır. Eski MSSQL
 
 ## Büyük Resim
 
-```
-Bonus DB (Shared)              Tenant DB (Per-tenant)          Tenant Log DB
-┌─────────────────────┐        ┌─────────────────────┐        ┌──────────────────────┐
-│ bonus.bonus_types    │        │ bonus.bonus_awards   │        │ bonus_log.            │
-│ bonus.bonus_rules    │───────>│ bonus.promo_         │        │   bonus_evaluation_   │
-│ campaign.campaigns   │  rule  │   redemptions        │        │   logs                │
-│ promotion.promo_codes│  ref   │                      │        │ (daily part, 90 gün)  │
-└─────────────────────┘        └─────────────────────┘        └──────────────────────┘
-       ↑ BO Admin                    ↑ Backend/Worker                 ↑ Worker
-```
+| Veritabanı | Tablolar | Erişim | Açıklama |
+|------------|----------|--------|----------|
+| **Bonus DB** (Shared) | `bonus.bonus_types`, `bonus.bonus_rules`, `campaign.campaigns`, `promotion.promo_codes` | BO Admin | Kural tanımları (shared, tüm tenant'lar için ortak yapılandırma) |
+| **Tenant DB** (Per-tenant) | `bonus.bonus_awards`, `bonus.promo_redemptions` | Backend/Worker | Oyuncu bazlı bonus kazanımları ve promosyon kullanımları (izole) |
+| **Tenant Log DB** | `bonus_log.bonus_evaluation_logs` | Worker | Değerlendirme audit trail (daily partition, 90 gün retention) |
 
-**Bonus DB** = Kural tanımları (shared, tüm tenant'lar için ortak yapılandırma).
-**Tenant DB** = Oyuncu bazlı bonus kazanımları ve promosyon kullanımları (izole).
-**Tenant Log DB** = Worker değerlendirme audit trail (partitioned, 90 gün retention).
+> Bonus DB → Tenant DB yönünde **rule referansı** vardır (backend cross-DB okuma ile).
 
 ---
 
@@ -63,13 +56,11 @@ Sektörde 15+ bonus tipi var (deposit match, cashback, freebet, freespin, loyalt
 
 **Kritik karar:** Tüm bonuslar HER ZAMAN **BONUS wallet**'a gider.
 
-```
-Oyuncu Cüzdanları (tenant.wallet.wallets):
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  REAL Wallet  │  │ BONUS Wallet │  │ LOCKED Wallet│
-│  (Gerçek para)│  │ (Bonus para) │  │ (Kilitli)    │
-└──────────────┘  └──────────────┘  └──────────────┘
-```
+| Cüzdan | Tip | Açıklama |
+|--------|-----|----------|
+| **REAL Wallet** | `real` | Gerçek para (deposit/withdraw) |
+| **BONUS Wallet** | `bonus` | Bonus para (tüm bonuslar buraya gider) |
+| **LOCKED Wallet** | `locked` | Kilitli bakiye (çevrim şartı tamamlanana kadar) |
 
 ### Harcama Önceliği
 

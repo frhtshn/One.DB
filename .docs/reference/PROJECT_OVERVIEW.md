@@ -53,69 +53,51 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 
 ### 2.1 Üst Düzey Görünüm
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           BACKOFFICE APPLICATION                            │
-│                    (Yönetim Paneli - React/Angular/Vue)                     │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │
-                                       ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        BACKEND (.NET + Orleans + gRPC)                      │
-│  REST API  │  Orleans Grains  │  gRPC Services (CryptoManager, Currency)   │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │
-           ┌───────────────────────────┼───────────────────────────┐
-           ▼                           ▼                           ▼
-┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────┐
-│   CORE DATABASES    │   │  GATEWAY DATABASES  │   │  TENANT DATABASES   │
-│  core               │   │  game, game_log     │   │ tenant_XXX          │
-│  core_log           │   │  finance,finance_log│   │ tenant_log_XXX      │
-│  core_audit         │   │  bonus              │   │ tenant_audit_XXX    │
-│  core_report        │   │                     │   │ tenant_report_XXX   │
-│                     │   │                     │   │ tenant_affiliate_XXX│
-└─────────────────────┘   └─────────────────────┘   └─────────────────────┘
+```mermaid
+flowchart TD
+    BO["Backoffice Application\n(Yönetim Paneli)"]
+    BE["Backend (.NET + Orleans + gRPC)\nREST API · Orleans Grains · gRPC Services"]
+    BO --> BE
+    subgraph core["Core Databases"]
+        CD["core\ncore_log\ncore_audit\ncore_report"]
+    end
+    subgraph gateway["Gateway Databases"]
+        GD["game · game_log\nfinance · finance_log\nbonus"]
+    end
+    subgraph tenant["Tenant Databases"]
+        TD2["tenant_XXX\ntenant_log_XXX\ntenant_audit_XXX\ntenant_report_XXX\ntenant_affiliate_XXX"]
+    end
+    BE --> CD
+    BE --> GD
+    BE --> TD2
 ```
 
 ### 2.2 Veritabanı Etkileşim Haritası
 
-```
-                              ┌──────────────────┐
-                              │      CORE        │
-                              │  (Merkezi Yapı)  │
-                              │ • Companies      │
-                              │ • Tenants        │
-                              │ • Users/Roles    │
-                              │ • Catalog Data   │
-                              │ • Theme Market   │
-                              │ • Messaging      │
-                              └────────┬─────────┘
-                                       │
-           ┌───────────────────────────┼───────────────────────────┐
-           │                           │                           │
-           ▼                           ▼                           ▼
-┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────┐
-│   CORE_LOG          │   │   CORE_AUDIT        │   │   CORE_REPORT       │
-│  (Teknik Loglar)    │   │  (Denetim Kayıtları)│   │  (Merkezi Raporlar) │
-│  Retention: 30-90gün│   │  Retention: 90 gün  │   │  Retention: Sınırsız│
-└─────────────────────┘   └─────────────────────┘   └─────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        GATEWAY & PLUGIN VERİTABANLARI                       │
-│  game  │  game_log  │  finance  │  finance_log  │  bonus                    │
-└────────────────────────────────────┬────────────────────────────────────────┘
-                                     │
-                 ┌───────────────────┼───────────────────┐
-                 ▼                   ▼                   ▼
-          ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-          │  tenant_001  │    │  tenant_002  │    │  tenant_XXX  │
-          │  (Oyuncular) │    │  (Oyuncular) │    │  (Oyuncular) │
-          ├──────────────┤    ├──────────────┤    ├──────────────┤
-          │tenant_log_001│    │tenant_log_002│    │tenant_log_XXX│
-          │tenant_aud_001│    │tenant_aud_002│    │tenant_aud_XXX│
-          │tenant_rep_001│    │tenant_rep_002│    │tenant_rep_XXX│
-          │tenant_aff_001│    │tenant_aff_002│    │tenant_aff_XXX│
-          └──────────────┘    └──────────────┘    └──────────────┘
+```mermaid
+flowchart TD
+    subgraph core["CORE (Merkezi Yapı)"]
+        C["Companies · Tenants · Users/Roles\nCatalog Data · Theme Market · Messaging"]
+    end
+    subgraph core_subs["Core Alt Veritabanları"]
+        CL["CORE_LOG\nTeknik Loglar\n30-90 gün"]
+        CA["CORE_AUDIT\nDenetim Kayıtları\n90 gün"]
+        CR["CORE_REPORT\nMerkezi Raporlar\nSınırsız"]
+    end
+    subgraph gw["Gateway & Plugin Veritabanları"]
+        GW["game · game_log · finance · finance_log · bonus"]
+    end
+    subgraph tenants["Tenant Veritabanları (per-tenant)"]
+        T1["tenant_001\ntenant_log_001\ntenant_aud_001\ntenant_rep_001\ntenant_aff_001"]
+        T2["tenant_002\ntenant_log_002\ntenant_aud_002\ntenant_rep_002\ntenant_aff_002"]
+        TX["tenant_XXX\n..."]
+    end
+    C --> CL
+    C --> CA
+    C --> CR
+    GW --> T1
+    GW --> T2
+    GW --> TX
 ```
 
 ---
@@ -261,17 +243,14 @@ Yeni tenant oluşturulduğunda:
 
 ### 5.1 Kur Senkronizasyonu (Currency & Crypto)
 
-```
-Coinlayer API ─── gRPC ──→ CryptoManager Service
-                                    │
-CurrencyLayer API ── HTTP ──→ Backend (CurrencyGrain / CryptoGrain)
-                                    │
-                    ┌───────────────┼───────────────┐
-                    ▼               ▼               ▼
-              Core DB          Tenant_001 DB    Tenant_002 DB
-         cryptocurrency_      crypto_rates_    crypto_rates_
-           upsert()           bulk_upsert()    bulk_upsert()
-         (katalog sync)       (kur yazma)      (kur yazma)
+```mermaid
+flowchart TD
+    CL["Coinlayer API"] -- "gRPC" --> CM["CryptoManager Service"]
+    CU["CurrencyLayer API"] -- "HTTP" --> BE["Backend\n(CurrencyGrain / CryptoGrain)"]
+    CM --> BE
+    BE -- "cryptocurrency_upsert()\n(katalog sync)" --> Core["Core DB"]
+    BE -- "crypto_rates_bulk_upsert()\n(kur yazma)" --> T1["Tenant_001 DB"]
+    BE -- "crypto_rates_bulk_upsert()\n(kur yazma)" --> T2["Tenant_002 DB"]
 ```
 
 **Akış:**
@@ -285,16 +264,15 @@ Backend, veritabanı transaction'ı içinde hem iş verisini hem de outbox mesaj
 
 ### 5.3 GeoIP Çözümleme
 
-```
-Kullanıcı/Oyuncu Login
-    │
-    ▼
-Backend → ip-api.com (22 alan)
-    │
-    ├─→ Core DB: catalog.ip_geo_cache (TTL 30 gün, cache hit sonraki login'ler)
-    ├─→ Core DB: security.user_sessions (backoffice oturum + geo)
-    ├─→ Core Audit DB: backoffice.auth_audit_log (denetim + geo)
-    └─→ Tenant Audit DB: player_audit.login_attempts/sessions (oyuncu + geo)
+```mermaid
+flowchart TD
+    L["Kullanıcı/Oyuncu Login"] --> BE["Backend"]
+    BE -- "22 alan" --> IP["ip-api.com"]
+    IP --> BE
+    BE --> G1["Core DB: catalog.ip_geo_cache\n(TTL 30 gün, cache hit)"]
+    BE --> G2["Core DB: security.user_sessions\n(backoffice oturum + geo)"]
+    BE --> G3["Core Audit DB: backoffice.auth_audit_log\n(denetim + geo)"]
+    BE --> G4["Tenant Audit DB: player_audit.login_attempts/sessions\n(oyuncu + geo)"]
 ```
 
 ---
@@ -520,13 +498,10 @@ Core DB `security` şemasında merkezi access control fonksiyonları:
 
 Tenant DB fonksiyonları auth kontrolü **yapmaz**. Yetkilendirme Core DB'de, iş mantığı Tenant DB'de çalışır:
 
-```
-Backend Request
-    │
-    ├─ 1. Core DB: security.user_assert_access_tenant(caller_id, tenant_id)
-    │      → P0403 exception fırlatırsa işlem durur
-    │
-    └─ 2. Tenant DB: iş fonksiyonu çağrılır (auth-agnostic)
+```mermaid
+flowchart LR
+    R["Backend Request"] --> A["1. Core DB:\nsecurity.user_assert_access_tenant\n(P0403 → işlem durur)"]
+    A -- "Başarılı" --> B["2. Tenant DB:\nİş fonksiyonu çağrılır\n(auth-agnostic)"]
 ```
 
 ### 9.4 GeoIP ile Güvenlik İzleme

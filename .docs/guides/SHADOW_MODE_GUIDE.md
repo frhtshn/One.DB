@@ -23,16 +23,11 @@ DB seviyesinde sadece **shadow ↔ production** ayrımı yapılır. Shadow mode 
 
 ## Nasıl Çalışır?
 
-```
-                    rollout_status
-                    ┌─────────────────────────────────────┐
-                    │  'production'  │      'shadow'       │
-┌───────────────────┼────────────────┼─────────────────────┤
-│ Anonymous         │   GÖRÜR ✅     │    GÖREMEZ ❌        │
-│ Normal oyuncu     │   GÖRÜR ✅     │    GÖREMEZ ❌        │
-│ Shadow tester     │   GÖRÜR ✅     │    GÖRÜR ✅          │
-└───────────────────┴────────────────┴─────────────────────┘
-```
+| Kullanıcı Tipi | `production` | `shadow` |
+|----------------|:------------:|:--------:|
+| Anonymous | Görür | Göremez |
+| Normal oyuncu | Görür | Göremez |
+| Shadow tester | Görür | Görür |
 
 ---
 

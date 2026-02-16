@@ -17,33 +17,23 @@ Bu doküman, **Nucleo platformunun** tüm veritabanlarını, şemalarını ve ta
 
 ## 2. Multi-Tenant Mimari Diyagramı
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                CORE (SHARED)                                │
-│           (Merkezi: Şirketler, Tenantlar, Katalog, Routing)                 │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  core   │  core_log  │  core_audit                                          │
-└────────────────────────────────┬────────────────────────────────────────────┘
-                                 │
-┌────────────────────────────────┼────────────────────────────────────────────┐
-│                    GATEWAY VE PLUGIN VERİTABANLARI                          │
-│             (Game, Finance & Bonus Provider Entegrasyonu)                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  game   │  game_log  │  finance  │  finance_log  │  bonus (Plugin)          │
-└────────────────────────────────┬────────────────────────────────────────────┘
-                                 │
-                 ┌───────────────┼───────────────┐
-                 ▼               ▼               ▼
-          ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-          │  tenant_001  │  │  tenant_002  │  │  tenant_XXX  │
-          │  (Oyuncular  │  │  (Oyuncular  │  │  (Oyuncular  │
-          │   Cüzdanlar) │  │   Cüzdanlar) │  │   Cüzdanlar) │
-          ├──────────────┤  ├──────────────┤  ├──────────────┤
-          │tenant_log_001│  │tenant_log_002│  │tenant_log_XXX│
-          │tenant_aud_001│  │tenant_aud_002│  │tenant_aud_XXX│
-          │tenant_rep_001│  │tenant_rep_002│  │tenant_rep_XXX│
-          │tenant_aff_001│  │tenant_aff_002│  │tenant_aff_XXX│
-          └──────────────┘  └──────────────┘  └──────────────┘
+```mermaid
+flowchart TD
+    subgraph core["CORE (Shared)\nMerkezi: Şirketler, Tenantlar, Katalog, Routing"]
+        CD["core · core_log · core_audit · core_report"]
+    end
+    subgraph gw["Gateway & Plugin Veritabanları\nGame, Finance & Bonus Provider Entegrasyonu"]
+        GD["game · game_log · finance · finance_log · bonus"]
+    end
+    subgraph tenants["Tenant Veritabanları (per-tenant)"]
+        T1["tenant_001\ntenant_log · tenant_aud\ntenant_rep · tenant_aff"]
+        T2["tenant_002\ntenant_log · tenant_aud\ntenant_rep · tenant_aff"]
+        TX["tenant_XXX\n..."]
+    end
+    CD --> GD
+    GD --> T1
+    GD --> T2
+    GD --> TX
 ```
 
 > Her tenant için ayrı bir veritabanı klonlanır. Core veritabanı tüm tenantlar arasında paylaşılır.

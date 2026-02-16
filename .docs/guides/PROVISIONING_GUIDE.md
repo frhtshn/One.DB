@@ -6,37 +6,24 @@ Yeni whitelabel (tenant) açılışından canlıya alınmasına kadar tam provis
 
 ## Büyük Resim
 
-```
-BO Admin (Yönetim Paneli)
-    │
-    │ 1. Company oluştur (gerekirse)
-    │ 2. Tenant oluştur (draft)
-    │ 3. Ayarları gir (domain, provider, currency, dil)
-    │ 4. "Canlıya Al" butonuna bas
-    │
-    ▼
-Backend (.NET) ──gRPC──> ProductionManager Service
-                              │
-                              │  11 adım
-                              ▼
-                    ┌───────────────────┐
-                    │ Hedef Sunucu      │
-                    │ • PostgreSQL (3x) │
-                    │ • Backend         │
-                    │ • Callback        │
-                    │ • Frontend        │
-                    └───────────────────┘
+```mermaid
+flowchart TD
+    BO["BO Admin (Yönetim Paneli)\n1. Company oluştur\n2. Tenant oluştur (draft)\n3. Ayarları gir\n4. Canlıya Al"]
+    BE["Backend (.NET)"]
+    PM["ProductionManager Service\n(11 adım)"]
+    HS["Hedef Sunucu\nPostgreSQL (3x) · Backend\nCallback · Frontend"]
+    BO --> BE -- "gRPC" --> PM --> HS
 ```
 
 ---
 
 ## Tenant Yaşam Döngüsü
 
-```
-draft ──> pending ──> provisioning ──> active
-                          │                │
-                          ▼                ▼
-                       failed         suspended ──> decommissioned
+```mermaid
+flowchart LR
+    draft --> pending --> provisioning --> active
+    provisioning --> failed
+    active --> suspended --> decommissioned
 ```
 
 | Durum | Açıklama |
@@ -104,16 +91,10 @@ draft ──> pending ──> provisioning ──> active
 
 Yeni tenant DB'leri sıfırdan `deploy_*.sql` çalıştırmak yerine **template dump'tan restore** edilir (çok daha hızlı).
 
-```
-Template Tenant (referans)
-    │
-    │  pg_dump -Fc
-    ▼
-S3: nucleo-dumps/tenant/2026.02.12-001.dump
-    │
-    │  pg_restore -Fc
-    ▼
-Yeni Tenant DB: tenant_42
+```mermaid
+flowchart TD
+    T["Template Tenant (referans)"] -- "pg_dump -Fc" --> S3["S3: nucleo-dumps/tenant/2026.02.12-001.dump"]
+    S3 -- "pg_restore -Fc" --> N["Yeni Tenant DB: tenant_42"]
 ```
 
 ### `core.template_dumps` Tablosu
@@ -196,20 +177,12 @@ retry_count: deneme sayısı
 
 ## Decommission (Tenant Kapatma)
 
-```
-BO Admin → "Tenant Kapat"
-    │
-    ▼
-Backend:
-  1. tenant_decommission_start(tenant_id)
-     → provisioning_status = 'decommissioned'
-     → decommissioned_at = NOW()
-  2. ProductionManager:
-     → Container'ları durdur
-     → DB backup al (archival)
-     → Container'ları sil
-  3. tenant_decommission_complete(tenant_id)
-     → log kaydı
+```mermaid
+flowchart TD
+    BO["BO Admin → Tenant Kapat"] --> S1
+    S1["1. tenant_decommission_start()\nstatus = decommissioned\ndecommissioned_at = NOW()"]
+    S1 --> S2["2. ProductionManager\nContainer durdur → DB backup → Container sil"]
+    S2 --> S3["3. tenant_decommission_complete()\nlog kaydı"]
 ```
 
 **Decommission sonrası:**
