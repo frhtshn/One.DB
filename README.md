@@ -14,25 +14,30 @@ Bu extension'larla db'ye bağlanılır. Daha sonra bir script yazıldığında "
 
 ## Dokümantasyon
 
-Detaylı mimari ve yapı dokümantasyonu `.docs/` klasöründedir.
+Detaylı mimari ve yapı dokümantasyonu `.docs/` klasöründedir. Referans dokümanları `.docs/reference/`, geliştirici rehberleri `.docs/guides/` altındadır.
 
-### Mimari
+### Referans (Mimari & Fonksiyonlar)
 
-| Dosya                                                              | Açıklama                                                     |
-| ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| [PROJECT_OVERVIEW.md](.docs/PROJECT_OVERVIEW.md)                   | **Proje genel bakış, sistem mimarisi ve veri akışı**         |
-| [DATABASE_ARCHITECTURE.md](.docs/DATABASE_ARCHITECTURE.md)         | Veritabanı mimarisi, şemalar ve tablolar                     |
-| [PARTITION_ARCHITECTURE.md](.docs/PARTITION_ARCHITECTURE.md)       | Partition yapısı ve yönetim fonksiyonları                     |
-| [LOGSTRATEGY.md](.docs/LOGSTRATEGY.md)                             | Log, audit ve retention stratejisi                           |
+| Dosya                                                                          | Açıklama                                                     |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| [PROJECT_OVERVIEW.md](.docs/reference/PROJECT_OVERVIEW.md)                     | **Proje genel bakış, sistem mimarisi ve veri akışı**         |
+| [DATABASE_ARCHITECTURE.md](.docs/reference/DATABASE_ARCHITECTURE.md)           | Veritabanı mimarisi, şemalar ve tablolar                     |
+| [PARTITION_ARCHITECTURE.md](.docs/reference/PARTITION_ARCHITECTURE.md)         | Partition yapısı ve yönetim fonksiyonları                     |
+| [LOGSTRATEGY.md](.docs/reference/LOGSTRATEGY.md)                               | Log, audit ve retention stratejisi                           |
+| [DATABASE_FUNCTIONS.md](.docs/reference/DATABASE_FUNCTIONS.md)                 | Stored procedure ve trigger referansı (index)                |
+| [FUNCTIONS_CORE.md](.docs/reference/FUNCTIONS_CORE.md)                         | Core katmanı fonksiyon ve trigger'ları                       |
+| [FUNCTIONS_TENANT.md](.docs/reference/FUNCTIONS_TENANT.md)                     | Tenant katmanı fonksiyon ve trigger'ları                     |
+| [FUNCTIONS_GATEWAY.md](.docs/reference/FUNCTIONS_GATEWAY.md)                   | Gateway & plugin (game, finance, bonus) fonksiyonları        |
 
-### Fonksiyon Referansları
+### Rehberler (Guides)
 
-| Dosya                                                      | Açıklama                                                  |
-| ---------------------------------------------------------- | --------------------------------------------------------- |
-| [DATABASE_FUNCTIONS.md](.docs/DATABASE_FUNCTIONS.md)       | Stored procedure ve trigger referansı (index)             |
-| [FUNCTIONS_CORE.md](.docs/FUNCTIONS_CORE.md)               | Core katmanı fonksiyon ve trigger'ları                    |
-| [FUNCTIONS_TENANT.md](.docs/FUNCTIONS_TENANT.md)           | Tenant katmanı fonksiyon ve trigger'ları                  |
-| [FUNCTIONS_GATEWAY.md](.docs/FUNCTIONS_GATEWAY.md)         | Gateway & plugin (game, finance, bonus) fonksiyonları     |
+| Dosya                                                                          | Açıklama                                                     |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| [GAME_GATEWAY_GUIDE.md](.docs/guides/GAME_GATEWAY_GUIDE.md)                   | Oyun gateway entegrasyonu geliştirme rehberi                 |
+| [FINANCE_GATEWAY_GUIDE.md](.docs/guides/FINANCE_GATEWAY_GUIDE.md)             | Finans gateway entegrasyonu geliştirme rehberi               |
+| [BONUS_ENGINE_GUIDE.md](.docs/guides/BONUS_ENGINE_GUIDE.md)                   | Bonus motoru (JSON-driven rule engine) rehberi               |
+| [PROVISIONING_GUIDE.md](.docs/guides/PROVISIONING_GUIDE.md)                   | Tenant provisioning/decommission rehberi                     |
+| [SHADOW_MODE_GUIDE.md](.docs/guides/SHADOW_MODE_GUIDE.md)                     | Shadow mode (canlı test) rehberi                             |
 
 
 ---
