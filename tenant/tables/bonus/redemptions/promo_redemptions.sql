@@ -21,8 +21,9 @@ CREATE TABLE bonus.promo_redemptions (
     status varchar(20) NOT NULL DEFAULT 'success', -- Durum: success, failed, expired
     failure_reason varchar(255),                  -- Başarısızlık sebebi
 
-    redeemed_at timestamp without time zone NOT NULL DEFAULT now(), -- Kullanım tarihi
-    created_at timestamp without time zone NOT NULL DEFAULT now()
+    redeemed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),  -- Kullanım tarihi
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()   -- Status tracking tutarlılığı
 );
 
 COMMENT ON TABLE bonus.promo_redemptions IS 'Promotional code redemption records tracking player usage to prevent duplicate redemptions';

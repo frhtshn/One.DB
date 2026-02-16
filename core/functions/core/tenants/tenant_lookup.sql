@@ -18,7 +18,9 @@ RETURNS TABLE(
     name VARCHAR(100),
     company_id BIGINT,
     company_name VARCHAR(100),
-    is_active BOOLEAN
+    is_active BOOLEAN,
+    domain VARCHAR(255),
+    provisioning_status VARCHAR(20)
 )
 LANGUAGE plpgsql
 STABLE
@@ -62,7 +64,9 @@ BEGIN
             t.tenant_name AS name,
             t.company_id,
             c.company_name,
-            (t.status = 1) AS is_active
+            (t.status = 1) AS is_active,
+            t.domain,
+            t.provisioning_status
         FROM core.tenants t
         JOIN core.companies c ON c.id = t.company_id
         WHERE (p_company_id IS NULL OR t.company_id = p_company_id)
@@ -79,7 +83,9 @@ BEGIN
             t.tenant_name AS name,
             t.company_id,
             c.company_name,
-            (t.status = 1) AS is_active
+            (t.status = 1) AS is_active,
+            t.domain,
+            t.provisioning_status
         FROM core.tenants t
         JOIN core.companies c ON c.id = t.company_id
         WHERE t.company_id = v_caller_company_id
@@ -96,7 +102,9 @@ BEGIN
         t.tenant_name AS name,
         t.company_id,
         c.company_name,
-        (t.status = 1) AS is_active
+        (t.status = 1) AS is_active,
+        t.domain,
+        t.provisioning_status
     FROM core.tenants t
     JOIN core.companies c ON c.id = t.company_id
     JOIN security.user_allowed_tenants uat ON uat.tenant_id = t.id

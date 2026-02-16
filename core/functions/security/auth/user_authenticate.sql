@@ -145,7 +145,8 @@ BEGIN
         ), '[]'::jsonb)
         INTO v_accessible_tenants
         FROM core.tenants t
-        WHERE t.company_id = v_user.company_id AND t.status = 1;
+        WHERE t.company_id = v_user.company_id AND t.status = 1
+          AND COALESCE(t.provisioning_status, 'draft') != 'decommissioned';
 
         -- Company role permission'lari (onceden hesapla)
         SELECT COALESCE(ARRAY_AGG(DISTINCT p.code), '{}')
@@ -187,7 +188,8 @@ BEGIN
         ), '{}'::jsonb)
         INTO v_tenant_permissions
         FROM core.tenants t
-        WHERE t.company_id = v_user.company_id AND t.status = 1;
+        WHERE t.company_id = v_user.company_id AND t.status = 1
+          AND COALESCE(t.provisioning_status, 'draft') != 'decommissioned';
 
     ELSE
         -- ============================================================
@@ -209,6 +211,7 @@ BEGIN
             SELECT DISTINCT t.id, t.tenant_code, t.tenant_name, t.environment
             FROM security.user_roles ur
             JOIN core.tenants t ON ur.tenant_id = t.id AND t.status = 1
+                AND COALESCE(t.provisioning_status, 'draft') != 'decommissioned'
             WHERE ur.user_id = v_user.id AND ur.tenant_id IS NOT NULL
         ) t;
 

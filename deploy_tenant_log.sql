@@ -15,6 +15,9 @@ COMMENT ON SCHEMA kyc_log IS 'KYC provider API logs (90+ day retention)';
 CREATE SCHEMA IF NOT EXISTS messaging_log;
 COMMENT ON SCHEMA messaging_log IS 'Message delivery logs (daily partitioned)';
 
+CREATE SCHEMA IF NOT EXISTS game_log;
+COMMENT ON SCHEMA game_log IS 'Game round/spin detail logs (per-tenant, daily partitioned)';
+
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
@@ -65,9 +68,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_log/tables/messaging/message_delivery_logs.sql
 
 -- =============================================================================
+-- GAME LOG TABLES
+-- Oyun round/spin detay logları (per-tenant izolasyon)
+-- Retention: 30 gün (partition ile yönetilir)
+-- =============================================================================
+\i tenant_log/tables/game_log/game_rounds.sql
+
+-- =============================================================================
 -- CONSTRAINTS
 -- =============================================================================
 \i tenant_log/constraints/messaging.sql
+\i tenant_log/constraints/game_log.sql
 
 -- =============================================================================
 -- INDEXES
@@ -76,6 +87,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- \i tenant_log/indexes/bonus.sql
 \i tenant_log/indexes/kyc.sql
 \i tenant_log/indexes/messaging.sql
+\i tenant_log/indexes/game_log.sql
 
 -- =============================================================================
 -- FUNCTIONS - MAINTENANCE (Partition yönetimi)

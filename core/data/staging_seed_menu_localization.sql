@@ -29,84 +29,84 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- ----------------------------------------------------------------
 -- MENUS (7)
 -- ----------------------------------------------------------------
-('ui.menu.system', 'ui', 'menu', 'System menusu'),
-('ui.menu.rbac', 'ui', 'menu', 'RBAC menusu'),
-('ui.menu.catalog', 'ui', 'menu', 'Catalog menusu'),
-('ui.menu.companies', 'ui', 'menu', 'Companies menusu'),
-('ui.menu.tenants', 'ui', 'menu', 'Tenants menusu'),
-('ui.menu.users', 'ui', 'menu', 'Users menusu'),
-('ui.menu.audit-logs', 'ui', 'menu', 'Audit Logs menusu'),
+('ui.menu.system', 'ui', 'menu', 'System menüsü'),
+('ui.menu.rbac', 'ui', 'menu', 'RBAC menüsü'),
+('ui.menu.catalog', 'ui', 'menu', 'Catalog menüsü'),
+('ui.menu.companies', 'ui', 'menu', 'Companies menüsü'),
+('ui.menu.tenants', 'ui', 'menu', 'Tenants menüsü'),
+('ui.menu.users', 'ui', 'menu', 'Users menüsü'),
+('ui.menu.audit-logs', 'ui', 'menu', 'Audit Logs menüsü'),
 
 -- ----------------------------------------------------------------
 -- SUBMENUS (10)
 -- ----------------------------------------------------------------
 -- System
-('ui.submenu.monitoring', 'ui', 'menu', 'Monitoring alt menusu'),
-('ui.submenu.localization', 'ui', 'menu', 'Localization alt menusu'),
+('ui.submenu.monitoring', 'ui', 'menu', 'Monitoring alt menüsü'),
+('ui.submenu.localization', 'ui', 'menu', 'Localization alt menüsü'),
 -- RBAC
-('ui.submenu.roles', 'ui', 'menu', 'Roles alt menusu'),
-('ui.submenu.permissions', 'ui', 'menu', 'Permissions alt menusu'),
-('ui.submenu.menus', 'ui', 'menu', 'Menu Management alt menusu'),
-('ui.submenu.permission-templates', 'ui', 'menu', 'Permission Templates alt menusu'),
+('ui.submenu.roles', 'ui', 'menu', 'Roles alt menüsü'),
+('ui.submenu.permissions', 'ui', 'menu', 'Permissions alt menüsü'),
+('ui.submenu.menus', 'ui', 'menu', 'Menu Management alt menüsü'),
+('ui.submenu.permission-templates', 'ui', 'menu', 'Permission Templates alt menüsü'),
 -- Catalog
-('ui.submenu.providers', 'ui', 'menu', 'Providers alt menusu'),
-('ui.submenu.payment-methods', 'ui', 'menu', 'Payment Methods alt menusu'),
-('ui.submenu.compliance', 'ui', 'menu', 'Compliance alt menusu'),
-('ui.submenu.uikit', 'ui', 'menu', 'UI Kit alt menusu'),
+('ui.submenu.providers', 'ui', 'menu', 'Providers alt menüsü'),
+('ui.submenu.payment-methods', 'ui', 'menu', 'Payment Methods alt menüsü'),
+('ui.submenu.compliance', 'ui', 'menu', 'Compliance alt menüsü'),
+('ui.submenu.uikit', 'ui', 'menu', 'UI Kit alt menüsü'),
 
 -- ----------------------------------------------------------------
 -- PAGES - Standalone (8)
 -- ----------------------------------------------------------------
-('ui.page.dashboard', 'ui', 'page', 'Dashboard sayfasi'),
-('ui.page.company-detail', 'ui', 'page', 'Company detail sayfasi'),
-('ui.page.tenant-detail', 'ui', 'page', 'Tenant detail sayfasi'),
-('ui.page.user-detail', 'ui', 'page', 'User detail sayfasi'),
-('ui.page.role-detail', 'ui', 'page', 'Role detail sayfasi'),
-('ui.page.provider-detail', 'ui', 'page', 'Provider detail sayfasi'),
-('ui.page.nav-template-detail', 'ui', 'page', 'Nav template detail sayfasi'),
-('ui.page.permission-template-detail', 'ui', 'page', 'Permission template detail sayfasi'),
+('ui.page.dashboard', 'ui', 'page', 'Dashboard sayfası'),
+('ui.page.company-detail', 'ui', 'page', 'Company detail sayfası'),
+('ui.page.tenant-detail', 'ui', 'page', 'Tenant detail sayfası'),
+('ui.page.user-detail', 'ui', 'page', 'User detail sayfası'),
+('ui.page.role-detail', 'ui', 'page', 'Role detail sayfası'),
+('ui.page.provider-detail', 'ui', 'page', 'Provider detail sayfası'),
+('ui.page.nav-template-detail', 'ui', 'page', 'Nav template detail sayfası'),
+('ui.page.permission-template-detail', 'ui', 'page', 'Permission template detail sayfası'),
 
 -- ----------------------------------------------------------------
 -- PAGES - System (4)
 -- ----------------------------------------------------------------
-('ui.page.error-logs', 'ui', 'page', 'Error logs sayfasi'),
-('ui.page.dead-letters', 'ui', 'page', 'Dead letters sayfasi'),
-('ui.page.languages', 'ui', 'page', 'Languages sayfasi'),
-('ui.page.localization-keys', 'ui', 'page', 'Localization keys sayfasi'),
+('ui.page.error-logs', 'ui', 'page', 'Error logs sayfası'),
+('ui.page.dead-letters', 'ui', 'page', 'Dead letters sayfası'),
+('ui.page.languages', 'ui', 'page', 'Languages sayfası'),
+('ui.page.localization-keys', 'ui', 'page', 'Localization keys sayfası'),
 
 -- ----------------------------------------------------------------
 -- PAGES - RBAC (4)
 -- ----------------------------------------------------------------
-('ui.page.roles', 'ui', 'page', 'Roles sayfasi'),
-('ui.page.permissions', 'ui', 'page', 'Permissions sayfasi'),
-('ui.page.menu-management', 'ui', 'page', 'Menu management sayfasi'),
-('ui.page.permission-templates', 'ui', 'page', 'Permission templates sayfasi'),
+('ui.page.roles', 'ui', 'page', 'Roles sayfası'),
+('ui.page.permissions', 'ui', 'page', 'Permissions sayfası'),
+('ui.page.menu-management', 'ui', 'page', 'Menu management sayfası'),
+('ui.page.permission-templates', 'ui', 'page', 'Permission templates sayfası'),
 
 -- ----------------------------------------------------------------
 -- PAGES - Catalog (14)
 -- ----------------------------------------------------------------
-('ui.page.providers', 'ui', 'page', 'Providers sayfasi'),
-('ui.page.provider-types', 'ui', 'page', 'Provider types sayfasi'),
-('ui.page.currencies', 'ui', 'page', 'Currencies sayfasi'),
-('ui.page.cryptocurrencies', 'ui', 'page', 'Cryptocurrencies sayfasi'),
-('ui.page.payment-methods', 'ui', 'page', 'Payment methods sayfasi'),
-('ui.page.jurisdictions', 'ui', 'page', 'Jurisdictions sayfasi'),
-('ui.page.kyc-policies', 'ui', 'page', 'KYC policies sayfasi'),
-('ui.page.kyc-doc-requirements', 'ui', 'page', 'KYC document requirements sayfasi'),
-('ui.page.kyc-level-requirements', 'ui', 'page', 'KYC level requirements sayfasi'),
-('ui.page.rg-policies', 'ui', 'page', 'Responsible gaming policies sayfasi'),
-('ui.page.themes', 'ui', 'page', 'Themes sayfasi'),
-('ui.page.nav-templates', 'ui', 'page', 'Navigation templates sayfasi'),
-('ui.page.widgets', 'ui', 'page', 'Widgets sayfasi'),
-('ui.page.ui-positions', 'ui', 'page', 'UI positions sayfasi'),
+('ui.page.providers', 'ui', 'page', 'Providers sayfası'),
+('ui.page.provider-types', 'ui', 'page', 'Provider types sayfası'),
+('ui.page.currencies', 'ui', 'page', 'Currencies sayfası'),
+('ui.page.cryptocurrencies', 'ui', 'page', 'Cryptocurrencies sayfası'),
+('ui.page.payment-methods', 'ui', 'page', 'Payment methods sayfası'),
+('ui.page.jurisdictions', 'ui', 'page', 'Jurisdictions sayfası'),
+('ui.page.kyc-policies', 'ui', 'page', 'KYC policies sayfası'),
+('ui.page.kyc-doc-requirements', 'ui', 'page', 'KYC document requirements sayfası'),
+('ui.page.kyc-level-requirements', 'ui', 'page', 'KYC level requirements sayfası'),
+('ui.page.rg-policies', 'ui', 'page', 'Responsible gaming policies sayfası'),
+('ui.page.themes', 'ui', 'page', 'Themes sayfası'),
+('ui.page.nav-templates', 'ui', 'page', 'Navigation templates sayfası'),
+('ui.page.widgets', 'ui', 'page', 'Widgets sayfası'),
+('ui.page.ui-positions', 'ui', 'page', 'UI positions sayfası'),
 
 -- ----------------------------------------------------------------
 -- PAGES - Companies, Tenants, Audit (4)
 -- ----------------------------------------------------------------
-('ui.page.companies', 'ui', 'page', 'Companies sayfasi'),
-('ui.page.tenants', 'ui', 'page', 'Tenants sayfasi'),
-('ui.page.users', 'ui', 'page', 'Users sayfasi'),
-('ui.page.audit-logs', 'ui', 'page', 'Audit logs sayfasi'),
+('ui.page.companies', 'ui', 'page', 'Companies sayfası'),
+('ui.page.tenants', 'ui', 'page', 'Tenants sayfası'),
+('ui.page.users', 'ui', 'page', 'Users sayfası'),
+('ui.page.audit-logs', 'ui', 'page', 'Audit logs sayfası'),
 
 -- ----------------------------------------------------------------
 -- TABS (23)
@@ -378,155 +378,155 @@ FROM catalog.localization_keys k
 JOIN (VALUES
     -- Menu Groups (4)
     ('ui.menu-group.platform', 'Platform'),
-    ('ui.menu-group.companies', 'Sirket Yonetimi'),
-    ('ui.menu-group.tenants', 'Tenant Yonetimi'),
+    ('ui.menu-group.companies', 'Şirket Yönetimi'),
+    ('ui.menu-group.tenants', 'Tenant Yönetimi'),
     ('ui.menu-group.audit', 'Denetim'),
 
     -- Menus (7)
     ('ui.menu.system', 'Sistem'),
-    ('ui.menu.rbac', 'Erisim Kontrolu'),
+    ('ui.menu.rbac', 'Erişim Kontrolü'),
     ('ui.menu.catalog', 'Katalog'),
-    ('ui.menu.companies', 'Sirketler'),
+    ('ui.menu.companies', 'Şirketler'),
     ('ui.menu.tenants', 'Tenantlar'),
-    ('ui.menu.users', 'Kullanicilar'),
-    ('ui.menu.audit-logs', 'Denetim Kayitlari'),
+    ('ui.menu.users', 'Kullanıcılar'),
+    ('ui.menu.audit-logs', 'Denetim Kayıtları'),
 
     -- Submenus (10)
-    ('ui.submenu.monitoring', 'Izleme'),
-    ('ui.submenu.localization', 'Dil Cevirileri'),
+    ('ui.submenu.monitoring', 'İzleme'),
+    ('ui.submenu.localization', 'Dil Çevirileri'),
     ('ui.submenu.roles', 'Roller'),
     ('ui.submenu.permissions', 'Yetkiler'),
-    ('ui.submenu.menus', 'Menu Yonetimi'),
-    ('ui.submenu.permission-templates', 'Yetki Sablonlari'),
-    ('ui.submenu.providers', 'Saglayicilar'),
-    ('ui.submenu.payment-methods', 'Odeme Yontemleri'),
+    ('ui.submenu.menus', 'Menü Yönetimi'),
+    ('ui.submenu.permission-templates', 'Yetki Şablonları'),
+    ('ui.submenu.providers', 'Sağlayıcılar'),
+    ('ui.submenu.payment-methods', 'Ödeme Yöntemleri'),
     ('ui.submenu.compliance', 'Uyumluluk'),
     ('ui.submenu.uikit', 'UI Kit'),
 
     -- Pages - Standalone (8)
     ('ui.page.dashboard', 'Dashboard'),
-    ('ui.page.company-detail', 'Sirket Detayi'),
-    ('ui.page.tenant-detail', 'Tenant Detayi'),
-    ('ui.page.user-detail', 'Kullanici Detayi'),
-    ('ui.page.role-detail', 'Rol Detayi'),
-    ('ui.page.provider-detail', 'Provider Detayi'),
-    ('ui.page.nav-template-detail', 'Nav Sablon Detayi'),
-    ('ui.page.permission-template-detail', 'Yetki Sablonu Detayi'),
+    ('ui.page.company-detail', 'Şirket Detayı'),
+    ('ui.page.tenant-detail', 'Tenant Detayı'),
+    ('ui.page.user-detail', 'Kullanıcı Detayı'),
+    ('ui.page.role-detail', 'Rol Detayı'),
+    ('ui.page.provider-detail', 'Provider Detayı'),
+    ('ui.page.nav-template-detail', 'Nav Şablon Detayı'),
+    ('ui.page.permission-template-detail', 'Yetki Şablonu Detayı'),
 
     -- Pages - System (4)
-    ('ui.page.error-logs', 'Hata Kayitlari'),
+    ('ui.page.error-logs', 'Hata Kayıtları'),
     ('ui.page.dead-letters', 'Dead Letters'),
     ('ui.page.languages', 'Diller'),
-    ('ui.page.localization-keys', 'Lokalizasyon Anahtarlari'),
+    ('ui.page.localization-keys', 'Lokalizasyon Anahtarları'),
 
     -- Pages - RBAC (4)
     ('ui.page.roles', 'Roller'),
     ('ui.page.permissions', 'Yetkiler'),
-    ('ui.page.menu-management', 'Menu Yonetimi'),
-    ('ui.page.permission-templates', 'Yetki Sablonlari'),
+    ('ui.page.menu-management', 'Menü Yönetimi'),
+    ('ui.page.permission-templates', 'Yetki Şablonları'),
 
     -- Pages - Catalog (14)
-    ('ui.page.providers', 'Saglayicilar'),
-    ('ui.page.provider-types', 'Saglayici Tipleri'),
+    ('ui.page.providers', 'Sağlayıcılar'),
+    ('ui.page.provider-types', 'Sağlayıcı Tipleri'),
     ('ui.page.currencies', 'Para Birimleri'),
     ('ui.page.cryptocurrencies', 'Kripto Para Birimleri'),
-    ('ui.page.payment-methods', 'Odeme Yontemleri'),
-    ('ui.page.jurisdictions', 'Yargi Alanlari'),
-    ('ui.page.kyc-policies', 'KYC Politikalari'),
-    ('ui.page.kyc-doc-requirements', 'KYC Dokuman Gereksinimleri'),
+    ('ui.page.payment-methods', 'Ödeme Yöntemleri'),
+    ('ui.page.jurisdictions', 'Yargı Alanları'),
+    ('ui.page.kyc-policies', 'KYC Politikaları'),
+    ('ui.page.kyc-doc-requirements', 'KYC Doküman Gereksinimleri'),
     ('ui.page.kyc-level-requirements', 'KYC Seviye Gereksinimleri'),
-    ('ui.page.rg-policies', 'Sorumlu Oyun Politikalari'),
+    ('ui.page.rg-policies', 'Sorumlu Oyun Politikaları'),
     ('ui.page.themes', 'Temalar'),
-    ('ui.page.nav-templates', 'Nav Sablonlari'),
+    ('ui.page.nav-templates', 'Nav Şablonları'),
     ('ui.page.widgets', 'Widgetlar'),
-    ('ui.page.ui-positions', 'UI Pozisyonlari'),
+    ('ui.page.ui-positions', 'UI Pozisyonları'),
 
     -- Pages - Companies, Tenants, Audit (4)
-    ('ui.page.companies', 'Sirketler'),
+    ('ui.page.companies', 'Şirketler'),
     ('ui.page.tenants', 'Tenantlar'),
-    ('ui.page.users', 'Kullanicilar'),
-    ('ui.page.audit-logs', 'Denetim Kayitlari'),
+    ('ui.page.users', 'Kullanıcılar'),
+    ('ui.page.audit-logs', 'Denetim Kayıtları'),
 
     -- Tabs (23)
     ('ui.tab.company-details', 'Detaylar'),
-    ('ui.tab.company-password-policy', 'Sifre Politikasi'),
+    ('ui.tab.company-password-policy', 'Şifre Politikası'),
     ('ui.tab.tenant-details', 'Detaylar'),
     ('ui.tab.tenant-settings', 'Ayarlar'),
-    ('ui.tab.tenant-regional', 'Bolgesel'),
+    ('ui.tab.tenant-regional', 'Bölgesel'),
     ('ui.tab.tenant-presentation', 'Sunum'),
     ('ui.tab.user-details', 'Detaylar'),
     ('ui.tab.user-roles', 'Roller'),
     ('ui.tab.user-permissions', 'Yetkiler'),
-    ('ui.tab.user-permission-templates', 'Yetki Sablonlari'),
+    ('ui.tab.user-permission-templates', 'Yetki Şablonları'),
     ('ui.tab.role-details', 'Detaylar'),
     ('ui.tab.role-permissions', 'Yetkiler'),
     ('ui.tab.provider-details', 'Detaylar'),
     ('ui.tab.provider-settings', 'Ayarlar'),
     ('ui.tab.nav-template-details', 'Detaylar'),
-    ('ui.tab.nav-template-items', 'Ogeler'),
+    ('ui.tab.nav-template-items', 'Öğeler'),
     ('ui.tab.template-details', 'Detaylar'),
     ('ui.tab.template-permissions', 'Yetkiler'),
     ('ui.tab.template-assignments', 'Atamalar'),
     ('ui.tab.audit-search', 'Arama'),
     ('ui.tab.audit-detail', 'Detay'),
     ('ui.tab.localization-keys', 'Anahtarlar'),
-    ('ui.tab.localization-values', 'Degerler'),
+    ('ui.tab.localization-values', 'Değerler'),
 
     -- Contexts - List Pages (17)
-    ('ui.context.company-create', 'Sirket Olustur'),
-    ('ui.context.tenant-create', 'Tenant Olustur'),
-    ('ui.context.user-create', 'Kullanici Olustur'),
-    ('ui.context.provider-create', 'Provider Olustur'),
-    ('ui.context.provider-type-create', 'Provider Tipi Olustur'),
-    ('ui.context.currency-create', 'Para Birimi Olustur'),
-    ('ui.context.cryptocurrency-create', 'Kripto Para Birimi Olustur'),
-    ('ui.context.payment-method-create', 'Odeme Yontemi Olustur'),
-    ('ui.context.jurisdiction-create', 'Yargi Alani Olustur'),
-    ('ui.context.kyc-policy-create', 'KYC Politikasi Olustur'),
-    ('ui.context.kyc-doc-req-create', 'KYC Dokuman Gereksinimi Olustur'),
-    ('ui.context.kyc-level-req-create', 'KYC Seviye Gereksinimi Olustur'),
-    ('ui.context.rg-policy-create', 'Sorumlu Oyun Politikasi Olustur'),
-    ('ui.context.theme-create', 'Tema Olustur'),
-    ('ui.context.nav-template-create', 'Nav Sablon Olustur'),
-    ('ui.context.widget-create', 'Widget Olustur'),
-    ('ui.context.ui-position-create', 'UI Pozisyon Olustur'),
+    ('ui.context.company-create', 'Şirket Oluştur'),
+    ('ui.context.tenant-create', 'Tenant Oluştur'),
+    ('ui.context.user-create', 'Kullanıcı Oluştur'),
+    ('ui.context.provider-create', 'Provider Oluştur'),
+    ('ui.context.provider-type-create', 'Provider Tipi Oluştur'),
+    ('ui.context.currency-create', 'Para Birimi Oluştur'),
+    ('ui.context.cryptocurrency-create', 'Kripto Para Birimi Oluştur'),
+    ('ui.context.payment-method-create', 'Ödeme Yöntemi Oluştur'),
+    ('ui.context.jurisdiction-create', 'Yargı Alanı Oluştur'),
+    ('ui.context.kyc-policy-create', 'KYC Politikası Oluştur'),
+    ('ui.context.kyc-doc-req-create', 'KYC Doküman Gereksinimi Oluştur'),
+    ('ui.context.kyc-level-req-create', 'KYC Seviye Gereksinimi Oluştur'),
+    ('ui.context.rg-policy-create', 'Sorumlu Oyun Politikası Oluştur'),
+    ('ui.context.theme-create', 'Tema Oluştur'),
+    ('ui.context.nav-template-create', 'Nav Şablon Oluştur'),
+    ('ui.context.widget-create', 'Widget Oluştur'),
+    ('ui.context.ui-position-create', 'UI Pozisyon Oluştur'),
 
     -- Contexts - Company Detail (3)
-    ('ui.context.company-edit', 'Sirketi Duzenle'),
-    ('ui.context.company-delete', 'Sirketi Sil'),
-    ('ui.context.company-pp-edit', 'Sifre Politikasini Duzenle'),
+    ('ui.context.company-edit', 'Şirketi Düzenle'),
+    ('ui.context.company-delete', 'Şirketi Sil'),
+    ('ui.context.company-pp-edit', 'Şifre Politikasını Düzenle'),
 
     -- Contexts - Tenant Detail (6)
-    ('ui.context.tenant-edit', 'Tenanti Duzenle'),
-    ('ui.context.tenant-delete', 'Tenanti Sil'),
-    ('ui.context.tenant-settings-edit', 'Ayarlari Duzenle'),
+    ('ui.context.tenant-edit', 'Tenantı Düzenle'),
+    ('ui.context.tenant-delete', 'Tenantı Sil'),
+    ('ui.context.tenant-settings-edit', 'Ayarları Düzenle'),
     ('ui.context.tenant-currencies', 'Para Birimleri'),
     ('ui.context.tenant-languages', 'Diller'),
     ('ui.context.tenant-crypto', 'Kripto Para Birimleri'),
 
     -- Contexts - User Detail (7)
     ('ui.context.user-email', 'Email'),
-    ('ui.context.user-username', 'Kullanici Adi'),
+    ('ui.context.user-username', 'Kullanıcı Adı'),
     ('ui.context.user-first-name', 'Ad'),
     ('ui.context.user-last-name', 'Soyad'),
-    ('ui.context.user-edit', 'Kullaniciyi Duzenle'),
-    ('ui.context.user-delete', 'Kullaniciyi Sil'),
+    ('ui.context.user-edit', 'Kullanıcıyı Düzenle'),
+    ('ui.context.user-delete', 'Kullanıcıyı Sil'),
     ('ui.context.user-deny-permission', 'Yetkiyi Reddet'),
 
     -- Contexts - Provider Detail (2)
-    ('ui.context.provider-edit', 'Provideri Duzenle'),
-    ('ui.context.provider-delete', 'Provideri Sil'),
+    ('ui.context.provider-edit', 'Providerı Düzenle'),
+    ('ui.context.provider-delete', 'Providerı Sil'),
 
     -- Contexts - Nav Template Detail (1)
-    ('ui.context.nav-template-edit', 'Sablonu Duzenle'),
+    ('ui.context.nav-template-edit', 'Şablonu Düzenle'),
 
     -- Contexts - Audit (1)
-    ('ui.context.audit-view', 'Detay Gor')
+    ('ui.context.audit-view', 'Detay Gör')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;
 
 -- ================================================================
--- 4. DOGRULAMA
+-- 4. DOĞRULAMA
 -- ================================================================
 
 DO $$

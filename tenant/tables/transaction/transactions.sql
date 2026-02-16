@@ -20,6 +20,7 @@ CREATE TABLE transaction.transactions (
 
     -- İlişki ve Takip
     related_transaction_id bigint,                -- İlişkili işlem (rollback, bonus için)
+    bonus_award_id bigint,                        -- Hangi bonus award'dan harcandığı (NULL = bonus işlemi değil)
     idempotency_key varchar(100),                 -- Tekrar eden işlemleri önlemek için
     external_reference_id varchar(100),           -- Dış sistem referans ID (Provider ID vb.)
 

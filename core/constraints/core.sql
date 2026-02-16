@@ -89,14 +89,6 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- tenant_games -> games
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_games_game') THEN
-        ALTER TABLE core.tenant_games ADD CONSTRAINT fk_tenant_games_game
-            FOREIGN KEY (game_id) REFERENCES catalog.games(id);
-    END IF;
-END $$;
-
 -- tenant_games unique constraint
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_tenant_games') THEN
@@ -144,6 +136,13 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- tenant_providers unique constraint (formal — bir tenant'a aynı provider tekrar atanamaz)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_tenant_providers') THEN
+        ALTER TABLE core.tenant_providers ADD CONSTRAINT uq_tenant_providers UNIQUE (tenant_id, provider_id);
+    END IF;
+END $$;
+
 -- tenant_settings -> tenants
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_settings_tenant') THEN
@@ -157,14 +156,6 @@ DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_payment_methods_tenant') THEN
         ALTER TABLE core.tenant_payment_methods ADD CONSTRAINT fk_tenant_payment_methods_tenant
             FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
-    END IF;
-END $$;
-
--- tenant_payment_methods -> payment_methods
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_payment_methods_payment_method') THEN
-        ALTER TABLE core.tenant_payment_methods ADD CONSTRAINT fk_tenant_payment_methods_payment_method
-            FOREIGN KEY (payment_method_id) REFERENCES catalog.payment_methods(id);
     END IF;
 END $$;
 
@@ -188,14 +179,6 @@ DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_provider_limits_provider') THEN
         ALTER TABLE core.tenant_provider_limits ADD CONSTRAINT fk_tenant_provider_limits_provider
             FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
-    END IF;
-END $$;
-
--- tenant_provider_limits -> payment_methods
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_provider_limits_payment_method') THEN
-        ALTER TABLE core.tenant_provider_limits ADD CONSTRAINT fk_tenant_provider_limits_payment_method
-            FOREIGN KEY (payment_method_id) REFERENCES catalog.payment_methods(id);
     END IF;
 END $$;
 
@@ -236,6 +219,55 @@ DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_data_policies_category') THEN
         ALTER TABLE core.tenant_data_policies ADD CONSTRAINT uq_tenant_data_policies_category
             UNIQUE (tenant_id, data_category);
+    END IF;
+END $$;
+
+-- =============================================================================
+-- Infrastructure / Provisioning Constraints
+-- =============================================================================
+
+-- infrastructure_servers unique server_code
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_infrastructure_servers_code') THEN
+        ALTER TABLE core.infrastructure_servers ADD CONSTRAINT uq_infrastructure_servers_code UNIQUE (server_code);
+    END IF;
+END $$;
+
+-- tenant_servers -> tenants
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_servers_tenant') THEN
+        ALTER TABLE core.tenant_servers ADD CONSTRAINT fk_tenant_servers_tenant
+            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    END IF;
+END $$;
+
+-- tenant_servers -> infrastructure_servers
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_servers_server') THEN
+        ALTER TABLE core.tenant_servers ADD CONSTRAINT fk_tenant_servers_server
+            FOREIGN KEY (server_id) REFERENCES core.infrastructure_servers(id);
+    END IF;
+END $$;
+
+-- tenant_servers unique (tenant + server + role)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_tenant_servers_role') THEN
+        ALTER TABLE core.tenant_servers ADD CONSTRAINT uq_tenant_servers_role UNIQUE (tenant_id, server_id, server_role);
+    END IF;
+END $$;
+
+-- tenant_provisioning_log -> tenants
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_provisioning_log_tenant') THEN
+        ALTER TABLE core.tenant_provisioning_log ADD CONSTRAINT fk_provisioning_log_tenant
+            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    END IF;
+END $$;
+
+-- template_dumps unique (db_type + version)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_template_dumps_type_version') THEN
+        ALTER TABLE core.template_dumps ADD CONSTRAINT uq_template_dumps_type_version UNIQUE (db_type, version);
     END IF;
 END $$;
 

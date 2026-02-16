@@ -109,6 +109,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/core/configuration/tenant_jurisdictions.sql
 \i core/tables/core/configuration/tenant_data_policies.sql
 
+-- Infrastructure (Sunucu envanteri ve provisioning)
+\i core/tables/core/configuration/infrastructure_servers.sql
+\i core/tables/core/configuration/tenant_servers.sql
+\i core/tables/core/configuration/tenant_provisioning_log.sql
+\i core/tables/core/configuration/template_dumps.sql
+
 -- Integration (Oyun, Provider, Ödeme entegrasyonları)
 \i core/tables/core/integration/tenant_games.sql
 \i core/tables/core/integration/tenant_providers.sql
@@ -255,6 +261,52 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/departments/user_department_list.sql
 \i core/functions/core/departments/user_department_remove.sql
 
+-- Infrastructure Functions (Sunucu envanteri)
+\i core/functions/core/infrastructure/infrastructure_server_list.sql
+\i core/functions/core/infrastructure/infrastructure_server_get.sql
+\i core/functions/core/infrastructure/infrastructure_server_create.sql
+\i core/functions/core/infrastructure/infrastructure_server_update.sql
+
+-- Provisioning Functions (Tenant yaşam döngüsü)
+\i core/functions/core/provisioning/tenant_config_auto_populate.sql
+\i core/functions/core/provisioning/tenant_secrets_generate.sql
+\i core/functions/core/provisioning/tenant_provision_start.sql
+\i core/functions/core/provisioning/tenant_provision_step_update.sql
+\i core/functions/core/provisioning/tenant_provision_complete.sql
+\i core/functions/core/provisioning/tenant_provision_fail.sql
+\i core/functions/core/provisioning/tenant_provision_status.sql
+\i core/functions/core/provisioning/tenant_provision_history_list.sql
+\i core/functions/core/provisioning/tenant_decommission_start.sql
+\i core/functions/core/provisioning/tenant_decommission_complete.sql
+
+-- Tenant Server Functions (Sunucu ataması)
+\i core/functions/core/tenant_servers/tenant_server_list.sql
+\i core/functions/core/tenant_servers/tenant_server_assign.sql
+\i core/functions/core/tenant_servers/tenant_server_update.sql
+
+-- Tenant Provider Functions (Provider entegrasyonu)
+\i core/functions/core/tenant_providers/tenant_provider_list.sql
+\i core/functions/core/tenant_providers/tenant_provider_enable.sql
+\i core/functions/core/tenant_providers/tenant_provider_disable.sql
+\i core/functions/core/tenant_providers/tenant_provider_set_rollout.sql
+
+-- Tenant Game Functions (Oyun yönetimi)
+\i core/functions/core/tenant_games/tenant_game_list.sql
+\i core/functions/core/tenant_games/tenant_game_upsert.sql
+\i core/functions/core/tenant_games/tenant_game_remove.sql
+\i core/functions/core/tenant_games/tenant_game_refresh.sql
+
+-- Tenant Payment Method Functions (Ödeme yöntemi)
+\i core/functions/core/tenant_payment_methods/tenant_payment_method_list.sql
+\i core/functions/core/tenant_payment_methods/tenant_payment_method_upsert.sql
+\i core/functions/core/tenant_payment_methods/tenant_payment_method_remove.sql
+\i core/functions/core/tenant_payment_methods/tenant_payment_method_refresh.sql
+
+-- Tenant Payment Provider Functions (Ödeme sağlayıcı)
+\i core/functions/core/tenant_payment_providers/tenant_payment_provider_list.sql
+\i core/functions/core/tenant_payment_providers/tenant_payment_provider_enable.sql
+\i core/functions/core/tenant_payment_providers/tenant_payment_provider_disable.sql
+
 -- Country Functions
 \i core/functions/catalog/countries/country_list.sql
 
@@ -329,14 +381,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/catalog/providers/provider_setting_get.sql
 \i core/functions/catalog/providers/provider_setting_upsert.sql
 \i core/functions/catalog/providers/provider_setting_delete.sql
-
--- Payment Method Functions
-\i core/functions/catalog/payment/payment_method_list.sql
-\i core/functions/catalog/payment/payment_method_get.sql
-\i core/functions/catalog/payment/payment_method_create.sql
-\i core/functions/catalog/payment/payment_method_update.sql
-\i core/functions/catalog/payment/payment_method_delete.sql
-\i core/functions/catalog/payment/payment_method_lookup.sql
 
 -- Compliance Functions
 -- Jurisdictions

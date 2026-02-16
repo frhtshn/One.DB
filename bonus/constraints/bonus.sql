@@ -10,11 +10,6 @@ ALTER TABLE bonus.bonus_rules
     ADD CONSTRAINT fk_bonus_rules_bonus_type
     FOREIGN KEY (bonus_type_id) REFERENCES bonus.bonus_types(id);
 
--- bonus_triggers.bonus_rule_id -> bonus_rules
-ALTER TABLE bonus.bonus_triggers
-    ADD CONSTRAINT fk_bonus_triggers_bonus_rule
-    FOREIGN KEY (bonus_rule_id) REFERENCES bonus.bonus_rules(id);
-
 
 -- =============================================
 -- Promotion Schema Foreign Key Constraints

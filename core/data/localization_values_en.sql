@@ -454,6 +454,156 @@ JOIN (VALUES
     ('error.messaging.cannot-send-to-self', 'Cannot send a message to yourself'),
     ('error.messaging.recipient-not-found', 'Recipient not found or inactive'),
     ('error.messaging.no-recipients', 'No recipients matched the specified filters'),
-    ('error.field.unauthorized-modification', 'You do not have permission to modify this field')
+    ('error.field.unauthorized-modification', 'You do not have permission to modify this field'),
+
+    -- Access Control (new)
+    ('error.access.permission-denied', 'Permission denied for this operation'),
+    ('error.access.user-scope-denied', 'Operation not allowed outside user scope'),
+
+    -- Role (new)
+    ('error.role.global-only', 'This role can only be used in global scope'),
+    ('error.role.hierarchy-violation', 'Role hierarchy violation'),
+    ('error.role.insufficient-level', 'Insufficient role level'),
+    ('error.role.target-level-violation', 'Target role level violation'),
+    ('error.role.tenant-required', 'Tenant ID is required'),
+
+    -- User (new)
+    ('error.user.concurrent-modification', 'User was modified by another process'),
+    ('error.user.delete.self-not-allowed', 'You cannot delete your own account'),
+    ('error.user.unlock.is-deleted', 'Cannot unlock deleted user'),
+    ('error.user.unlock.self-not-allowed', 'You cannot unlock your own account'),
+
+    -- Department
+    ('error.department.not-found', 'Department not found'),
+
+    -- Tenant (new)
+    ('error.tenant.id-required', 'Tenant ID is required'),
+    ('error.tenant-provider.not-found', 'Tenant provider record not found'),
+    ('error.tenant-game.not-found', 'Tenant game record not found'),
+    ('error.tenant-payment-method.not-found', 'Tenant payment method record not found'),
+
+    -- Provider (new)
+    ('error.provider.invalid-rollout-status', 'Invalid rollout status'),
+    ('error.provider.not-game-type', 'Provider is not a game type provider'),
+    ('error.provider.not-payment-type', 'Provider is not a payment type provider'),
+
+    -- Game (Game DB)
+    ('error.game.not-found', 'Game not found'),
+    ('error.game.id-required', 'Game ID is required'),
+    ('error.game.catalog-data-required', 'Catalog data is required'),
+    ('error.game.currency-code-required', 'Currency code is required'),
+    ('error.game.limits-data-required', 'Limits data is required'),
+    ('error.game.limits-invalid-format', 'Invalid limits data format'),
+
+    -- Payment Method (Finance DB — new)
+    ('error.payment-method.data-required', 'Payment method data is required'),
+    ('error.payment-method.currency-code-required', 'Currency code is required'),
+    ('error.payment-method.limits-data-required', 'Limits data is required'),
+    ('error.payment-method.limits-invalid-format', 'Invalid limits data format'),
+
+    -- Player (Tenant DB)
+    ('error.player.id-required', 'Player ID is required'),
+    ('error.player-limit.invalid-type', 'Invalid limit type'),
+
+    -- Shadow Mode
+    ('error.shadow-tester.player-id-required', 'Player ID is required'),
+
+    -- Jurisdiction (new)
+    ('error.jurisdiction.has-retention-policies', 'Cannot delete jurisdiction. It has linked data retention policies'),
+
+    -- Data Retention Policy
+    ('error.data-retention-policy.not-found', 'Data retention policy not found'),
+    ('error.data-retention-policy.id-required', 'Policy ID is required'),
+    ('error.data-retention-policy.jurisdiction-required', 'Jurisdiction ID is required'),
+    ('error.data-retention-policy.data-category-invalid', 'Invalid data category'),
+    ('error.data-retention-policy.retention-days-invalid', 'Invalid retention period'),
+    ('error.data-retention-policy.already-exists', 'Policy already exists for this jurisdiction and category'),
+
+    -- Cryptocurrency
+    ('error.cryptocurrency.not-found', 'Cryptocurrency not found'),
+    ('error.cryptocurrency.symbol-required', 'Cryptocurrency symbol is required'),
+    ('error.cryptocurrency.name-invalid', 'Invalid cryptocurrency name'),
+    ('error.cryptocurrency.delete.in-use', 'Cannot delete cryptocurrency. It is in use'),
+
+    -- Currency Rates
+    ('error.currency-rates.base-currency-required', 'Base currency is required'),
+    ('error.currency-rates.provider-required', 'Rate provider is required'),
+    ('error.currency-rates.rates-empty', 'Rate data cannot be empty'),
+    ('error.currency-rates.timestamp-required', 'Timestamp is required'),
+
+    -- Crypto Rates
+    ('error.crypto-rates.base-currency-required', 'Base currency is required'),
+    ('error.crypto-rates.provider-required', 'Rate provider is required'),
+    ('error.crypto-rates.rates-empty', 'Rate data cannot be empty'),
+    ('error.crypto-rates.timestamp-required', 'Timestamp is required'),
+
+    -- Messaging — Tenant (campaign, template, inbox)
+    ('error.messaging.player-id-required', 'Player ID is required'),
+    ('error.messaging.message-not-found', 'Message not found'),
+    ('error.messaging.invalid-message-type', 'Invalid message type'),
+    ('error.messaging.invalid-channel-type', 'Invalid channel type'),
+    ('error.messaging.template-not-found', 'Message template not found'),
+    ('error.messaging.template-code-required', 'Template code is required'),
+    ('error.messaging.template-code-exists', 'Template code already exists'),
+    ('error.messaging.template-name-required', 'Template name is required'),
+    ('error.messaging.invalid-template-status', 'Invalid template status'),
+    ('error.messaging.campaign-not-found', 'Messaging campaign not found'),
+    ('error.messaging.campaign-name-required', 'Campaign name is required'),
+    ('error.messaging.campaign-not-editable', 'Campaign cannot be edited'),
+    ('error.messaging.campaign-not-publishable', 'Campaign cannot be published'),
+    ('error.messaging.campaign-not-cancellable', 'Campaign cannot be cancelled'),
+
+    -- Bonus Engine — Bonus Types
+    ('error.bonus-type.not-found', 'Bonus type not found'),
+    ('error.bonus-type.id-required', 'Bonus type ID is required'),
+    ('error.bonus-type.code-required', 'Bonus type code is required'),
+    ('error.bonus-type.code-exists', 'Bonus type code already exists'),
+    ('error.bonus-type.name-required', 'Bonus type name is required'),
+    ('error.bonus-type.category-required', 'Bonus category is required'),
+    ('error.bonus-type.value-type-required', 'Value type is required'),
+
+    -- Bonus Engine — Bonus Rules
+    ('error.bonus-rule.not-found', 'Bonus rule not found'),
+    ('error.bonus-rule.not-found-or-inactive', 'Bonus rule not found or inactive'),
+    ('error.bonus-rule.id-required', 'Bonus rule ID is required'),
+    ('error.bonus-rule.code-required', 'Bonus rule code is required'),
+    ('error.bonus-rule.code-exists', 'Bonus rule code already exists'),
+    ('error.bonus-rule.name-required', 'Bonus rule name is required'),
+    ('error.bonus-rule.trigger-config-required', 'Trigger configuration is required'),
+    ('error.bonus-rule.reward-config-required', 'Reward configuration is required'),
+    ('error.bonus-rule.invalid-evaluation-type', 'Invalid evaluation type'),
+
+    -- Bonus Engine — Bonus Awards
+    ('error.bonus-award.not-found', 'Bonus award not found'),
+    ('error.bonus-award.id-required', 'Bonus award ID is required'),
+    ('error.bonus-award.player-required', 'Player ID is required'),
+    ('error.bonus-award.rule-required', 'Bonus rule ID is required'),
+    ('error.bonus-award.currency-required', 'Currency is required'),
+    ('error.bonus-award.wallet-not-found', 'Bonus wallet not found'),
+    ('error.bonus-award.cannot-cancel', 'Bonus award cannot be cancelled'),
+    ('error.bonus-award.not-completable', 'Bonus award cannot be completed'),
+    ('error.bonus-award.wagering-not-complete', 'Wagering requirement not met'),
+
+    -- Bonus Engine — Campaigns
+    ('error.campaign.not-found', 'Campaign not found'),
+    ('error.campaign.id-required', 'Campaign ID is required'),
+    ('error.campaign.code-required', 'Campaign code is required'),
+    ('error.campaign.code-exists', 'Campaign code already exists'),
+    ('error.campaign.name-required', 'Campaign name is required'),
+    ('error.campaign.type-required', 'Campaign type is required'),
+    ('error.campaign.dates-required', 'Campaign dates are required'),
+    ('error.campaign.end-before-start', 'End date cannot be before start date'),
+    ('error.campaign.invalid-status', 'Invalid campaign status'),
+    ('error.campaign.invalid-award-strategy', 'Invalid award strategy'),
+
+    -- Bonus Engine — Promo Codes
+    ('error.promo.not-found', 'Promo code not found'),
+    ('error.promo.id-required', 'Promo ID is required'),
+    ('error.promo.code-required', 'Promo code is required'),
+    ('error.promo.code-id-required', 'Promo code ID is required'),
+    ('error.promo.code-exists', 'Promo code already exists'),
+    ('error.promo.name-required', 'Promo name is required'),
+    ('error.promo.invalid-status', 'Invalid promo status'),
+    ('error.promo.player-required', 'Player ID is required')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

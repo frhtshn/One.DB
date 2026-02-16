@@ -14,16 +14,16 @@
 -- ================================================================
 -- PERMISSIONS - FULL LIST (UPSERT)
 -- ================================================================
--- Toplam: 99 permission (60 API/System + 39 Field)
+-- Toplam: 107 permission (68 API/System + 39 Field)
 -- Kategoriler (category kolonu bazinda):
---   platform (7), company (13), tenant (23), catalog (15),
+--   platform (8), company (13), tenant (28), catalog (17),
 --   audit (2), field (39)
 -- ================================================================
 
 INSERT INTO security.permissions (code, name, description, category, status) VALUES
 
 -- ================================================================
--- PLATFORM SCOPE (6) — SuperAdmin only (bypass)
+-- PLATFORM SCOPE (7) — SuperAdmin only (bypass)
 -- ================================================================
 -- Platform yonetimi: rol, permission, presentation, localization, language, health
 ('platform.role.manage', 'Role Management', 'Role CRUD (list, get, create, update, delete)', 'platform', 1),
@@ -54,7 +54,7 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('company.user.delete', 'Delete Company User', 'Delete company user (soft delete)', 'company', 1),
 
 -- ================================================================
--- TENANT SCOPE (14) — Admin+ (sub-entity yazma Admin only)
+-- TENANT SCOPE (19) — Admin+ (sub-entity yazma Admin only)
 -- ================================================================
 ('tenant.list', 'Tenant List', 'List tenants', 'tenant', 1),
 ('tenant.view', 'View Tenant', 'View tenant details', 'tenant', 1),
@@ -88,7 +88,20 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('tenant.user-permission.deny', 'Deny Permission', 'Deny permission override from user', 'tenant', 1),
 
 -- ================================================================
--- CATALOG SCOPE (15) — Admin+
+-- TENANT.BONUS (3) — Bonus Award yönetimi
+-- ================================================================
+('tenant.bonus.list', 'Bonus Award List', 'List player bonus awards', 'tenant', 1),
+('tenant.bonus.view', 'View Bonus Award', 'View bonus award details', 'tenant', 1),
+('tenant.bonus.manage', 'Manage Bonus Awards', 'Cancel/manage player bonus awards', 'tenant', 1),
+
+-- ================================================================
+-- TENANT.PROVISION (2) — Provisioning/Decommission
+-- ================================================================
+('tenant.provision.view', 'View Provisioning', 'View provisioning status and history', 'tenant', 1),
+('tenant.provision.manage', 'Manage Provisioning', 'Start/complete provision and decommission', 'tenant', 1),
+
+-- ================================================================
+-- CATALOG SCOPE (17) — Admin+
 -- ================================================================
 -- Provider (6)
 ('catalog.provider.list', 'Provider List', 'List providers and provider types', 'catalog', 1),
@@ -110,6 +123,14 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 -- Compliance (2)
 ('catalog.compliance.list', 'Compliance List', 'List jurisdictions, KYC policies', 'catalog', 1),
 ('catalog.compliance.manage', 'Compliance Management', 'Jurisdiction/KYC policy CRUD', 'catalog', 1),
+-- Bonus (2)
+('catalog.bonus.list', 'Bonus Rule List', 'List bonus types, rules, campaigns, promo codes', 'catalog', 1),
+('catalog.bonus.manage', 'Bonus Rule Management', 'Bonus type/rule/campaign/promo CRUD', 'catalog', 1),
+
+-- ================================================================
+-- PLATFORM.INFRASTRUCTURE (1) — SuperAdmin
+-- ================================================================
+('platform.infrastructure.manage', 'Infrastructure Management', 'Infrastructure server CRUD and tenant server assignment', 'platform', 1),
 
 -- ================================================================
 -- AUDIT SCOPE (2) — Moderator+
@@ -216,19 +237,19 @@ BEGIN
     RAISE NOTICE '================================================';
     RAISE NOTICE 'PERMISSIONS SEED COMPLETED';
     RAISE NOTICE '================================================';
-    RAISE NOTICE 'Platform:     % (expected: 7)', v_platform;
+    RAISE NOTICE 'Platform:     % (expected: 8)', v_platform;
     RAISE NOTICE 'Company:      % (expected: 13)', v_company;
-    RAISE NOTICE 'Tenant:       % (expected: 23)', v_tenant;
-    RAISE NOTICE 'Catalog:      % (expected: 15)', v_catalog;
+    RAISE NOTICE 'Tenant:       % (expected: 28)', v_tenant;
+    RAISE NOTICE 'Catalog:      % (expected: 17)', v_catalog;
     RAISE NOTICE 'Audit:        % (expected: 2)', v_audit;
     RAISE NOTICE 'Field:        % (expected: 39)', v_field;
     RAISE NOTICE '------------------------------------------------';
-    RAISE NOTICE 'TOTAL:        % (expected: 99)', v_total;
+    RAISE NOTICE 'TOTAL:        % (expected: 107)', v_total;
     RAISE NOTICE '================================================';
 
-    -- Strict validation: convention'daki 99 permission kontrol
-    IF v_platform < 7 THEN
-        RAISE WARNING 'Platform permission eksik! Beklenen: 7, Gercek: %', v_platform;
+    -- Strict validation: convention'daki 107 permission kontrol
+    IF v_platform < 8 THEN
+        RAISE WARNING 'Platform permission eksik! Beklenen: 8, Gercek: %', v_platform;
     END IF;
     IF v_field < 39 THEN
         RAISE WARNING 'Field permission eksik! Beklenen: 39, Gercek: %', v_field;

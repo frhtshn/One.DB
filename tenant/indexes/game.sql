@@ -26,7 +26,16 @@ CREATE INDEX IF NOT EXISTS idx_game_settings_has_jackpot ON game.game_settings U
 -- game_settings - Sıralama
 CREATE INDEX IF NOT EXISTS idx_game_settings_display_order ON game.game_settings USING btree(display_order);
 
+-- game_settings - Cursor pagination (OFFSET yerine cursor-based: display_order, id)
+CREATE INDEX IF NOT EXISTS idx_game_settings_cursor ON game.game_settings USING btree(display_order, id);
+
 -- game_limits
 CREATE INDEX IF NOT EXISTS idx_game_limits_game ON game.game_limits USING btree(game_id);
 CREATE INDEX IF NOT EXISTS idx_game_limits_currency ON game.game_limits USING btree(currency_code);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_game_limits_lookup ON game.game_limits USING btree(game_id, currency_code);
+
+-- game_limits - currency_type filtresi (fiat vs crypto)
+CREATE INDEX IF NOT EXISTS idx_game_limits_currency_type ON game.game_limits USING btree(currency_type);
+
+-- game_limits - aktif limitler (soft delete filtresi)
+CREATE INDEX IF NOT EXISTS idx_game_limits_active ON game.game_limits USING btree(is_active) WHERE is_active = true;

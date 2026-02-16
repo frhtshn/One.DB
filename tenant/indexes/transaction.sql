@@ -16,6 +16,9 @@ CREATE INDEX IF NOT EXISTS idx_transactions_related ON transaction.transactions 
 CREATE INDEX IF NOT EXISTS idx_transactions_external_ref ON transaction.transactions USING btree(external_reference_id) WHERE external_reference_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_transactions_confirmed_at ON transaction.transactions USING btree(confirmed_at DESC);
 
+-- Bonus award referansı (per-bonus harcama takibi)
+CREATE INDEX IF NOT EXISTS idx_transactions_bonus_award ON transaction.transactions USING btree(bonus_award_id, created_at) WHERE bonus_award_id IS NOT NULL;
+
 -- GIN Index (metadata)
 CREATE INDEX IF NOT EXISTS idx_transactions_metadata_gin ON transaction.transactions USING gin(metadata);
 

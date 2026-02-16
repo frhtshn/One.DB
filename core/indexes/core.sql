@@ -117,6 +117,49 @@ CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_tenant_id ON core.tenant_dat
 CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_category ON core.tenant_data_policies USING btree(data_category);
 
 -- =============================================================================
+-- Infrastructure / Provisioning Indexes
+-- =============================================================================
+
+-- infrastructure_servers (active sunucular)
+CREATE INDEX IF NOT EXISTS idx_infrastructure_servers_status ON core.infrastructure_servers USING btree(status) WHERE status = 'active';
+
+-- infrastructure_servers (tip filtresi)
+CREATE INDEX IF NOT EXISTS idx_infrastructure_servers_type ON core.infrastructure_servers USING btree(server_type);
+
+-- infrastructure_servers (region filtresi)
+CREATE INDEX IF NOT EXISTS idx_infrastructure_servers_region ON core.infrastructure_servers USING btree(region);
+
+-- infrastructure_servers (unique server_code)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_infrastructure_servers_code ON core.infrastructure_servers USING btree(server_code);
+
+-- tenant_servers (tenant bazlı sorgu)
+CREATE INDEX IF NOT EXISTS idx_tenant_servers_tenant ON core.tenant_servers USING btree(tenant_id);
+
+-- tenant_servers (sunucu bazlı sorgu)
+CREATE INDEX IF NOT EXISTS idx_tenant_servers_server ON core.tenant_servers USING btree(server_id);
+
+-- tenant_servers (çalışan container'lar)
+CREATE INDEX IF NOT EXISTS idx_tenant_servers_status ON core.tenant_servers USING btree(status) WHERE status = 'running';
+
+-- tenant_servers (unique: tenant + server + role)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_servers_role ON core.tenant_servers USING btree(tenant_id, server_id, server_role);
+
+-- tenant_provisioning_log (tenant bazlı geçmiş)
+CREATE INDEX IF NOT EXISTS idx_provisioning_log_tenant ON core.tenant_provisioning_log USING btree(tenant_id);
+
+-- tenant_provisioning_log (run bazlı sorgu)
+CREATE INDEX IF NOT EXISTS idx_provisioning_log_run ON core.tenant_provisioning_log USING btree(provision_run_id);
+
+-- tenant_provisioning_log (aktif/hatalı adımlar)
+CREATE INDEX IF NOT EXISTS idx_provisioning_log_status ON core.tenant_provisioning_log USING btree(status) WHERE status IN ('running', 'failed');
+
+-- template_dumps (aktif dump'lar)
+CREATE INDEX IF NOT EXISTS idx_template_dumps_active ON core.template_dumps USING btree(status) WHERE status = 'active';
+
+-- template_dumps (unique: db_type + version)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_template_dumps_type_version ON core.template_dumps USING btree(db_type, version);
+
+-- =============================================================================
 -- GIN Indexes for JSONB Columns
 -- =============================================================================
 

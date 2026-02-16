@@ -39,6 +39,13 @@ BEGIN
         'defaultLanguage', t.default_language,
         'defaultCountry', t.default_country,
         'timezone', t.timezone,
+        'domain', t.domain,
+        'subdomain', t.subdomain,
+        'provisioningStatus', t.provisioning_status,
+        'provisioningStep', t.provisioning_step,
+        'provisionedAt', t.provisioned_at,
+        'decommissionedAt', t.decommissioned_at,
+        'hostingMode', t.hosting_mode,
         'createdAt', t.created_at,
         'updatedAt', t.updated_at,
         'supportedCurrencies', COALESCE((

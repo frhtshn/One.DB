@@ -3,6 +3,9 @@
 -- Açıklama: Tenant oyun etkinleştirme tablosu
 -- Her tenant'in hangi oyunları sunacağını belirler
 -- Tenant DB'deki game.game_settings ile senkronize edilir
+-- Denormalize alanlar: BO listesinde cross-DB JOIN yerine
+-- doğrudan gösterilir (backend seed/sync sırasında doldurur)
+-- game_id FK yok — catalog.games Game DB'de (cross-DB)
 -- =============================================
 
 DROP TABLE IF EXISTS core.tenant_games CASCADE;
@@ -10,7 +13,14 @@ DROP TABLE IF EXISTS core.tenant_games CASCADE;
 CREATE TABLE core.tenant_games (
     id BIGSERIAL PRIMARY KEY,                                       -- Benzersiz kayıt kimliği
     tenant_id BIGINT NOT NULL,                                      -- Tenant ID (FK: core.tenants)
-    game_id BIGINT NOT NULL,                                        -- Oyun ID (FK: catalog.games)
+    game_id BIGINT NOT NULL,                                        -- Oyun ID (Game DB — FK yok, cross-DB, backend doğrular)
+
+    -- Denormalize Alanlar (Game DB'den — cross-DB JOIN yerine BO listesinde gösterilir)
+    game_name VARCHAR(255),                                         -- Oyun görünen adı (Sweet Bonanza)
+    game_code VARCHAR(100),                                         -- Normalize edilmiş oyun kodu (pragmatic_sweet_bonanza)
+    provider_code VARCHAR(50),                                      -- Provider kodu (PRAGMATIC, EVOLUTION)
+    game_type VARCHAR(50),                                          -- Ana tip: slot, live, table, crash
+    thumbnail_url VARCHAR(500),                                     -- Küçük resim URL (lobby icon)
 
     -- Etkinleştirme Durumu
     is_enabled BOOLEAN NOT NULL DEFAULT true,                       -- Oyun aktif mi
@@ -54,4 +64,4 @@ CREATE TABLE core.tenant_games (
     updated_by BIGINT                                               -- Güncelleyen kullanıcı
 );
 
-COMMENT ON TABLE core.tenant_games IS 'Tenant game enablement and customization. Defines which games from catalog are available for each tenant with custom settings.';
+COMMENT ON TABLE core.tenant_games IS 'Tenant game enablement and customization. Denormalized fields from Game DB catalog for cross-DB BO listing without JOINs. game_id has no FK (cross-DB, backend validates).';

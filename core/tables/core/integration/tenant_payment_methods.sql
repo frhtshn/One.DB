@@ -3,6 +3,9 @@
 -- Açıklama: Tenant ödeme yöntemi etkinleştirme tablosu
 -- Her tenant'in hangi ödeme yöntemlerini sunacağını belirler
 -- Tenant DB'deki finance.payment_method_settings ile senkronize edilir
+-- Denormalize alanlar: BO listesinde cross-DB JOIN yerine
+-- doğrudan gösterilir (backend seed/sync sırasında doldurur)
+-- payment_method_id FK yok — catalog.payment_methods Finance DB'de (cross-DB)
 -- =============================================
 
 DROP TABLE IF EXISTS core.tenant_payment_methods CASCADE;
@@ -10,7 +13,14 @@ DROP TABLE IF EXISTS core.tenant_payment_methods CASCADE;
 CREATE TABLE core.tenant_payment_methods (
     id BIGSERIAL PRIMARY KEY,                                       -- Benzersiz kayıt kimliği
     tenant_id BIGINT NOT NULL,                                      -- Tenant ID (FK: core.tenants)
-    payment_method_id BIGINT NOT NULL,                              -- Ödeme yöntemi ID (FK: catalog.payment_methods)
+    payment_method_id BIGINT NOT NULL,                              -- Ödeme yöntemi ID (Finance DB — FK yok, cross-DB, backend doğrular)
+
+    -- Denormalize Alanlar (Finance DB'den — cross-DB JOIN yerine BO listesinde gösterilir)
+    payment_method_name VARCHAR(255),                               -- Görünen ad: Kredi Kartı, Papara Cüzdan
+    payment_method_code VARCHAR(100),                               -- Normalize edilmiş yöntem kodu (papara_wallet)
+    provider_code VARCHAR(50),                                      -- Provider kodu (PAYTR, MPAY, PAPARA)
+    payment_type VARCHAR(50),                                       -- Ana tip: CARD, EWALLET, BANK, CRYPTO
+    icon_url VARCHAR(500),                                          -- Yöntem ikonu
 
     -- Etkinleştirme Durumu
     is_enabled BOOLEAN NOT NULL DEFAULT true,                       -- Yöntem aktif mi
@@ -71,4 +81,4 @@ CREATE TABLE core.tenant_payment_methods (
     updated_by BIGINT                                               -- Güncelleyen kullanıcı
 );
 
-COMMENT ON TABLE core.tenant_payment_methods IS 'Tenant payment method enablement with limit/fee overrides and visibility settings';
+COMMENT ON TABLE core.tenant_payment_methods IS 'Tenant payment method enablement with limit/fee overrides. Denormalized fields from Finance DB catalog for cross-DB BO listing without JOINs. payment_method_id has no FK (cross-DB, backend validates).';

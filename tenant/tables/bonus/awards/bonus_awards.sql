@@ -1,46 +1,79 @@
 -- =============================================
--- Bonus Awards (Bonus Ödülleri)
--- Oyunculara verilen bonusların kaydı
--- Çevrim takibi ve durum yönetimi
+-- Tablo: bonus.bonus_awards
+-- Açıklama: JSON-driven bonus kural motoru ile
+--           oyunculara verilen bonusların kaydı.
+--           Çevrim takibi, per-bonus bakiye,
+--           stacking ve tam audit trail desteği
 -- =============================================
 
 DROP TABLE IF EXISTS bonus.bonus_awards CASCADE;
 
 CREATE TABLE bonus.bonus_awards (
-    id bigserial PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
     -- Oyuncu bilgisi
-    player_id bigint NOT NULL,                    -- Oyuncu ID
+    player_id BIGINT NOT NULL,                         -- Oyuncu ID
 
-    -- Bonus bilgileri
-    bonus_rule_id bigint NOT NULL,                -- Bonus kuralı ID (Core DB'den)
-    bonus_type_code varchar(50) NOT NULL,         -- Bonus tipi: deposit_match, free_spin, cashback
-    trigger_id bigint,                            -- Tetikleyici ID (depozit, kayıt vb.)
-    promo_code_id bigint,                         -- Kullanılan promosyon kodu ID
-    campaign_id bigint,                           -- Kampanya ID
+    -- Bonus bilgileri (cross-DB referanslar, app-level kontrol)
+    bonus_rule_id BIGINT NOT NULL,                     -- Bonus kuralı ID (Bonus DB'den)
+    bonus_type_code VARCHAR(50) NOT NULL,              -- Kategori: deposit_match, free_spin, cashback
+    bonus_subtype VARCHAR(30),                         -- Alt tip: monetary, freebet, freespin
+    promo_code_id BIGINT,                              -- Kullanılan promosyon kodu ID
+    campaign_id BIGINT,                                -- Kampanya ID
 
     -- Değerler
-    bonus_amount decimal(18,2) NOT NULL,          -- Bonus tutarı
-    currency char(3) NOT NULL,                    -- Para birimi
+    bonus_amount DECIMAL(18,2) NOT NULL,               -- Bonus tutarı
+    currency CHAR(3) NOT NULL,                         -- Para birimi
 
-    -- Çevrim takibi
-    wagering_requirement decimal(5,2),            -- Çevrim şartı (x10, x30 vb.)
-    wagering_progress decimal(18,2) DEFAULT 0,    -- Tamamlanan çevrim tutarı
-    wagering_completed boolean DEFAULT false,     -- Çevrim tamamlandı mı?
+    -- ═══ JSON-driven Engine Alanları ═══
 
-    -- Geçerlilik
-    expires_at timestamp without time zone,       -- Son kullanma tarihi
+    -- Rule snapshot (kural değişse bile award orijinal koşulları korur)
+    -- Tüm 6 bileşeni içerir: trigger, data, eligibility, reward, usage, target
+    rule_snapshot JSONB,
 
-    -- Durum
-    status varchar(20) NOT NULL DEFAULT 'pending', -- Durum: pending, active, completed, expired, cancelled
+    -- Usage kuralları (Tenant tarafında enforce edilir)
+    -- {"wagering_multiplier":30,"min_combined_count":5,"min_selection_odds":1.65,
+    --  "min_total_odds":13.0,"excluded_bet_types":["virtual","live"],
+    --  "max_withdrawal_factor":25,"turnover_applies_to":"bonus",
+    --  "game_contributions":{"SLOT":100,"LIVE":10,"TABLE":10}}
+    usage_criteria JSONB,
 
-    -- Transaction referansı
-    tenant_transaction_id bigint,                 -- Oluşturulan transaction ID
+    -- Reward hesaplama detayı (audit trail)
+    -- {"type":"percentage","source_value":500,"rate":100,"result":500,"capped_at":1000}
+    -- {"type":"tiered","source_value":3500,"matched_tier":{"min":2500,"max":4999},"result":500}
+    reward_details JSONB,
 
-    awarded_at timestamp without time zone NOT NULL DEFAULT now(), -- Verilme tarihi
-    completed_at timestamp without time zone,     -- Tamamlanma tarihi
-    created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone NOT NULL DEFAULT now()
+    -- ═══ Çevrim Takibi ═══
+    wagering_target DECIMAL(18,2),                     -- Toplam çevrim hedefi (amount * multiplier)
+    wagering_progress DECIMAL(18,2) DEFAULT 0,         -- Tamamlanan çevrim tutarı
+    wagering_completed BOOLEAN DEFAULT false,          -- Çevrim tamamlandı mı?
+
+    -- ═══ Kazanç/Çekim Limitleri ═══
+    max_withdrawal_amount DECIMAL(18,2),               -- bonus_amount * max_withdrawal_factor
+    current_balance DECIMAL(18,2) DEFAULT 0,           -- Per-bonus bakiye takibi (stacking için)
+
+    -- ═══ Geçerlilik ═══
+    expires_at TIMESTAMPTZ,                            -- Son kullanma tarihi
+
+    -- ═══ Durum ═══
+    -- pending, active, wagering_complete, pending_kyc, completed, expired, cancelled, claimed
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+
+    -- ═══ Transaction Referansları ═══
+    tenant_transaction_id BIGINT,                      -- Bonus credit transaction ID
+    completion_transaction_id BIGINT,                  -- BONUS→REAL dönüşüm transaction ID
+
+    -- ═══ Admin Audit ═══
+    awarded_by BIGINT,                                 -- Manuel award için admin user ID
+    cancellation_reason VARCHAR(255),                  -- İptal sebebi
+    cancelled_by BIGINT,                               -- İptal eden (admin ID veya NULL=system/player)
+
+    -- ═══ Tarihler ═══
+    awarded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),     -- Verilme tarihi
+    completed_at TIMESTAMPTZ,                          -- Tamamlanma tarihi
+    cancelled_at TIMESTAMPTZ,                          -- İptal tarihi
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE bonus.bonus_awards IS 'Player bonus awards tracking wagering requirements, progress, and completion status';
+COMMENT ON TABLE bonus.bonus_awards IS 'Player bonus awards with JSON-driven rule engine support, per-bonus balance tracking, wagering progress, and full audit trail';

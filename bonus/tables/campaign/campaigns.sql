@@ -14,12 +14,16 @@ CREATE TABLE campaign.campaigns (
     bonus_rule_ids jsonb,                -- Birden fazla bonus kuralı olabilir
 
     -- Süre
-    start_date timestamp without time zone NOT NULL,
-    end_date timestamp without time zone NOT NULL,
+    start_date TIMESTAMPTZ NOT NULL,
+    end_date TIMESTAMPTZ NOT NULL,
 
     -- Bütçe (opsiyonel)
-    total_budget decimal(18,2),
-    spent_budget decimal(18,2) DEFAULT 0,
+    budget_currency CHAR(3),                   -- Bütçe para birimi (multi-currency desteği)
+    total_budget DECIMAL(18,2),
+    spent_budget DECIMAL(18,2) DEFAULT 0,
+
+    -- Ödül stratejisi
+    award_strategy VARCHAR(30) DEFAULT 'automatic',  -- automatic, claim, manual
 
     -- Hedef kitle
     target_segments jsonb,               -- ["new_players", "vip", "dormant"]
@@ -27,8 +31,8 @@ CREATE TABLE campaign.campaigns (
     -- Durum
     status varchar(20) NOT NULL DEFAULT 'draft',  -- draft, active, paused, ended
 
-    created_at timestamp without time zone NOT NULL DEFAULT now(),
-    updated_at timestamp without time zone NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 COMMENT ON TABLE campaign.campaigns IS 'Marketing campaigns management including welcome, deposit bonus, tournament, and seasonal promotions with budget tracking and audience segmentation';

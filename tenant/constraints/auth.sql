@@ -27,3 +27,18 @@ ALTER TABLE auth.player_password_history
     ADD CONSTRAINT fk_player_password_history_player
     FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
 
+-- shadow_testers -> players (SHADOW_MODE)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_shadow_testers_player') THEN
+        ALTER TABLE auth.shadow_testers ADD CONSTRAINT fk_shadow_testers_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- shadow_testers unique constraint (bir oyuncu sadece bir kez eklenebilir)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_shadow_testers_player') THEN
+        ALTER TABLE auth.shadow_testers ADD CONSTRAINT uq_shadow_testers_player UNIQUE (player_id);
+    END IF;
+END $$;
+

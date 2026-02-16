@@ -191,14 +191,51 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/messaging/player_message_delete.sql
 
 -- =============================================================================
--- FUNCTIONS - Backoffice (Auth checked in Core DB)
+-- FUNCTIONS - Auth (Shadow Test)
 -- =============================================================================
--- TODO: Add backoffice functions when created
+\i tenant/functions/auth/shadow_tester_add.sql
+\i tenant/functions/auth/shadow_tester_remove.sql
 
 -- =============================================================================
--- FUNCTIONS - Frontend (Public content, no auth required)
+-- FUNCTIONS - Finance (Ödeme ayarları ve limitler)
 -- =============================================================================
--- TODO: Add frontend functions when created
+\i tenant/functions/finance/payment_method_settings_sync.sql
+\i tenant/functions/finance/payment_method_settings_remove.sql
+\i tenant/functions/finance/payment_method_settings_get.sql
+\i tenant/functions/finance/payment_method_settings_update.sql
+\i tenant/functions/finance/payment_method_settings_list.sql
+\i tenant/functions/finance/payment_method_limits_sync.sql
+\i tenant/functions/finance/payment_method_limit_upsert.sql
+\i tenant/functions/finance/payment_method_limit_list.sql
+\i tenant/functions/finance/payment_provider_rollout_sync.sql
+\i tenant/functions/finance/payment_player_limit_set.sql
+\i tenant/functions/finance/payment_player_limit_get.sql
+\i tenant/functions/finance/payment_player_limit_list.sql
+
+-- =============================================================================
+-- FUNCTIONS - Game (Oyun ayarları ve limitler)
+-- =============================================================================
+\i tenant/functions/game/game_settings_sync.sql
+\i tenant/functions/game/game_settings_remove.sql
+\i tenant/functions/game/game_settings_get.sql
+\i tenant/functions/game/game_settings_update.sql
+\i tenant/functions/game/game_settings_list.sql
+\i tenant/functions/game/game_limits_sync.sql
+\i tenant/functions/game/game_limit_upsert.sql
+\i tenant/functions/game/game_limit_list.sql
+\i tenant/functions/game/game_provider_rollout_sync.sql
+
+-- =============================================================================
+-- FUNCTIONS - Bonus (Award ve Promosyon)
+-- =============================================================================
+\i tenant/functions/bonus/bonus_award_create.sql
+\i tenant/functions/bonus/bonus_award_get.sql
+\i tenant/functions/bonus/bonus_award_list.sql
+\i tenant/functions/bonus/bonus_award_cancel.sql
+\i tenant/functions/bonus/bonus_award_complete.sql
+\i tenant/functions/bonus/bonus_award_expire.sql
+\i tenant/functions/bonus/promo_redeem.sql
+\i tenant/functions/bonus/promo_redemption_list.sql
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created

@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- LOCALIZATION KEYS
 -- Key ve domain her zaman lowercase, kebab-case
 -- ============================================================================
@@ -8,483 +8,689 @@ TRUNCATE TABLE catalog.localization_keys CASCADE;
 INSERT INTO catalog.localization_keys (localization_key, domain, category, description) VALUES
 
 -- ============================================================================
--- VALIDATION MESSAGES (LocalizedValidator'da kullanilan)
+-- VALIDATION MESSAGES (LocalizedValidator'da kullanılan)
 -- Pattern: validation.{domain}.{reason}
 -- ============================================================================
-('validation.summary', 'validation', 'summary', 'Coklu hata ozet mesaji. Args: {0}=errorCount'),
-('validation.field.required', 'validation', 'field', '{0} alani icin zorunluluk mesaji'),
-('validation.field.max-length', 'validation', 'field', '{0} alani max uzunluk asimi. Args: {1}=maxLength'),
-('validation.field.min-length', 'validation', 'field', '{0} alani min uzunluk hatasi. Args: {1}=minLength'),
-('validation.field.length', 'validation', 'field', '{0} alani uzunluk araligi. Args: {1}=min, {2}=max'),
-('validation.field.exact-length', 'validation', 'field', '{0} alani tam uzunluk. Args: {1}=length'),
-('validation.field.invalid-value', 'validation', 'field', 'Gecersiz deger'),
-('validation.field.only-one-allowed', 'validation', 'field', 'Sadece bir deger izin veriliyor'),
-('validation.format.email-invalid', 'validation', 'format', 'Gecersiz email formati'),
-('validation.format.url-invalid', 'validation', 'format', 'Gecersiz URL formati'),
-('validation.format.invalid', 'validation', 'format', 'Gecersiz format'),
-('validation.format.timezone-invalid', 'validation', 'format', 'Gecersiz timezone'),
-('validation.format.target-type-invalid', 'validation', 'format', 'Gecersiz hedef tipi'),
-('validation.format.environment-invalid', 'validation', 'format', 'Gecersiz ortam degeri'),
-('validation.range.greater-than-zero', 'validation', 'range', 'Sifirdan buyuk olmali'),
-('validation.range.between', 'validation', 'range', 'Aralik kontrolu. Args: {1}=min, {2}=max'),
-('validation.range.min', 'validation', 'range', 'Minimum deger kontrolu. Args: {1}=min'),
-('validation.range.cooling-off-invalid', 'validation', 'range', 'Cooling off min degeri max degerden buyuk olamaz'),
-('validation.filter.sort-field-invalid', 'validation', 'filter', 'Gecersiz siralama alani. Args: {1}=allowedFields'),
-('validation.filter.sort-order-invalid', 'validation', 'filter', 'Gecersiz siralama yonu'),
-('validation.request.invalid', 'validation', 'request', 'Gecersiz istek'),
 
--- Password Validation (PasswordPolicyValidator'da kullanilan)
-('validation.password.required', 'validation', 'password', 'Sifre zorunlu'),
-('validation.password.min-length', 'validation', 'password', 'Min uzunluk. Args: {0}=minLength'),
-('validation.password.max-length', 'validation', 'password', 'Max uzunluk. Args: {0}=maxLength'),
-('validation.password.require-uppercase', 'validation', 'password', 'Buyuk harf gerekli'),
-('validation.password.require-lowercase', 'validation', 'password', 'Kucuk harf gerekli'),
+('validation.summary', 'validation', 'summary', 'Çoklu hata özet mesajı. Args: {0}=errorCount'),
+('validation.field.required', 'validation', 'field', '{0} alanı için zorunluluk mesajı'),
+('validation.field.max-length', 'validation', 'field', '{0} alanı maksimum uzunluk aşıldı. Args: {1}=maxLength'),
+('validation.field.min-length', 'validation', 'field', '{0} alanı minimum uzunluk hatası. Args: {1}=minLength'),
+('validation.field.length', 'validation', 'field', '{0} alanı uzunluk aralığı. Args: {1}=min, {2}=max'),
+('validation.field.exact-length', 'validation', 'field', '{0} alanı tam uzunluk. Args: {1}=length'),
+('validation.field.invalid-value', 'validation', 'field', 'Geçersiz değer'),
+('validation.field.only-one-allowed', 'validation', 'field', 'Sadece bir değer izin veriliyor'),
+('validation.format.email-invalid', 'validation', 'format', 'Geçersiz e-posta formatı'),
+('validation.format.url-invalid', 'validation', 'format', 'Geçersiz URL formatı'),
+('validation.format.invalid', 'validation', 'format', 'Geçersiz format'),
+('validation.format.timezone-invalid', 'validation', 'format', 'Geçersiz zaman dilimi'),
+('validation.format.target-type-invalid', 'validation', 'format', 'Geçersiz hedef tipi'),
+('validation.format.environment-invalid', 'validation', 'format', 'Geçersiz ortam değeri'),
+('validation.range.greater-than-zero', 'validation', 'range', 'Sıfırdan büyük olmalı'),
+('validation.range.between', 'validation', 'range', 'Aralık kontrolü. Args: {1}=min, {2}=max'),
+('validation.range.min', 'validation', 'range', 'Minimum değer kontrolü. Args: {1}=min'),
+('validation.range.cooling-off-invalid', 'validation', 'range', 'Cooling off minimum değeri maksimum değerden büyük olamaz'),
+('validation.filter.sort-field-invalid', 'validation', 'filter', 'Geçersiz sıralama alanı. Args: {1}=allowedFields'),
+('validation.filter.sort-order-invalid', 'validation', 'filter', 'Geçersiz sıralama yönü'),
+('validation.request.invalid', 'validation', 'request', 'Geçersiz istek'),
+
+-- Şifre Doğrulama (PasswordPolicyValidator'da kullanılan)
+('validation.password.required', 'validation', 'password', 'Şifre zorunlu'),
+('validation.password.min-length', 'validation', 'password', 'Minimum uzunluk. Args: {0}=minLength'),
+('validation.password.max-length', 'validation', 'password', 'Maksimum uzunluk. Args: {0}=maxLength'),
+('validation.password.require-uppercase', 'validation', 'password', 'Büyük harf gerekli'),
+('validation.password.require-lowercase', 'validation', 'password', 'Küçük harf gerekli'),
 ('validation.password.require-digit', 'validation', 'password', 'Rakam gerekli'),
-('validation.password.require-special', 'validation', 'password', 'Ozel karakter gerekli'),
-('validation.password.mismatch', 'validation', 'password', 'Sifre tekrari uyusmuyor'),
+('validation.password.require-special', 'validation', 'password', 'Özel karakter gerekli'),
+('validation.password.mismatch', 'validation', 'password', 'Şifre tekrarı uyuşmuyor'),
 
--- KYC Validation
-('validation.kyc.level-invalid', 'validation', 'kyc', 'Gecersiz KYC seviyesi'),
-('validation.kyc.deadline-action-invalid', 'validation', 'kyc', 'Gecersiz deadline action degeri'),
+-- KYC Doğrulama
+('validation.kyc.level-invalid', 'validation', 'kyc', 'Geçersiz KYC seviyesi'),
+('validation.kyc.deadline-action-invalid', 'validation', 'kyc', 'Geçersiz deadline action değeri'),
 
 -- ============================================================================
--- ERROR MESSAGES (Exception siniflarinda kullanilan)
+-- ERROR MESSAGES (Exception sınıflarında kullanılan)
 -- Pattern: error.{domain}.{sub-domain?}.{reason}
 -- ============================================================================
 
 -- Logs Exceptions (Dead Letter, Error, Audit)
-('error.logs.errornotfound', 'error', 'logs', 'Error log bulunamadi'),
-('error.logs.deadletternotfound', 'error', 'logs', 'Dead letter bulunamadi'),
-('error.logs.auditnotfound', 'error', 'logs', 'Audit log bulunamadi'),
+('error.logs.errornotfound', 'error', 'logs', 'Error log bulunamadı'),
+('error.logs.deadletternotfound', 'error', 'logs', 'Dead letter bulunamadı'),
+('error.logs.auditnotfound', 'error', 'logs', 'Audit log bulunamadı'),
 
 -- Auth - Account Status
-('error.auth.account-inactive', 'error', 'auth', 'Hesap aktif degil'),
+('error.auth.account-inactive', 'error', 'auth', 'Hesap aktif değil'),
 
 -- BadRequest - Field Errors
 ('error.field.missing', 'error', 'field', 'Zorunlu alan eksik. Args: {0}=fieldName'),
-('error.field.invalid', 'error', 'field', 'Gecersiz alan. Args: {0}=fieldName, {1}=reason'),
+('error.field.invalid', 'error', 'field', 'Geçersiz alan. Args: {0}=fieldName, {1}=reason'),
 
 -- Generic CRUD Exceptions
-('error.crud.create-failed', 'error', 'crud', 'Olusturma basarisiz. Args: {0}=resourceType'),
-('error.crud.update-failed', 'error', 'crud', 'Guncelleme basarisiz. Args: {0}=resourceType'),
+('error.crud.create-failed', 'error', 'crud', 'Oluşturma başarısız. Args: {0}=resourceType'),
+('error.crud.update-failed', 'error', 'crud', 'Güncelleme başarısız. Args: {0}=resourceType'),
 
 -- Business Rule Exceptions
 ('error.business.insufficient-balance', 'error', 'business', 'Yetersiz bakiye. Args: {0}=required, {1}=balance'),
-('error.business.invalid-status-transition', 'error', 'business', 'Gecersiz durum gecisi. Args: {0}=from, {1}=to'),
+('error.business.invalid-status-transition', 'error', 'business', 'Geçersiz durum geçişi. Args: {0}=from, {1}=to'),
 
 -- System - Cache Exceptions
-('error.system.cache.connection-failed', 'error', 'system', 'Cache baglanti hatasi'),
-('error.system.cache.operation-failed', 'error', 'system', 'Cache islem hatasi. Args: {0}=operation'),
+('error.system.cache.connection-failed', 'error', 'system', 'Cache bağlantı hatası'),
+('error.system.cache.operation-failed', 'error', 'system', 'Cache işlem hatası. Args: {0}=operation'),
 
 -- System - Circuit Breaker Exceptions
-('error.system.circuit-breaker.database', 'error', 'system', 'Veritabani circuit breaker acik'),
-('error.system.circuit-breaker.cache', 'error', 'system', 'Cache circuit breaker acik'),
-('error.system.circuit-breaker.external-api', 'error', 'system', 'External API circuit breaker acik. Args: {0}=apiName'),
-('error.system.circuit-breaker.messaging', 'error', 'system', 'Messaging circuit breaker acik. Args: {0}=serviceName'),
+('error.system.circuit-breaker.database', 'error', 'system', 'Veritabanı circuit breaker açık'),
+('error.system.circuit-breaker.cache', 'error', 'system', 'Cache circuit breaker açık'),
+('error.system.circuit-breaker.external-api', 'error', 'system', 'External API circuit breaker açık. Args: {0}=apiName'),
+('error.system.circuit-breaker.messaging', 'error', 'system', 'Messaging circuit breaker açık. Args: {0}=serviceName'),
 
 -- Conflict Exceptions
 ('error.conflict.duplicate', 'error', 'conflict', 'Kaynak zaten mevcut. Args: {0}=resourceType, {1}=identifier'),
-('error.conflict.concurrency', 'error', 'conflict', 'Eszamanlilik cakismasi. Args: {0}=resourceType, {1}=resourceId'),
+('error.conflict.concurrency', 'error', 'conflict', 'Eşzamanlılık çakışması. Args: {0}=resourceType, {1}=resourceId'),
 
 -- System - Database Exceptions
-('error.system.database.connection-failed', 'error', 'system', 'Veritabani baglanti hatasi'),
-('error.system.database.query-failed', 'error', 'system', 'Veritabani sorgu hatasi. Args: {0}=operation'),
-('error.system.database.invalid-tenant-id', 'error', 'system', 'Gecersiz tenant ID. Args: {0}=tenantId'),
-('error.system.database.command-failed', 'error', 'system', 'Veritabani islem hatasi. Args: {0}=operation'),
+('error.system.database.connection-failed', 'error', 'system', 'Veritabanı bağlantı hatası'),
+('error.system.database.query-failed', 'error', 'system', 'Veritabanı sorgu hatası. Args: {0}=operation'),
+('error.system.database.invalid-tenant-id', 'error', 'system', 'Geçersiz tenant ID. Args: {0}=tenantId'),
+('error.system.database.command-failed', 'error', 'system', 'Veritabanı işlem hatası. Args: {0}=operation'),
 
 -- Forbidden Exceptions
-('error.forbidden.resource', 'error', 'forbidden', 'Kaynak erisim yetkisi yok. Args: {0}=resource, {1}=permission'),
-('error.tenant.access-denied', 'error', 'tenant', 'Tenant erisim engellendi. Args: {0}=tenantId'),
-('error.tenant.mismatch', 'error', 'tenant', 'Tenant uyusmazligi - farkli tenant icin islem yapilamaz'),
-('error.tenant.scope-missing', 'error', 'tenant', 'Tenant kapsam parametresi bulunamadi'),
-('error.access.company-scope-denied', 'error', 'access', 'Sirket kapsami disinda islem yapilamaz'),
-('error.access.tenant-scope-denied', 'error', 'access', 'Tenant kapsami disinda islem yapilamaz'),
-('error.access.hierarchy-violation', 'error', 'access', 'Hiyerarsi ihlali - yetkisiz islem'),
-('error.access.denied', 'error', 'access', 'Erisim engellendi'),
+('error.forbidden.resource', 'error', 'forbidden', 'Kaynak erişim yetkisi yok. Args: {0}=resource, {1}=permission'),
+('error.tenant.access-denied', 'error', 'tenant', 'Tenant erişim engellendi. Args: {0}=tenantId'),
+('error.tenant.mismatch', 'error', 'tenant', 'Tenant uyuşmazlığı - farklı tenant için işlem yapılamaz'),
+('error.tenant.scope-missing', 'error', 'tenant', 'Tenant kapsam parametresi bulunamadı'),
+('error.access.company-scope-denied', 'error', 'access', 'Şirket kapsamı dışında işlem yapılamaz'),
+('error.access.tenant-scope-denied', 'error', 'access', 'Tenant kapsamı dışında işlem yapılamaz'),
+('error.access.hierarchy-violation', 'error', 'access', 'Hiyerarşi ihlali - yetkisiz işlem'),
+('error.access.denied', 'error', 'access', 'Erişim engellendi'),
 
 -- Access Control
-('error.access.unauthorized', 'error', 'access', 'Yetkisiz erisim'),
+('error.access.unauthorized', 'error', 'access', 'Yetkisiz erişim'),
 
 -- Caller Exceptions
-('error.caller.locked', 'error', 'caller', 'Hesabiniz kilitli'),
+('error.caller.locked', 'error', 'caller', 'Hesabınız kilitli'),
 
 -- System - Grain Exceptions
-('error.system.grain.activation-failed', 'error', 'system', 'Grain aktivasyon hatasi. Args: {0}=grainType, {1}=grainKey'),
-('error.system.grain.operation-failed', 'error', 'system', 'Grain islem hatasi. Args: {0}=operation'),
+('error.system.grain.activation-failed', 'error', 'system', 'Grain aktivasyon hatası. Args: {0}=grainType, {1}=grainKey'),
+('error.system.grain.operation-failed', 'error', 'system', 'Grain işlem hatası. Args: {0}=operation'),
 
 -- System - Operation Timeout Exceptions
-('error.system.operation.timeout', 'error', 'system', 'Islem zaman asimi. Args: {0}=operation, {1}=seconds'),
+('error.system.operation.timeout', 'error', 'system', 'İşlem zaman aşımı. Args: {0}=operation, {1}=seconds'),
 
 -- System - Rate Limit Exceptions
-('error.system.rate-limit.exceeded', 'error', 'system', 'Rate limit asildi. Args: {0}=clientId, {1}=current, {2}=limit, {3}=retryAfter'),
+('error.system.rate-limit.exceeded', 'error', 'system', 'Rate limit aşıldı. Args: {0}=clientId, {1}=current, {2}=limit, {3}=retryAfter'),
 
 -- System - Silo Exceptions
-('error.system.silo.unavailable', 'error', 'system', 'Silo erisilemez'),
-('error.system.silo.cluster-unavailable', 'error', 'system', 'Orleans cluster erisilemez'),
-('error.system.silo.auth-init-failed', 'error', 'system', 'Auth altyapisi baslatilamadi'),
+('error.system.silo.unavailable', 'error', 'system', 'Silo erişilemez'),
+('error.system.silo.cluster-unavailable', 'error', 'system', 'Orleans cluster erişilemez'),
+('error.system.silo.auth-init-failed', 'error', 'system', 'Auth altyapısı başlatılamadı'),
 
 -- Tenant Exceptions
-('error.tenant.not-active', 'error', 'tenant', 'Tenant aktif degil. Args: {0}=tenantId'),
-('error.tenant.configuration-invalid', 'error', 'tenant', 'Tenant konfigurasyon hatasi. Args: {0}=tenantId, {1}=reason'),
+('error.tenant.not-active', 'error', 'tenant', 'Tenant aktif değil. Args: {0}=tenantId'),
+('error.tenant.configuration-invalid', 'error', 'tenant', 'Tenant konfigürasyon hatası. Args: {0}=tenantId, {1}=reason'),
 ('error.tenant.code-exists', 'error', 'tenant', 'Tenant kodu zaten mevcut'),
-('error.tenant.not-found', 'error', 'tenant', 'Tenant bulunamadi'),
-('error.tenant.already-deleted', 'error', 'tenant', 'Tenant zaten silinmis'),
+('error.tenant.not-found', 'error', 'tenant', 'Tenant bulunamadı'),
+('error.tenant.already-deleted', 'error', 'tenant', 'Tenant zaten silinmiş'),
 
 -- Resource Not Found Exceptions
-('error.resource.not-found', 'error', 'notfound', 'Kaynak bulunamadi. Args: {0}=resourceType, {1}=resourceId'),
+('error.resource.not-found', 'error', 'notfound', 'Kaynak bulunamadı. Args: {0}=resourceType, {1}=resourceId'),
 
 -- Configuration Exceptions
-('error.config.missing-required', 'error', 'config', 'Zorunlu konfigurasyon eksik. Args: {0}=configKey'),
-('error.config.cannot-resolve-hostname', 'error', 'config', 'Hostname cozumlenemedi. Args: {0}=hostname'),
-('error.config.invalid-value', 'error', 'config', 'Gecersiz konfigurasyon degeri. Args: {0}=configKey, {1}=reason'),
+('error.config.missing-required', 'error', 'config', 'Zorunlu konfigürasyon eksik. Args: {0}=configKey'),
+('error.config.cannot-resolve-hostname', 'error', 'config', 'Hostname çözümlenemedi. Args: {0}=hostname'),
+('error.config.invalid-value', 'error', 'config', 'Geçersiz konfigürasyon değeri. Args: {0}=configKey, {1}=reason'),
 
 -- System - Replica Write Exceptions
-('error.system.replica.write-not-allowed', 'error', 'system', 'Replica uzerinde yazma yasak. Args: {0}=identifier, {1}=operation'),
+('error.system.replica.write-not-allowed', 'error', 'system', 'Replica üzerinde yazma yasak. Args: {0}=identifier, {1}=operation'),
 
 -- Auth - Token Exceptions
 ('error.auth.token.missing', 'error', 'auth', 'Token eksik'),
-('error.auth.token.invalid', 'error', 'auth', 'Gecersiz token. Args: {0}=reason'),
-('error.auth.token.expired', 'error', 'auth', 'Token suresi dolmus'),
-('error.auth.token.revoked', 'error', 'auth', 'Token iptal edilmis'),
-('error.auth.token.not-found', 'error', 'auth', 'Token bulunamadi'),
-('error.auth.token.refresh-invalid', 'error', 'auth', 'Gecersiz veya suresi dolmus refresh token'),
+('error.auth.token.invalid', 'error', 'auth', 'Geçersiz token. Args: {0}=reason'),
+('error.auth.token.expired', 'error', 'auth', 'Token süresi dolmuş'),
+('error.auth.token.revoked', 'error', 'auth', 'Token iptal edilmiş'),
+('error.auth.token.not-found', 'error', 'auth', 'Token bulunamadı'),
+('error.auth.token.refresh-invalid', 'error', 'auth', 'Geçersiz veya süresi dolmuş refresh token'),
 ('error.auth.token.refresh-required', 'error', 'auth', 'Refresh token zorunlu'),
-('error.auth.token.refresh-failed', 'error', 'auth', 'Token yenileme basarisiz'),
-('error.auth.token.refresh-in-progress', 'error', 'auth', 'Refresh islemi zaten devam ediyor'),
+('error.auth.token.refresh-failed', 'error', 'auth', 'Token yenileme başarısız'),
+('error.auth.token.refresh-in-progress', 'error', 'auth', 'Refresh işlemi zaten devam ediyor'),
 
 -- Auth - Login Exceptions
-('error.auth.login.throttled', 'error', 'auth', 'Cok fazla giris denemesi. Args: {0}=saniye'),
-('error.auth.login.failed', 'error', 'auth', 'Genel login hatasi'),
-('error.auth.login.account-locked', 'error', 'auth', 'Hesap kilitlendi. Args: {0}=acilis saati'),
-('error.auth.login.invalid-credentials', 'error', 'auth', 'Gecersiz kullanici/sifre'),
+('error.auth.login.throttled', 'error', 'auth', 'Çok fazla giriş denemesi. Args: {0}=saniye'),
+('error.auth.login.failed', 'error', 'auth', 'Genel giriş hatası'),
+('error.auth.login.account-locked', 'error', 'auth', 'Hesap kilitlendi. Args: {0}=açılış saati'),
+('error.auth.login.invalid-credentials', 'error', 'auth', 'Geçersiz kullanıcı/şifre'),
 
 -- Auth - User Exceptions
-('error.auth.user.invalid-id', 'error', 'auth', 'Gecersiz kullanici kimligi'),
-('error.auth.user.not-found', 'error', 'auth', 'Kullanici bulunamadi'),
-('error.auth.admin.not-found', 'error', 'auth', 'Admin kullanici bilgisi alinamadi'),
+('error.auth.user.invalid-id', 'error', 'auth', 'Geçersiz kullanıcı kimliği'),
+('error.auth.user.not-found', 'error', 'auth', 'Kullanıcı bulunamadı'),
+('error.auth.admin.not-found', 'error', 'auth', 'Admin kullanıcı bilgisi alınamadı'),
 
 -- Auth - Session Exceptions
-('error.auth.session.not-found', 'error', 'auth', 'Oturum bulunamadi'),
-('error.auth.session.id-required', 'error', 'auth', 'Oturum kimligi zorunlu'),
-('error.auth.session.use-logout-endpoint', 'error', 'auth', 'Mevcut oturum icin logout endpoint kullanilmali'),
-('error.auth.session.revoke-failed', 'error', 'auth', 'Oturum sonlandirma basarisiz'),
+('error.auth.session.not-found', 'error', 'auth', 'Oturum bulunamadı'),
+('error.auth.session.id-required', 'error', 'auth', 'Oturum kimliği zorunlu'),
+('error.auth.session.use-logout-endpoint', 'error', 'auth', 'Mevcut oturum için logout endpoint kullanılmalı'),
+('error.auth.session.revoke-failed', 'error', 'auth', 'Oturum sonlandırma başarısız'),
 
 -- Auth - Logout Exceptions
-('error.auth.logout.failed', 'error', 'auth', 'Cikis basarisiz'),
-('error.auth.logout.all-failed', 'error', 'auth', 'Toplu cikis basarisiz'),
+('error.auth.logout.failed', 'error', 'auth', 'Çıkış başarısız'),
+('error.auth.logout.all-failed', 'error', 'auth', 'Toplu çıkış başarısız'),
 
 -- Auth - Unlock Exceptions
-('error.auth.unlock.failed', 'error', 'auth', 'Hesap kilidi acilamadi'),
+('error.auth.unlock.failed', 'error', 'auth', 'Hesap kilidi açılamadı'),
 
 -- Auth - 2FA Exceptions
-('error.auth.2fa.invalid-code', 'error', 'auth', 'Gecersiz 2FA dogrulama kodu'),
-('error.auth.2fa.token-expired', 'error', 'auth', '2FA token suresi dolmus, tekrar login gerekli'),
-('error.auth.2fa.max-attempts', 'error', 'auth', 'Cok fazla basarisiz 2FA denemesi, tekrar login gerekli'),
+('error.auth.2fa.invalid-code', 'error', 'auth', 'Geçersiz 2FA doğrulama kodu'),
+('error.auth.2fa.token-expired', 'error', 'auth', '2FA token süresi dolmuş, tekrar giriş gerekli'),
+('error.auth.2fa.max-attempts', 'error', 'auth', 'Çok fazla başarısız 2FA denemesi, tekrar giriş gerekli'),
 ('error.auth.2fa.already-enabled', 'error', 'auth', '2FA zaten aktif'),
-('error.auth.2fa.not-enabled', 'error', 'auth', '2FA aktif degil'),
-('error.auth.2fa.setup-expired', 'error', 'auth', '2FA kurulum suresi dolmus'),
+('error.auth.2fa.not-enabled', 'error', 'auth', '2FA aktif değil'),
+('error.auth.2fa.setup-expired', 'error', 'auth', '2FA kurulum süresi dolmuş'),
 
 -- Auth Success Messages
-('success.auth.logout', 'success', 'auth', 'Cikis basarili mesaji'),
-('success.auth.logout-all', 'success', 'auth', 'Tum oturumlar sonlandirildi mesaji'),
-('success.auth.session-revoked', 'success', 'auth', 'Oturum sonlandirildi mesaji'),
-('success.auth.unlocked', 'success', 'auth', 'Hesap kilidi acildi'),
-('success.auth.password-changed', 'success', 'auth', 'Sifre degistirildi mesaji'),
+('success.auth.logout', 'success', 'auth', 'Çıkış başarılı mesajı'),
+('success.auth.logout-all', 'success', 'auth', 'Tüm oturumlar sonlandırıldı mesajı'),
+('success.auth.session-revoked', 'success', 'auth', 'Oturum sonlandırıldı mesajı'),
+('success.auth.unlocked', 'success', 'auth', 'Hesap kilidi açıldı'),
+('success.auth.password-changed', 'success', 'auth', 'Şifre değiştirildi mesajı'),
 
 -- Presentation Success Messages
 ('success.presentation.cache-invalidated', 'success', 'presentation', 'Presentation cache temizlendi'),
 
 -- Permission Exceptions
-('error.permission.escalation', 'error', 'auth', 'Yetki yukseltme girisimi engellendi'),
-('error.permission.not-found', 'error', 'permission', 'Yetki bulunamadi'),
-('error.permission.grant.failed', 'error', 'permission', 'Yetki verme basarisiz'),
-('error.permission.deny.failed', 'error', 'permission', 'Yetki reddetme basarisiz'),
-('error.permission.remove.failed', 'error', 'permission', 'Yetki kaldirma basarisiz'),
-('error.permission.deleted', 'error', 'permission', 'Yetki silinmis'),
+('error.permission.escalation', 'error', 'auth', 'Yetki yükseltme girişimi engellendi'),
+('error.permission.not-found', 'error', 'permission', 'Yetki bulunamadı'),
+('error.permission.grant.failed', 'error', 'permission', 'Yetki verme başarısız'),
+('error.permission.deny.failed', 'error', 'permission', 'Yetki reddetme başarısız'),
+('error.permission.remove.failed', 'error', 'permission', 'Yetki kaldırma başarısız'),
+('error.permission.deleted', 'error', 'permission', 'Yetki silinmiş'),
 ('error.permission.create.code-required', 'error', 'permission', 'Yetki kodu zorunlu'),
 ('error.permission.create.code-exists', 'error', 'permission', 'Yetki kodu zaten mevcut'),
-('error.permission.create.code-deleted', 'error', 'permission', 'Yetki kodu silinmis. Restore kullanin'),
-('error.permission.update.is-deleted', 'error', 'permission', 'Silinmis yetki guncellenemez'),
-('error.permission.delete.already-deleted', 'error', 'permission', 'Yetki zaten silinmis'),
-('error.permission.restore.not-deleted', 'error', 'permission', 'Yetki silinmis degil'),
-('error.permission.create.failed', 'error', 'permission', 'Yetki olusturulamadi'),
-('error.permission.update.failed', 'error', 'permission', 'Yetki guncellenemedi'),
+('error.permission.create.code-deleted', 'error', 'permission', 'Yetki kodu silinmiş. Restore kullanın'),
+('error.permission.update.is-deleted', 'error', 'permission', 'Silinmiş yetki güncellenemez'),
+('error.permission.delete.already-deleted', 'error', 'permission', 'Yetki zaten silinmiş'),
+('error.permission.restore.not-deleted', 'error', 'permission', 'Yetki silinmiş değil'),
+('error.permission.create.failed', 'error', 'permission', 'Yetki oluşturulamadı'),
+('error.permission.update.failed', 'error', 'permission', 'Yetki güncellenemedi'),
 ('error.permission.delete.failed', 'error', 'permission', 'Yetki silinemedi'),
-('error.permission.restore.failed', 'error', 'permission', 'Yetki geri yuklenemedi'),
+('error.permission.restore.failed', 'error', 'permission', 'Yetki geri yüklenemedi'),
 
 -- Role Exceptions
-('error.role.not-found', 'error', 'role', 'Rol bulunamadi'),
+('error.role.not-found', 'error', 'role', 'Rol bulunamadı'),
 ('error.role.create.code-exists', 'error', 'role', 'Rol kodu zaten mevcut'),
-('error.role.create.code-deleted', 'error', 'role', 'Rol kodu silinmis. Restore kullanin'),
-('error.role.deleted', 'error', 'role', 'Silinmis rol uzerinde islem yapilamaz'),
-('error.role.delete.already-deleted', 'error', 'role', 'Rol zaten silinmis'),
-('error.role.restore.not-deleted', 'error', 'role', 'Rol silinmis degil'),
-('error.role.system-protected', 'error', 'role', 'Sistem rolu degistirilemez'),
-('error.role.list.failed', 'error', 'role', 'Rol listesi alinamadi'),
-('error.role.get.failed', 'error', 'role', 'Rol bilgisi alinamadi'),
-('error.role.create.failed', 'error', 'role', 'Rol olusturulamadi'),
-('error.role.update.failed', 'error', 'role', 'Rol guncellenemedi'),
+('error.role.create.code-deleted', 'error', 'role', 'Rol kodu silinmiş. Restore kullanın'),
+('error.role.deleted', 'error', 'role', 'Silinmiş rol üzerinde işlem yapılamaz'),
+('error.role.delete.already-deleted', 'error', 'role', 'Rol zaten silinmiş'),
+('error.role.restore.not-deleted', 'error', 'role', 'Rol silinmiş değil'),
+('error.role.system-protected', 'error', 'role', 'Sistem rolü değiştirilemez'),
+('error.role.list.failed', 'error', 'role', 'Rol listesi alınamadı'),
+('error.role.get.failed', 'error', 'role', 'Rol bilgisi alınamadı'),
+('error.role.create.failed', 'error', 'role', 'Rol oluşturulamadı'),
+('error.role.update.failed', 'error', 'role', 'Rol güncellenemedi'),
 ('error.role.delete.failed', 'error', 'role', 'Rol silinemedi'),
-('error.role.restore.failed', 'error', 'role', 'Rol geri yuklenemedi'),
-('error.role.assign.failed', 'error', 'role', 'Rol atama basarisiz'),
-('error.role.remove.failed', 'error', 'role', 'Rol kaldirma basarisiz'),
-('error.role.bulk-assign.failed', 'error', 'role', 'Toplu yetki atama basarisiz'),
-('error.role.assign-permission.failed', 'error', 'role', 'Role yetki atama basarisiz'),
-('error.role.remove-permission.failed', 'error', 'role', 'Rolden yetki kaldirma basarisiz'),
-('error.role.assign-tenant.failed', 'error', 'role', 'Tenant rol atama basarisiz'),
-('error.role.remove-tenant.failed', 'error', 'role', 'Tenant rol kaldirma basarisiz'),
-('error.role.user-not-found', 'error', 'role', 'Kullanici bulunamadi'),
-('error.role.permission-not-found', 'error', 'role', 'Yetki bulunamadi'),
-('error.role.permission-deleted', 'error', 'role', 'Silinmis yetki atanamaz'),
-('error.role.operation-failed', 'error', 'role', 'Rol islemi basarisiz'),
-('error.role.tenant-mismatch', 'error', 'role', 'Tenant uyusmazligi'),
+('error.role.restore.failed', 'error', 'role', 'Rol geri yüklenemedi'),
+('error.role.assign.failed', 'error', 'role', 'Rol atama başarısız'),
+('error.role.remove.failed', 'error', 'role', 'Rol kaldırma başarısız'),
+('error.role.bulk-assign.failed', 'error', 'role', 'Toplu yetki atama başarısız'),
+('error.role.assign-permission.failed', 'error', 'role', 'Role yetki atama başarısız'),
+('error.role.remove-permission.failed', 'error', 'role', 'Rolden yetki kaldırma başarısız'),
+('error.role.assign-tenant.failed', 'error', 'role', 'Tenant rol atama başarısız'),
+('error.role.remove-tenant.failed', 'error', 'role', 'Tenant rol kaldırma başarısız'),
+('error.role.user-not-found', 'error', 'role', 'Kullanıcı bulunamadı'),
+('error.role.permission-not-found', 'error', 'role', 'Yetki bulunamadı'),
+('error.role.permission-deleted', 'error', 'role', 'Silinmiş yetki atanamaz'),
+('error.role.operation-failed', 'error', 'role', 'Rol işlemi başarısız'),
+('error.role.tenant-mismatch', 'error', 'role', 'Tenant uyuşmazlığı'),
 
 -- User Exceptions
-('error.user.not-found', 'error', 'user', 'Kullanici bulunamadi'),
-('error.user.create.email-exists', 'error', 'user', 'Email adresi zaten kayitli'),
-('error.user.create.username-exists', 'error', 'user', 'Kullanici adi bu sirkette zaten mevcut'),
-('error.user.update.is-deleted', 'error', 'user', 'Silinmis kullanici guncellenemez'),
-('error.user.update.email-exists', 'error', 'user', 'Email adresi baska kullanicida kayitli'),
-('error.user.update.username-exists', 'error', 'user', 'Kullanici adi bu sirkette baska kullanicida mevcut'),
-('error.user.delete.already-deleted', 'error', 'user', 'Kullanici zaten silinmis'),
-('error.user.reset-password.is-deleted', 'error', 'user', 'Silinmis kullanicinin sifresi sifirlanamaz'),
-('error.user.reset-password.self-not-allowed', 'error', 'user', 'Kendi sifrenizi sifirlamak icin change-password kullanin'),
-('error.user.restore.not-deleted', 'error', 'user', 'Kullanici silinmis degil'),
-('error.user.account-inactive', 'error', 'user', 'Hesap aktif degil'),
+('error.user.not-found', 'error', 'user', 'Kullanıcı bulunamadı'),
+('error.user.create.email-exists', 'error', 'user', 'Email adresi zaten kayıtlı'),
+('error.user.create.username-exists', 'error', 'user', 'Kullanıcı adı bu şirkette zaten mevcut'),
+('error.user.update.is-deleted', 'error', 'user', 'Silinmiş kullanıcı güncellenemez'),
+('error.user.update.email-exists', 'error', 'user', 'Email adresi başka kullanıcıda kayıtlı'),
+('error.user.update.username-exists', 'error', 'user', 'Kullanıcı adı bu şirkette başka kullanıcıda mevcut'),
+('error.user.delete.already-deleted', 'error', 'user', 'Kullanıcı zaten silinmiş'),
+('error.user.reset-password.is-deleted', 'error', 'user', 'Silinmiş kullanıcının şifresi sıfırlanamaz'),
+('error.user.reset-password.self-not-allowed', 'error', 'user', 'Kendi şifrenizi sıfırlamak için change-password kullanın'),
+('error.user.restore.not-deleted', 'error', 'user', 'Kullanıcı silinmiş değil'),
+('error.user.account-inactive', 'error', 'user', 'Hesap aktif değil'),
 ('error.user.account-locked', 'error', 'user', 'Hesap kilitli'),
-('error.user.change-password.current-password-invalid', 'error', 'user', 'Mevcut sifre hatali'),
-('error.user.change-password.same-as-current', 'error', 'user', 'Yeni sifre mevcut sifre ile ayni olamaz'),
-('error.user.change-password.recently-used', 'error', 'user', 'Bu sifre yakin zamanda kullanilmis'),
+('error.user.change-password.current-password-invalid', 'error', 'user', 'Mevcut şifre hatalı'),
+('error.user.change-password.same-as-current', 'error', 'user', 'Yeni şifre mevcut şifre ile aynı olamaz'),
+('error.user.change-password.recently-used', 'error', 'user', 'Bu şifre yakın zamanda kullanılmış'),
 
 -- Password Policy Exceptions
-('error.password-policy.invalid-expiry-days', 'error', 'password-policy', 'Gecersiz sifre gecerlilik suresi'),
-('error.password-policy.invalid-history-count', 'error', 'password-policy', 'Sifre gecmisi sayisi 0-10 arasi olmali'),
+('error.password-policy.invalid-expiry-days', 'error', 'password-policy', 'Geçersiz şifre geçerlilik süresi'),
+('error.password-policy.invalid-history-count', 'error', 'password-policy', 'Şifre geçmişi sayısı 0-10 arası olmalı'),
 
 -- Company Exceptions
-('error.company.not-found', 'error', 'company', 'Sirket bulunamadi veya pasif'),
+('error.company.not-found', 'error', 'company', 'Şirket bulunamadı veya pasif'),
 
 -- Company CRUD & Validation Exceptions
-('error.company.create.code-exists', 'error', 'company', 'Sirket kodu zaten kayitli'),
-('error.company.create.name-exists', 'error', 'company', 'Sirket adi zaten kayitli'),
-('error.company.update.code-exists', 'error', 'company', 'Sirket kodu baska sirkette kayitli'),
-('error.company.update.name-exists', 'error', 'company', 'Sirket adi baska sirkette kayitli'),
-('error.company.delete.already-deleted', 'error', 'company', 'Sirket zaten silinmis'),
-('error.country.not-found', 'error', 'country', 'Ulke kodu bulunamadi'),
-('error.pagination.invalid', 'error', 'pagination', 'Gecersiz sayfa veya sayfa boyutu'),
+('error.company.create.code-exists', 'error', 'company', 'Şirket kodu zaten kayıtlı'),
+('error.company.create.name-exists', 'error', 'company', 'Şirket adı zaten kayıtlı'),
+('error.company.update.code-exists', 'error', 'company', 'Şirket kodu başka şirkette kayıtlı'),
+('error.company.update.name-exists', 'error', 'company', 'Şirket adı başka şirkette kayıtlı'),
+('error.company.delete.already-deleted', 'error', 'company', 'Şirket zaten silinmiş'),
+('error.country.not-found', 'error', 'country', 'Ülke kodu bulunamadı'),
+('error.pagination.invalid', 'error', 'pagination', 'Geçersiz sayfa veya sayfa boyutu'),
 
 -- Localization Exceptions
-('error.localization.language-code-invalid', 'error', 'localization', 'Gecersiz dil kodu. Args: {0}=langCode'),
-('error.localization.language-name-invalid', 'error', 'localization', 'Gecersiz dil adi'),
-('error.localization.key.not-found', 'error', 'localization', 'Localization key bulunamadi'),
-('error.localization.key.invalid', 'error', 'localization', 'Gecersiz localization key'),
+('error.localization.language-code-invalid', 'error', 'localization', 'Geçersiz dil kodu. Args: {0}=langCode'),
+('error.localization.language-name-invalid', 'error', 'localization', 'Geçersiz dil adı'),
+('error.localization.key.not-found', 'error', 'localization', 'Localization key bulunamadı'),
+('error.localization.key.invalid', 'error', 'localization', 'Geçersiz localization key'),
 ('error.localization.key.exists', 'error', 'localization', 'Localization key zaten mevcut'),
-('error.localization.domain-invalid', 'error', 'localization', 'Gecersiz domain'),
-('error.localization.translation.not-found', 'error', 'localization', 'Ceviri bulunamadi'),
+('error.localization.domain-invalid', 'error', 'localization', 'Geçersiz domain'),
+('error.localization.translation.not-found', 'error', 'localization', 'Çeviri bulunamadı'),
 
 -- Language Management Exceptions
-('error.language.not-found', 'error', 'language', 'Dil bulunamadi'),
+('error.language.not-found', 'error', 'language', 'Dil bulunamadı'),
 ('error.language.create.code-exists', 'error', 'language', 'Dil kodu zaten mevcut'),
-('error.language.code-invalid', 'error', 'language', 'Gecersiz dil kodu (2 karakter olmali)'),
-('error.language.name-invalid', 'error', 'language', 'Gecersiz dil adi (min 2 karakter)'),
-('error.language.delete.has-translations', 'error', 'language', 'Dil silinemez, cevirileri mevcut'),
+('error.language.code-invalid', 'error', 'language', 'Geçersiz dil kodu (2 karakter olmalı)'),
+('error.language.name-invalid', 'error', 'language', 'Geçersiz dil adı (min 2 karakter)'),
+('error.language.delete.has-translations', 'error', 'language', 'Dil silinemez, çevirileri mevcut'),
 
 -- Currency Management Exceptions
-('error.currency.not-found', 'error', 'currency', 'Para birimi bulunamadi'),
+('error.currency.not-found', 'error', 'currency', 'Para birimi bulunamadı'),
 ('error.currency.create.code-exists', 'error', 'currency', 'Para birimi kodu zaten mevcut'),
-('error.currency.code-invalid', 'error', 'currency', 'Gecersiz para birimi kodu (3 karakter olmali)'),
-('error.currency.name-invalid', 'error', 'currency', 'Gecersiz para birimi adi (min 2 karakter)'),
-('error.currency.delete.in-use', 'error', 'currency', 'Para birimi silinemez, tenant tarafindan kullaniliyor'),
-('error.currency.delete.is-base-currency', 'error', 'currency', 'Para birimi silinemez, tenant base currency olarak kullaniyor'),
+('error.currency.code-invalid', 'error', 'currency', 'Geçersiz para birimi kodu (3 karakter olmalı)'),
+('error.currency.name-invalid', 'error', 'currency', 'Geçersiz para birimi adı (min 2 karakter)'),
+('error.currency.delete.in-use', 'error', 'currency', 'Para birimi silinemez, tenant tarafından kullanılıyor'),
+('error.currency.delete.is-base-currency', 'error', 'currency', 'Para birimi silinemez, tenant base currency olarak kullanıyor'),
 
 -- SQL Validation Exceptions
-('error.sql.function-name-invalid', 'error', 'sql', 'Gecersiz function adi. Args: {0}=functionName'),
-('error.sql.identifier-too-long', 'error', 'sql', 'Identifier cok uzun. Args: {0}=identifier, {1}=length, {2}=maxLength'),
+('error.sql.function-name-invalid', 'error', 'sql', 'Geçersiz function adı. Args: {0}=functionName'),
+('error.sql.identifier-too-long', 'error', 'sql', 'Identifier çok uzun. Args: {0}=identifier, {1}=length, {2}=maxLength'),
 ('error.sql.command-not-allowed', 'error', 'sql', 'SQL komutu izin verilmiyor. Args: {0}=allowedPrefixes'),
 ('error.sql.stacked-query', 'error', 'sql', 'Birden fazla SQL komutu yasak'),
-('error.sql.system-table-access', 'error', 'sql', 'Sistem tablosuna erisim yasak'),
+('error.sql.system-table-access', 'error', 'sql', 'Sistem tablosuna erişim yasak'),
 
 -- ============================================================================
 -- CATALOG - ACCESS CONTROL EXCEPTIONS
 -- ============================================================================
 
 -- Access Control
-('error.access.superadmin-required', 'error', 'access', 'Bu islem icin SuperAdmin yetkisi gerekli'),
-('error.access.platform-admin-required', 'error', 'access', 'Bu islem icin Platform Admin (SuperAdmin/Admin) yetkisi gerekli'),
+('error.access.superadmin-required', 'error', 'access', 'Bu işlem için SuperAdmin yetkisi gerekli'),
+('error.access.platform-admin-required', 'error', 'access', 'Bu işlem için Platform Admin (SuperAdmin/Admin) yetkisi gerekli'),
 
 -- ============================================================================
 -- CATALOG - PROVIDER EXCEPTIONS
 -- ============================================================================
 
 -- Provider Type Exceptions
-('error.provider-type.not-found', 'error', 'provider-type', 'Provider tipi bulunamadi'),
+('error.provider-type.not-found', 'error', 'provider-type', 'Provider tipi bulunamadı'),
 ('error.provider-type.id-required', 'error', 'provider-type', 'Provider tip ID zorunlu'),
-('error.provider-type.code-invalid', 'error', 'provider-type', 'Gecersiz provider tip kodu (min 2 karakter)'),
-('error.provider-type.name-invalid', 'error', 'provider-type', 'Gecersiz provider tip adi (min 2 karakter)'),
+('error.provider-type.code-invalid', 'error', 'provider-type', 'Geçersiz provider tip kodu (min 2 karakter)'),
+('error.provider-type.name-invalid', 'error', 'provider-type', 'Geçersiz provider tip adı (min 2 karakter)'),
 ('error.provider-type.code-exists', 'error', 'provider-type', 'Provider tip kodu zaten mevcut'),
-('error.provider-type.has-providers', 'error', 'provider-type', 'Provider tipi silinemez, bagli provider kayitlari mevcut'),
+('error.provider-type.has-providers', 'error', 'provider-type', 'Provider tipi silinemez, bağlı provider kayıtları mevcut'),
 
 -- Provider Exceptions
-('error.provider.not-found', 'error', 'provider', 'Provider bulunamadi'),
+('error.provider.not-found', 'error', 'provider', 'Provider bulunamadı'),
 ('error.provider.id-required', 'error', 'provider', 'Provider ID zorunlu'),
 ('error.provider.type-required', 'error', 'provider', 'Provider tipi zorunlu'),
-('error.provider.code-invalid', 'error', 'provider', 'Gecersiz provider kodu (min 2 karakter)'),
-('error.provider.name-invalid', 'error', 'provider', 'Gecersiz provider adi (min 2 karakter)'),
+('error.provider.code-invalid', 'error', 'provider', 'Geçersiz provider kodu (min 2 karakter)'),
+('error.provider.name-invalid', 'error', 'provider', 'Geçersiz provider adı (min 2 karakter)'),
 ('error.provider.code-exists', 'error', 'provider', 'Provider kodu zaten mevcut'),
-('error.provider.has-games', 'error', 'provider', 'Provider silinemez, bagli oyun kayitlari mevcut'),
-('error.provider.has-payment-methods', 'error', 'provider', 'Provider silinemez, bagli odeme yontemi kayitlari mevcut'),
+('error.provider.has-games', 'error', 'provider', 'Provider silinemez, bağlı oyun kayıtları mevcut'),
+('error.provider.has-payment-methods', 'error', 'provider', 'Provider silinemez, bağlı ödeme yöntemi kayıtları mevcut'),
 
 -- Provider Setting Exceptions
-('error.provider-setting.not-found', 'error', 'provider-setting', 'Provider ayari bulunamadi'),
+('error.provider-setting.not-found', 'error', 'provider-setting', 'Provider ayarı bulunamadı'),
 ('error.provider-setting.provider-required', 'error', 'provider-setting', 'Provider ID zorunlu'),
-('error.provider-setting.key-required', 'error', 'provider-setting', 'Ayar anahtari zorunlu'),
-('error.provider-setting.key-invalid', 'error', 'provider-setting', 'Gecersiz ayar anahtari (min 2 karakter)'),
-('error.provider-setting.value-required', 'error', 'provider-setting', 'Ayar degeri zorunlu'),
+('error.provider-setting.key-required', 'error', 'provider-setting', 'Ayar anahtarı zorunlu'),
+('error.provider-setting.key-invalid', 'error', 'provider-setting', 'Geçersiz ayar anahtarı (min 2 karakter)'),
+('error.provider-setting.value-required', 'error', 'provider-setting', 'Ayar değeri zorunlu'),
 
 -- ============================================================================
 -- CATALOG - PAYMENT METHOD EXCEPTIONS
 -- ============================================================================
 
-('error.payment-method.not-found', 'error', 'payment-method', 'Odeme yontemi bulunamadi'),
-('error.payment-method.id-required', 'error', 'payment-method', 'Odeme yontemi ID zorunlu'),
+('error.payment-method.not-found', 'error', 'payment-method', 'Ödeme yöntemi bulunamadı'),
+('error.payment-method.id-required', 'error', 'payment-method', 'Ödeme yöntemi ID zorunlu'),
 ('error.payment-method.provider-required', 'error', 'payment-method', 'Provider ID zorunlu'),
-('error.payment-method.code-invalid', 'error', 'payment-method', 'Gecersiz odeme yontemi kodu (min 2 karakter)'),
-('error.payment-method.name-invalid', 'error', 'payment-method', 'Gecersiz odeme yontemi adi (min 2 karakter)'),
-('error.payment-method.type-invalid', 'error', 'payment-method', 'Gecersiz odeme tipi (CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER)'),
-('error.payment-method.code-exists', 'error', 'payment-method', 'Odeme yontemi kodu bu provider altinda zaten mevcut'),
-('error.payment-method.in-use', 'error', 'payment-method', 'Odeme yontemi silinemez, tenant tarafindan kullaniliyor'),
+('error.payment-method.code-invalid', 'error', 'payment-method', 'Geçersiz ödeme yöntemi kodu (min 2 karakter)'),
+('error.payment-method.name-invalid', 'error', 'payment-method', 'Geçersiz ödeme yöntemi adı (min 2 karakter)'),
+('error.payment-method.type-invalid', 'error', 'payment-method', 'Geçersiz ödeme tipi (CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER)'),
+('error.payment-method.code-exists', 'error', 'payment-method', 'Ödeme yöntemi kodu bu provider altında zaten mevcut'),
+('error.payment-method.in-use', 'error', 'payment-method', 'Ödeme yöntemi silinemez, tenant tarafından kullanılıyor'),
 
 -- ============================================================================
 -- CATALOG - COMPLIANCE EXCEPTIONS
 -- ============================================================================
 
 -- Jurisdiction Exceptions
-('error.jurisdiction.not-found', 'error', 'jurisdiction', 'Jurisdiction bulunamadi'),
+('error.jurisdiction.not-found', 'error', 'jurisdiction', 'Jurisdiction bulunamadı'),
 ('error.jurisdiction.id-required', 'error', 'jurisdiction', 'Jurisdiction ID zorunlu'),
-('error.jurisdiction.code-invalid', 'error', 'jurisdiction', 'Gecersiz jurisdiction kodu (min 2 karakter)'),
-('error.jurisdiction.name-invalid', 'error', 'jurisdiction', 'Gecersiz jurisdiction adi (min 2 karakter)'),
-('error.jurisdiction.country-code-invalid', 'error', 'jurisdiction', 'Gecersiz ulke kodu (2 karakter ISO kodu)'),
-('error.jurisdiction.authority-type-invalid', 'error', 'jurisdiction', 'Gecersiz otorite tipi (national, regional, offshore)'),
+('error.jurisdiction.code-invalid', 'error', 'jurisdiction', 'Geçersiz jurisdiction kodu (min 2 karakter)'),
+('error.jurisdiction.name-invalid', 'error', 'jurisdiction', 'Geçersiz jurisdiction adı (min 2 karakter)'),
+('error.jurisdiction.country-code-invalid', 'error', 'jurisdiction', 'Geçersiz ülke kodu (2 karakter ISO kodu)'),
+('error.jurisdiction.authority-type-invalid', 'error', 'jurisdiction', 'Geçersiz otorite tipi (national, regional, offshore)'),
 ('error.jurisdiction.code-exists', 'error', 'jurisdiction', 'Jurisdiction kodu zaten mevcut'),
-('error.jurisdiction.has-kyc-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli KYC politikasi mevcut'),
-('error.jurisdiction.has-document-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli belge gereksinimleri mevcut'),
-('error.jurisdiction.has-level-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli seviye gereksinimleri mevcut'),
-('error.jurisdiction.has-gaming-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bagli sorumlu oyun politikasi mevcut'),
-('error.jurisdiction.in-use-by-tenants', 'error', 'jurisdiction', 'Jurisdiction silinemez, tenant tarafindan kullaniliyor'),
+('error.jurisdiction.has-kyc-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı KYC politikası mevcut'),
+('error.jurisdiction.has-document-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı belge gereksinimleri mevcut'),
+('error.jurisdiction.has-level-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı seviye gereksinimleri mevcut'),
+('error.jurisdiction.has-gaming-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı sorumlu oyun politikası mevcut'),
+('error.jurisdiction.in-use-by-tenants', 'error', 'jurisdiction', 'Jurisdiction silinemez, tenant tarafından kullanılıyor'),
 
 -- KYC Policy Exceptions
-('error.kyc-policy.not-found', 'error', 'kyc-policy', 'KYC politikasi bulunamadi'),
+('error.kyc-policy.not-found', 'error', 'kyc-policy', 'KYC politikası bulunamadı'),
 ('error.kyc-policy.id-required', 'error', 'kyc-policy', 'KYC politika ID zorunlu'),
 ('error.kyc-policy.jurisdiction-required', 'error', 'kyc-policy', 'Jurisdiction ID zorunlu'),
-('error.kyc-policy.already-exists-for-jurisdiction', 'error', 'kyc-policy', 'Bu jurisdiction icin KYC politikasi zaten mevcut'),
-('error.kyc-policy.verification-timing-invalid', 'error', 'kyc-policy', 'Gecersiz dogrulama zamani'),
-('error.kyc-policy.min-age-invalid', 'error', 'kyc-policy', 'Minimum yas 18 den kucuk olamaz'),
+('error.kyc-policy.already-exists-for-jurisdiction', 'error', 'kyc-policy', 'Bu jurisdiction için KYC politikası zaten mevcut'),
+('error.kyc-policy.verification-timing-invalid', 'error', 'kyc-policy', 'Geçersiz doğrulama zamanı'),
+('error.kyc-policy.min-age-invalid', 'error', 'kyc-policy', 'Minimum yaş 18 den küçük olamaz'),
 
 -- KYC Document Requirement Exceptions
-('error.kyc-document-requirement.not-found', 'error', 'kyc-document-requirement', 'Belge gereksinimi bulunamadi'),
+('error.kyc-document-requirement.not-found', 'error', 'kyc-document-requirement', 'Belge gereksinimi bulunamadı'),
 ('error.kyc-document-requirement.id-required', 'error', 'kyc-document-requirement', 'Belge gereksinimi ID zorunlu'),
 ('error.kyc-document-requirement.jurisdiction-required', 'error', 'kyc-document-requirement', 'Jurisdiction ID zorunlu'),
-('error.kyc-document-requirement.document-type-invalid', 'error', 'kyc-document-requirement', 'Gecersiz belge tipi'),
-('error.kyc-document-requirement.required-for-invalid', 'error', 'kyc-document-requirement', 'Gecersiz zorunluluk tipi (all, deposit, withdrawal, edd)'),
-('error.kyc-document-requirement.verification-method-invalid', 'error', 'kyc-document-requirement', 'Gecersiz dogrulama yontemi (manual, automated, hybrid)'),
+('error.kyc-document-requirement.document-type-invalid', 'error', 'kyc-document-requirement', 'Geçersiz belge tipi'),
+('error.kyc-document-requirement.required-for-invalid', 'error', 'kyc-document-requirement', 'Geçersiz zorunluluk tipi (all, deposit, withdrawal, edd)'),
+('error.kyc-document-requirement.verification-method-invalid', 'error', 'kyc-document-requirement', 'Geçersiz doğrulama yöntemi (manual, automated, hybrid)'),
 ('error.kyc-document-requirement.already-exists', 'error', 'kyc-document-requirement', 'Bu jurisdiction ve belge tipi kombinasyonu zaten mevcut'),
 
 -- KYC Level Requirement Exceptions
-('error.kyc-level-requirement.not-found', 'error', 'kyc-level-requirement', 'Seviye gereksinimi bulunamadi'),
+('error.kyc-level-requirement.not-found', 'error', 'kyc-level-requirement', 'Seviye gereksinimi bulunamadı'),
 ('error.kyc-level-requirement.id-required', 'error', 'kyc-level-requirement', 'Seviye gereksinimi ID zorunlu'),
 ('error.kyc-level-requirement.jurisdiction-required', 'error', 'kyc-level-requirement', 'Jurisdiction ID zorunlu'),
-('error.kyc-level-requirement.level-invalid', 'error', 'kyc-level-requirement', 'Gecersiz KYC seviyesi (basic, standard, enhanced)'),
-('error.kyc-level-requirement.level-order-invalid', 'error', 'kyc-level-requirement', 'Gecersiz seviye sirasi (0 veya ustu olmali)'),
-('error.kyc-level-requirement.deadline-action-invalid', 'error', 'kyc-level-requirement', 'Gecersiz sure dolumu aksiyonu'),
+('error.kyc-level-requirement.level-invalid', 'error', 'kyc-level-requirement', 'Geçersiz KYC seviyesi (basic, standard, enhanced)'),
+('error.kyc-level-requirement.level-order-invalid', 'error', 'kyc-level-requirement', 'Geçersiz seviye sırası (0 veya üstü olmalı)'),
+('error.kyc-level-requirement.deadline-action-invalid', 'error', 'kyc-level-requirement', 'Geçersiz süre dolumu aksiyonu'),
 ('error.kyc-level-requirement.already-exists', 'error', 'kyc-level-requirement', 'Bu jurisdiction ve KYC seviyesi kombinasyonu zaten mevcut'),
 
 -- Responsible Gaming Policy Exceptions
-('error.responsible-gaming-policy.not-found', 'error', 'responsible-gaming-policy', 'Sorumlu oyun politikasi bulunamadi'),
-('error.responsible-gaming-policy.id-required', 'error', 'responsible-gaming-policy', 'Sorumlu oyun politikasi ID zorunlu'),
+('error.responsible-gaming-policy.not-found', 'error', 'responsible-gaming-policy', 'Sorumlu oyun politikası bulunamadı'),
+('error.responsible-gaming-policy.id-required', 'error', 'responsible-gaming-policy', 'Sorumlu oyun politikası ID zorunlu'),
 ('error.responsible-gaming-policy.jurisdiction-required', 'error', 'responsible-gaming-policy', 'Jurisdiction ID zorunlu'),
-('error.responsible-gaming-policy.already-exists-for-jurisdiction', 'error', 'responsible-gaming-policy', 'Bu jurisdiction icin sorumlu oyun politikasi zaten mevcut'),
+('error.responsible-gaming-policy.already-exists-for-jurisdiction', 'error', 'responsible-gaming-policy', 'Bu jurisdiction için sorumlu oyun politikası zaten mevcut'),
 
 -- ============================================================================
 -- CATALOG - UIKIT EXCEPTIONS
 -- ============================================================================
 
 -- Theme Exceptions
-('error.theme.not-found', 'error', 'theme', 'Tema bulunamadi'),
+('error.theme.not-found', 'error', 'theme', 'Tema bulunamadı'),
 ('error.theme.id-required', 'error', 'theme', 'Tema ID zorunlu'),
-('error.theme.code-invalid', 'error', 'theme', 'Gecersiz tema kodu (min 2 karakter)'),
-('error.theme.name-invalid', 'error', 'theme', 'Gecersiz tema adi (min 2 karakter)'),
+('error.theme.code-invalid', 'error', 'theme', 'Geçersiz tema kodu (min 2 karakter)'),
+('error.theme.name-invalid', 'error', 'theme', 'Geçersiz tema adı (min 2 karakter)'),
 ('error.theme.code-exists', 'error', 'theme', 'Tema kodu zaten mevcut'),
 
 -- Widget Exceptions
-('error.widget.not-found', 'error', 'widget', 'Widget bulunamadi'),
+('error.widget.not-found', 'error', 'widget', 'Widget bulunamadı'),
 ('error.widget.id-required', 'error', 'widget', 'Widget ID zorunlu'),
-('error.widget.code-invalid', 'error', 'widget', 'Gecersiz widget kodu (min 2 karakter)'),
-('error.widget.name-invalid', 'error', 'widget', 'Gecersiz widget adi (min 2 karakter)'),
-('error.widget.category-invalid', 'error', 'widget', 'Gecersiz widget kategorisi (CONTENT, GAME, ACCOUNT, NAVIGATION)'),
-('error.widget.component-name-invalid', 'error', 'widget', 'Gecersiz component adi (min 2 karakter)'),
+('error.widget.code-invalid', 'error', 'widget', 'Geçersiz widget kodu (min 2 karakter)'),
+('error.widget.name-invalid', 'error', 'widget', 'Geçersiz widget adı (min 2 karakter)'),
+('error.widget.category-invalid', 'error', 'widget', 'Geçersiz widget kategorisi (CONTENT, GAME, ACCOUNT, NAVIGATION)'),
+('error.widget.component-name-invalid', 'error', 'widget', 'Geçersiz component adı (min 2 karakter)'),
 ('error.widget.code-exists', 'error', 'widget', 'Widget kodu zaten mevcut'),
 
 -- UI Position Exceptions
-('error.ui-position.not-found', 'error', 'ui-position', 'UI pozisyonu bulunamadi'),
+('error.ui-position.not-found', 'error', 'ui-position', 'UI pozisyonu bulunamadı'),
 ('error.ui-position.id-required', 'error', 'ui-position', 'UI pozisyon ID zorunlu'),
-('error.ui-position.code-invalid', 'error', 'ui-position', 'Gecersiz pozisyon kodu (min 2 karakter)'),
-('error.ui-position.name-invalid', 'error', 'ui-position', 'Gecersiz pozisyon adi (min 2 karakter)'),
+('error.ui-position.code-invalid', 'error', 'ui-position', 'Geçersiz pozisyon kodu (min 2 karakter)'),
+('error.ui-position.name-invalid', 'error', 'ui-position', 'Geçersiz pozisyon adı (min 2 karakter)'),
 ('error.ui-position.code-exists', 'error', 'ui-position', 'UI pozisyon kodu zaten mevcut'),
 
 -- Navigation Template Exceptions
-('error.navigation-template.not-found', 'error', 'navigation-template', 'Navigasyon sablonu bulunamadi'),
-('error.navigation-template.id-required', 'error', 'navigation-template', 'Navigasyon sablon ID zorunlu'),
-('error.navigation-template.code-invalid', 'error', 'navigation-template', 'Gecersiz sablon kodu (min 2 karakter)'),
-('error.navigation-template.name-invalid', 'error', 'navigation-template', 'Gecersiz sablon adi (min 2 karakter)'),
-('error.navigation-template.code-exists', 'error', 'navigation-template', 'Navigasyon sablon kodu zaten mevcut'),
-('error.navigation-template.has-items', 'error', 'navigation-template', 'Navigasyon sablonu silinemez, bagli ogeler mevcut'),
+('error.navigation-template.not-found', 'error', 'navigation-template', 'Navigasyon şablonu bulunamadı'),
+('error.navigation-template.id-required', 'error', 'navigation-template', 'Navigasyon şablon ID zorunlu'),
+('error.navigation-template.code-invalid', 'error', 'navigation-template', 'Geçersiz şablon kodu (min 2 karakter)'),
+('error.navigation-template.name-invalid', 'error', 'navigation-template', 'Geçersiz şablon adı (min 2 karakter)'),
+('error.navigation-template.code-exists', 'error', 'navigation-template', 'Navigasyon şablon kodu zaten mevcut'),
+('error.navigation-template.has-items', 'error', 'navigation-template', 'Navigasyon şablonu silinemez, bağlı öğeler mevcut'),
 
 -- Navigation Template Item Exceptions
-('error.navigation-template-item.not-found', 'error', 'navigation-template-item', 'Sablon ogesi bulunamadi'),
-('error.navigation-template-item.id-required', 'error', 'navigation-template-item', 'Sablon ogesi ID zorunlu'),
-('error.navigation-template-item.template-required', 'error', 'navigation-template-item', 'Sablon ID zorunlu'),
-('error.navigation-template-item.menu-location-invalid', 'error', 'navigation-template-item', 'Gecersiz menu konumu (min 2 karakter)'),
-('error.navigation-template-item.target-type-invalid', 'error', 'navigation-template-item', 'Gecersiz hedef tipi (INTERNAL, EXTERNAL, ACTION)'),
-('error.navigation-template-item.parent-not-found', 'error', 'navigation-template-item', 'Ust oge bulunamadi'),
-('error.navigation-template-item.self-parent', 'error', 'navigation-template-item', 'Bir oge kendi kendisinin ust ogesi olamaz'),
-('error.navigation-template-item.has-children', 'error', 'navigation-template-item', 'Oge silinemez, alt ogeleri mevcut'),
+('error.navigation-template-item.not-found', 'error', 'navigation-template-item', 'Şablon öğesi bulunamadı'),
+('error.navigation-template-item.id-required', 'error', 'navigation-template-item', 'Şablon öğesi ID zorunlu'),
+('error.navigation-template-item.template-required', 'error', 'navigation-template-item', 'Şablon ID zorunlu'),
+('error.navigation-template-item.menu-location-invalid', 'error', 'navigation-template-item', 'Geçersiz menü konumu (min 2 karakter)'),
+('error.navigation-template-item.target-type-invalid', 'error', 'navigation-template-item', 'Geçersiz hedef tipi (INTERNAL, EXTERNAL, ACTION)'),
+('error.navigation-template-item.parent-not-found', 'error', 'navigation-template-item', 'Üst öğe bulunamadı'),
+('error.navigation-template-item.self-parent', 'error', 'navigation-template-item', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
+('error.navigation-template-item.has-children', 'error', 'navigation-template-item', 'Öğe silinemez, alt öğeleri mevcut'),
 
 -- Tenant Navigation Errors
-('error.tenant-navigation.not-found', 'error', 'tenant-navigation', 'Navigasyon ogesi bulunamadi'),
+('error.tenant-navigation.not-found', 'error', 'tenant-navigation', 'Navigasyon öğesi bulunamadı'),
 ('error.tenant-navigation.already-initialized', 'error', 'tenant-navigation', 'Tenant navigasyonu zaten mevcut'),
-('error.tenant-navigation.is-locked', 'error', 'tenant-navigation', 'Kilitli oge silinemez'),
-('error.tenant-navigation.has-children', 'error', 'tenant-navigation', 'Oge silinemez, alt ogeleri mevcut'),
-('error.tenant-navigation.parent-not-found', 'error', 'tenant-navigation', 'Ust oge bulunamadi'),
-('error.tenant-navigation.self-parent', 'error', 'tenant-navigation', 'Bir oge kendi kendisinin ust ogesi olamaz'),
-('error.tenant-navigation.readonly-field-update', 'error', 'tenant-navigation', 'Salt okunur alan guncellenemez'),
-('error.tenant-navigation.invalid-item-ids', 'error', 'tenant-navigation', 'Gecersiz oge ID listesi'),
+('error.tenant-navigation.is-locked', 'error', 'tenant-navigation', 'Kilitli öğe silinemez'),
+('error.tenant-navigation.has-children', 'error', 'tenant-navigation', 'Öğe silinemez, alt öğeleri mevcut'),
+('error.tenant-navigation.parent-not-found', 'error', 'tenant-navigation', 'Üst öğe bulunamadı'),
+('error.tenant-navigation.self-parent', 'error', 'tenant-navigation', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
+('error.tenant-navigation.readonly-field-update', 'error', 'tenant-navigation', 'Salt okunur alan güncellenemez'),
+('error.tenant-navigation.invalid-item-ids', 'error', 'tenant-navigation', 'Geçersiz öğe ID listesi'),
 
 -- Tenant Theme Errors
-('error.tenant-theme.not-found', 'error', 'tenant-theme', 'Tenant tema yapilandirmasi bulunamadi'),
-('error.tenant-theme.no-active-theme', 'error', 'tenant-theme', 'Aktif tema bulunamadi'),
+('error.tenant-theme.not-found', 'error', 'tenant-theme', 'Tenant tema yapılandırması bulunamadı'),
+('error.tenant-theme.no-active-theme', 'error', 'tenant-theme', 'Aktif tema bulunamadı'),
 
 -- Tenant Layout Errors
-('error.tenant-layout.not-found', 'error', 'tenant-layout', 'Layout bulunamadi'),
+('error.tenant-layout.not-found', 'error', 'tenant-layout', 'Layout bulunamadı'),
 ('error.tenant-layout.no-filter', 'error', 'tenant-layout', 'En az bir filtre parametresi gerekli'),
 
 -- ============================================================================
 -- MESSAGING EXCEPTIONS
 -- ============================================================================
-('error.messaging.sender-id-required', 'error', 'messaging', 'Gonderen kullanici ID zorunlu'),
-('error.messaging.recipient-id-required', 'error', 'messaging', 'Alici kullanici ID zorunlu'),
+('error.messaging.sender-id-required', 'error', 'messaging', 'Gönderen kullanıcı ID zorunlu'),
+('error.messaging.recipient-id-required', 'error', 'messaging', 'Alıcı kullanıcı ID zorunlu'),
 ('error.messaging.subject-required', 'error', 'messaging', 'Mesaj konusu zorunlu'),
-('error.messaging.body-required', 'error', 'messaging', 'Mesaj icerigi zorunlu'),
-('error.messaging.user-id-required', 'error', 'messaging', 'Kullanici ID zorunlu'),
-('error.messaging.invalid-parameters', 'error', 'messaging', 'Gecersiz parametreler'),
+('error.messaging.body-required', 'error', 'messaging', 'Mesaj içeriği zorunlu'),
+('error.messaging.user-id-required', 'error', 'messaging', 'Kullanıcı ID zorunlu'),
+('error.messaging.invalid-parameters', 'error', 'messaging', 'Geçersiz parametreler'),
 ('error.messaging.draft-id-required', 'error', 'messaging', 'Draft ID zorunlu'),
-('error.messaging.draft-not-found', 'error', 'messaging', 'Draft bulunamadi veya silinmis'),
-('error.messaging.draft-not-found-or-published', 'error', 'messaging', 'Draft bulunamadi veya yayinlanmis'),
-('error.messaging.draft-already-published', 'error', 'messaging', 'Draft zaten yayinlanmis'),
-('error.messaging.draft-not-published', 'error', 'messaging', 'Draft yayinlanmamis, geri alinamaz'),
-('error.messaging.cannot-send-to-self', 'error', 'messaging', 'Kendine mesaj gonderilemez'),
-('error.messaging.recipient-not-found', 'error', 'messaging', 'Alici bulunamadi veya aktif degil'),
-('error.messaging.no-recipients', 'error', 'messaging', 'Filtreler hic alici cozumleyemedi'),
+('error.messaging.draft-not-found', 'error', 'messaging', 'Draft bulunamadı veya silinmiş'),
+('error.messaging.draft-not-found-or-published', 'error', 'messaging', 'Draft bulunamadı veya yayınlanmış'),
+('error.messaging.draft-already-published', 'error', 'messaging', 'Draft zaten yayınlanmış'),
+('error.messaging.draft-not-published', 'error', 'messaging', 'Draft yayınlanmamış, geri alınamaz'),
+('error.messaging.cannot-send-to-self', 'error', 'messaging', 'Kendine mesaj gönderilemez'),
+('error.messaging.recipient-not-found', 'error', 'messaging', 'Alıcı bulunamadı veya aktif değil'),
+('error.messaging.no-recipients', 'error', 'messaging', 'Filtreler hiç alıcı çözümleyemedi'),
 
 -- Protected Field System
-('error.field.unauthorized-modification', 'error', 'field', 'Korunmali alani degistirme yetkisi yok')
+('error.field.unauthorized-modification', 'error', 'field', 'Korunmalı alanı değiştirme yetkisi yok'),
+
+-- ============================================================================
+-- CALLER EXCEPTIONS
+-- ============================================================================
+('error.caller.not-found', 'error', 'caller', 'Çağıran kullanıcı bulunamadı'),
+
+-- ============================================================================
+-- MENU GROUP EXCEPTIONS
+-- ============================================================================
+('error.menu-group.not-found', 'error', 'menu-group', 'Menü grubu bulunamadı'),
+('error.menu-group.code-exists', 'error', 'menu-group', 'Menü grup kodu zaten mevcut'),
+('error.menu-group.delete.already-deleted', 'error', 'menu-group', 'Menü grubu zaten silinmiş'),
+('error.menu-group.restore.not-deleted', 'error', 'menu-group', 'Menü grubu silinmiş değil'),
+
+-- ============================================================================
+-- ACCESS CONTROL (ek)
+-- ============================================================================
+('error.access.permission-denied', 'error', 'access', 'İşlem yetkisi yok'),
+('error.access.user-scope-denied', 'error', 'access', 'Kullanıcı kapsamı dışında işlem yapılamaz'),
+
+-- ============================================================================
+-- ROLE (ek)
+-- ============================================================================
+('error.role.global-only', 'error', 'role', 'Bu rol sadece global kapsamda kullanılabilir'),
+('error.role.hierarchy-violation', 'error', 'role', 'Rol hiyerarşi ihlali'),
+('error.role.insufficient-level', 'error', 'role', 'Yetersiz rol seviyesi'),
+('error.role.target-level-violation', 'error', 'role', 'Hedef rol seviyesi ihlali'),
+('error.role.tenant-required', 'error', 'role', 'Tenant ID zorunlu'),
+
+-- ============================================================================
+-- USER (ek)
+-- ============================================================================
+('error.user.concurrent-modification', 'error', 'user', 'Kullanıcı başka bir işlem tarafından değiştirildi'),
+('error.user.delete.self-not-allowed', 'error', 'user', 'Kendi hesabınızı silemezsiniz'),
+('error.user.unlock.is-deleted', 'error', 'user', 'Silinmiş kullanıcının kilidi açılamaz'),
+('error.user.unlock.self-not-allowed', 'error', 'user', 'Kendi hesabınızın kilidini açamazsınız'),
+
+-- ============================================================================
+-- DEPARTMENT
+-- ============================================================================
+('error.department.not-found', 'error', 'department', 'Departman bulunamadı'),
+
+-- ============================================================================
+-- TENANT (ek)
+-- ============================================================================
+('error.tenant.id-required', 'error', 'tenant', 'Tenant ID zorunlu'),
+('error.tenant-provider.not-found', 'error', 'tenant-provider', 'Tenant provider kaydı bulunamadı'),
+('error.tenant-game.not-found', 'error', 'tenant-game', 'Tenant oyun kaydı bulunamadı'),
+('error.tenant-payment-method.not-found', 'error', 'tenant-payment-method', 'Tenant ödeme yöntemi kaydı bulunamadı'),
+
+-- ============================================================================
+-- PROVIDER (ek)
+-- ============================================================================
+('error.provider.invalid-rollout-status', 'error', 'provider', 'Geçersiz rollout durumu'),
+('error.provider.not-game-type', 'error', 'provider', 'Provider oyun tipinde değil'),
+('error.provider.not-payment-type', 'error', 'provider', 'Provider ödeme tipinde değil'),
+
+-- ============================================================================
+-- GAME (Game DB)
+-- ============================================================================
+('error.game.not-found', 'error', 'game', 'Oyun bulunamadı'),
+('error.game.id-required', 'error', 'game', 'Oyun ID zorunlu'),
+('error.game.catalog-data-required', 'error', 'game', 'Katalog verisi zorunlu'),
+('error.game.currency-code-required', 'error', 'game', 'Para birimi kodu zorunlu'),
+('error.game.limits-data-required', 'error', 'game', 'Limit verisi zorunlu'),
+('error.game.limits-invalid-format', 'error', 'game', 'Geçersiz limit veri formatı'),
+
+-- ============================================================================
+-- PAYMENT METHOD (Finance DB — ek)
+-- ============================================================================
+('error.payment-method.data-required', 'error', 'payment-method', 'Ödeme yöntemi verisi zorunlu'),
+('error.payment-method.currency-code-required', 'error', 'payment-method', 'Para birimi kodu zorunlu'),
+('error.payment-method.limits-data-required', 'error', 'payment-method', 'Limit verisi zorunlu'),
+('error.payment-method.limits-invalid-format', 'error', 'payment-method', 'Geçersiz limit veri formatı'),
+
+-- ============================================================================
+-- PLAYER (Tenant DB)
+-- ============================================================================
+('error.player.id-required', 'error', 'player', 'Oyuncu ID zorunlu'),
+('error.player-limit.invalid-type', 'error', 'player-limit', 'Geçersiz limit tipi'),
+
+-- ============================================================================
+-- SHADOW MODE
+-- ============================================================================
+('error.shadow-tester.player-id-required', 'error', 'shadow-tester', 'Oyuncu ID zorunlu'),
+
+-- ============================================================================
+-- JURISDICTION (ek)
+-- ============================================================================
+('error.jurisdiction.has-retention-policies', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı veri saklama politikası mevcut'),
+
+-- ============================================================================
+-- DATA RETENTION POLICY
+-- ============================================================================
+('error.data-retention-policy.not-found', 'error', 'data-retention-policy', 'Veri saklama politikası bulunamadı'),
+('error.data-retention-policy.id-required', 'error', 'data-retention-policy', 'Politika ID zorunlu'),
+('error.data-retention-policy.jurisdiction-required', 'error', 'data-retention-policy', 'Jurisdiction ID zorunlu'),
+('error.data-retention-policy.data-category-invalid', 'error', 'data-retention-policy', 'Geçersiz veri kategorisi'),
+('error.data-retention-policy.retention-days-invalid', 'error', 'data-retention-policy', 'Geçersiz saklama süresi'),
+('error.data-retention-policy.already-exists', 'error', 'data-retention-policy', 'Bu jurisdiction ve kategori için politika zaten mevcut'),
+
+-- ============================================================================
+-- CRYPTOCURRENCY
+-- ============================================================================
+('error.cryptocurrency.not-found', 'error', 'cryptocurrency', 'Kripto para bulunamadı'),
+('error.cryptocurrency.symbol-required', 'error', 'cryptocurrency', 'Kripto para sembolü zorunlu'),
+('error.cryptocurrency.name-invalid', 'error', 'cryptocurrency', 'Geçersiz kripto para adı'),
+('error.cryptocurrency.delete.in-use', 'error', 'cryptocurrency', 'Kripto para silinemez, kullanımda'),
+
+-- ============================================================================
+-- CURRENCY RATES
+-- ============================================================================
+('error.currency-rates.base-currency-required', 'error', 'currency-rates', 'Baz para birimi zorunlu'),
+('error.currency-rates.provider-required', 'error', 'currency-rates', 'Sağlayıcı zorunlu'),
+('error.currency-rates.rates-empty', 'error', 'currency-rates', 'Kur verisi boş olamaz'),
+('error.currency-rates.timestamp-required', 'error', 'currency-rates', 'Zaman damgası zorunlu'),
+
+-- ============================================================================
+-- CRYPTO RATES
+-- ============================================================================
+('error.crypto-rates.base-currency-required', 'error', 'crypto-rates', 'Baz para birimi zorunlu'),
+('error.crypto-rates.provider-required', 'error', 'crypto-rates', 'Sağlayıcı zorunlu'),
+('error.crypto-rates.rates-empty', 'error', 'crypto-rates', 'Kur verisi boş olamaz'),
+('error.crypto-rates.timestamp-required', 'error', 'crypto-rates', 'Zaman damgası zorunlu'),
+
+-- ============================================================================
+-- MESSAGING — TENANT (campaign, template, inbox)
+-- ============================================================================
+('error.messaging.player-id-required', 'error', 'messaging', 'Oyuncu ID zorunlu'),
+('error.messaging.message-not-found', 'error', 'messaging', 'Mesaj bulunamadı'),
+('error.messaging.invalid-message-type', 'error', 'messaging', 'Geçersiz mesaj tipi'),
+('error.messaging.invalid-channel-type', 'error', 'messaging', 'Geçersiz kanal tipi'),
+('error.messaging.template-not-found', 'error', 'messaging', 'Mesaj şablonu bulunamadı'),
+('error.messaging.template-code-required', 'error', 'messaging', 'Şablon kodu zorunlu'),
+('error.messaging.template-code-exists', 'error', 'messaging', 'Şablon kodu zaten mevcut'),
+('error.messaging.template-name-required', 'error', 'messaging', 'Şablon adı zorunlu'),
+('error.messaging.invalid-template-status', 'error', 'messaging', 'Geçersiz şablon durumu'),
+('error.messaging.campaign-not-found', 'error', 'messaging', 'Kampanya bulunamadı'),
+('error.messaging.campaign-name-required', 'error', 'messaging', 'Kampanya adı zorunlu'),
+('error.messaging.campaign-not-editable', 'error', 'messaging', 'Kampanya düzenlenemez'),
+('error.messaging.campaign-not-publishable', 'error', 'messaging', 'Kampanya yayınlanamaz'),
+('error.messaging.campaign-not-cancellable', 'error', 'messaging', 'Kampanya iptal edilemez'),
+
+-- ============================================================================
+-- BONUS ENGINE — Bonus Types
+-- ============================================================================
+('error.bonus-type.not-found', 'error', 'bonus-type', 'Bonus tipi bulunamadı'),
+('error.bonus-type.id-required', 'error', 'bonus-type', 'Bonus tip ID zorunlu'),
+('error.bonus-type.code-required', 'error', 'bonus-type', 'Bonus tip kodu zorunlu'),
+('error.bonus-type.code-exists', 'error', 'bonus-type', 'Bonus tip kodu zaten mevcut'),
+('error.bonus-type.name-required', 'error', 'bonus-type', 'Bonus tip adı zorunlu'),
+('error.bonus-type.category-required', 'error', 'bonus-type', 'Bonus kategorisi zorunlu'),
+('error.bonus-type.value-type-required', 'error', 'bonus-type', 'Değer tipi zorunlu'),
+
+-- ============================================================================
+-- BONUS ENGINE — Bonus Rules
+-- ============================================================================
+('error.bonus-rule.not-found', 'error', 'bonus-rule', 'Bonus kuralı bulunamadı'),
+('error.bonus-rule.not-found-or-inactive', 'error', 'bonus-rule', 'Bonus kuralı bulunamadı veya aktif değil'),
+('error.bonus-rule.id-required', 'error', 'bonus-rule', 'Bonus kural ID zorunlu'),
+('error.bonus-rule.code-required', 'error', 'bonus-rule', 'Bonus kural kodu zorunlu'),
+('error.bonus-rule.code-exists', 'error', 'bonus-rule', 'Bonus kural kodu zaten mevcut'),
+('error.bonus-rule.name-required', 'error', 'bonus-rule', 'Bonus kural adı zorunlu'),
+('error.bonus-rule.trigger-config-required', 'error', 'bonus-rule', 'Trigger konfigürasyonu zorunlu'),
+('error.bonus-rule.reward-config-required', 'error', 'bonus-rule', 'Ödül konfigürasyonu zorunlu'),
+('error.bonus-rule.invalid-evaluation-type', 'error', 'bonus-rule', 'Geçersiz değerlendirme tipi'),
+
+-- ============================================================================
+-- BONUS ENGINE — Bonus Awards
+-- ============================================================================
+('error.bonus-award.not-found', 'error', 'bonus-award', 'Bonus ödülü bulunamadı'),
+('error.bonus-award.id-required', 'error', 'bonus-award', 'Bonus ödül ID zorunlu'),
+('error.bonus-award.player-required', 'error', 'bonus-award', 'Oyuncu ID zorunlu'),
+('error.bonus-award.rule-required', 'error', 'bonus-award', 'Bonus kural ID zorunlu'),
+('error.bonus-award.currency-required', 'error', 'bonus-award', 'Para birimi zorunlu'),
+('error.bonus-award.wallet-not-found', 'error', 'bonus-award', 'Bonus cüzdanı bulunamadı'),
+('error.bonus-award.cannot-cancel', 'error', 'bonus-award', 'Bonus iptal edilemez'),
+('error.bonus-award.not-completable', 'error', 'bonus-award', 'Bonus tamamlanamaz'),
+('error.bonus-award.wagering-not-complete', 'error', 'bonus-award', 'Çevrim tamamlanmadı'),
+
+-- ============================================================================
+-- BONUS ENGINE — Campaigns
+-- ============================================================================
+('error.campaign.not-found', 'error', 'campaign', 'Kampanya bulunamadı'),
+('error.campaign.id-required', 'error', 'campaign', 'Kampanya ID zorunlu'),
+('error.campaign.code-required', 'error', 'campaign', 'Kampanya kodu zorunlu'),
+('error.campaign.code-exists', 'error', 'campaign', 'Kampanya kodu zaten mevcut'),
+('error.campaign.name-required', 'error', 'campaign', 'Kampanya adı zorunlu'),
+('error.campaign.type-required', 'error', 'campaign', 'Kampanya tipi zorunlu'),
+('error.campaign.dates-required', 'error', 'campaign', 'Kampanya tarihleri zorunlu'),
+('error.campaign.end-before-start', 'error', 'campaign', 'Bitiş tarihi başlangıçtan önce olamaz'),
+('error.campaign.invalid-status', 'error', 'campaign', 'Geçersiz kampanya durumu'),
+('error.campaign.invalid-award-strategy', 'error', 'campaign', 'Geçersiz ödül stratejisi'),
+
+-- ============================================================================
+-- BONUS ENGINE — Promo Codes
+-- ============================================================================
+('error.promo.not-found', 'error', 'promo', 'Promosyon bulunamadı'),
+('error.promo.id-required', 'error', 'promo', 'Promosyon ID zorunlu'),
+('error.promo.code-required', 'error', 'promo', 'Promosyon kodu zorunlu'),
+('error.promo.code-id-required', 'error', 'promo', 'Promosyon kod ID zorunlu'),
+('error.promo.code-exists', 'error', 'promo', 'Promosyon kodu zaten mevcut'),
+('error.promo.name-required', 'error', 'promo', 'Promosyon adı zorunlu'),
+('error.promo.invalid-status', 'error', 'promo', 'Geçersiz promosyon durumu'),
+('error.promo.player-required', 'error', 'promo', 'Oyuncu ID zorunlu')
 
 ON CONFLICT DO NOTHING;

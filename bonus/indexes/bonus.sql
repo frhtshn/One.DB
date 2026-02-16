@@ -8,26 +8,18 @@ CREATE INDEX IF NOT EXISTS idx_bonus_types_category ON bonus.bonus_types USING b
 CREATE INDEX IF NOT EXISTS idx_bonus_types_active ON bonus.bonus_types USING btree(is_active) WHERE is_active = true;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_bonus_types_code ON bonus.bonus_types USING btree(tenant_id, type_code);
 
--- bonus_rules
+-- bonus_rules — temel indexler
 CREATE INDEX IF NOT EXISTS idx_bonus_rules_tenant ON bonus.bonus_rules USING btree(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_bonus_rules_bonus_type ON bonus.bonus_rules USING btree(bonus_type_id);
 CREATE INDEX IF NOT EXISTS idx_bonus_rules_active ON bonus.bonus_rules USING btree(is_active) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_bonus_rules_validity ON bonus.bonus_rules USING btree(valid_from, valid_until);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_bonus_rules_code ON bonus.bonus_rules USING btree(tenant_id, rule_code);
--- JSONB indexes for bonus rules
-CREATE INDEX IF NOT EXISTS idx_bonus_rules_wagering_games ON bonus.bonus_rules USING gin(wagering_game_types);
-CREATE INDEX IF NOT EXISTS idx_bonus_rules_countries ON bonus.bonus_rules USING gin(eligible_countries);
-CREATE INDEX IF NOT EXISTS idx_bonus_rules_currencies ON bonus.bonus_rules USING gin(eligible_currencies);
-
--- bonus_triggers
-CREATE INDEX IF NOT EXISTS idx_bonus_triggers_tenant ON bonus.bonus_triggers USING btree(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_bonus_triggers_bonus_rule ON bonus.bonus_triggers USING btree(bonus_rule_id);
-CREATE INDEX IF NOT EXISTS idx_bonus_triggers_type ON bonus.bonus_triggers USING btree(trigger_type);
-CREATE INDEX IF NOT EXISTS idx_bonus_triggers_active ON bonus.bonus_triggers USING btree(is_active) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_bonus_triggers_priority ON bonus.bonus_triggers USING btree(priority DESC) WHERE is_active = true;
-CREATE UNIQUE INDEX IF NOT EXISTS idx_bonus_triggers_code ON bonus.bonus_triggers USING btree(tenant_id, trigger_code);
--- JSONB index for trigger conditions
-CREATE INDEX IF NOT EXISTS idx_bonus_triggers_conditions ON bonus.bonus_triggers USING gin(trigger_conditions);
+-- bonus_rules — JSONB bileşen indexleri (yeni)
+CREATE INDEX IF NOT EXISTS idx_bonus_rules_trigger ON bonus.bonus_rules USING gin(trigger_config);
+CREATE INDEX IF NOT EXISTS idx_bonus_rules_eligibility ON bonus.bonus_rules USING gin(eligibility_criteria);
+-- bonus_rules — evaluation ve stacking indexleri (yeni)
+CREATE INDEX IF NOT EXISTS idx_bonus_rules_evaluation ON bonus.bonus_rules USING btree(evaluation_type) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_bonus_rules_stacking ON bonus.bonus_rules USING btree(stacking_group) WHERE stacking_group IS NOT NULL AND is_active = true;
 
 
 -- =============================================

@@ -34,7 +34,9 @@ BEGIN
             ('affiliate_log', 'commission_calculations',  'created_at'),
             ('affiliate_log', 'report_generations',       'created_at'),
             ('kyc_log',       'player_kyc_provider_logs', 'created_at'),
-            ('messaging_log', 'message_delivery_logs',    'created_at')
+            ('messaging_log', 'message_delivery_logs',    'created_at'),
+            ('bonus_log',     'bonus_evaluation_logs',    'created_at'),
+            ('game_log',      'game_rounds',              'created_at')
         ) AS t(schema_name, tbl_name, partition_key)
     LOOP
         -- Bugunden itibaren look_ahead_days kadar ileri

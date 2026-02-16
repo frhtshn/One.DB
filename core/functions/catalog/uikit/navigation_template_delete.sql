@@ -1,6 +1,6 @@
 -- ================================================================
--- NAVIGATION_TEMPLATE_DELETE: Navigasyon şablonu siler
--- Bağlı item varsa silme engellenir
+-- NAVIGATION_TEMPLATE_DELETE: Navigasyon şablonu pasifleştir (soft delete)
+-- Bağlı aktif item varsa engellenir
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.navigation_template_delete(INT);
@@ -17,17 +17,21 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.navigation-template.id-required';
     END IF;
 
-    IF NOT EXISTS(SELECT 1 FROM catalog.navigation_templates nt WHERE nt.id = p_id) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.navigation-template.not-found';
-    END IF;
-
-    -- Bağlı item kontrolü
+    -- Bağlı aktif item kontrolü
     IF EXISTS(SELECT 1 FROM catalog.navigation_template_items nti WHERE nti.template_id = p_id) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.navigation-template.has-items';
     END IF;
 
-    DELETE FROM catalog.navigation_templates WHERE id = p_id;
+    -- Pasifleştir
+    UPDATE catalog.navigation_templates SET
+        is_active = false,
+        updated_at = NOW()
+    WHERE id = p_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.navigation-template.not-found';
+    END IF;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.navigation_template_delete IS 'Deletes a navigation template. Fails if items exist.';
+COMMENT ON FUNCTION catalog.navigation_template_delete IS 'Soft-deletes a navigation template (is_active=false). Fails if items exist.';

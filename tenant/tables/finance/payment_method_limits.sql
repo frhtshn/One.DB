@@ -14,7 +14,8 @@ CREATE TABLE finance.payment_method_limits (
     payment_method_id BIGINT NOT NULL,                              -- Core DB'deki ödeme yöntemi ID
 
     -- Para birimi
-    currency_code CHAR(3) NOT NULL,                                 -- Para birimi kodu: TRY, USD, EUR
+    currency_code VARCHAR(20) NOT NULL,                             -- Para birimi kodu: TRY, USD, EUR, BTC, ETH, DOGE
+    currency_type SMALLINT NOT NULL DEFAULT 1,                      -- 1=Fiat, 2=Crypto
 
     -- Para Yatırma Limitleri
     min_deposit DECIMAL(18,8) NOT NULL,                             -- Minimum para yatırma
@@ -42,9 +43,12 @@ CREATE TABLE finance.payment_method_limits (
     withdrawal_fee_min DECIMAL(18,8),                               -- Minimum komisyon tutarı
     withdrawal_fee_max DECIMAL(18,8),                               -- Maksimum komisyon tutarı
 
+    -- Soft delete (provider artık desteklemiyorsa false)
+    is_active BOOLEAN NOT NULL DEFAULT true,                        -- Aktif/pasif durumu
+
     -- Audit
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE finance.payment_method_limits IS 'Currency-specific limits and fees for each payment method with deposit and withdrawal configurations';
+COMMENT ON TABLE finance.payment_method_limits IS 'Currency-specific limits and fees for each payment method. Supports both fiat (currency_type=1) and crypto (currency_type=2). Soft delete via is_active.';

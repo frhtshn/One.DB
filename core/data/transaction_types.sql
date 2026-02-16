@@ -32,12 +32,16 @@ VALUES
 (31, 'manual.payment.transaction', 'payment', 'payment', false, false, false, false, true, 'Manual payment'),
 (32, 'manual.fund.transfer', 'payment', 'payment', false, false, false, false, true, 'Manual fund transfer'),
 (33, 'casino.transfer.funds', 'payment', 'casino', false, false, false, false, true, 'Casino fund transfer'),
+-- BONUS ENGINE (Bonus Worker tarafından kullanılır)
+(40, 'bonus.award.credit', 'bonus', NULL, true, false, false, false, true, 'Bonus award credit to BONUS wallet'),
+(41, 'bonus.award.debit', 'bonus', NULL, true, false, false, false, true, 'Bonus debit from BONUS wallet (cancel/expire)'),
+(42, 'bonus.award.completion', 'bonus', NULL, true, false, false, false, true, 'Bonus completion transfer BONUS to REAL wallet'),
 -- ROLLBACK TYPES
-(40, 'sports.bet.wager.rollback', 'bet', 'sports', false,  false, true,  false, true, 'Sports bet rollback'),
-(41, 'sports.win.rollback', 'win', 'sports', false,  false, true,  false, true, 'Sports bet win rollback'),
-(42, 'free.sports.win.rollback', 'win', 'sports', true,  true,  true,  false, true, 'Free sports bet win rollback'),
-(43, 'free.sports.wager.rollback', 'bet', 'sports', true,  true,  true,  false, true, 'Free bet wager rollback'),
-(44, 'casino.bonus.transaction.rollback', 'bonus', 'casino', true,  false, true,  false, true, 'Casino bonus rollback'),
-(45, 'bonus.transaction.rollback', 'bonus', NULL, true,  false, true,  false, true, 'Bonus rollback'),
-(46, 'discount.transaction.rollback', 'bonus', NULL, true,  false, true,  false, true, 'Discount rollback'),
-(47, 'casino.adjustment.rollback', 'adjustment', 'casino', false,  false, true,  false, true, 'Casino adjustment rollback');
+(50, 'sports.bet.wager.rollback', 'bet', 'sports', false,  false, true,  false, true, 'Sports bet rollback'),
+(51, 'sports.win.rollback', 'win', 'sports', false,  false, true,  false, true, 'Sports bet win rollback'),
+(52, 'free.sports.win.rollback', 'win', 'sports', true,  true,  true,  false, true, 'Free sports bet win rollback'),
+(53, 'free.sports.wager.rollback', 'bet', 'sports', true,  true,  true,  false, true, 'Free bet wager rollback'),
+(54, 'casino.bonus.transaction.rollback', 'bonus', 'casino', true,  false, true,  false, true, 'Casino bonus rollback'),
+(55, 'bonus.transaction.rollback', 'bonus', NULL, true,  false, true,  false, true, 'Bonus rollback'),
+(56, 'discount.transaction.rollback', 'bonus', NULL, true,  false, true,  false, true, 'Discount rollback'),
+(57, 'casino.adjustment.rollback', 'adjustment', 'casino', false,  false, true,  false, true, 'Casino adjustment rollback');

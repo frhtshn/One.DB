@@ -1,27 +1,6 @@
 -- Catalog Schema Foreign Key Constraints
 -- Using IF NOT EXISTS pattern for idempotent deploys
 
--- games -> providers
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_games_provider') THEN
-        ALTER TABLE catalog.games ADD CONSTRAINT fk_games_provider
-            FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
-    END IF;
-END $$;
-
--- games unique constraints
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_games_provider_external') THEN
-        ALTER TABLE catalog.games ADD CONSTRAINT uq_games_provider_external UNIQUE (provider_id, external_game_id);
-    END IF;
-END $$;
-
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_games_provider_code') THEN
-        ALTER TABLE catalog.games ADD CONSTRAINT uq_games_provider_code UNIQUE (provider_id, game_code);
-    END IF;
-END $$;
-
 -- providers -> provider_types
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_providers_provider_type') THEN
@@ -138,21 +117,6 @@ DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_navigation_template_items_parent') THEN
         ALTER TABLE catalog.navigation_template_items ADD CONSTRAINT fk_navigation_template_items_parent
             FOREIGN KEY (parent_id) REFERENCES catalog.navigation_template_items(id) ON DELETE CASCADE;
-    END IF;
-END $$;
-
--- payment_methods -> providers
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_payment_methods_provider') THEN
-        ALTER TABLE catalog.payment_methods ADD CONSTRAINT fk_payment_methods_provider
-            FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
-    END IF;
-END $$;
-
--- payment_methods unique constraint
-DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_payment_methods_provider_code') THEN
-        ALTER TABLE catalog.payment_methods ADD CONSTRAINT uq_payment_methods_provider_code UNIQUE (provider_id, payment_method_code);
     END IF;
 END $$;
 

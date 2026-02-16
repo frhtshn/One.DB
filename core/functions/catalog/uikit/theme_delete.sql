@@ -1,6 +1,5 @@
 -- ================================================================
--- THEME_DELETE: Tema siler
--- Tenant tarafından kullanılıyorsa silme engellenir
+-- THEME_DELETE: Tema pasifleştir (soft delete)
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.theme_delete(INT);
@@ -18,19 +17,16 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.theme.id-required';
     END IF;
 
-    -- Mevcut kayıt kontrolü
-    IF NOT EXISTS(SELECT 1 FROM catalog.themes t WHERE t.id = p_id) THEN
+    -- Pasifleştir
+    UPDATE catalog.themes SET
+        is_active = false,
+        updated_at = NOW()
+    WHERE id = p_id;
+
+    IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.theme.not-found';
     END IF;
-
-    -- NOT: Tenant kullanım kontrolü core.tenant_settings veya benzeri tablo varsa eklenebilir
-    -- IF EXISTS(SELECT 1 FROM core.tenant_settings ts WHERE ts.theme_id = p_id) THEN
-    --     RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.theme.in-use';
-    -- END IF;
-
-    -- Sil
-    DELETE FROM catalog.themes WHERE id = p_id;
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.theme_delete IS 'Deletes a theme.';
+COMMENT ON FUNCTION catalog.theme_delete IS 'Soft-deletes a theme (is_active=false).';

@@ -5,7 +5,7 @@
 -- GÜNCELLENDİ: Caller ID ile yetki kontrolü
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[]);
+DROP FUNCTION IF EXISTS core.tenant_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[], VARCHAR, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION core.tenant_update(
     p_caller_id BIGINT,
@@ -20,7 +20,10 @@ CREATE OR REPLACE FUNCTION core.tenant_update(
     p_timezone VARCHAR DEFAULT NULL,
     p_status SMALLINT DEFAULT NULL,
     p_supported_currencies VARCHAR[] DEFAULT NULL, -- Full list to sync
-    p_supported_languages VARCHAR[] DEFAULT NULL   -- Full list to sync
+    p_supported_languages VARCHAR[] DEFAULT NULL,  -- Full list to sync
+    p_domain VARCHAR(255) DEFAULT NULL,
+    p_subdomain VARCHAR(255) DEFAULT NULL,
+    p_hosting_mode VARCHAR(20) DEFAULT NULL
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -72,6 +75,9 @@ BEGIN
         default_country = COALESCE(p_default_country, default_country),
         timezone = COALESCE(p_timezone, timezone),
         status = COALESCE(p_status, status),
+        domain = COALESCE(p_domain, domain),
+        subdomain = COALESCE(p_subdomain, subdomain),
+        hosting_mode = COALESCE(p_hosting_mode, hosting_mode),
         updated_at = NOW()
     WHERE id = p_id
     RETURNING base_currency, default_language INTO v_current_base_currency, v_current_default_language;
@@ -127,4 +133,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[]) IS 'Updates tenant details. Checks caller permissions.';
+COMMENT ON FUNCTION core.tenant_update(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, SMALLINT, VARCHAR[], VARCHAR[], VARCHAR, VARCHAR, VARCHAR) IS 'Updates tenant details with provisioning fields. Checks caller permissions.';

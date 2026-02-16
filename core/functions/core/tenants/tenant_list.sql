@@ -70,6 +70,9 @@ BEGIN
             'baseCurrency', t.base_currency,
             'defaultLanguage', t.default_language,
             'defaultCountry', t.default_country,
+            'domain', t.domain,
+            'provisioningStatus', t.provisioning_status,
+            'hostingMode', t.hosting_mode,
             'createdAt', t.created_at,
             'supportedCurrencies', COALESCE((
                 SELECT jsonb_agg(tc.currency_code ORDER BY tc.currency_code)

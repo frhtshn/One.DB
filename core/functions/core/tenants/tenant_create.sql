@@ -5,7 +5,7 @@
 -- GÜNCELLENDİ: Caller ID ile yetki kontrolü
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_create(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[]);
+DROP FUNCTION IF EXISTS core.tenant_create(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[], VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION core.tenant_create(
     p_caller_id BIGINT,
@@ -18,7 +18,9 @@ CREATE OR REPLACE FUNCTION core.tenant_create(
     p_default_country CHAR(2) DEFAULT NULL,
     p_timezone VARCHAR DEFAULT NULL,
     p_supported_currencies VARCHAR[] DEFAULT NULL, -- Array of currency codes
-    p_supported_languages VARCHAR[] DEFAULT NULL   -- Array of language codes
+    p_supported_languages VARCHAR[] DEFAULT NULL,  -- Array of language codes
+    p_domain VARCHAR(255) DEFAULT NULL,
+    p_hosting_mode VARCHAR(20) DEFAULT 'shared'
 )
 RETURNS BIGINT
 LANGUAGE plpgsql
@@ -51,6 +53,8 @@ BEGIN
         default_language,
         default_country,
         timezone,
+        domain,
+        hosting_mode,
         status,
         created_at,
         updated_at
@@ -63,6 +67,8 @@ BEGIN
         p_default_language,
         p_default_country,
         p_timezone,
+        p_domain,
+        p_hosting_mode,
         1, -- Active default
         NOW(),
         NOW()
@@ -108,4 +114,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_create(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[]) IS 'Creates a new tenant. Checks caller permissions.';
+COMMENT ON FUNCTION core.tenant_create(BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, CHAR(3), CHAR(2), CHAR(2), VARCHAR, VARCHAR[], VARCHAR[], VARCHAR, VARCHAR) IS 'Creates a new tenant with optional domain and hosting mode. Checks caller permissions.';

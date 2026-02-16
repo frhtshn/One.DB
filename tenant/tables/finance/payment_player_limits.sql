@@ -14,19 +14,23 @@ CREATE TABLE finance.payment_player_limits (
     payment_method_id bigint NOT NULL,            -- Ödeme yöntemi ID
     payment_method_code varchar(100) NOT NULL,    -- Yöntem kodu
 
+    -- Para birimi (per-currency limitler — fiat/crypto ölçek farkı)
+    currency_code VARCHAR(20) NOT NULL DEFAULT 'TRY',  -- Para birimi kodu: TRY, USD, BTC
+    currency_type SMALLINT NOT NULL DEFAULT 1,          -- 1=Fiat, 2=Crypto
+
     -- Para yatırma limitleri (oyuncuya özel)
-    min_deposit decimal(18,2),                    -- Minimum para yatırma
-    max_deposit decimal(18,2),                    -- Maksimum para yatırma
+    min_deposit decimal(18,8),                    -- Minimum para yatırma
+    max_deposit decimal(18,8),                    -- Maksimum para yatırma
 
     -- Para çekme limitleri (oyuncuya özel)
-    min_withdrawal decimal(18,2),                 -- Minimum para çekme
-    max_withdrawal decimal(18,2),                 -- Maksimum para çekme
+    min_withdrawal decimal(18,8),                 -- Minimum para çekme
+    max_withdrawal decimal(18,8),                 -- Maksimum para çekme
 
     -- Periyodik limitler
-    daily_deposit_limit decimal(18,2),            -- Günlük para yatırma limiti
-    daily_withdrawal_limit decimal(18,2),         -- Günlük para çekme limiti
-    monthly_deposit_limit decimal(18,2),          -- Aylık para yatırma limiti
-    monthly_withdrawal_limit decimal(18,2),       -- Aylık para çekme limiti
+    daily_deposit_limit decimal(18,8),            -- Günlük para yatırma limiti
+    daily_withdrawal_limit decimal(18,8),         -- Günlük para çekme limiti
+    monthly_deposit_limit decimal(18,8),          -- Aylık para yatırma limiti
+    monthly_withdrawal_limit decimal(18,8),       -- Aylık para çekme limiti
 
     -- Limit tipi
     limit_type varchar(50),                       -- Tip: self_imposed, responsible_gaming, admin_imposed

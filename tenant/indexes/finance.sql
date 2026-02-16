@@ -47,11 +47,23 @@ CREATE INDEX IF NOT EXISTS idx_payment_method_settings_withdrawal ON finance.pay
 CREATE INDEX IF NOT EXISTS idx_payment_method_settings_display_order ON finance.payment_method_settings USING btree(display_order);
 CREATE INDEX IF NOT EXISTS idx_payment_method_settings_popularity ON finance.payment_method_settings USING btree(popularity_score DESC) WHERE is_enabled = true;
 
+-- payment_method_settings - Cursor pagination (OFFSET yerine cursor-based: display_order, id)
+CREATE INDEX IF NOT EXISTS idx_payment_method_settings_cursor ON finance.payment_method_settings USING btree(display_order, id);
+
 -- payment_method_limits
 CREATE INDEX IF NOT EXISTS idx_payment_method_limits_method ON finance.payment_method_limits USING btree(payment_method_id);
 CREATE INDEX IF NOT EXISTS idx_payment_method_limits_currency ON finance.payment_method_limits USING btree(currency_code);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_method_limits_lookup ON finance.payment_method_limits USING btree(payment_method_id, currency_code);
 
+-- payment_method_limits - currency_type filtresi (fiat vs crypto)
+CREATE INDEX IF NOT EXISTS idx_payment_method_limits_currency_type ON finance.payment_method_limits USING btree(currency_type);
+
+-- payment_method_limits - aktif limitler (soft delete filtresi)
+CREATE INDEX IF NOT EXISTS idx_payment_method_limits_active ON finance.payment_method_limits USING btree(is_active) WHERE is_active = true;
+
 -- payment_player_limits
 CREATE INDEX IF NOT EXISTS idx_payment_player_limits_player ON finance.payment_player_limits USING btree(player_id);
 CREATE INDEX IF NOT EXISTS idx_payment_player_limits_method ON finance.payment_player_limits USING btree(payment_method_id);
+
+-- payment_player_limits - currency_code filtresi (per-currency limit arama)
+CREATE INDEX IF NOT EXISTS idx_payment_player_limits_currency ON finance.payment_player_limits USING btree(currency_code);

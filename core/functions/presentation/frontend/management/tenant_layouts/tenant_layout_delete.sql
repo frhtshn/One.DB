@@ -1,8 +1,8 @@
 -- ================================================================
--- TENANT_LAYOUT_DELETE: Layout sil
+-- TENANT_LAYOUT_DELETE: Layout pasifleştir (soft delete)
 -- ================================================================
 -- Açıklama:
---   Tenant layout'unu siler.
+--   Tenant layout'unu pasifleştirir.
 -- Erişim:
 --   - Platform Admin: Tüm tenant'lar
 --   - CompanyAdmin: Kendi company'sindeki tenant'lar
@@ -30,22 +30,18 @@ BEGIN
     -- 2. Tenant erişim kontrolü
     PERFORM security.user_assert_access_tenant(p_caller_id, p_tenant_id);
 
-    -- 3. Layout varlık kontrolü
-    IF NOT EXISTS (
-        SELECT 1 FROM presentation.tenant_layouts
-        WHERE id = p_id AND tenant_id = p_tenant_id
-    ) THEN
+    -- 3. Pasifleştir
+    UPDATE presentation.tenant_layouts SET
+        is_active = false,
+        updated_at = NOW()
+    WHERE id = p_id AND tenant_id = p_tenant_id;
+
+    IF NOT FOUND THEN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant-layout.not-found';
     END IF;
-
-    -- ========================================
-    -- 5. SİL
-    -- ========================================
-    DELETE FROM presentation.tenant_layouts
-    WHERE id = p_id AND tenant_id = p_tenant_id;
 END;
 $$;
 
 COMMENT ON FUNCTION presentation.tenant_layout_delete(BIGINT, BIGINT, BIGINT) IS
-'Deletes a tenant layout.
+'Soft-deletes a tenant layout (is_active=false).
 Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';

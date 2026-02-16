@@ -1,18 +1,6 @@
 -- Catalog Schema Indexes
 -- FK indexes for optimal JOIN performance
 
--- games indexes
-CREATE INDEX IF NOT EXISTS idx_games_provider_id ON catalog.games USING btree(provider_id);
-CREATE INDEX IF NOT EXISTS idx_games_game_type ON catalog.games USING btree(game_type);
-CREATE INDEX IF NOT EXISTS idx_games_is_active ON catalog.games USING btree(is_active);
-CREATE INDEX IF NOT EXISTS idx_games_categories ON catalog.games USING GIN(categories);
-CREATE INDEX IF NOT EXISTS idx_games_tags ON catalog.games USING GIN(tags);
-CREATE INDEX IF NOT EXISTS idx_games_features ON catalog.games USING GIN(features);
-CREATE INDEX IF NOT EXISTS idx_games_popularity ON catalog.games USING btree(popularity_score DESC) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_games_release_date ON catalog.games USING btree(release_date DESC);
-CREATE INDEX IF NOT EXISTS idx_games_rtp ON catalog.games USING btree(rtp) WHERE rtp IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_games_has_jackpot ON catalog.games USING btree(has_jackpot) WHERE has_jackpot = true;
-
 -- providers.provider_type_id -> provider_types.id
 CREATE INDEX IF NOT EXISTS idx_providers_provider_type_id ON catalog.providers USING btree(provider_type_id);
 
@@ -63,16 +51,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_kyc_doc_req_lookup ON catalog.kyc_document
 -- responsible_gaming_policies
 CREATE INDEX IF NOT EXISTS idx_rg_policies_jurisdiction ON catalog.responsible_gaming_policies USING btree(jurisdiction_id);
 CREATE INDEX IF NOT EXISTS idx_rg_policies_active ON catalog.responsible_gaming_policies USING btree(is_active) WHERE is_active = true;
-
--- payment_methods indexes
-CREATE INDEX IF NOT EXISTS idx_payment_methods_provider_id ON catalog.payment_methods USING btree(provider_id);
-CREATE INDEX IF NOT EXISTS idx_payment_methods_payment_type ON catalog.payment_methods USING btree(payment_type);
-CREATE INDEX IF NOT EXISTS idx_payment_methods_is_active ON catalog.payment_methods USING btree(is_active);
-CREATE INDEX IF NOT EXISTS idx_payment_methods_deposit ON catalog.payment_methods USING btree(supports_deposit) WHERE supports_deposit = true;
-CREATE INDEX IF NOT EXISTS idx_payment_methods_withdrawal ON catalog.payment_methods USING btree(supports_withdrawal) WHERE supports_withdrawal = true;
-CREATE INDEX IF NOT EXISTS idx_payment_methods_currencies ON catalog.payment_methods USING GIN(supported_currencies);
-CREATE INDEX IF NOT EXISTS idx_payment_methods_features ON catalog.payment_methods USING GIN(features);
-CREATE INDEX IF NOT EXISTS idx_payment_methods_popularity ON catalog.payment_methods USING btree(popularity_score DESC) WHERE is_active = true;
 
 -- =========================================================================================
 -- GIN Indexes for JSONB Columns

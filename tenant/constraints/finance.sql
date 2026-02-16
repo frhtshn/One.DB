@@ -32,9 +32,9 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- payment_player_limits unique constraint
+-- payment_player_limits unique constraint (per-currency — fiat/crypto ayrı limitler)
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_payment_player_limits_player_method') THEN
-        ALTER TABLE finance.payment_player_limits ADD CONSTRAINT uq_payment_player_limits_player_method UNIQUE (player_id, payment_method_id);
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_payment_player_limits_player_method_currency') THEN
+        ALTER TABLE finance.payment_player_limits ADD CONSTRAINT uq_payment_player_limits_player_method_currency UNIQUE (player_id, payment_method_id, currency_code);
     END IF;
 END $$;

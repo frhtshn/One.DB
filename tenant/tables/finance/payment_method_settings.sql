@@ -64,6 +64,10 @@ CREATE TABLE finance.payment_method_settings (
 
     -- Coğrafi Kısıtlamalar
     blocked_countries CHAR(2)[] DEFAULT '{}',                       -- Engelli ülkeler
+    allowed_countries CHAR(2)[] DEFAULT '{}',                       -- Sadece izin verilen ülkeler (boşsa tümü)
+
+    -- Shadow Mode (SHADOW_MODE — provider rollout status miras alınır)
+    rollout_status VARCHAR(20) NOT NULL DEFAULT 'production',       -- shadow: sadece test oyuncuları, production: herkes
 
     -- Zamanlama
     available_from TIMESTAMP,                                       -- Ne zamandan itibaren mevcut

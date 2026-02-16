@@ -456,6 +456,156 @@ JOIN (VALUES
     ('error.messaging.cannot-send-to-self', 'Kendinize mesaj gönderemezsiniz'),
     ('error.messaging.recipient-not-found', 'Alıcı bulunamadı veya aktif değil'),
     ('error.messaging.no-recipients', 'Belirtilen filtrelerle eşleşen alıcı bulunamadı'),
-    ('error.field.unauthorized-modification', 'Bu alanı değiştirme yetkiniz bulunmamaktadır')
+    ('error.field.unauthorized-modification', 'Bu alanı değiştirme yetkiniz bulunmamaktadır'),
+
+    -- Erişim Kontrolü (yeni)
+    ('error.access.permission-denied', 'Bu işlem için yetki yok'),
+    ('error.access.user-scope-denied', 'Kullanıcı kapsamı dışında işlem yapılamaz'),
+
+    -- Rol (yeni)
+    ('error.role.global-only', 'Bu rol sadece global kapsamda kullanılabilir'),
+    ('error.role.hierarchy-violation', 'Rol hiyerarşi ihlali'),
+    ('error.role.insufficient-level', 'Yetersiz rol seviyesi'),
+    ('error.role.target-level-violation', 'Hedef rol seviyesi ihlali'),
+    ('error.role.tenant-required', 'Tenant ID zorunludur'),
+
+    -- Kullanıcı (yeni)
+    ('error.user.concurrent-modification', 'Kullanıcı başka bir işlem tarafından değiştirildi'),
+    ('error.user.delete.self-not-allowed', 'Kendi hesabınızı silemezsiniz'),
+    ('error.user.unlock.is-deleted', 'Silinmiş kullanıcının kilidi açılamaz'),
+    ('error.user.unlock.self-not-allowed', 'Kendi hesabınızın kilidini açamazsınız'),
+
+    -- Departman
+    ('error.department.not-found', 'Departman bulunamadı'),
+
+    -- Tenant (yeni)
+    ('error.tenant.id-required', 'Tenant ID zorunludur'),
+    ('error.tenant-provider.not-found', 'Tenant provider kaydı bulunamadı'),
+    ('error.tenant-game.not-found', 'Tenant oyun kaydı bulunamadı'),
+    ('error.tenant-payment-method.not-found', 'Tenant ödeme yöntemi kaydı bulunamadı'),
+
+    -- Provider (yeni)
+    ('error.provider.invalid-rollout-status', 'Geçersiz rollout durumu'),
+    ('error.provider.not-game-type', 'Provider oyun tipinde değil'),
+    ('error.provider.not-payment-type', 'Provider ödeme tipinde değil'),
+
+    -- Oyun (Game DB)
+    ('error.game.not-found', 'Oyun bulunamadı'),
+    ('error.game.id-required', 'Oyun ID zorunludur'),
+    ('error.game.catalog-data-required', 'Katalog verisi zorunludur'),
+    ('error.game.currency-code-required', 'Para birimi kodu zorunludur'),
+    ('error.game.limits-data-required', 'Limit verisi zorunludur'),
+    ('error.game.limits-invalid-format', 'Geçersiz limit veri formatı'),
+
+    -- Ödeme Yöntemi (Finance DB — yeni)
+    ('error.payment-method.data-required', 'Ödeme yöntemi verisi zorunludur'),
+    ('error.payment-method.currency-code-required', 'Para birimi kodu zorunludur'),
+    ('error.payment-method.limits-data-required', 'Limit verisi zorunludur'),
+    ('error.payment-method.limits-invalid-format', 'Geçersiz limit veri formatı'),
+
+    -- Oyuncu (Tenant DB)
+    ('error.player.id-required', 'Oyuncu ID zorunludur'),
+    ('error.player-limit.invalid-type', 'Geçersiz limit tipi'),
+
+    -- Shadow Mode
+    ('error.shadow-tester.player-id-required', 'Oyuncu ID zorunludur'),
+
+    -- Jurisdiction (yeni)
+    ('error.jurisdiction.has-retention-policies', 'Jurisdiction silinemez. Bağlı veri saklama politikası mevcut'),
+
+    -- Veri Saklama Politikası
+    ('error.data-retention-policy.not-found', 'Veri saklama politikası bulunamadı'),
+    ('error.data-retention-policy.id-required', 'Politika ID zorunludur'),
+    ('error.data-retention-policy.jurisdiction-required', 'Jurisdiction ID zorunludur'),
+    ('error.data-retention-policy.data-category-invalid', 'Geçersiz veri kategorisi'),
+    ('error.data-retention-policy.retention-days-invalid', 'Geçersiz saklama süresi'),
+    ('error.data-retention-policy.already-exists', 'Bu jurisdiction ve kategori için politika zaten mevcut'),
+
+    -- Kripto Para
+    ('error.cryptocurrency.not-found', 'Kripto para bulunamadı'),
+    ('error.cryptocurrency.symbol-required', 'Kripto para sembolü zorunludur'),
+    ('error.cryptocurrency.name-invalid', 'Geçersiz kripto para adı'),
+    ('error.cryptocurrency.delete.in-use', 'Kripto para silinemez. Kullanımda'),
+
+    -- Döviz Kurları
+    ('error.currency-rates.base-currency-required', 'Baz para birimi zorunludur'),
+    ('error.currency-rates.provider-required', 'Kur sağlayıcısı zorunludur'),
+    ('error.currency-rates.rates-empty', 'Kur verisi boş olamaz'),
+    ('error.currency-rates.timestamp-required', 'Zaman damgası zorunludur'),
+
+    -- Kripto Kurları
+    ('error.crypto-rates.base-currency-required', 'Baz para birimi zorunludur'),
+    ('error.crypto-rates.provider-required', 'Kur sağlayıcısı zorunludur'),
+    ('error.crypto-rates.rates-empty', 'Kur verisi boş olamaz'),
+    ('error.crypto-rates.timestamp-required', 'Zaman damgası zorunludur'),
+
+    -- Mesajlaşma — Tenant (kampanya, şablon, gelen kutusu)
+    ('error.messaging.player-id-required', 'Oyuncu ID zorunludur'),
+    ('error.messaging.message-not-found', 'Mesaj bulunamadı'),
+    ('error.messaging.invalid-message-type', 'Geçersiz mesaj tipi'),
+    ('error.messaging.invalid-channel-type', 'Geçersiz kanal tipi'),
+    ('error.messaging.template-not-found', 'Mesaj şablonu bulunamadı'),
+    ('error.messaging.template-code-required', 'Şablon kodu zorunludur'),
+    ('error.messaging.template-code-exists', 'Şablon kodu zaten mevcut'),
+    ('error.messaging.template-name-required', 'Şablon adı zorunludur'),
+    ('error.messaging.invalid-template-status', 'Geçersiz şablon durumu'),
+    ('error.messaging.campaign-not-found', 'Mesajlaşma kampanyası bulunamadı'),
+    ('error.messaging.campaign-name-required', 'Kampanya adı zorunludur'),
+    ('error.messaging.campaign-not-editable', 'Kampanya düzenlenemez'),
+    ('error.messaging.campaign-not-publishable', 'Kampanya yayınlanamaz'),
+    ('error.messaging.campaign-not-cancellable', 'Kampanya iptal edilemez'),
+
+    -- Bonus Motoru — Bonus Tipleri
+    ('error.bonus-type.not-found', 'Bonus tipi bulunamadı'),
+    ('error.bonus-type.id-required', 'Bonus tip ID zorunludur'),
+    ('error.bonus-type.code-required', 'Bonus tip kodu zorunludur'),
+    ('error.bonus-type.code-exists', 'Bonus tip kodu zaten mevcut'),
+    ('error.bonus-type.name-required', 'Bonus tip adı zorunludur'),
+    ('error.bonus-type.category-required', 'Bonus kategorisi zorunludur'),
+    ('error.bonus-type.value-type-required', 'Değer tipi zorunludur'),
+
+    -- Bonus Motoru — Bonus Kuralları
+    ('error.bonus-rule.not-found', 'Bonus kuralı bulunamadı'),
+    ('error.bonus-rule.not-found-or-inactive', 'Bonus kuralı bulunamadı veya aktif değil'),
+    ('error.bonus-rule.id-required', 'Bonus kural ID zorunludur'),
+    ('error.bonus-rule.code-required', 'Bonus kural kodu zorunludur'),
+    ('error.bonus-rule.code-exists', 'Bonus kural kodu zaten mevcut'),
+    ('error.bonus-rule.name-required', 'Bonus kural adı zorunludur'),
+    ('error.bonus-rule.trigger-config-required', 'Trigger konfigürasyonu zorunludur'),
+    ('error.bonus-rule.reward-config-required', 'Ödül konfigürasyonu zorunludur'),
+    ('error.bonus-rule.invalid-evaluation-type', 'Geçersiz değerlendirme tipi'),
+
+    -- Bonus Motoru — Bonus Ödülleri
+    ('error.bonus-award.not-found', 'Bonus ödülü bulunamadı'),
+    ('error.bonus-award.id-required', 'Bonus ödül ID zorunludur'),
+    ('error.bonus-award.player-required', 'Oyuncu ID zorunludur'),
+    ('error.bonus-award.rule-required', 'Bonus kural ID zorunludur'),
+    ('error.bonus-award.currency-required', 'Para birimi zorunludur'),
+    ('error.bonus-award.wallet-not-found', 'Bonus cüzdanı bulunamadı'),
+    ('error.bonus-award.cannot-cancel', 'Bonus ödülü iptal edilemez'),
+    ('error.bonus-award.not-completable', 'Bonus ödülü tamamlanamaz'),
+    ('error.bonus-award.wagering-not-complete', 'Çevrim şartı karşılanmadı'),
+
+    -- Bonus Motoru — Kampanyalar
+    ('error.campaign.not-found', 'Kampanya bulunamadı'),
+    ('error.campaign.id-required', 'Kampanya ID zorunludur'),
+    ('error.campaign.code-required', 'Kampanya kodu zorunludur'),
+    ('error.campaign.code-exists', 'Kampanya kodu zaten mevcut'),
+    ('error.campaign.name-required', 'Kampanya adı zorunludur'),
+    ('error.campaign.type-required', 'Kampanya tipi zorunludur'),
+    ('error.campaign.dates-required', 'Kampanya tarihleri zorunludur'),
+    ('error.campaign.end-before-start', 'Bitiş tarihi başlangıçtan önce olamaz'),
+    ('error.campaign.invalid-status', 'Geçersiz kampanya durumu'),
+    ('error.campaign.invalid-award-strategy', 'Geçersiz ödül stratejisi'),
+
+    -- Bonus Motoru — Promosyon Kodları
+    ('error.promo.not-found', 'Promosyon bulunamadı'),
+    ('error.promo.id-required', 'Promosyon ID zorunludur'),
+    ('error.promo.code-required', 'Promosyon kodu zorunludur'),
+    ('error.promo.code-id-required', 'Promosyon kod ID zorunludur'),
+    ('error.promo.code-exists', 'Promosyon kodu zaten mevcut'),
+    ('error.promo.name-required', 'Promosyon adı zorunludur'),
+    ('error.promo.invalid-status', 'Geçersiz promosyon durumu'),
+    ('error.promo.player-required', 'Oyuncu ID zorunludur')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;
