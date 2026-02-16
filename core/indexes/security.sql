@@ -127,3 +127,9 @@ CREATE INDEX idx_pta_template_id ON security.permission_template_assignments USI
 -- permission_template_assignments (duplicate assignment kontrolü - unique active)
 CREATE UNIQUE INDEX uix_pta_active ON security.permission_template_assignments(user_id, template_id) WHERE removed_at IS NULL;
 
+-- permission_template_items (permission lookup - JOIN performance)
+CREATE INDEX IF NOT EXISTS idx_pti_permission_id ON security.permission_template_items USING btree(permission_id);
+
+-- permission_template_assignments (cleanup expired - permission_template_cleanup_expired)
+CREATE INDEX IF NOT EXISTS idx_pta_expires_at ON security.permission_template_assignments USING btree(expires_at) WHERE expires_at IS NOT NULL;
+

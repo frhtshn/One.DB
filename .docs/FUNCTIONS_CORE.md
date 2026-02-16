@@ -312,7 +312,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-### Security Schema (61)
+### Security Schema (74)
 
 #### IDOR Protection (7)
 
@@ -326,7 +326,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `user_assert_access_company` | Guard clause. Raises P0403 on failure |
 | `user_assert_manage_user` | Guard clause. Raises P0403 on failure |
 
-#### Permission Management (15)
+#### Permission Management (16)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
@@ -339,12 +339,30 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `permission_get` | Permission get by code |
 | `permission_list` | Paginated list with category/search/status filters |
 | `permission_update` | Permission update |
+| `user_context_overrides_load` | Load context-scoped overrides for ProtectedFieldReadFilter |
 | `user_permission_list` | List user's effective permissions (optional tenant scope) |
 | `user_permission_override_list` | List user permission overrides. IDOR |
 | `user_permission_override_load` | Load user permission overrides (optional tenant scope) |
 | `user_permission_remove` | Remove user permission override. IDOR |
 | `user_permission_set` | Set user permission override (grant/deny, optional expiry) |
 | `user_permission_set_with_outbox` | Set permission + outbox message in single transaction |
+
+#### Permission Template Management (12)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `permission_template_create` | Create new permission template. IDOR (company scope) |
+| `permission_template_update` | Update template metadata and active status |
+| `permission_template_delete` | Soft-delete template preserving audit trail |
+| `permission_template_get` | Retrieve template details with items and assignments |
+| `permission_template_list` | Paginated template list with filtering and search |
+| `permission_template_item_set` | Bulk add or remove permissions from template |
+| `permission_template_assign` | Assign template to user (expansion + snapshot model) |
+| `permission_template_unassign` | Remove template assignment from user |
+| `permission_template_assignment_list` | List active template assignments for user |
+| `permission_template_clone` | Clone template with new code/name (metadata + items) |
+| `permission_template_from_user` | Create template from user's effective permission set |
+| `permission_template_cleanup_expired` | Clean up expired assignments and permission overrides |
 
 #### Role Management (12)
 

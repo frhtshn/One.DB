@@ -49,7 +49,13 @@ DO $$ BEGIN
     END IF;
 END $$;
 
-
+-- contexts -> tabs (NULL = tab'sız düz sayfa context'i)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_contexts_tab') THEN
+        ALTER TABLE presentation.contexts ADD CONSTRAINT fk_contexts_tab
+            FOREIGN KEY (tab_id) REFERENCES presentation.tabs(id);
+    END IF;
+END $$;
 
 -- Check Constraints
 -- pages parent check (menu_id + submenu_id ayni anda dolu olamaz, ikisi NULL olabilir = standalone page)

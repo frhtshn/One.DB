@@ -204,15 +204,18 @@ Backoffice kullanıcı ve yetki yönetimi.
 
 #### RBAC (Role Based Access Control)
 
-| Tablo                       | Açıklama                                 |
-| --------------------------- | ---------------------------------------- |
-| `roles`                     | Rol tanımları                            |
-| `permissions`               | Sistem yetki tanımları                   |
-| `role_permissions`          | Rol-yetki eşleştirmeleri                 |
-| `user_roles`                | Kullanıcı-rol atamaları                  |
-| `user_tenant_roles`         | Tenant bazlı rol atamaları               |
-| `user_allowed_tenants`      | Kullanıcının erişebildiği tenantlar      |
-| `user_permission_overrides` | Kullanıcı bazlı yetki override (istisna) |
+| Tablo                             | Açıklama                                                           |
+| --------------------------------- | ------------------------------------------------------------------ |
+| `roles`                           | Rol tanımları                                                      |
+| `permissions`                     | Sistem yetki tanımları                                             |
+| `role_permissions`                | Rol-yetki eşleştirmeleri                                           |
+| `user_roles`                      | Kullanıcı-rol atamaları                                            |
+| `user_tenant_roles`               | Tenant bazlı rol atamaları                                         |
+| `user_allowed_tenants`            | Kullanıcının erişebildiği tenantlar                                |
+| `user_permission_overrides`       | Kullanıcı bazlı yetki override (global veya context-scoped)       |
+| `permission_templates`            | Toplu yetki atama şablonları (snapshot model)                      |
+| `permission_template_items`       | Şablon içindeki yetki tanımları                                    |
+| `permission_template_assignments` | Şablon-kullanıcı atamaları (audit trail, soft-delete)              |
 
 #### Secrets
 
