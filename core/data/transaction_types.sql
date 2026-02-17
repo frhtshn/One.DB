@@ -10,6 +10,7 @@ VALUES
 (5,  'poker.bet', 'bet', 'poker', false, false, false, false, true, 'Poker bet'),
 (6,  'virtual.sports.bet', 'bet', 'sports', false, false, false, false, true, 'Virtual sports bet'),
 (7,  'horse.greyhound.bet', 'bet', 'sports', false, false, false, false, true, 'Horse/Greyhound bet'),
+(8,  'casino.free.bet', 'bet', 'casino', true,  true,  false, false, true, 'Casino free round bet'),
 -- WIN TRANSACTIONS
 (10, 'sports.bet.win', 'win', 'sports', false,  false, false, true,  true, 'Sports bet win'),
 (11, 'free.sports.win', 'win', 'sports', true,  true,  false, true,  true, 'Free sports bet win'),
@@ -44,4 +45,13 @@ VALUES
 (54, 'casino.bonus.transaction.rollback', 'bonus', 'casino', true,  false, true,  false, true, 'Casino bonus rollback'),
 (55, 'bonus.transaction.rollback', 'bonus', NULL, true,  false, true,  false, true, 'Bonus rollback'),
 (56, 'discount.transaction.rollback', 'bonus', NULL, true,  false, true,  false, true, 'Discount rollback'),
-(57, 'casino.adjustment.rollback', 'adjustment', 'casino', false,  false, true,  false, true, 'Casino adjustment rollback');
+(57, 'casino.adjustment.rollback', 'adjustment', 'casino', false,  false, true,  false, true, 'Casino adjustment rollback'),
+-- CASINO REFUND / ROLLBACK (Game Gateway)
+(60, 'casino.bet.refund', 'refund', 'casino', false, false, true,  false, true, 'Casino bet refund'),
+(61, 'live.casino.bet.refund', 'refund', 'casino', false, false, true,  false, true, 'Live casino bet refund'),
+(62, 'casino.free.bet.refund', 'refund', 'casino', true,  true,  true,  false, true, 'Free round bet refund'),
+(63, 'casino.win.rollback', 'rollback', 'casino', false, false, true,  false, true, 'Casino win rollback'),
+-- CASINO SPECIAL WINS (Game Gateway)
+(70, 'casino.jackpot.win', 'win', 'casino', false, false, false, true,  true, 'Casino jackpot win'),
+(71, 'casino.promo.win', 'win', 'casino', false, false, false, true,  true, 'Casino promo/tournament win'),
+(72, 'casino.bonus.free.win', 'win', 'casino', true,  true,  false, true,  true, 'Casino free spins bonus win');
