@@ -171,6 +171,62 @@ sequenceDiagram
 
 > **Cross-DB izolasyonu:** Tenant DB fonksiyonları Core DB'ye erişmez. Tüm ayarlar backend tarafından parametre olarak iletilir.
 
+### 2.5 FE/BO Sayfa Görünürlüğü
+
+#### `required_module` Kolonu
+
+`presentation.menus` tablosuna eklenen `required_module VARCHAR(100)` kolonu, permission kontrolüne ek olarak **modül bazlı** görünürlük sağlar:
+
+| Kolon Değeri | Davranış |
+|-------------|----------|
+| `NULL` | Modül bağımlılığı yok — permission yeterliyse gösterilir |
+| `'ticket_module_enabled'` | Bu tenant için ilgili `core.tenant_settings` key'i `true` olmalı |
+
+#### Menü Yapısı
+
+```
+Tenants (menu_group)
+  └── support-standard (menu, required_module: NULL)
+  │     ├── representatives → Temsilci yönetimi
+  │     ├── welcome-calls   → Hoşgeldin araması
+  │     └── player-notes    → Oyuncu notları
+  │
+  └── support-tickets (menu, required_module: 'ticket_module_enabled')
+        ├── ticket-queue   → Kuyruk / dashboard
+        ├── ticket-config  → Kategori, tag, hazır yanıt
+        └── agent-settings → Agent ayarları
+```
+
+#### Görünürlük Tablosu
+
+| Durum | Standart Menü | Ticket Menüsü |
+|-------|---------------|----------------|
+| `ticket_module_enabled = true` + permission var | Görünür | Görünür |
+| `ticket_module_enabled = false` + permission var | Görünür | **Gizli** |
+| Permission yok | Gizli | Gizli |
+
+#### Backend Menü Sorgusu
+
+```sql
+SELECT m.*
+FROM presentation.menus m
+WHERE m.is_active = true
+  AND m.required_permission IN (... kullanıcı permission'ları ...)
+  AND (
+    m.required_module IS NULL
+    OR EXISTS (
+      SELECT 1 FROM core.tenant_settings ts
+      WHERE ts.tenant_id = p_tenant_id
+        AND ts.setting_key = m.required_module
+        AND ts.setting_value::boolean = true
+    )
+  )
+```
+
+> **Oyuncu FE:** Oyuncu panelinde "Destek Talebi" sayfası da koşulludur. FE, tenant config endpoint'inden modül durumunu alır ve "Destek" menü öğesini koşullu gösterir.
+
+> **Genişletilebilirlik:** `required_module` generic'tir. İleride başka ücretli modüller eklendiğinde (ör: `affiliate_module_enabled`) aynı mekanizma kullanılır.
+
 ---
 
 ## 3. Ticket Durum Makinesi
@@ -633,7 +689,7 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 | Dashboard | 2 | `tenant/functions/support/ticket_queue_list.sql`, `ticket_dashboard_stats.sql` |
 | Maintenance | 1 | `tenant/functions/support/maintenance/welcome_call_task_cleanup.sql` |
 
-### Güncellenecek Dosyalar (7)
+### Güncellenecek Dosyalar (9)
 
 | Dosya | Değişiklik |
 |-------|------------|
@@ -644,6 +700,8 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 | `core/data/role_permissions_full.sql` | Yeni rol atamaları |
 | `core/data/staging_seed.sql` | 3 yeni tenant_settings kaydı |
 | `core/functions/core/provisioning/tenant_config_auto_populate.sql` | Support ayarları otomatik ekleme |
+| `core/tables/presentation/backoffice/menus.sql` | `required_module VARCHAR(100)` kolonu |
+| `core/data/seed_presentation.sql` | Support menü, submenu, page, tab, context kayıtları |
 
 ---
 
@@ -658,5 +716,5 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 | Yeni indeks | ~25 (2 dosya) |
 | Yeni FK constraint | 6 (1 dosya) |
 | Yeni error key | 3 (modül & anti-abuse) + 22 (iş mantığı) |
-| Güncellenecek dosya | 7 |
+| Güncellenecek dosya | 9 |
 | Toplam yeni dosya | 59 |
