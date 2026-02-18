@@ -330,6 +330,24 @@ Tenant admin her bonus tipi için şunları yapılandırır:
 | `min_group/category_level` | Minimum seviye filtresi |
 | `cooldown_after_approved/rejected_days` | Cooldown süreleri (gün) |
 | `max_pending_per_player` | Aynı anda kaç pending talep (default: 1) |
+| `default_usage_criteria` | Varsayılan çevrim şartı — JSONB: `{"wagering_multiplier":30,"expires_in_days":30,...}` |
+
+### Çevrim (Wagering) Şartı
+
+Manuel bonuslarda çevrim şartı üç katmanlı öncelik zinciri ile belirlenir:
+
+1. **Operatör override** — onay sırasında `p_usage_criteria` ile manuel giriş
+2. **Setting default** — `bonus_request_settings.default_usage_criteria`
+3. **Çevrim yok** — her ikisi NULL ise bonus direkt kullanılabilir
+
+```
+v_usage_criteria = COALESCE(operatör_girişi, setting_default)
+```
+
+FE gösterimi:
+- **Talep öncesi:** `player_requestable_bonus_types()` response'unda `hasWagering`, `wageringMultiplier` bilgisi
+- **Talep sonrası:** `player_bonus_request_list()` response'unda progress bar verisi (`wageringTarget`, `wageringProgress`, `progressPercent`)
+- Çevrim şartı yoksa progress bar gösterilmez
 
 ### Rollback Mekanizması
 
