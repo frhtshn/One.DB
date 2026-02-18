@@ -389,7 +389,7 @@ Rollback action logu `action_data` JSONB'de önceki durumu ve iptal edilen award
 | `promo_redeem` | Promosyon kodu kullan |
 | `promo_redemption_list` | Kullanım geçmişi |
 
-### Tenant DB — Manuel Bonus Talep (18 fonksiyon)
+### Tenant DB — Manuel Bonus Talep (19 fonksiyon)
 
 | Grup | Fonksiyon | Açıklama |
 |------|----------|----------|
@@ -403,7 +403,8 @@ Rollback action logu `action_data` JSONB'de önceki durumu ve iptal edilen award
 | BO — Karar | `bonus_request_reject` | Reddet (review_note zorunlu) |
 | BO — Karar | `bonus_request_rollback` | Geri al (completed/rejected → in_progress) |
 | BO — Diğer | `bonus_request_cancel` | İptal (oyuncu veya operatör) |
-| BO — Diğer | `bonus_request_expire` | Batch expire (maintenance, SKIP LOCKED) |
+| BO — Diğer | `bonus_request_expire` | Batch expire (günlük, SKIP LOCKED) |
+| BO — Diğer | `bonus_request_cleanup` | Retention cleanup — cancelled/expired 90 gün sonra sil (haftalık) |
 | Oyuncu | `player_bonus_request_create` | Oyuncu talebi (cooldown + uygunluk kontrolü) |
 | Oyuncu | `player_bonus_request_list` | Kendi taleplerini listele (hassas veri yok) |
 | Oyuncu | `player_bonus_request_cancel` | Kendi talebini iptal (sadece pending) |
