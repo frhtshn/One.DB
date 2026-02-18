@@ -1,6 +1,6 @@
 # Çağrı Merkezi & Müşteri Temsilcisi — Geliştirici Rehberi
 
-Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli modül), **Temsilci Atama** ve **Hoşgeldin Araması** (standart hizmetler). Tüm veriler Tenant DB `support` şemasında tutulur; yetki kontrolleri Core DB üzerinden yapılır.
+Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli plugin), **Temsilci Atama** ve **Hoşgeldin Araması** (standart hizmetler). Tüm veriler Tenant DB `support` şemasında tutulur; yetki kontrolleri Core DB üzerinden yapılır.
 
 > **Detaylı spesifikasyon:** [CALL_CENTER_DESIGN.md](../../.planning/CALL_CENTER_DESIGN.md)
 
@@ -12,18 +12,18 @@ Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli m
 
 | # | Alt Sistem | Başlatan | Tür | Açıklama |
 |---|------------|----------|-----|----------|
-| 1 | **Ticket Sistemi** | Oyuncu / BO kullanıcısı | **Ücretli modül** | Şikâyet, soru, talep → kuyruk → atama → çözüm → kapatma |
+| 1 | **Ticket Sistemi** | Oyuncu / BO kullanıcısı | **Ücretli plugin** | Şikâyet, soru, talep → kuyruk → atama → çözüm → kapatma |
 | 2 | **Temsilci Atama** | BO kullanıcısı | **Standart** | Her oyuncuya kalıcı müşteri temsilcisi. Değişiklik historik |
 | 3 | **Hoşgeldin Araması** | Sistem (otomatik) | **Standart** | Kayıt sonrası arama görevi → call center kuyruk → arama → temsilci atama |
 
-> **Modül ayrımı:** Temsilci atama ve hoşgeldin araması tüm tenant'lar için ücretsiz standart hizmettir. Ticket sistemi ayrıca faturalandırılır — yalnızca platform admin'ler (superadmin/admin) `ticket_module_enabled` ayarını açabilir.
+> **Plugin ayrımı:** Temsilci atama ve hoşgeldin araması tüm tenant'lar için ücretsiz standart hizmettir. Ticket sistemi ayrıca faturalandırılır — yalnızca platform admin'ler (superadmin/admin) `ticket_plugin_enabled` ayarını açabilir.
 
 ### 1.2 Veritabanı Dağılımı
 
 ```mermaid
 flowchart TD
     subgraph TENANT_DB["Tenant DB (İzole — Per-Tenant)"]
-        subgraph TICKET["Ticket Sistemi (Ücretli Modül)"]
+        subgraph TICKET["Ticket Sistemi (Ücretli Plugin)"]
             TC["support.ticket_categories"]
             TK["support.tickets"]
             TA["support.ticket_actions"]
@@ -51,7 +51,7 @@ flowchart TD
 
     subgraph CORE_DB["Core DB (Merkezi)"]
         PERM["security.permissions (15 yeni)"]
-        TS["core.tenant_settings<br/>(ticket_module_enabled + anti-abuse)"]
+        TS["core.tenant_settings<br/>(ticket_plugin_enabled + anti-abuse)"]
     end
 
     TK -->|"Aksiyon kaydı"| TA
@@ -70,8 +70,8 @@ sequenceDiagram
     participant TENANT as Tenant DB
 
     P->>BE: Ticket oluştur
-    BE->>CORE: Auth + ticket_module_enabled kontrol
-    CORE-->>BE: OK (modül aktif)
+    BE->>CORE: Auth + ticket_plugin_enabled kontrol
+    CORE-->>BE: OK (plugin aktif)
     BE->>CORE: Anti-abuse ayarlarını oku
     CORE-->>BE: max_open=1, cooldown=0
     BE->>TENANT: support.player_ticket_create(... p_max_open_tickets=1, p_cooldown_minutes=0)
@@ -120,24 +120,24 @@ sequenceDiagram
 
 ---
 
-## 2. Modül Aktivasyonu & Tenant Konfigürasyonu
+## 2. Plugin Aktivasyonu & Tenant Konfigürasyonu
 
 ### 2.1 Hizmet Modeli
 
 | Katman | Hizmetler | Kontrol |
 |--------|-----------|---------|
 | **Standart** (her zaman açık) | Temsilci atama, hoşgeldin araması, agent ayarları, oyuncu notları | Yok — her zaman çalışır |
-| **Ücretli modül** (platform admin) | Ticket CRUD, kategoriler, etiketler, hazır yanıtlar, ticket dashboard, oyuncu self-service | `ticket_module_enabled` ayarı |
+| **Ücretli plugin** (platform admin) | Ticket CRUD, kategoriler, etiketler, hazır yanıtlar, ticket dashboard, oyuncu self-service | `ticket_plugin_enabled` ayarı |
 
 ### 2.2 Tenant Settings Key'leri
 
-#### Modül Aktivasyonu (`'Module'` kategorisi — sadece superadmin/admin)
+#### Plugin Aktivasyonu (`'Plugin'` kategorisi — sadece superadmin/admin)
 
 | Key | Tip | Varsayılan | Açıklama |
 |-----|-----|------------|----------|
-| `ticket_module_enabled` | `boolean` | `false` | Ticket modülü aktif mi? `false` ise ticket fonksiyonları engellenir. Standart hizmetleri **etkilemez** |
+| `ticket_plugin_enabled` | `boolean` | `false` | Ticket plugin'i aktif mi? `false` ise ticket fonksiyonları engellenir. Standart hizmetleri **etkilemez** |
 
-> **Yetki kısıtı:** `'Module'` kategorisindeki key'ler sadece superadmin/admin tarafından değiştirilebilir. Backend middleware'de kategori bazlı rol kontrolü yapılır.
+> **Yetki kısıtı:** `'Plugin'` kategorisindeki key'ler sadece superadmin/admin tarafından değiştirilebilir. Backend middleware'de kategori bazlı rol kontrolü yapılır.
 
 #### Anti-Abuse Ayarları (`'Support'` kategorisi — tenantadmin+)
 
@@ -146,9 +146,9 @@ sequenceDiagram
 | `support_max_open_tickets_per_player` | `integer` | `1` | Oyuncunun aynı anda açık tutabileceği max ticket. `0` = limitsiz |
 | `support_ticket_cooldown_minutes` | `integer` | `0` | Ticket kapandıktan/iptalden sonra yeni ticket açma bekleme süresi (dk). `0` = yok |
 
-### 2.3 Modül Kapsamı — Neyi Etkiler, Neyi Etkilemez
+### 2.3 Plugin Kapsamı — Neyi Etkiler, Neyi Etkilemez
 
-| Fonksiyon grubu | `ticket_module_enabled = false` | `= true` |
+| Fonksiyon grubu | `ticket_plugin_enabled = false` | `= true` |
 |------------------|---------------------------------|-----------|
 | `player_representative_*` | Çalışır | Çalışır |
 | `welcome_call_task_*` | Çalışır | Çalışır |
@@ -163,8 +163,8 @@ sequenceDiagram
 
 ```
 1. API isteği gelir (ticket ile ilgili)
-2. Backend → Core DB: tenant_setting_get(tenant_id, 'ticket_module_enabled')
-3. false ise → 403 "error.support.ticket-module-disabled" — Tenant DB'ye çağrı yapılmaz
+2. Backend → Core DB: tenant_setting_get(tenant_id, 'ticket_plugin_enabled')
+3. false ise → 403 "error.support.ticket-plugin-disabled" — Tenant DB'ye çağrı yapılmaz
 4. true ise → anti-abuse ayarlarını da oku (max_open, cooldown)
 5. Tenant DB fonksiyonuna parametre olarak ilet
 ```
@@ -173,25 +173,25 @@ sequenceDiagram
 
 ### 2.5 FE/BO Sayfa Görünürlüğü
 
-#### `required_module` Kolonu
+#### `required_plugin` Kolonu
 
-`presentation.menus` tablosuna eklenen `required_module VARCHAR(100)` kolonu, permission kontrolüne ek olarak **modül bazlı** görünürlük sağlar:
+`presentation.menus` tablosuna eklenen `required_plugin VARCHAR(100)` kolonu, permission kontrolüne ek olarak **plugin bazlı** görünürlük sağlar:
 
 | Kolon Değeri | Davranış |
 |-------------|----------|
-| `NULL` | Modül bağımlılığı yok — permission yeterliyse gösterilir |
-| `'ticket_module_enabled'` | Bu tenant için ilgili `core.tenant_settings` key'i `true` olmalı |
+| `NULL` | Plugin bağımlılığı yok — permission yeterliyse gösterilir |
+| `'ticket_plugin_enabled'` | Bu tenant için ilgili `core.tenant_settings` key'i `true` olmalı |
 
 #### Menü Yapısı
 
 ```
 Tenants (menu_group)
-  └── support-standard (menu, required_module: NULL)
+  └── support-standard (menu, required_plugin: NULL)
   │     ├── representatives → Temsilci yönetimi
   │     ├── welcome-calls   → Hoşgeldin araması
   │     └── player-notes    → Oyuncu notları
   │
-  └── support-tickets (menu, required_module: 'ticket_module_enabled')
+  └── support-tickets (menu, required_plugin: 'ticket_plugin_enabled')
         ├── ticket-queue   → Kuyruk / dashboard
         ├── ticket-config  → Kategori, tag, hazır yanıt
         └── agent-settings → Agent ayarları
@@ -201,8 +201,8 @@ Tenants (menu_group)
 
 | Durum | Standart Menü | Ticket Menüsü |
 |-------|---------------|----------------|
-| `ticket_module_enabled = true` + permission var | Görünür | Görünür |
-| `ticket_module_enabled = false` + permission var | Görünür | **Gizli** |
+| `ticket_plugin_enabled = true` + permission var | Görünür | Görünür |
+| `ticket_plugin_enabled = false` + permission var | Görünür | **Gizli** |
 | Permission yok | Gizli | Gizli |
 
 #### Backend Menü Sorgusu
@@ -213,19 +213,19 @@ FROM presentation.menus m
 WHERE m.is_active = true
   AND m.required_permission IN (... kullanıcı permission'ları ...)
   AND (
-    m.required_module IS NULL
+    m.required_plugin IS NULL
     OR EXISTS (
       SELECT 1 FROM core.tenant_settings ts
       WHERE ts.tenant_id = p_tenant_id
-        AND ts.setting_key = m.required_module
+        AND ts.setting_key = m.required_plugin
         AND ts.setting_value::boolean = true
     )
   )
 ```
 
-> **Oyuncu FE:** Oyuncu panelinde "Destek Talebi" sayfası da koşulludur. FE, tenant config endpoint'inden modül durumunu alır ve "Destek" menü öğesini koşullu gösterir.
+> **Oyuncu FE:** Oyuncu panelinde "Destek Talebi" sayfası da koşulludur. FE, tenant config endpoint'inden plugin durumunu alır ve "Destek" menü öğesini koşullu gösterir.
 
-> **Genişletilebilirlik:** `required_module` generic'tir. İleride başka ücretli modüller eklendiğinde (ör: `affiliate_module_enabled`) aynı mekanizma kullanılır.
+> **Genişletilebilirlik:** `required_plugin` generic'tir. İleride başka ücretli plugin'ler eklendiğinde (ör: `affiliate_plugin_enabled`) aynı mekanizma kullanılır.
 
 ---
 
@@ -320,7 +320,7 @@ stateDiagram-v2
 
 ### 5.1 Tenant DB — `support` Şeması
 
-#### Ticket Tabloları (Ücretli Modül)
+#### Ticket Tabloları (Ücretli Plugin)
 
 | Tablo | Açıklama |
 |-------|----------|
@@ -365,7 +365,7 @@ stateDiagram-v2
 
 ## 6. Fonksiyon Haritası
 
-### 6.1 Ticket Yönetimi — BO (11 fonksiyon, Ücretli Modül)
+### 6.1 Ticket Yönetimi — BO (11 fonksiyon, Ücretli Plugin)
 
 | Fonksiyon | İmza (kısa) | Açıklama |
 |-----------|-------------|----------|
@@ -381,7 +381,7 @@ stateDiagram-v2
 | `ticket_reopen` | `(p_ticket_id, p_performed_by_id, p_performed_by_type, p_reason)` → `VOID` | Tekrar aç |
 | `ticket_cancel` | `(p_ticket_id, p_performed_by_id, p_performed_by_type)` → `VOID` | İptal |
 
-### 6.2 Ticket — Oyuncu (4 fonksiyon, Ücretli Modül)
+### 6.2 Ticket — Oyuncu (4 fonksiyon, Ücretli Plugin)
 
 | Fonksiyon | İmza (kısa) | Açıklama |
 |-----------|-------------|----------|
@@ -426,7 +426,7 @@ stateDiagram-v2
 | `welcome_call_task_complete` | Arama tamamla (answered/declined → completed, wrong_number → failed) |
 | `welcome_call_task_reschedule` | Tekrar planla (attempt_count++, max aşılınca → failed) |
 
-### 6.7 Ticket Konfig — BO (11 fonksiyon, Ücretli Modül)
+### 6.7 Ticket Konfig — BO (11 fonksiyon, Ücretli Plugin)
 
 | Grup | Fonksiyonlar | Açıklama |
 |------|-------------|----------|
@@ -434,7 +434,7 @@ stateDiagram-v2
 | Tag (3) | `ticket_tag_create`, `_update`, `_list` | Etiket yönetimi |
 | Canned Response (4) | `canned_response_create`, `_update`, `_list`, `_delete` | Hazır yanıt şablonları |
 
-### 6.8 Dashboard — BO (2 fonksiyon, Ücretli Modül)
+### 6.8 Dashboard — BO (2 fonksiyon, Ücretli Plugin)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
@@ -581,11 +581,11 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 
 ## 11. Hata Mesajları
 
-### Modül & Anti-Abuse
+### Plugin & Anti-Abuse
 
 | Key | Durum | Kaynak |
 |-----|-------|--------|
-| `error.support.ticket-module-disabled` | Ticket modülü bu tenant için aktif değil | Backend (API) |
+| `error.support.ticket-plugin-disabled` | Ticket plugin'i bu tenant için aktif değil | Backend (API) |
 | `error.support.max-open-tickets-reached` | Oyuncunun açık ticket limiti dolmuş | Tenant DB |
 | `error.support.ticket-cooldown-active` | Cooldown süresi dolmamış | Tenant DB |
 
@@ -700,7 +700,7 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 | `core/data/role_permissions_full.sql` | Yeni rol atamaları |
 | `core/data/staging_seed.sql` | 3 yeni tenant_settings kaydı |
 | `core/functions/core/provisioning/tenant_config_auto_populate.sql` | Support ayarları otomatik ekleme |
-| `core/tables/presentation/backoffice/menus.sql` | `required_module VARCHAR(100)` kolonu |
+| `core/tables/presentation/backoffice/menus.sql` | `required_plugin VARCHAR(100)` kolonu |
 | `core/data/seed_presentation.sql` | Support menü, submenu, page, tab, context kayıtları |
 
 ---
@@ -712,9 +712,9 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 | Yeni tablo | 13 (11 tenant + 1 log + 1 report) |
 | Yeni fonksiyon | 39 |
 | Yeni permission | 15 |
-| Yeni tenant_settings key | 3 (1 Module + 2 Support) |
+| Yeni tenant_settings key | 3 (1 Plugin + 2 Support) |
 | Yeni indeks | ~25 (2 dosya) |
 | Yeni FK constraint | 6 (1 dosya) |
-| Yeni error key | 3 (modül & anti-abuse) + 22 (iş mantığı) |
+| Yeni error key | 3 (plugin & anti-abuse) + 22 (iş mantığı) |
 | Güncellenecek dosya | 9 |
 | Toplam yeni dosya | 59 |
