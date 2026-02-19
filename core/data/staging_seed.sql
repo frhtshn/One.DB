@@ -96,68 +96,68 @@ INSERT INTO core.tenants (company_id, tenant_code, tenant_name, environment, bas
 -- 5. USERS (12 — sadeleştirilmiş)
 -- ================================================================
 -- Şifre: deneme (tüm kullanıcılar için aynı)
--- Hash: zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=
+-- Hash: $argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c
 
 INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency, country) VALUES
 -- Superadmin (NUCLEO)
 -- UYARI: Production'da şifre MUTLAKA değiştirilmeli!
 (0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- Platform Admin (NUCLEO)
 (0, 'System', 'Admin', 'admin@nucleo.io', 'admin',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'en', 'Europe/Istanbul', 'EUR', 'MT'),
 
 -- CompanyAdmin - EUROBET (Malta)
 (1, 'James', 'Wilson', 'eurobet@nucleo.io', 'eurobet',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'en', 'Europe/Malta', 'EUR', 'MT'),
 
 -- CompanyAdmin - CYPRUSPLAY (Kıbrıs)
 (2, 'Andreas', 'Georgiou', 'cyprus@nucleo.io', 'cyprus',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'en', 'Asia/Nicosia', 'EUR', 'CY'),
 
 -- CompanyAdmin - TURKBET (Türkiye)
 (3, 'Ahmet', 'Yılmaz', 'turkbet@nucleo.io', 'turkbet',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- TenantAdmin - eurobet_eu
 (1, 'Maria', 'Santos', 'eurobet.eu@nucleo.io', 'eurobet_eu',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'en', 'Europe/Malta', 'EUR', 'MT'),
 
 -- TenantAdmin - cyprus_main
 (2, 'Nikos', 'Papadopoulos', 'cyprus.admin@nucleo.io', 'cyprus_admin',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'en', 'Asia/Nicosia', 'EUR', 'CY'),
 
 -- TenantAdmin - turkbet_tr
 (3, 'Mehmet', 'Demir', 'turkbet.admin@nucleo.io', 'turkbet_admin',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- Moderator - turkbet_tr (multi-tenant test: 3 tenant, 3 farklı rol)
 (3, 'Ayşe', 'Kaya', 'turkbet.mod@nucleo.io', 'turkbet_mod',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- Editor - turkbet_tr
 (3, 'Zeynep', 'Çelik', 'turkbet.edit@nucleo.io', 'turkbet_edit',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- Operator - turkbet_tr
 (3, 'Ali', 'Öztürk', 'turkbet.op@nucleo.io', 'turkbet_op',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- User - eurobet_eu
 (1, 'John', 'Smith', 'eurobet.user@nucleo.io', 'eurobet_user',
- 'zsECiTmx0nxGD5ymsfm0Lw==:YYJDTEdcIwrDmFRqT8fqJ59Fzw81zTKcE1fHBSs9gwo=',
+ '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
  1, 'en', 'Europe/Malta', 'EUR', 'MT');
 
 -- ================================================================
