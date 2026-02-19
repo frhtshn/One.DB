@@ -62,9 +62,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/player_auth/player_credentials.sql
 \i tenant/tables/player_auth/player_groups.sql
 \i tenant/tables/player_auth/player_password_history.sql
-
--- Shadow Testers Table
-\i tenant/tables/auth/shadow_testers.sql
+\i tenant/tables/player_auth/shadow_testers.sql
 
 -- FINANCE TABLES
 \i tenant/tables/finance/operation_types.sql
