@@ -22,13 +22,34 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS tablefunc WITH SCHEMA infra;
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
--- TABLES
--- \i finance_log/tables/...
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
 
--- FUNCTIONS
--- \i finance_log/functions/...
+-- =============================================================================
+-- FINANCE LOG TABLES
+-- =============================================================================
+\i finance_log/tables/finance_log/provider_api_requests.sql
+\i finance_log/tables/finance_log/provider_api_callbacks.sql
 
+-- =============================================================================
+-- CONSTRAINTS
+-- =============================================================================
+\i finance_log/constraints/finance_log.sql
+
+-- =============================================================================
 -- INDEXES
--- \i finance_log/indexes/...
+-- =============================================================================
+\i finance_log/indexes/finance_log.sql
+
+-- =============================================================================
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+-- =============================================================================
+\i finance_log/functions/maintenance/create_partitions.sql
+\i finance_log/functions/maintenance/drop_expired_partitions.sql
+\i finance_log/functions/maintenance/partition_info.sql
+\i finance_log/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
 
 COMMIT;

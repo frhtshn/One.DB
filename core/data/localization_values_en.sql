@@ -494,6 +494,17 @@ JOIN (VALUES
     ('error.game.currency-code-required', 'Currency code is required'),
     ('error.game.limits-data-required', 'Limits data is required'),
     ('error.game.limits-invalid-format', 'Invalid limits data format'),
+    ('error.game.player-required', 'Player ID is required'),
+    ('error.game.session-not-found', 'Game session not found'),
+    ('error.game.session-expired', 'Game session has expired'),
+
+    -- Wallet (Game Gateway)
+    ('error.wallet.player-not-found', 'Player not found'),
+    ('error.wallet.player-frozen', 'Player account is frozen or inactive'),
+    ('error.wallet.wallet-not-found', 'Wallet not found for given currency'),
+    ('error.wallet.insufficient-balance', 'Insufficient balance'),
+    ('error.wallet.amount-required', 'Amount is required and must be positive'),
+    ('error.wallet.idempotency-key-required', 'Idempotency key is required'),
 
     -- Payment Method (Finance DB — new)
     ('error.payment-method.data-required', 'Payment method data is required'),
@@ -507,6 +518,27 @@ JOIN (VALUES
 
     -- Shadow Mode
     ('error.shadow-tester.player-id-required', 'Player ID is required'),
+    ('error.shadow-tester.not-found', 'Shadow tester not found'),
+
+    -- Player Segmentation (Player Category & Group)
+    ('error.player-category.code-required', 'Category code is required'),
+    ('error.player-category.name-required', 'Category name is required'),
+    ('error.player-category.code-exists', 'Category code already exists'),
+    ('error.player-category.not-found', 'Player category not found'),
+    ('error.player-category.already-inactive', 'Player category is already inactive'),
+
+    ('error.player-group.code-required', 'Group code is required'),
+    ('error.player-group.name-required', 'Group name is required'),
+    ('error.player-group.code-exists', 'Group code already exists'),
+    ('error.player-group.not-found', 'Player group not found'),
+    ('error.player-group.already-inactive', 'Player group is already inactive'),
+
+    -- Player Classification
+    ('error.player-classification.player-not-found', 'Player not found'),
+    ('error.player-classification.group-not-found', 'Group not found or inactive'),
+    ('error.player-classification.category-not-found', 'Category not found or inactive'),
+    ('error.player-classification.no-assignment', 'At least one group or category is required'),
+    ('error.player-classification.no-players', 'Player list is empty'),
 
     -- Jurisdiction (new)
     ('error.jurisdiction.has-retention-policies', 'Cannot delete jurisdiction. It has linked data retention policies'),
@@ -583,6 +615,47 @@ JOIN (VALUES
     ('error.bonus-award.cannot-cancel', 'Bonus award cannot be cancelled'),
     ('error.bonus-award.not-completable', 'Bonus award cannot be completed'),
     ('error.bonus-award.wagering-not-complete', 'Wagering requirement not met'),
+    ('error.bonus-award.amount-required', 'Bonus amount is required'),
+
+    -- Bonus Request (Manual bonus request system)
+    ('error.bonus-request.not-found', 'Bonus request not found'),
+    ('error.bonus-request.invalid-status', 'Invalid request status for this operation'),
+    ('error.bonus-request.player-required', 'Player ID is required'),
+    ('error.bonus-request.invalid-source', 'Invalid request source. Must be player or operator'),
+    ('error.bonus-request.type-required', 'Bonus type is required'),
+    ('error.bonus-request.description-required', 'Description is required'),
+    ('error.bonus-request.amount-required', 'Amount is required for operator requests'),
+    ('error.bonus-request.currency-required', 'Currency is required for operator requests'),
+    ('error.bonus-request.hold-reason-required', 'Hold reason is required'),
+    ('error.bonus-request.review-note-required', 'Review note is required for rejection'),
+    ('error.bonus-request.rollback-reason-required', 'Rollback reason is required'),
+    ('error.bonus-request.rollback-not-allowed', 'Rollback is not allowed from this status'),
+    ('error.bonus-request.type-not-requestable', 'This bonus type is not available for requests'),
+    ('error.bonus-request.player-not-eligible', 'Player is not eligible for this bonus type'),
+    ('error.bonus-request.pending-exists', 'A pending request already exists for this bonus type'),
+    ('error.bonus-request.cooldown-after-approved', 'Cooldown period after approved request has not elapsed'),
+    ('error.bonus-request.cooldown-after-rejected', 'Cooldown period after rejected request has not elapsed'),
+    ('error.bonus-request.not-owner', 'You are not the owner of this request'),
+
+    -- Bonus Request Settings
+    ('error.bonus-request-settings.not-found', 'Bonus request setting not found'),
+    ('error.bonus-request-settings.display-name-required', 'Display name is required'),
+    ('error.bonus-request-settings.invalid-display-name', 'Invalid display name JSON format'),
+    ('error.bonus-request-settings.invalid-rules-content', 'Invalid rules content JSON format'),
+    ('error.bonus-request-settings.invalid-eligible-groups', 'Invalid eligible groups JSON format'),
+    ('error.bonus-request-settings.invalid-eligible-categories', 'Invalid eligible categories JSON format'),
+    ('error.bonus-request-settings.invalid-usage-criteria', 'Invalid usage criteria JSON format'),
+
+    -- Bonus Mapping (Provider bonus tracking)
+    ('error.bonus-mapping.award-required', 'Bonus award ID is required'),
+    ('error.bonus-mapping.provider-required', 'Provider code is required'),
+    ('error.bonus-mapping.data-required', 'Bonus mapping data is required'),
+    ('error.bonus-mapping.not-found', 'Provider bonus mapping not found'),
+    ('error.bonus-mapping.invalid-status', 'Invalid bonus mapping status'),
+
+    -- Reconciliation (Provider reconciliation)
+    ('error.reconciliation.provider-required', 'Provider code is required for reconciliation'),
+    ('error.reconciliation.date-required', 'Report date is required'),
 
     -- Bonus Engine — Campaigns
     ('error.campaign.not-found', 'Campaign not found'),
@@ -604,6 +677,105 @@ JOIN (VALUES
     ('error.promo.code-exists', 'Promo code already exists'),
     ('error.promo.name-required', 'Promo name is required'),
     ('error.promo.invalid-status', 'Invalid promo status'),
-    ('error.promo.player-required', 'Player ID is required')
+    ('error.promo.player-required', 'Player ID is required'),
+
+    -- Finance Gateway — Payment Sessions
+    ('error.finance.session-player-required', 'Player ID is required for payment session'),
+    ('error.finance.session-type-required', 'Session type is required'),
+    ('error.finance.session-amount-required', 'Amount is required for payment session'),
+    ('error.finance.session-not-found', 'Payment session not found'),
+    ('error.finance.session-expired', 'Payment session has expired'),
+
+    -- Finance Gateway — Deposit
+    ('error.deposit.player-required', 'Player ID is required'),
+    ('error.deposit.invalid-amount', 'Deposit amount must be greater than zero'),
+    ('error.deposit.idempotency-required', 'Idempotency key is required'),
+    ('error.deposit.player-not-active', 'Player account is not active'),
+    ('error.deposit.wallet-not-found', 'Player wallet not found'),
+    ('error.deposit-confirm.transaction-not-found', 'Pending deposit transaction not found'),
+    ('error.deposit-confirm.player-mismatch', 'Player ID does not match the deposit transaction'),
+    ('error.deposit-fail.already-confirmed', 'Cannot fail an already confirmed deposit'),
+
+    -- Finance Gateway — Withdrawal
+    ('error.withdrawal.insufficient-balance', 'Insufficient balance for withdrawal'),
+    ('error.withdrawal.active-wagering-incomplete', 'Active bonus wagering requirement is not complete'),
+    ('error.withdrawal-cancel.already-confirmed', 'Cannot cancel an already confirmed withdrawal'),
+    ('error.withdrawal-fail.already-confirmed', 'Cannot fail an already confirmed withdrawal'),
+
+    -- Finance Gateway — Workflow
+    ('error.workflow.invalid-type', 'Invalid workflow type'),
+    ('error.workflow.already-pending', 'Active workflow already exists for this transaction'),
+    ('error.workflow.not-found', 'Workflow not found'),
+    ('error.workflow.not-pending', 'Workflow is not in pending status'),
+    ('error.workflow.not-in-review', 'Workflow is not in review status'),
+
+    -- Finance Gateway — Account Adjustment
+    ('error.adjustment.not-found', 'Adjustment not found'),
+    ('error.adjustment.not-pending', 'Adjustment is not in pending status'),
+    ('error.adjustment.invalid-direction', 'Direction must be CREDIT or DEBIT'),
+    ('error.adjustment.invalid-wallet-type', 'Wallet type must be REAL or BONUS'),
+    ('error.adjustment.invalid-type', 'Invalid adjustment type'),
+    ('error.adjustment.provider-required', 'Provider ID is required for game correction'),
+    ('error.adjustment.insufficient-balance', 'Insufficient balance for debit adjustment'),
+
+    -- Finance Gateway — Fee Calculation
+    ('error.calculate-fee.invalid-direction', 'Invalid direction for fee calculation'),
+    ('error.calculate-fee.method-not-found', 'Payment method limits not found'),
+
+    -- Support — Ticket System
+    ('error.support.player-required', 'Player ID is required'),
+    ('error.support.subject-required', 'Ticket subject is required'),
+    ('error.support.description-required', 'Ticket description is required'),
+    ('error.support.invalid-channel', 'Invalid communication channel'),
+    ('error.support.invalid-priority', 'Invalid priority level'),
+    ('error.support.invalid-created-by-type', 'Invalid creator type'),
+    ('error.support.ticket-not-found', 'Ticket not found'),
+    ('error.support.ticket-invalid-status', 'Invalid ticket status for this operation'),
+    ('error.support.ticket-not-owner', 'This ticket does not belong to this player'),
+    ('error.support.ticket-already-assigned', 'Ticket is already assigned to this agent'),
+    ('error.support.ticket-closed', 'Cannot perform operation on closed ticket'),
+    ('error.support.resolve-note-required', 'Resolution note is required'),
+    ('error.support.max-open-tickets-reached', 'Maximum open tickets limit reached'),
+    ('error.support.ticket-cooldown-active', 'Ticket creation cooldown period has not elapsed'),
+
+    -- Support — Player Note
+    ('error.support.note-not-found', 'Note not found'),
+    ('error.support.note-already-deleted', 'Note is already deleted'),
+    ('error.support.note-content-required', 'Note content is required'),
+    ('error.support.invalid-note-type', 'Invalid note type'),
+
+    -- Support — Representative
+    ('error.support.representative-reason-required', 'Representative change reason is required'),
+    ('error.support.representative-already-assigned', 'Same representative is already assigned'),
+
+    -- Support — Welcome Call
+    ('error.support.welcome-task-not-found', 'Welcome call task not found'),
+    ('error.support.welcome-task-not-in-progress', 'Task is not in a valid status'),
+    ('error.support.welcome-task-not-assignable', 'Task is not in an assignable status'),
+    ('error.support.invalid-call-result', 'Invalid call result'),
+    ('error.support.invalid-reschedule-result', 'Invalid reschedule result'),
+    ('error.support.assigned-to-required', 'Assigned-to user ID is required'),
+
+    -- Support — Category
+    ('error.support.category-not-found', 'Ticket category not found'),
+    ('error.support.parent-category-not-found', 'Parent category not found'),
+    ('error.support.category-has-children', 'Cannot delete category with active children'),
+    ('error.support.category-code-exists', 'Category code already exists'),
+    ('error.support.category-code-required', 'Category code is required'),
+    ('error.support.category-name-required', 'Category name is required'),
+    ('error.support.invalid-category-name-format', 'Invalid category name JSON format'),
+    ('error.support.invalid-category-description-format', 'Invalid category description JSON format'),
+
+    -- Support — Tag
+    ('error.support.tag-not-found', 'Tag not found'),
+    ('error.support.tag-name-exists', 'Tag name already exists'),
+    ('error.support.tag-name-required', 'Tag name is required'),
+    ('error.support.invalid-tag-color', 'Invalid color code (HEX format expected)'),
+
+    -- Support — Canned Response
+    ('error.support.canned-response-not-found', 'Canned response not found'),
+
+    -- Support — General
+    ('error.support.no-fields-to-update', 'At least one field to update is required')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

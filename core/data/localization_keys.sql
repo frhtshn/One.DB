@@ -553,6 +553,34 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.game.currency-code-required', 'error', 'game', 'Para birimi kodu zorunlu'),
 ('error.game.limits-data-required', 'error', 'game', 'Limit verisi zorunlu'),
 ('error.game.limits-invalid-format', 'error', 'game', 'Geçersiz limit veri formatı'),
+('error.game.player-required', 'error', 'game', 'Oyuncu ID zorunlu'),
+('error.game.session-not-found', 'error', 'game', 'Oyun oturumu bulunamadı'),
+('error.game.session-expired', 'error', 'game', 'Oyun oturumunun süresi dolmuş'),
+
+-- ============================================================================
+-- WALLET (Game Gateway)
+-- ============================================================================
+('error.wallet.player-not-found', 'error', 'wallet', 'Oyuncu bulunamadı'),
+('error.wallet.player-frozen', 'error', 'wallet', 'Oyuncu hesabı dondurulmuş veya pasif'),
+('error.wallet.wallet-not-found', 'error', 'wallet', 'Belirtilen para birimi için cüzdan bulunamadı'),
+('error.wallet.insufficient-balance', 'error', 'wallet', 'Yetersiz bakiye'),
+('error.wallet.amount-required', 'error', 'wallet', 'Tutar zorunlu ve pozitif olmalı'),
+('error.wallet.idempotency-key-required', 'error', 'wallet', 'İdempotency anahtarı zorunlu'),
+
+-- ============================================================================
+-- BONUS MAPPING (Provider bonus takibi)
+-- ============================================================================
+('error.bonus-mapping.award-required', 'error', 'bonus-mapping', 'Bonus ödül ID zorunludur'),
+('error.bonus-mapping.provider-required', 'error', 'bonus-mapping', 'Sağlayıcı kodu zorunludur'),
+('error.bonus-mapping.data-required', 'error', 'bonus-mapping', 'Bonus eşleme verisi zorunludur'),
+('error.bonus-mapping.not-found', 'error', 'bonus-mapping', 'Sağlayıcı bonus eşlemesi bulunamadı'),
+('error.bonus-mapping.invalid-status', 'error', 'bonus-mapping', 'Geçersiz bonus eşleme durumu'),
+
+-- ============================================================================
+-- RECONCILIATION (Provider uzlaştırma)
+-- ============================================================================
+('error.reconciliation.provider-required', 'error', 'reconciliation', 'Uzlaştırma için sağlayıcı kodu zorunludur'),
+('error.reconciliation.date-required', 'error', 'reconciliation', 'Rapor tarihi zorunludur'),
 
 -- ============================================================================
 -- PAYMENT METHOD (Finance DB — ek)
@@ -572,6 +600,28 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- SHADOW MODE
 -- ============================================================================
 ('error.shadow-tester.player-id-required', 'error', 'shadow-tester', 'Oyuncu ID zorunlu'),
+('error.shadow-tester.not-found', 'error', 'shadow-tester', 'Shadow tester bulunamadı'),
+
+-- ============================================================================
+-- PLAYER SEGMENTATION (Player Category & Group)
+-- ============================================================================
+('error.player-category.code-required', 'error', 'player-category', 'Kategori kodu zorunlu'),
+('error.player-category.name-required', 'error', 'player-category', 'Kategori adı zorunlu'),
+('error.player-category.code-exists', 'error', 'player-category', 'Kategori kodu zaten mevcut'),
+('error.player-category.not-found', 'error', 'player-category', 'Kategori bulunamadı'),
+('error.player-category.already-inactive', 'error', 'player-category', 'Kategori zaten deaktif'),
+
+('error.player-group.code-required', 'error', 'player-group', 'Grup kodu zorunlu'),
+('error.player-group.name-required', 'error', 'player-group', 'Grup adı zorunlu'),
+('error.player-group.code-exists', 'error', 'player-group', 'Grup kodu zaten mevcut'),
+('error.player-group.not-found', 'error', 'player-group', 'Grup bulunamadı'),
+('error.player-group.already-inactive', 'error', 'player-group', 'Grup zaten deaktif'),
+
+('error.player-classification.player-not-found', 'error', 'player-classification', 'Oyuncu bulunamadı'),
+('error.player-classification.group-not-found', 'error', 'player-classification', 'Grup bulunamadı veya aktif değil'),
+('error.player-classification.category-not-found', 'error', 'player-classification', 'Kategori bulunamadı veya aktif değil'),
+('error.player-classification.no-assignment', 'error', 'player-classification', 'En az bir grup veya kategori gerekli'),
+('error.player-classification.no-players', 'error', 'player-classification', 'Oyuncu listesi boş'),
 
 -- ============================================================================
 -- JURISDICTION (ek)
@@ -666,6 +716,38 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.bonus-award.cannot-cancel', 'error', 'bonus-award', 'Bonus iptal edilemez'),
 ('error.bonus-award.not-completable', 'error', 'bonus-award', 'Bonus tamamlanamaz'),
 ('error.bonus-award.wagering-not-complete', 'error', 'bonus-award', 'Çevrim tamamlanmadı'),
+('error.bonus-award.amount-required', 'error', 'bonus-award', 'Bonus tutarı zorunlu'),
+
+-- ============================================================================
+-- BONUS REQUEST (Manuel bonus talep sistemi)
+-- ============================================================================
+('error.bonus-request.not-found', 'error', 'bonus-request', 'Bonus talebi bulunamadı'),
+('error.bonus-request.invalid-status', 'error', 'bonus-request', 'Geçersiz talep durumu'),
+('error.bonus-request.player-required', 'error', 'bonus-request', 'Oyuncu ID zorunlu'),
+('error.bonus-request.invalid-source', 'error', 'bonus-request', 'Geçersiz talep kaynağı'),
+('error.bonus-request.type-required', 'error', 'bonus-request', 'Bonus tipi zorunlu'),
+('error.bonus-request.description-required', 'error', 'bonus-request', 'Açıklama zorunlu'),
+('error.bonus-request.amount-required', 'error', 'bonus-request', 'Tutar zorunlu (operatör talebi için)'),
+('error.bonus-request.currency-required', 'error', 'bonus-request', 'Para birimi zorunlu (operatör talebi için)'),
+('error.bonus-request.hold-reason-required', 'error', 'bonus-request', 'Beklemeye alma nedeni zorunlu'),
+('error.bonus-request.review-note-required', 'error', 'bonus-request', 'İnceleme notu zorunlu (ret için)'),
+('error.bonus-request.rollback-reason-required', 'error', 'bonus-request', 'Geri alma nedeni zorunlu'),
+('error.bonus-request.rollback-not-allowed', 'error', 'bonus-request', 'Bu durumdan geri alma yapılamaz'),
+('error.bonus-request.type-not-requestable', 'error', 'bonus-request', 'Bu bonus tipi için talep oluşturulamaz'),
+('error.bonus-request.player-not-eligible', 'error', 'bonus-request', 'Oyuncu bu bonus tipine uygun değil'),
+('error.bonus-request.pending-exists', 'error', 'bonus-request', 'Aynı tip için bekleyen talep mevcut'),
+('error.bonus-request.cooldown-after-approved', 'error', 'bonus-request', 'Onaylanan talep sonrası bekleme süresi dolmadı'),
+('error.bonus-request.cooldown-after-rejected', 'error', 'bonus-request', 'Reddedilen talep sonrası bekleme süresi dolmadı'),
+('error.bonus-request.not-owner', 'error', 'bonus-request', 'Talep sahibi değil'),
+
+-- Bonus Request Settings
+('error.bonus-request-settings.not-found', 'error', 'bonus-request-settings', 'Bonus talep ayarı bulunamadı'),
+('error.bonus-request-settings.display-name-required', 'error', 'bonus-request-settings', 'Görüntü adı zorunlu'),
+('error.bonus-request-settings.invalid-display-name', 'error', 'bonus-request-settings', 'Geçersiz görüntü adı JSON formatı'),
+('error.bonus-request-settings.invalid-rules-content', 'error', 'bonus-request-settings', 'Geçersiz kurallar içeriği JSON formatı'),
+('error.bonus-request-settings.invalid-eligible-groups', 'error', 'bonus-request-settings', 'Geçersiz uygun gruplar JSON formatı'),
+('error.bonus-request-settings.invalid-eligible-categories', 'error', 'bonus-request-settings', 'Geçersiz uygun kategoriler JSON formatı'),
+('error.bonus-request-settings.invalid-usage-criteria', 'error', 'bonus-request-settings', 'Geçersiz kullanım kriterleri JSON formatı'),
 
 -- ============================================================================
 -- BONUS ENGINE — Campaigns
@@ -691,6 +773,119 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.promo.code-exists', 'error', 'promo', 'Promosyon kodu zaten mevcut'),
 ('error.promo.name-required', 'error', 'promo', 'Promosyon adı zorunlu'),
 ('error.promo.invalid-status', 'error', 'promo', 'Geçersiz promosyon durumu'),
-('error.promo.player-required', 'error', 'promo', 'Oyuncu ID zorunlu')
+('error.promo.player-required', 'error', 'promo', 'Oyuncu ID zorunlu'),
+
+-- ============================================================================
+-- FINANCE GATEWAY — Payment Sessions
+-- ============================================================================
+('error.finance.session-player-required', 'error', 'finance', 'Ödeme oturumu için oyuncu ID zorunlu'),
+('error.finance.session-type-required', 'error', 'finance', 'Oturum tipi zorunlu'),
+('error.finance.session-amount-required', 'error', 'finance', 'Ödeme oturumu için tutar zorunlu'),
+('error.finance.session-not-found', 'error', 'finance', 'Ödeme oturumu bulunamadı'),
+('error.finance.session-expired', 'error', 'finance', 'Ödeme oturumunun süresi dolmuş'),
+
+-- ============================================================================
+-- FINANCE GATEWAY — Deposit
+-- ============================================================================
+('error.deposit.player-required', 'error', 'deposit', 'Oyuncu ID zorunlu'),
+('error.deposit.invalid-amount', 'error', 'deposit', 'Para yatırma tutarı sıfırdan büyük olmalı'),
+('error.deposit.idempotency-required', 'error', 'deposit', 'İdempotency anahtarı zorunlu'),
+('error.deposit.player-not-active', 'error', 'deposit', 'Oyuncu hesabı aktif değil'),
+('error.deposit.wallet-not-found', 'error', 'deposit', 'Oyuncu cüzdanı bulunamadı'),
+('error.deposit-confirm.transaction-not-found', 'error', 'deposit', 'Bekleyen para yatırma işlemi bulunamadı'),
+('error.deposit-confirm.player-mismatch', 'error', 'deposit', 'Oyuncu ID para yatırma işlemiyle eşleşmiyor'),
+('error.deposit-fail.already-confirmed', 'error', 'deposit', 'Onaylanmış para yatırma başarısız yapılamaz'),
+
+-- ============================================================================
+-- FINANCE GATEWAY — Withdrawal
+-- ============================================================================
+('error.withdrawal.insufficient-balance', 'error', 'withdrawal', 'Para çekme için yetersiz bakiye'),
+('error.withdrawal.active-wagering-incomplete', 'error', 'withdrawal', 'Aktif bonus çevrim şartı tamamlanmamış'),
+('error.withdrawal-cancel.already-confirmed', 'error', 'withdrawal', 'Onaylanmış para çekme iptal edilemez'),
+('error.withdrawal-fail.already-confirmed', 'error', 'withdrawal', 'Onaylanmış para çekme başarısız yapılamaz'),
+
+-- ============================================================================
+-- FINANCE GATEWAY — Workflow
+-- ============================================================================
+('error.workflow.invalid-type', 'error', 'workflow', 'Geçersiz onay akışı tipi'),
+('error.workflow.already-pending', 'error', 'workflow', 'Bu işlem için aktif onay akışı zaten mevcut'),
+('error.workflow.not-found', 'error', 'workflow', 'Onay akışı bulunamadı'),
+('error.workflow.not-pending', 'error', 'workflow', 'Onay akışı beklemede durumunda değil'),
+('error.workflow.not-in-review', 'error', 'workflow', 'Onay akışı inceleme durumunda değil'),
+
+-- ============================================================================
+-- FINANCE GATEWAY — Account Adjustment
+-- ============================================================================
+('error.adjustment.not-found', 'error', 'adjustment', 'Düzeltme kaydı bulunamadı'),
+('error.adjustment.not-pending', 'error', 'adjustment', 'Düzeltme beklemede durumunda değil'),
+('error.adjustment.invalid-direction', 'error', 'adjustment', 'Yön CREDIT veya DEBIT olmalıdır'),
+('error.adjustment.invalid-wallet-type', 'error', 'adjustment', 'Cüzdan tipi REAL veya BONUS olmalıdır'),
+('error.adjustment.invalid-type', 'error', 'adjustment', 'Geçersiz düzeltme tipi'),
+('error.adjustment.provider-required', 'error', 'adjustment', 'Oyun düzeltmesi için provider ID zorunludur'),
+('error.adjustment.insufficient-balance', 'error', 'adjustment', 'Borç düzeltmesi için yetersiz bakiye'),
+
+-- ============================================================================
+-- FINANCE GATEWAY — Fee Calculation
+-- ============================================================================
+('error.calculate-fee.invalid-direction', 'error', 'fee', 'Fee hesaplaması için geçersiz yön'),
+('error.calculate-fee.method-not-found', 'error', 'fee', 'Ödeme yöntemi limitleri bulunamadı'),
+
+-- ============================================================================
+-- SUPPORT — Ticket Sistemi
+-- ============================================================================
+('error.support.player-required', 'error', 'support', 'Oyuncu ID zorunlu'),
+('error.support.subject-required', 'error', 'support', 'Ticket başlığı zorunlu'),
+('error.support.description-required', 'error', 'support', 'Ticket açıklaması zorunlu'),
+('error.support.invalid-channel', 'error', 'support', 'Geçersiz iletişim kanalı'),
+('error.support.invalid-priority', 'error', 'support', 'Geçersiz öncelik seviyesi'),
+('error.support.invalid-created-by-type', 'error', 'support', 'Geçersiz oluşturucu tipi'),
+('error.support.ticket-not-found', 'error', 'support', 'Ticket bulunamadı'),
+('error.support.ticket-invalid-status', 'error', 'support', 'Bu işlem için geçersiz ticket durumu'),
+('error.support.ticket-not-owner', 'error', 'support', 'Bu ticket bu oyuncuya ait değil'),
+('error.support.ticket-already-assigned', 'error', 'support', 'Ticket zaten bu temsilciye atanmış'),
+('error.support.ticket-closed', 'error', 'support', 'Kapalı ticket üzerinde işlem yapılamaz'),
+('error.support.resolve-note-required', 'error', 'support', 'Çözüm notu zorunlu'),
+('error.support.max-open-tickets-reached', 'error', 'support', 'Açık ticket limiti dolmuş'),
+('error.support.ticket-cooldown-active', 'error', 'support', 'Ticket oluşturma bekleme süresi dolmamış'),
+
+-- SUPPORT — Player Note
+('error.support.note-not-found', 'error', 'support', 'Not bulunamadı'),
+('error.support.note-already-deleted', 'error', 'support', 'Not zaten silinmiş'),
+('error.support.note-content-required', 'error', 'support', 'Not içeriği zorunlu'),
+('error.support.invalid-note-type', 'error', 'support', 'Geçersiz not tipi'),
+
+-- SUPPORT — Representative
+('error.support.representative-reason-required', 'error', 'support', 'Temsilci değişiklik nedeni zorunlu'),
+('error.support.representative-already-assigned', 'error', 'support', 'Aynı temsilci zaten atanmış'),
+
+-- SUPPORT — Welcome Call
+('error.support.welcome-task-not-found', 'error', 'support', 'Hoşgeldin araması görevi bulunamadı'),
+('error.support.welcome-task-not-in-progress', 'error', 'support', 'Görev uygun durumda değil'),
+('error.support.welcome-task-not-assignable', 'error', 'support', 'Görev atanamaz durumda'),
+('error.support.invalid-call-result', 'error', 'support', 'Geçersiz arama sonucu'),
+('error.support.invalid-reschedule-result', 'error', 'support', 'Geçersiz yeniden planlama sonucu'),
+('error.support.assigned-to-required', 'error', 'support', 'Atanan kişi ID zorunlu'),
+
+-- SUPPORT — Category
+('error.support.category-not-found', 'error', 'support', 'Ticket kategorisi bulunamadı'),
+('error.support.parent-category-not-found', 'error', 'support', 'Üst kategori bulunamadı'),
+('error.support.category-has-children', 'error', 'support', 'Alt kategorisi olan kategori silinemez'),
+('error.support.category-code-exists', 'error', 'support', 'Kategori kodu zaten mevcut'),
+('error.support.category-code-required', 'error', 'support', 'Kategori kodu zorunlu'),
+('error.support.category-name-required', 'error', 'support', 'Kategori adı zorunlu'),
+('error.support.invalid-category-name-format', 'error', 'support', 'Geçersiz kategori adı JSON formatı'),
+('error.support.invalid-category-description-format', 'error', 'support', 'Geçersiz kategori açıklama JSON formatı'),
+
+-- SUPPORT — Tag
+('error.support.tag-not-found', 'error', 'support', 'Etiket bulunamadı'),
+('error.support.tag-name-exists', 'error', 'support', 'Etiket adı zaten mevcut'),
+('error.support.tag-name-required', 'error', 'support', 'Etiket adı zorunlu'),
+('error.support.invalid-tag-color', 'error', 'support', 'Geçersiz renk kodu (HEX formatı bekleniyor)'),
+
+-- SUPPORT — Canned Response
+('error.support.canned-response-not-found', 'error', 'support', 'Hazır yanıt bulunamadı'),
+
+-- SUPPORT — Genel
+('error.support.no-fields-to-update', 'error', 'support', 'Güncellenecek en az bir alan gerekli')
 
 ON CONFLICT DO NOTHING;

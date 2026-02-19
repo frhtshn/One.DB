@@ -63,6 +63,9 @@ CREATE TABLE bonus.bonus_awards (
     tenant_transaction_id BIGINT,                      -- Bonus credit transaction ID
     completion_transaction_id BIGINT,                  -- BONUS→REAL dönüşüm transaction ID
 
+    -- ═══ Bonus Request Referansı ═══
+    bonus_request_id BIGINT,                           -- Manuel bonus talebi referansı (nullable)
+
     -- ═══ Admin Audit ═══
     awarded_by BIGINT,                                 -- Manuel award için admin user ID
     cancellation_reason VARCHAR(255),                  -- İptal sebebi

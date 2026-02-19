@@ -2,8 +2,8 @@
 
 Gateway ve plugin veritabanlarındaki tüm stored procedure, function ve trigger'ları içerir.
 
-**Veritabanları:** `game`, `game_log`, `finance`, `bonus`
-**Toplam:** 38 fonksiyon
+**Veritabanları:** `game`, `game_log`, `finance`, `finance_log`, `bonus`
+**Toplam:** 42 fonksiyon
 
 ---
 
@@ -57,6 +57,21 @@ Gateway seviyesi API log'ları. Paylaşımlı DB, daily partition, 7 gün retent
 | `payment_method_list` | Filtrelenebilir ödeme yöntemi listesi |
 | `payment_method_lookup` | Kod ile ödeme yöntemi ara |
 | `payment_method_currency_limit_sync` | Ödeme yöntemi bazlı para birimi limitlerini senkronize et |
+
+---
+
+## Finance Log Database (4 fonksiyon)
+
+Gateway seviyesi ödeme API log'ları. Paylaşımlı DB, daily partition, 14 gün retention.
+
+### Maintenance Schema (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `create_partitions` | İleri tarihli partition'lar oluşturur (varsayılan: 14 gün). `provider_api_requests` ve `provider_api_callbacks` tabloları |
+| `drop_expired_partitions` | Süresi dolan partition'ları siler (varsayılan: 14 gün retention) |
+| `partition_info` | Mevcut partition'ların boyut ve satır sayısı bilgisi |
+| `run_maintenance` | Cron job ana fonksiyonu: partition oluştur + süresi dolanları sil |
 
 ---
 

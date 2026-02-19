@@ -158,6 +158,8 @@ Test başarılı olduktan sonra diğer tenant'lara doğrudan production olarak e
 |----------|----------|
 | `shadow_tester_add` | Shadow tester ekle (idempotent) |
 | `shadow_tester_remove` | Shadow tester kaldır |
+| `shadow_tester_list` | Tüm shadow tester'ları listele (username dahil) |
+| `shadow_tester_get` | player_id bazlı shadow tester detayı |
 | `game_provider_rollout_sync` | Provider'ın tüm oyunlarının rollout durumunu toplu güncelle |
 | `payment_provider_rollout_sync` | Provider'ın tüm metotlarının rollout durumunu toplu güncelle |
 | `game_settings_sync` | +`p_rollout_status` parametresi |

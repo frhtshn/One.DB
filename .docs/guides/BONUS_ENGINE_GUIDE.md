@@ -59,6 +59,37 @@ Sektörde 15+ bonus tipi var (deposit match, cashback, freebet, freespin, loyalt
 - Backend handler'lar generic: expression evaluator ile koşulları değerlendirir
 - Operatörler: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `in`, `not_in`, `between`, `contains`
 
+### Eligibility Field Kataloğu
+
+`eligibility_criteria` koşullarında kullanılabilecek alanlar. Veri kaynağı: `auth.player_get_segmentation()` fonksiyonu.
+
+| Field Key | Kaynak | Tip | Desteklenen Operatörler |
+|-----------|--------|-----|------------------------|
+| `player.category` | category.code | string | `eq`, `neq`, `in`, `not_in` |
+| `player.category_level` | categoryLevel | numeric | `eq`, `gt`, `gte`, `lt`, `lte`, `between` |
+| `player.groups` | groupCodes | string[] | `contains`, `in`, `not_in` |
+| `player.group_max_level` | groupMaxLevel | numeric | `eq`, `gt`, `gte`, `lt`, `lte`, `between` |
+| `player.country` | country | string | `eq`, `neq`, `in`, `not_in` |
+| `player.account_age_days` | accountAgeDays | numeric | `eq`, `gt`, `gte`, `lt`, `lte`, `between` |
+| `player.kyc_status` | kycStatus | string | `eq`, `neq`, `in` |
+| `player.deposit_count` | Backend stats | numeric | `eq`, `gt`, `gte`, `lt`, `lte`, `between` |
+| `player.total_deposit` | Backend stats | numeric | `eq`, `gt`, `gte`, `lt`, `lte`, `between` |
+| `event.amount` | Event data | numeric | Tüm numeric operatörler |
+| `event.currency` | Event data | string | `eq`, `in` |
+| `event.payment_method` | Event data | string | `eq`, `in`, `not_in` |
+
+**Değerlendirme mantığı:** Varsayılan `AND` (tüm koşullar sağlanmalı). `"logic": "or"` ile herhangi birinin sağlanması yeterli.
+
+```json
+{
+  "logic": "or",
+  "conditions": [
+    {"field": "player.category", "op": "in", "value": ["gold", "platinum", "vip"]},
+    {"field": "player.groups", "op": "contains", "value": "high_rollers"}
+  ]
+}
+```
+
 ---
 
 ## Değerlendirme Tipleri

@@ -39,3 +39,15 @@ CREATE INDEX IF NOT EXISTS idx_game_limits_currency_type ON game.game_limits USI
 
 -- game_limits - aktif limitler (soft delete filtresi)
 CREATE INDEX IF NOT EXISTS idx_game_limits_active ON game.game_limits USING btree(is_active) WHERE is_active = true;
+
+-- game_sessions - token arama (her callback'te kullanılır)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_game_sessions_token ON game.game_sessions USING btree(session_token);
+
+-- game_sessions - aktif oturumlar (player bazlı)
+CREATE INDEX IF NOT EXISTS idx_game_sessions_player_active ON game.game_sessions USING btree(player_id, created_at DESC) WHERE status = 'active';
+
+-- game_sessions - süre dolmuş oturum temizliği
+CREATE INDEX IF NOT EXISTS idx_game_sessions_expires ON game.game_sessions USING btree(expires_at) WHERE status = 'active';
+
+-- game_sessions - provider bazlı listeleme
+CREATE INDEX IF NOT EXISTS idx_game_sessions_provider ON game.game_sessions USING btree(provider_code, status);

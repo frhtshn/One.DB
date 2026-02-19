@@ -14,9 +14,9 @@
 -- ================================================================
 -- PERMISSIONS - FULL LIST (UPSERT)
 -- ================================================================
--- Toplam: 107 permission (68 API/System + 39 Field)
+-- Toplam: 131 permission (92 API/System + 39 Field)
 -- Kategoriler (category kolonu bazinda):
---   platform (8), company (13), tenant (28), catalog (17),
+--   platform (8), company (13), tenant (52), catalog (17),
 --   audit (2), field (39)
 -- ================================================================
 
@@ -54,7 +54,7 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('company.user.delete', 'Delete Company User', 'Delete company user (soft delete)', 'company', 1),
 
 -- ================================================================
--- TENANT SCOPE (19) — Admin+ (sub-entity yazma Admin only)
+-- TENANT SCOPE (22) — Admin+ (sub-entity yazma Admin only)
 -- ================================================================
 ('tenant.list', 'Tenant List', 'List tenants', 'tenant', 1),
 ('tenant.view', 'View Tenant', 'View tenant details', 'tenant', 1),
@@ -95,10 +95,51 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('tenant.bonus.manage', 'Manage Bonus Awards', 'Cancel/manage player bonus awards', 'tenant', 1),
 
 -- ================================================================
+-- TENANT.BONUS-REQUEST (6) — Bonus Request yönetimi
+-- ================================================================
+('tenant.bonus-request.list', 'Bonus Request List', 'List bonus requests', 'tenant', 1),
+('tenant.bonus-request.view', 'View Bonus Request', 'View bonus request details and action history', 'tenant', 1),
+('tenant.bonus-request.create', 'Create Bonus Request', 'Create manual bonus requests for players', 'tenant', 1),
+('tenant.bonus-request.review', 'Review Bonus Request', 'Approve or reject bonus requests', 'tenant', 1),
+('tenant.bonus-request.assign', 'Assign Bonus Request', 'Assign bonus requests to operators', 'tenant', 1),
+('tenant.bonus-request-settings.manage', 'Manage Bonus Request Settings', 'Configure requestable bonus types, cooldown periods, rules content and display names', 'tenant', 1),
+
+-- ================================================================
 -- TENANT.PROVISION (2) — Provisioning/Decommission
 -- ================================================================
 ('tenant.provision.view', 'View Provisioning', 'View provisioning status and history', 'tenant', 1),
 ('tenant.provision.manage', 'Manage Provisioning', 'Start/complete provision and decommission', 'tenant', 1),
+
+-- ================================================================
+-- TENANT.SEGMENTATION (3) — Player Category/Group/Classification yönetimi
+-- ================================================================
+('tenant.player-category.manage', 'Manage Player Categories', 'Create, update, delete player VIP categories', 'tenant', 1),
+('tenant.player-group.manage', 'Manage Player Groups', 'Create, update, delete player behavioral groups', 'tenant', 1),
+('tenant.player-classification.manage', 'Manage Player Classification', 'Assign/remove player category and group memberships', 'tenant', 1),
+
+-- ================================================================
+-- TENANT.SUPPORT (15) — Çağrı Merkezi & Müşteri Temsilcisi
+-- ================================================================
+-- Ticket (5)
+('tenant.support-ticket.list', 'Support Ticket List', 'List support tickets', 'tenant', 1),
+('tenant.support-ticket.view', 'View Support Ticket', 'View support ticket details and action history', 'tenant', 1),
+('tenant.support-ticket.create', 'Create Support Ticket', 'Create support tickets on behalf of players', 'tenant', 1),
+('tenant.support-ticket.assign', 'Assign Support Ticket', 'Assign support tickets to agents', 'tenant', 1),
+('tenant.support-ticket.manage', 'Manage Support Ticket', 'Resolve, close, reopen, cancel tickets and manage priority/category', 'tenant', 1),
+-- Player Note (2)
+('tenant.support-player-note.list', 'Support Player Note List', 'List player notes', 'tenant', 1),
+('tenant.support-player-note.manage', 'Manage Player Notes', 'Create, update, delete player notes', 'tenant', 1),
+-- Representative (2)
+('tenant.support-representative.view', 'View Player Representative', 'View assigned representative and assignment history', 'tenant', 1),
+('tenant.support-representative.manage', 'Manage Player Representative', 'Assign or change player representative', 'tenant', 1),
+-- Agent & Config (4)
+('tenant.support-agent.manage', 'Manage Support Agents', 'Configure agent availability, capacity, and skills', 'tenant', 1),
+('tenant.support-category.manage', 'Manage Ticket Categories', 'Create, update, delete ticket categories', 'tenant', 1),
+('tenant.support-tag.manage', 'Manage Ticket Tags', 'Create, update ticket tags', 'tenant', 1),
+('tenant.support-canned-response.manage', 'Manage Canned Responses', 'Create, update, delete canned response templates', 'tenant', 1),
+-- Dashboard & Welcome Call (2)
+('tenant.support-dashboard.view', 'Support Dashboard', 'View support dashboard statistics and queue', 'tenant', 1),
+('tenant.support-welcome-call.manage', 'Manage Welcome Calls', 'View, assign, complete, reschedule welcome call tasks', 'tenant', 1),
 
 -- ================================================================
 -- CATALOG SCOPE (17) — Admin+
@@ -239,12 +280,12 @@ BEGIN
     RAISE NOTICE '================================================';
     RAISE NOTICE 'Platform:     % (expected: 8)', v_platform;
     RAISE NOTICE 'Company:      % (expected: 13)', v_company;
-    RAISE NOTICE 'Tenant:       % (expected: 28)', v_tenant;
+    RAISE NOTICE 'Tenant:       % (expected: 52)', v_tenant;
     RAISE NOTICE 'Catalog:      % (expected: 17)', v_catalog;
     RAISE NOTICE 'Audit:        % (expected: 2)', v_audit;
     RAISE NOTICE 'Field:        % (expected: 39)', v_field;
     RAISE NOTICE '------------------------------------------------';
-    RAISE NOTICE 'TOTAL:        % (expected: 107)', v_total;
+    RAISE NOTICE 'TOTAL:        % (expected: 131)', v_total;
     RAISE NOTICE '================================================';
 
     -- Strict validation: convention'daki 107 permission kontrol

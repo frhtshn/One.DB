@@ -9,6 +9,9 @@ COMMENT ON SCHEMA finance IS 'Financial reporting tables';
 CREATE SCHEMA IF NOT EXISTS game;
 COMMENT ON SCHEMA game IS 'Game performance reporting tables';
 
+CREATE SCHEMA IF NOT EXISTS support_report;
+COMMENT ON SCHEMA support_report IS 'Support ticket statistics and reporting';
+
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
@@ -37,6 +40,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- GAME TABLES
 \i tenant_report/tables/game/game_hourly_stats.sql
 \i tenant_report/tables/game/game_performance_daily.sql
+
+-- SUPPORT REPORT TABLES
+\i tenant_report/tables/support/ticket_daily_stats.sql
 
 -- CONSTRAINTS
 \i tenant_report/constraints/finance.sql

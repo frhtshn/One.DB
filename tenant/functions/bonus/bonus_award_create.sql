@@ -8,7 +8,7 @@
 -- max_withdrawal_amount hesaplanır: amount * factor.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS bonus.bonus_award_create(BIGINT, BIGINT, VARCHAR, VARCHAR, BIGINT, BIGINT, DECIMAL, CHAR, TEXT, TEXT, TEXT, TIMESTAMPTZ, BIGINT);
+DROP FUNCTION IF EXISTS bonus.bonus_award_create(BIGINT, BIGINT, VARCHAR, VARCHAR, BIGINT, BIGINT, DECIMAL, CHAR, TEXT, TEXT, TEXT, TIMESTAMPTZ, BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION bonus.bonus_award_create(
     p_player_id BIGINT,
@@ -23,7 +23,8 @@ CREATE OR REPLACE FUNCTION bonus.bonus_award_create(
     p_rule_snapshot TEXT DEFAULT NULL,
     p_reward_details TEXT DEFAULT NULL,
     p_expires_at TIMESTAMPTZ DEFAULT NULL,
-    p_awarded_by BIGINT DEFAULT NULL
+    p_awarded_by BIGINT DEFAULT NULL,
+    p_bonus_request_id BIGINT DEFAULT NULL
 )
 RETURNS BIGINT
 LANGUAGE plpgsql
@@ -104,6 +105,7 @@ BEGIN
         wagering_target, wagering_progress, wagering_completed,
         max_withdrawal_amount, current_balance,
         expires_at, status,
+        bonus_request_id,
         awarded_by, awarded_at, created_at, updated_at
     ) VALUES (
         p_player_id, p_bonus_rule_id, p_bonus_type_code, p_bonus_subtype,
@@ -115,6 +117,7 @@ BEGIN
         v_wagering_target, 0, false,
         v_max_withdrawal_amount, p_bonus_amount,
         p_expires_at, 'active',
+        p_bonus_request_id,
         p_awarded_by, NOW(), NOW(), NOW()
     )
     RETURNING id INTO v_new_id;

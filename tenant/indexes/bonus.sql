@@ -18,9 +18,17 @@ CREATE INDEX IF NOT EXISTS idx_bonus_awards_awarded_at ON bonus.bonus_awards USI
 CREATE INDEX IF NOT EXISTS idx_bonus_awards_usage ON bonus.bonus_awards USING gin(usage_criteria);
 CREATE INDEX IF NOT EXISTS idx_bonus_awards_subtype ON bonus.bonus_awards USING btree(bonus_subtype) WHERE bonus_subtype IS NOT NULL;
 
+-- bonus_awards — bonus request referansı
+CREATE INDEX IF NOT EXISTS idx_bonus_awards_request ON bonus.bonus_awards USING btree(bonus_request_id) WHERE bonus_request_id IS NOT NULL;
+
 -- promo_redemptions
 CREATE INDEX IF NOT EXISTS idx_promo_redemptions_player ON bonus.promo_redemptions USING btree(player_id);
 CREATE INDEX IF NOT EXISTS idx_promo_redemptions_code ON bonus.promo_redemptions USING btree(promo_code_id);
 CREATE INDEX IF NOT EXISTS idx_promo_redemptions_status ON bonus.promo_redemptions USING btree(status);
 -- UNIQUE kaldırıldı — max_per_player > 1 desteği için normal index
 CREATE INDEX IF NOT EXISTS idx_promo_redemptions_player_code ON bonus.promo_redemptions USING btree(player_id, promo_code_id);
+
+-- provider_bonus_mappings
+CREATE UNIQUE INDEX IF NOT EXISTS idx_provider_bonus_mappings_lookup ON bonus.provider_bonus_mappings USING btree(provider_code, provider_bonus_id);
+CREATE INDEX IF NOT EXISTS idx_provider_bonus_mappings_award ON bonus.provider_bonus_mappings USING btree(bonus_award_id);
+CREATE INDEX IF NOT EXISTS idx_provider_bonus_mappings_status ON bonus.provider_bonus_mappings USING btree(status) WHERE status = 'active';

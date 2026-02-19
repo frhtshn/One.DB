@@ -496,6 +496,17 @@ JOIN (VALUES
     ('error.game.currency-code-required', 'Para birimi kodu zorunludur'),
     ('error.game.limits-data-required', 'Limit verisi zorunludur'),
     ('error.game.limits-invalid-format', 'Geçersiz limit veri formatı'),
+    ('error.game.player-required', 'Oyuncu ID zorunludur'),
+    ('error.game.session-not-found', 'Oyun oturumu bulunamadı'),
+    ('error.game.session-expired', 'Oyun oturumunun süresi dolmuş'),
+
+    -- Cüzdan (Game Gateway)
+    ('error.wallet.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.wallet.player-frozen', 'Oyuncu hesabı dondurulmuş veya pasif'),
+    ('error.wallet.wallet-not-found', 'Belirtilen para birimi için cüzdan bulunamadı'),
+    ('error.wallet.insufficient-balance', 'Yetersiz bakiye'),
+    ('error.wallet.amount-required', 'Tutar zorunludur ve pozitif olmalıdır'),
+    ('error.wallet.idempotency-key-required', 'İdempotency anahtarı zorunludur'),
 
     -- Ödeme Yöntemi (Finance DB — yeni)
     ('error.payment-method.data-required', 'Ödeme yöntemi verisi zorunludur'),
@@ -509,6 +520,27 @@ JOIN (VALUES
 
     -- Shadow Mode
     ('error.shadow-tester.player-id-required', 'Oyuncu ID zorunludur'),
+    ('error.shadow-tester.not-found', 'Shadow tester bulunamadı'),
+
+    -- Oyuncu Segmentasyonu (Kategori & Grup)
+    ('error.player-category.code-required', 'Kategori kodu zorunludur'),
+    ('error.player-category.name-required', 'Kategori adı zorunludur'),
+    ('error.player-category.code-exists', 'Kategori kodu zaten mevcut'),
+    ('error.player-category.not-found', 'Oyuncu kategorisi bulunamadı'),
+    ('error.player-category.already-inactive', 'Oyuncu kategorisi zaten deaktif'),
+
+    ('error.player-group.code-required', 'Grup kodu zorunludur'),
+    ('error.player-group.name-required', 'Grup adı zorunludur'),
+    ('error.player-group.code-exists', 'Grup kodu zaten mevcut'),
+    ('error.player-group.not-found', 'Oyuncu grubu bulunamadı'),
+    ('error.player-group.already-inactive', 'Oyuncu grubu zaten deaktif'),
+
+    -- Oyuncu Sınıflandırma
+    ('error.player-classification.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.player-classification.group-not-found', 'Grup bulunamadı veya aktif değil'),
+    ('error.player-classification.category-not-found', 'Kategori bulunamadı veya aktif değil'),
+    ('error.player-classification.no-assignment', 'En az bir grup veya kategori gereklidir'),
+    ('error.player-classification.no-players', 'Oyuncu listesi boş'),
 
     -- Jurisdiction (yeni)
     ('error.jurisdiction.has-retention-policies', 'Jurisdiction silinemez. Bağlı veri saklama politikası mevcut'),
@@ -585,6 +617,47 @@ JOIN (VALUES
     ('error.bonus-award.cannot-cancel', 'Bonus ödülü iptal edilemez'),
     ('error.bonus-award.not-completable', 'Bonus ödülü tamamlanamaz'),
     ('error.bonus-award.wagering-not-complete', 'Çevrim şartı karşılanmadı'),
+    ('error.bonus-award.amount-required', 'Bonus tutarı zorunludur'),
+
+    -- Bonus Talep (Manuel bonus talep sistemi)
+    ('error.bonus-request.not-found', 'Bonus talebi bulunamadı'),
+    ('error.bonus-request.invalid-status', 'Bu işlem için geçersiz talep durumu'),
+    ('error.bonus-request.player-required', 'Oyuncu ID zorunludur'),
+    ('error.bonus-request.invalid-source', 'Geçersiz talep kaynağı. player veya operator olmalıdır'),
+    ('error.bonus-request.type-required', 'Bonus tipi zorunludur'),
+    ('error.bonus-request.description-required', 'Açıklama zorunludur'),
+    ('error.bonus-request.amount-required', 'Operatör talepleri için tutar zorunludur'),
+    ('error.bonus-request.currency-required', 'Operatör talepleri için para birimi zorunludur'),
+    ('error.bonus-request.hold-reason-required', 'Beklemeye alma nedeni zorunludur'),
+    ('error.bonus-request.review-note-required', 'Ret için inceleme notu zorunludur'),
+    ('error.bonus-request.rollback-reason-required', 'Geri alma nedeni zorunludur'),
+    ('error.bonus-request.rollback-not-allowed', 'Bu durumdan geri alma yapılamaz'),
+    ('error.bonus-request.type-not-requestable', 'Bu bonus tipi için talep oluşturulamaz'),
+    ('error.bonus-request.player-not-eligible', 'Oyuncu bu bonus tipine uygun değil'),
+    ('error.bonus-request.pending-exists', 'Bu bonus tipi için bekleyen talep zaten mevcut'),
+    ('error.bonus-request.cooldown-after-approved', 'Onaylanan talep sonrası bekleme süresi henüz dolmadı'),
+    ('error.bonus-request.cooldown-after-rejected', 'Reddedilen talep sonrası bekleme süresi henüz dolmadı'),
+    ('error.bonus-request.not-owner', 'Bu talebin sahibi değilsiniz'),
+
+    -- Bonus Talep Ayarları
+    ('error.bonus-request-settings.not-found', 'Bonus talep ayarı bulunamadı'),
+    ('error.bonus-request-settings.display-name-required', 'Görüntü adı zorunludur'),
+    ('error.bonus-request-settings.invalid-display-name', 'Geçersiz görüntü adı JSON formatı'),
+    ('error.bonus-request-settings.invalid-rules-content', 'Geçersiz kurallar içeriği JSON formatı'),
+    ('error.bonus-request-settings.invalid-eligible-groups', 'Geçersiz uygun gruplar JSON formatı'),
+    ('error.bonus-request-settings.invalid-eligible-categories', 'Geçersiz uygun kategoriler JSON formatı'),
+    ('error.bonus-request-settings.invalid-usage-criteria', 'Geçersiz kullanım kriterleri JSON formatı'),
+
+    -- Bonus Eşleme (Provider bonus takibi)
+    ('error.bonus-mapping.award-required', 'Bonus ödül ID zorunludur'),
+    ('error.bonus-mapping.provider-required', 'Sağlayıcı kodu zorunludur'),
+    ('error.bonus-mapping.data-required', 'Bonus eşleme verisi zorunludur'),
+    ('error.bonus-mapping.not-found', 'Sağlayıcı bonus eşlemesi bulunamadı'),
+    ('error.bonus-mapping.invalid-status', 'Geçersiz bonus eşleme durumu'),
+
+    -- Uzlaştırma (Provider uzlaştırma)
+    ('error.reconciliation.provider-required', 'Uzlaştırma için sağlayıcı kodu zorunludur'),
+    ('error.reconciliation.date-required', 'Rapor tarihi zorunludur'),
 
     -- Bonus Motoru — Kampanyalar
     ('error.campaign.not-found', 'Kampanya bulunamadı'),
@@ -606,6 +679,105 @@ JOIN (VALUES
     ('error.promo.code-exists', 'Promosyon kodu zaten mevcut'),
     ('error.promo.name-required', 'Promosyon adı zorunludur'),
     ('error.promo.invalid-status', 'Geçersiz promosyon durumu'),
-    ('error.promo.player-required', 'Oyuncu ID zorunludur')
+    ('error.promo.player-required', 'Oyuncu ID zorunludur'),
+
+    -- Finance Gateway — Ödeme Oturumları
+    ('error.finance.session-player-required', 'Ödeme oturumu için oyuncu ID zorunludur'),
+    ('error.finance.session-type-required', 'Oturum tipi zorunludur'),
+    ('error.finance.session-amount-required', 'Ödeme oturumu için tutar zorunludur'),
+    ('error.finance.session-not-found', 'Ödeme oturumu bulunamadı'),
+    ('error.finance.session-expired', 'Ödeme oturumunun süresi dolmuş'),
+
+    -- Finance Gateway — Para Yatırma
+    ('error.deposit.player-required', 'Oyuncu ID zorunludur'),
+    ('error.deposit.invalid-amount', 'Para yatırma tutarı sıfırdan büyük olmalıdır'),
+    ('error.deposit.idempotency-required', 'İdempotency anahtarı zorunludur'),
+    ('error.deposit.player-not-active', 'Oyuncu hesabı aktif değil'),
+    ('error.deposit.wallet-not-found', 'Oyuncu cüzdanı bulunamadı'),
+    ('error.deposit-confirm.transaction-not-found', 'Bekleyen para yatırma işlemi bulunamadı'),
+    ('error.deposit-confirm.player-mismatch', 'Oyuncu ID para yatırma işlemiyle eşleşmiyor'),
+    ('error.deposit-fail.already-confirmed', 'Onaylanmış para yatırma başarısız yapılamaz'),
+
+    -- Finance Gateway — Para Çekme
+    ('error.withdrawal.insufficient-balance', 'Para çekme için yetersiz bakiye'),
+    ('error.withdrawal.active-wagering-incomplete', 'Aktif bonus çevrim şartı tamamlanmamış'),
+    ('error.withdrawal-cancel.already-confirmed', 'Onaylanmış para çekme iptal edilemez'),
+    ('error.withdrawal-fail.already-confirmed', 'Onaylanmış para çekme başarısız yapılamaz'),
+
+    -- Finance Gateway — Onay Akışı
+    ('error.workflow.invalid-type', 'Geçersiz onay akışı tipi'),
+    ('error.workflow.already-pending', 'Bu işlem için aktif bir onay akışı zaten mevcut'),
+    ('error.workflow.not-found', 'Onay akışı bulunamadı'),
+    ('error.workflow.not-pending', 'Onay akışı beklemede durumunda değil'),
+    ('error.workflow.not-in-review', 'Onay akışı inceleme durumunda değil'),
+
+    -- Finance Gateway — Hesap Düzeltme
+    ('error.adjustment.not-found', 'Düzeltme kaydı bulunamadı'),
+    ('error.adjustment.not-pending', 'Düzeltme beklemede durumunda değil'),
+    ('error.adjustment.invalid-direction', 'Yön CREDIT veya DEBIT olmalıdır'),
+    ('error.adjustment.invalid-wallet-type', 'Cüzdan tipi REAL veya BONUS olmalıdır'),
+    ('error.adjustment.invalid-type', 'Geçersiz düzeltme tipi'),
+    ('error.adjustment.provider-required', 'Oyun düzeltmesi için provider ID zorunludur'),
+    ('error.adjustment.insufficient-balance', 'Borç düzeltmesi için yetersiz bakiye'),
+
+    -- Finance Gateway — Komisyon Hesaplama
+    ('error.calculate-fee.invalid-direction', 'Fee hesaplaması için geçersiz yön'),
+    ('error.calculate-fee.method-not-found', 'Ödeme yöntemi limitleri bulunamadı'),
+
+    -- Support — Ticket Sistemi
+    ('error.support.player-required', 'Oyuncu ID zorunludur'),
+    ('error.support.subject-required', 'Ticket başlığı zorunludur'),
+    ('error.support.description-required', 'Ticket açıklaması zorunludur'),
+    ('error.support.invalid-channel', 'Geçersiz iletişim kanalı'),
+    ('error.support.invalid-priority', 'Geçersiz öncelik seviyesi'),
+    ('error.support.invalid-created-by-type', 'Geçersiz oluşturucu tipi'),
+    ('error.support.ticket-not-found', 'Ticket bulunamadı'),
+    ('error.support.ticket-invalid-status', 'Bu işlem için geçersiz ticket durumu'),
+    ('error.support.ticket-not-owner', 'Bu ticket bu oyuncuya ait değil'),
+    ('error.support.ticket-already-assigned', 'Ticket zaten bu temsilciye atanmış'),
+    ('error.support.ticket-closed', 'Kapalı ticket üzerinde işlem yapılamaz'),
+    ('error.support.resolve-note-required', 'Çözüm notu zorunludur'),
+    ('error.support.max-open-tickets-reached', 'Açık ticket limiti dolmuş'),
+    ('error.support.ticket-cooldown-active', 'Ticket oluşturma bekleme süresi dolmamış'),
+
+    -- Support — Oyuncu Notu
+    ('error.support.note-not-found', 'Not bulunamadı'),
+    ('error.support.note-already-deleted', 'Not zaten silinmiş'),
+    ('error.support.note-content-required', 'Not içeriği zorunludur'),
+    ('error.support.invalid-note-type', 'Geçersiz not tipi'),
+
+    -- Support — Temsilci Atama
+    ('error.support.representative-reason-required', 'Temsilci değişiklik nedeni zorunludur'),
+    ('error.support.representative-already-assigned', 'Aynı temsilci zaten atanmış'),
+
+    -- Support — Hoşgeldin Araması
+    ('error.support.welcome-task-not-found', 'Hoşgeldin araması görevi bulunamadı'),
+    ('error.support.welcome-task-not-in-progress', 'Görev uygun durumda değil'),
+    ('error.support.welcome-task-not-assignable', 'Görev atanamaz durumda'),
+    ('error.support.invalid-call-result', 'Geçersiz arama sonucu'),
+    ('error.support.invalid-reschedule-result', 'Geçersiz yeniden planlama sonucu'),
+    ('error.support.assigned-to-required', 'Atanan kişi ID zorunludur'),
+
+    -- Support — Kategori
+    ('error.support.category-not-found', 'Ticket kategorisi bulunamadı'),
+    ('error.support.parent-category-not-found', 'Üst kategori bulunamadı'),
+    ('error.support.category-has-children', 'Alt kategorisi olan kategori silinemez'),
+    ('error.support.category-code-exists', 'Kategori kodu zaten mevcut'),
+    ('error.support.category-code-required', 'Kategori kodu zorunludur'),
+    ('error.support.category-name-required', 'Kategori adı zorunludur'),
+    ('error.support.invalid-category-name-format', 'Geçersiz kategori adı JSON formatı'),
+    ('error.support.invalid-category-description-format', 'Geçersiz kategori açıklama JSON formatı'),
+
+    -- Support — Etiket
+    ('error.support.tag-not-found', 'Etiket bulunamadı'),
+    ('error.support.tag-name-exists', 'Etiket adı zaten mevcut'),
+    ('error.support.tag-name-required', 'Etiket adı zorunludur'),
+    ('error.support.invalid-tag-color', 'Geçersiz renk kodu (HEX formatı bekleniyor)'),
+
+    -- Support — Hazır Yanıt
+    ('error.support.canned-response-not-found', 'Hazır yanıt bulunamadı'),
+
+    -- Support — Genel
+    ('error.support.no-fields-to-update', 'Güncellenecek en az bir alan gereklidir')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

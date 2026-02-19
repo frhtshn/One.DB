@@ -18,6 +18,9 @@ COMMENT ON SCHEMA messaging_log IS 'Message delivery logs (daily partitioned)';
 CREATE SCHEMA IF NOT EXISTS game_log;
 COMMENT ON SCHEMA game_log IS 'Game round/spin detail logs (per-tenant, daily partitioned)';
 
+CREATE SCHEMA IF NOT EXISTS support_log;
+COMMENT ON SCHEMA support_log IS 'Support ticket notification delivery logs (daily partitioned)';
+
 CREATE SCHEMA IF NOT EXISTS infra;
 COMMENT ON SCHEMA infra IS 'PostgreSQL extensions and infrastructure';
 
@@ -70,6 +73,20 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_log/tables/game_log/game_rounds.sql
 
 -- =============================================================================
+-- RECONCILIATION TABLES
+-- Provider data feed uzlaştırma tabloları
+-- =============================================================================
+\i tenant_log/tables/game_log/reconciliation_reports.sql
+\i tenant_log/tables/game_log/reconciliation_mismatches.sql
+
+-- =============================================================================
+-- SUPPORT LOG TABLES
+-- Ticket bildirim gönderim logları
+-- Retention: 90 gün (partition ile yönetilir)
+-- =============================================================================
+\i tenant_log/tables/support/ticket_activity_logs.sql
+
+-- =============================================================================
 -- CONSTRAINTS
 -- =============================================================================
 \i tenant_log/constraints/kyc.sql
@@ -84,6 +101,20 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_log/indexes/kyc.sql
 \i tenant_log/indexes/messaging.sql
 \i tenant_log/indexes/game_log.sql
+
+-- =============================================================================
+-- FUNCTIONS - Game Log (Round yaşam döngüsü)
+-- =============================================================================
+\i tenant_log/functions/game_log/round_upsert.sql
+\i tenant_log/functions/game_log/round_close.sql
+\i tenant_log/functions/game_log/round_cancel.sql
+
+-- =============================================================================
+-- FUNCTIONS - Reconciliation (Provider uzlaştırma)
+-- =============================================================================
+\i tenant_log/functions/game_log/reconciliation_report_create.sql
+\i tenant_log/functions/game_log/reconciliation_mismatch_upsert.sql
+\i tenant_log/functions/game_log/reconciliation_report_list.sql
 
 -- =============================================================================
 -- FUNCTIONS - MAINTENANCE (Partition yönetimi)

@@ -54,4 +54,17 @@ VALUES
 -- CASINO SPECIAL WINS (Game Gateway)
 (70, 'casino.jackpot.win', 'win', 'casino', false, false, false, true,  true, 'Casino jackpot win'),
 (71, 'casino.promo.win', 'win', 'casino', false, false, false, true,  true, 'Casino promo/tournament win'),
-(72, 'casino.bonus.free.win', 'win', 'casino', true,  true,  false, true,  true, 'Casino free spins bonus win');
+(72, 'casino.bonus.free.win', 'win', 'casino', true,  true,  false, true,  true, 'Casino free spins bonus win'),
+-- FINANCE DEPOSIT / WITHDRAWAL
+(80, 'deposit.provider', 'deposit', 'payment', false, false, false, false, true, 'PSP deposit'),
+(81, 'deposit.manual', 'deposit', 'payment', false, false, false, false, true, 'Manual deposit'),
+(82, 'deposit.crypto', 'deposit', 'payment', false, false, false, false, true, 'Crypto deposit'),
+(85, 'withdrawal.provider', 'withdrawal', 'payment', false, false, false, false, true, 'PSP withdrawal'),
+(86, 'withdrawal.manual', 'withdrawal', 'payment', false, false, false, false, true, 'Manual withdrawal'),
+(87, 'withdrawal.crypto', 'withdrawal', 'payment', false, false, false, false, true, 'Crypto withdrawal'),
+-- CHARGEBACK / REVERSAL
+(90, 'deposit.chargeback', 'chargeback', 'payment', false, false, true,  false, true, 'Deposit chargeback'),
+(91, 'withdrawal.reversal', 'reversal', 'payment', false, false, true,  false, true, 'Withdrawal reversal'),
+-- ACCOUNT ADJUSTMENT
+(95, 'adjustment.credit', 'adjustment', 'payment', false, false, false, false, true, 'Account adjustment credit'),
+(96, 'adjustment.debit', 'adjustment', 'payment', false, false, false, false, true, 'Account adjustment debit');

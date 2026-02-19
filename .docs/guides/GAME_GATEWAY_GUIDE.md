@@ -508,7 +508,6 @@ sequenceDiagram
     end
 
     BO->>TL: reconciliation_report_list()
-    BO->>TL: reconciliation_report_get()
 ```
 
 ### Reconciliation Tabloları
@@ -524,8 +523,7 @@ sequenceDiagram
 |-----------|----------|
 | `reconciliation_report_create` | Rapor oluştur (game_rounds'tan aggregate) |
 | `reconciliation_mismatch_upsert` | Mismatch kayıt/güncelle |
-| `reconciliation_report_get` | Rapor detayı + mismatch kayıtları |
-| `reconciliation_report_list` | Raporları listele (filtreleme + pagination) |
+| `reconciliation_report_list` | Raporları listele (filtreleme + mismatch sayısı + pagination) |
 
 ---
 
@@ -605,7 +603,7 @@ sequenceDiagram
 
 ---
 
-## 13. Fonksiyon Listesi (49 toplam)
+## 13. Fonksiyon Listesi (48 toplam)
 
 ### Oyun Kataloğu (26 fonksiyon)
 
@@ -620,7 +618,7 @@ sequenceDiagram
 | Tenant DB | BO + Game Open | `game_settings_get`, `game_settings_update`, `game_settings_list`, `game_limit_upsert`, `game_limit_list` |
 | Tenant DB | Shadow Mode | `shadow_tester_add`, `shadow_tester_remove` |
 
-### Seamless Wallet (23 fonksiyon)
+### Seamless Wallet (22 fonksiyon)
 
 | DB | Grup | Fonksiyonlar |
 |----|------|-------------|
@@ -628,7 +626,7 @@ sequenceDiagram
 | Tenant DB | Wallet (10) | `player_info_get`, `player_balance_get`, `player_balance_per_game_get`, `bet_process`, `win_process`, `rollback_process`, `jackpot_win_process`, `bonus_win_process`, `promo_win_process`, `adjustment_process` |
 | Tenant DB | Bonus Mapping (3) | `provider_bonus_mapping_create`, `provider_bonus_mapping_get`, `provider_bonus_mapping_update_status` |
 | Tenant Log DB | Round (3) | `round_upsert`, `round_close`, `round_cancel` |
-| Tenant Log DB | Reconciliation (4) | `reconciliation_report_create`, `reconciliation_mismatch_upsert`, `reconciliation_report_get`, `reconciliation_report_list` |
+| Tenant Log DB | Reconciliation (3) | `reconciliation_report_create`, `reconciliation_mismatch_upsert`, `reconciliation_report_list` |
 
 ---
 

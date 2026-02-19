@@ -15,9 +15,11 @@ CREATE INDEX idx_player_credentials_lockout ON auth.player_credentials USING btr
 
 -- player_categories
 CREATE UNIQUE INDEX idx_player_categories_code ON auth.player_categories USING btree(category_code);
+CREATE INDEX IF NOT EXISTS idx_player_categories_level ON auth.player_categories USING btree(level);
 
 -- player_groups
 CREATE UNIQUE INDEX idx_player_groups_code ON auth.player_groups USING btree(group_code);
+CREATE INDEX IF NOT EXISTS idx_player_groups_level ON auth.player_groups USING btree(level);
 
 -- player_classification
 CREATE INDEX idx_player_classification_player ON auth.player_classification USING btree(player_id);
