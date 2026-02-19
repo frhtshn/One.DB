@@ -193,288 +193,243 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/views/v_cross_rates.sql
 
 -- =============================================================================
--- FUNCTIONS - Finance
+-- FUNCTIONS - GATEWAY (Oyun ve finans gateway fonksiyonları)
 -- =============================================================================
-\i tenant/functions/finance/currency_rates_bulk_upsert.sql
-\i tenant/functions/finance/currency_rates_latest_list.sql
-\i tenant/functions/finance/crypto_rates_bulk_upsert.sql
-\i tenant/functions/finance/crypto_rates_latest_list.sql
 
--- =============================================================================
--- FUNCTIONS - Messaging
--- =============================================================================
-\i tenant/functions/messaging/admin_template_create.sql
-\i tenant/functions/messaging/admin_template_update.sql
-\i tenant/functions/messaging/admin_template_get.sql
-\i tenant/functions/messaging/admin_template_list.sql
-\i tenant/functions/messaging/admin_campaign_create.sql
-\i tenant/functions/messaging/admin_campaign_update.sql
-\i tenant/functions/messaging/admin_campaign_publish.sql
-\i tenant/functions/messaging/admin_campaign_cancel.sql
-\i tenant/functions/messaging/admin_campaign_get.sql
-\i tenant/functions/messaging/admin_campaign_list.sql
-\i tenant/functions/messaging/admin_player_message_send.sql
-\i tenant/functions/messaging/player_message_list.sql
-\i tenant/functions/messaging/player_message_read.sql
-\i tenant/functions/messaging/player_message_delete.sql
+-- Gateway: Finance (Kur senkronizasyonu ve ücret hesaplama)
+\i tenant/functions/gateway/finance/currency_rates_bulk_upsert.sql
+\i tenant/functions/gateway/finance/currency_rates_latest_list.sql
+\i tenant/functions/gateway/finance/crypto_rates_bulk_upsert.sql
+\i tenant/functions/gateway/finance/crypto_rates_latest_list.sql
+\i tenant/functions/gateway/finance/calculate_fee.sql
 
--- =============================================================================
--- FUNCTIONS - Auth (Shadow Test)
--- =============================================================================
-\i tenant/functions/auth/shadow_tester_add.sql
-\i tenant/functions/auth/shadow_tester_remove.sql
-\i tenant/functions/auth/shadow_tester_list.sql
-\i tenant/functions/auth/shadow_tester_get.sql
+-- Gateway: Game Sessions (Oyun oturum yönetimi)
+\i tenant/functions/gateway/game/game_session_create.sql
+\i tenant/functions/gateway/game/game_session_validate.sql
+\i tenant/functions/gateway/game/game_session_end.sql
 
--- =============================================================================
--- FUNCTIONS - Auth (Player Segmentation)
--- =============================================================================
-\i tenant/functions/auth/player_category_create.sql
-\i tenant/functions/auth/player_category_update.sql
-\i tenant/functions/auth/player_category_get.sql
-\i tenant/functions/auth/player_category_list.sql
-\i tenant/functions/auth/player_category_delete.sql
-\i tenant/functions/auth/player_group_create.sql
-\i tenant/functions/auth/player_group_update.sql
-\i tenant/functions/auth/player_group_get.sql
-\i tenant/functions/auth/player_group_list.sql
-\i tenant/functions/auth/player_group_delete.sql
+-- Gateway: Payment Sessions (Ödeme oturum yönetimi)
+\i tenant/functions/gateway/transaction/payment_session_create.sql
+\i tenant/functions/gateway/transaction/payment_session_get.sql
+\i tenant/functions/gateway/transaction/payment_session_update.sql
 
--- =============================================================================
--- FUNCTIONS - Auth (Player Classification & Segmentation)
--- =============================================================================
-\i tenant/functions/auth/player_classification_assign.sql
-\i tenant/functions/auth/player_classification_remove.sql
-\i tenant/functions/auth/player_classification_list.sql
-\i tenant/functions/auth/player_classification_bulk_assign.sql
-\i tenant/functions/auth/player_get_segmentation.sql
+-- Gateway: Wallet (Bahis, kazanç, deposit, withdrawal işlemleri)
+\i tenant/functions/gateway/wallet/player_info_get.sql
+\i tenant/functions/gateway/wallet/player_balance_get.sql
+\i tenant/functions/gateway/wallet/player_balance_per_game_get.sql
+\i tenant/functions/gateway/wallet/bet_process.sql
+\i tenant/functions/gateway/wallet/win_process.sql
+\i tenant/functions/gateway/wallet/rollback_process.sql
+\i tenant/functions/gateway/wallet/jackpot_win_process.sql
+\i tenant/functions/gateway/wallet/bonus_win_process.sql
+\i tenant/functions/gateway/wallet/promo_win_process.sql
+\i tenant/functions/gateway/wallet/adjustment_process.sql
+\i tenant/functions/gateway/wallet/deposit_initiate.sql
+\i tenant/functions/gateway/wallet/deposit_confirm.sql
+\i tenant/functions/gateway/wallet/deposit_fail.sql
+\i tenant/functions/gateway/wallet/withdrawal_initiate.sql
+\i tenant/functions/gateway/wallet/withdrawal_confirm.sql
+\i tenant/functions/gateway/wallet/withdrawal_cancel.sql
+\i tenant/functions/gateway/wallet/withdrawal_fail.sql
 
--- =============================================================================
--- FUNCTIONS - Finance (Ödeme ayarları ve limitler)
--- =============================================================================
-\i tenant/functions/finance/payment_method_settings_sync.sql
-\i tenant/functions/finance/payment_method_settings_remove.sql
-\i tenant/functions/finance/payment_method_settings_get.sql
-\i tenant/functions/finance/payment_method_settings_update.sql
-\i tenant/functions/finance/payment_method_settings_list.sql
-\i tenant/functions/finance/payment_method_limits_sync.sql
-\i tenant/functions/finance/payment_method_limit_upsert.sql
-\i tenant/functions/finance/payment_method_limit_list.sql
-\i tenant/functions/finance/payment_provider_rollout_sync.sql
-\i tenant/functions/finance/payment_player_limit_set.sql
-\i tenant/functions/finance/payment_player_limit_get.sql
-\i tenant/functions/finance/payment_player_limit_list.sql
-\i tenant/functions/finance/calculate_fee.sql
-
--- =============================================================================
--- FUNCTIONS - Game (Oyun ayarları ve limitler)
--- =============================================================================
-\i tenant/functions/game/game_settings_sync.sql
-\i tenant/functions/game/game_settings_remove.sql
-\i tenant/functions/game/game_settings_get.sql
-\i tenant/functions/game/game_settings_update.sql
-\i tenant/functions/game/game_settings_list.sql
-\i tenant/functions/game/game_limits_sync.sql
-\i tenant/functions/game/game_limit_upsert.sql
-\i tenant/functions/game/game_limit_list.sql
-\i tenant/functions/game/game_provider_rollout_sync.sql
-
--- =============================================================================
--- FUNCTIONS - Game Sessions (Oyun oturum yönetimi)
--- =============================================================================
-\i tenant/functions/game/game_session_create.sql
-\i tenant/functions/game/game_session_validate.sql
-\i tenant/functions/game/game_session_end.sql
-
--- =============================================================================
--- FUNCTIONS - Payment Sessions (Ödeme oturum yönetimi)
--- =============================================================================
-\i tenant/functions/transaction/payment_session_create.sql
-\i tenant/functions/transaction/payment_session_get.sql
-\i tenant/functions/transaction/payment_session_update.sql
-
--- =============================================================================
--- FUNCTIONS - Workflow (İşlem onay akışları)
--- =============================================================================
-\i tenant/functions/transaction/workflow_create.sql
-\i tenant/functions/transaction/workflow_assign.sql
-\i tenant/functions/transaction/workflow_approve.sql
-\i tenant/functions/transaction/workflow_reject.sql
-\i tenant/functions/transaction/workflow_cancel.sql
-\i tenant/functions/transaction/workflow_escalate.sql
-\i tenant/functions/transaction/workflow_add_note.sql
-\i tenant/functions/transaction/workflow_list.sql
-\i tenant/functions/transaction/workflow_get.sql
-
--- =============================================================================
--- FUNCTIONS - Account Adjustment (Hesap düzeltme işlemleri)
--- =============================================================================
-\i tenant/functions/transaction/adjustment_create.sql
-\i tenant/functions/transaction/adjustment_apply.sql
-\i tenant/functions/transaction/adjustment_cancel.sql
-\i tenant/functions/transaction/adjustment_get.sql
-\i tenant/functions/transaction/adjustment_list.sql
-
--- =============================================================================
--- FUNCTIONS - Wallet (Game Gateway wallet işlemleri)
--- =============================================================================
-\i tenant/functions/wallet/player_info_get.sql
-\i tenant/functions/wallet/player_balance_get.sql
-\i tenant/functions/wallet/player_balance_per_game_get.sql
-\i tenant/functions/wallet/bet_process.sql
-\i tenant/functions/wallet/win_process.sql
-\i tenant/functions/wallet/rollback_process.sql
-\i tenant/functions/wallet/jackpot_win_process.sql
-\i tenant/functions/wallet/bonus_win_process.sql
-\i tenant/functions/wallet/promo_win_process.sql
-\i tenant/functions/wallet/adjustment_process.sql
-
--- =============================================================================
--- FUNCTIONS - Deposit (Para yatırma işlemleri)
--- =============================================================================
-\i tenant/functions/wallet/deposit_initiate.sql
-\i tenant/functions/wallet/deposit_confirm.sql
-\i tenant/functions/wallet/deposit_fail.sql
-\i tenant/functions/wallet/deposit_manual_process.sql
-
--- =============================================================================
--- FUNCTIONS - Withdrawal (Para çekme işlemleri)
--- =============================================================================
-\i tenant/functions/wallet/withdrawal_initiate.sql
-\i tenant/functions/wallet/withdrawal_confirm.sql
-\i tenant/functions/wallet/withdrawal_cancel.sql
-\i tenant/functions/wallet/withdrawal_fail.sql
-\i tenant/functions/wallet/withdrawal_manual_process.sql
-
--- =============================================================================
--- FUNCTIONS - Bonus (Award ve Promosyon)
--- =============================================================================
-\i tenant/functions/bonus/bonus_award_create.sql
-\i tenant/functions/bonus/bonus_award_get.sql
-\i tenant/functions/bonus/bonus_award_list.sql
-\i tenant/functions/bonus/bonus_award_cancel.sql
-\i tenant/functions/bonus/bonus_award_complete.sql
-\i tenant/functions/bonus/bonus_award_expire.sql
-\i tenant/functions/bonus/promo_redeem.sql
-\i tenant/functions/bonus/promo_redemption_list.sql
-
--- =============================================================================
--- FUNCTIONS - Bonus Provider Mapping (Provider bonus takibi)
--- =============================================================================
+-- Gateway: Bonus Provider Mapping (Provider bonus takibi)
 \i tenant/tables/bonus/provider_bonus_mappings.sql
-\i tenant/functions/bonus/provider_bonus_mapping_create.sql
-\i tenant/functions/bonus/provider_bonus_mapping_get.sql
-\i tenant/functions/bonus/provider_bonus_mapping_update_status.sql
+\i tenant/functions/gateway/bonus/provider_bonus_mapping_create.sql
+\i tenant/functions/gateway/bonus/provider_bonus_mapping_get.sql
+\i tenant/functions/gateway/bonus/provider_bonus_mapping_update_status.sql
 
 -- =============================================================================
--- FUNCTIONS - Bonus Request (Manuel bonus talep sistemi)
+-- FUNCTIONS - BACKOFFICE (BO operatör fonksiyonları)
 -- =============================================================================
--- Ayar fonksiyonları
-\i tenant/functions/bonus/bonus_request_setting_upsert.sql
-\i tenant/functions/bonus/bonus_request_setting_list.sql
-\i tenant/functions/bonus/bonus_request_setting_get.sql
-\i tenant/functions/bonus/player_requestable_bonus_types.sql
 
--- BO fonksiyonları
-\i tenant/functions/bonus/bonus_request_create.sql
-\i tenant/functions/bonus/bonus_request_get.sql
-\i tenant/functions/bonus/bonus_request_list.sql
-\i tenant/functions/bonus/bonus_request_assign.sql
-\i tenant/functions/bonus/bonus_request_start_review.sql
-\i tenant/functions/bonus/bonus_request_hold.sql
-\i tenant/functions/bonus/bonus_request_approve.sql
-\i tenant/functions/bonus/bonus_request_reject.sql
-\i tenant/functions/bonus/bonus_request_cancel.sql
-\i tenant/functions/bonus/bonus_request_rollback.sql
+-- Backoffice: Auth — Shadow Test
+\i tenant/functions/backoffice/auth/shadow_tester_add.sql
+\i tenant/functions/backoffice/auth/shadow_tester_remove.sql
+\i tenant/functions/backoffice/auth/shadow_tester_list.sql
+\i tenant/functions/backoffice/auth/shadow_tester_get.sql
 
--- Maintenance fonksiyonları
-\i tenant/functions/bonus/maintenance/bonus_request_expire.sql
-\i tenant/functions/bonus/maintenance/bonus_request_cleanup.sql
+-- Backoffice: Auth — Player Segmentation
+\i tenant/functions/backoffice/auth/player_category_create.sql
+\i tenant/functions/backoffice/auth/player_category_update.sql
+\i tenant/functions/backoffice/auth/player_category_get.sql
+\i tenant/functions/backoffice/auth/player_category_list.sql
+\i tenant/functions/backoffice/auth/player_category_delete.sql
+\i tenant/functions/backoffice/auth/player_group_create.sql
+\i tenant/functions/backoffice/auth/player_group_update.sql
+\i tenant/functions/backoffice/auth/player_group_get.sql
+\i tenant/functions/backoffice/auth/player_group_list.sql
+\i tenant/functions/backoffice/auth/player_group_delete.sql
 
--- Oyuncu fonksiyonları
-\i tenant/functions/bonus/player_bonus_request_create.sql
-\i tenant/functions/bonus/player_bonus_request_list.sql
-\i tenant/functions/bonus/player_bonus_request_cancel.sql
+-- Backoffice: Auth — Player Classification
+\i tenant/functions/backoffice/auth/player_classification_assign.sql
+\i tenant/functions/backoffice/auth/player_classification_remove.sql
+\i tenant/functions/backoffice/auth/player_classification_list.sql
+\i tenant/functions/backoffice/auth/player_classification_bulk_assign.sql
+\i tenant/functions/backoffice/auth/player_get_segmentation.sql
+
+-- Backoffice: Finance (Ödeme ayarları ve limitler)
+\i tenant/functions/backoffice/finance/payment_method_settings_sync.sql
+\i tenant/functions/backoffice/finance/payment_method_settings_remove.sql
+\i tenant/functions/backoffice/finance/payment_method_settings_get.sql
+\i tenant/functions/backoffice/finance/payment_method_settings_update.sql
+\i tenant/functions/backoffice/finance/payment_method_settings_list.sql
+\i tenant/functions/backoffice/finance/payment_method_limits_sync.sql
+\i tenant/functions/backoffice/finance/payment_method_limit_upsert.sql
+\i tenant/functions/backoffice/finance/payment_method_limit_list.sql
+\i tenant/functions/backoffice/finance/payment_provider_rollout_sync.sql
+\i tenant/functions/backoffice/finance/payment_player_limit_set.sql
+\i tenant/functions/backoffice/finance/payment_player_limit_get.sql
+\i tenant/functions/backoffice/finance/payment_player_limit_list.sql
+
+-- Backoffice: Game (Oyun ayarları ve limitler)
+\i tenant/functions/backoffice/game/game_settings_sync.sql
+\i tenant/functions/backoffice/game/game_settings_remove.sql
+\i tenant/functions/backoffice/game/game_settings_get.sql
+\i tenant/functions/backoffice/game/game_settings_update.sql
+\i tenant/functions/backoffice/game/game_settings_list.sql
+\i tenant/functions/backoffice/game/game_limits_sync.sql
+\i tenant/functions/backoffice/game/game_limit_upsert.sql
+\i tenant/functions/backoffice/game/game_limit_list.sql
+\i tenant/functions/backoffice/game/game_provider_rollout_sync.sql
+
+-- Backoffice: Messaging (Template ve kampanya yönetimi)
+\i tenant/functions/backoffice/messaging/admin_template_create.sql
+\i tenant/functions/backoffice/messaging/admin_template_update.sql
+\i tenant/functions/backoffice/messaging/admin_template_get.sql
+\i tenant/functions/backoffice/messaging/admin_template_list.sql
+\i tenant/functions/backoffice/messaging/admin_campaign_create.sql
+\i tenant/functions/backoffice/messaging/admin_campaign_update.sql
+\i tenant/functions/backoffice/messaging/admin_campaign_publish.sql
+\i tenant/functions/backoffice/messaging/admin_campaign_cancel.sql
+\i tenant/functions/backoffice/messaging/admin_campaign_get.sql
+\i tenant/functions/backoffice/messaging/admin_campaign_list.sql
+\i tenant/functions/backoffice/messaging/admin_player_message_send.sql
+
+-- Backoffice: Transaction — Workflow (İşlem onay akışları)
+\i tenant/functions/backoffice/transaction/workflow_create.sql
+\i tenant/functions/backoffice/transaction/workflow_assign.sql
+\i tenant/functions/backoffice/transaction/workflow_approve.sql
+\i tenant/functions/backoffice/transaction/workflow_reject.sql
+\i tenant/functions/backoffice/transaction/workflow_cancel.sql
+\i tenant/functions/backoffice/transaction/workflow_escalate.sql
+\i tenant/functions/backoffice/transaction/workflow_add_note.sql
+\i tenant/functions/backoffice/transaction/workflow_list.sql
+\i tenant/functions/backoffice/transaction/workflow_get.sql
+
+-- Backoffice: Transaction — Account Adjustment (Hesap düzeltme)
+\i tenant/functions/backoffice/transaction/adjustment_create.sql
+\i tenant/functions/backoffice/transaction/adjustment_apply.sql
+\i tenant/functions/backoffice/transaction/adjustment_cancel.sql
+\i tenant/functions/backoffice/transaction/adjustment_get.sql
+\i tenant/functions/backoffice/transaction/adjustment_list.sql
+
+-- Backoffice: Wallet (Manuel deposit/withdrawal)
+\i tenant/functions/backoffice/wallet/deposit_manual_process.sql
+\i tenant/functions/backoffice/wallet/withdrawal_manual_process.sql
+
+-- Backoffice: Bonus — Award ve Promosyon
+\i tenant/functions/backoffice/bonus/bonus_award_create.sql
+\i tenant/functions/backoffice/bonus/bonus_award_get.sql
+\i tenant/functions/backoffice/bonus/bonus_award_list.sql
+\i tenant/functions/backoffice/bonus/bonus_award_cancel.sql
+\i tenant/functions/backoffice/bonus/bonus_award_complete.sql
+\i tenant/functions/backoffice/bonus/bonus_award_expire.sql
+\i tenant/functions/backoffice/bonus/promo_redemption_list.sql
+
+-- Backoffice: Bonus — Request Ayarları
+\i tenant/functions/backoffice/bonus/bonus_request_setting_upsert.sql
+\i tenant/functions/backoffice/bonus/bonus_request_setting_list.sql
+\i tenant/functions/backoffice/bonus/bonus_request_setting_get.sql
+
+-- Backoffice: Bonus — Request Yönetimi
+\i tenant/functions/backoffice/bonus/bonus_request_create.sql
+\i tenant/functions/backoffice/bonus/bonus_request_get.sql
+\i tenant/functions/backoffice/bonus/bonus_request_list.sql
+\i tenant/functions/backoffice/bonus/bonus_request_assign.sql
+\i tenant/functions/backoffice/bonus/bonus_request_start_review.sql
+\i tenant/functions/backoffice/bonus/bonus_request_hold.sql
+\i tenant/functions/backoffice/bonus/bonus_request_approve.sql
+\i tenant/functions/backoffice/bonus/bonus_request_reject.sql
+\i tenant/functions/backoffice/bonus/bonus_request_cancel.sql
+\i tenant/functions/backoffice/bonus/bonus_request_rollback.sql
+
+-- Backoffice: Support — Ticket yönetimi
+\i tenant/functions/backoffice/support/ticket_create.sql
+\i tenant/functions/backoffice/support/ticket_get.sql
+\i tenant/functions/backoffice/support/ticket_list.sql
+\i tenant/functions/backoffice/support/ticket_update.sql
+\i tenant/functions/backoffice/support/ticket_assign.sql
+\i tenant/functions/backoffice/support/ticket_add_note.sql
+\i tenant/functions/backoffice/support/ticket_reply_player.sql
+\i tenant/functions/backoffice/support/ticket_resolve.sql
+\i tenant/functions/backoffice/support/ticket_close.sql
+\i tenant/functions/backoffice/support/ticket_reopen.sql
+\i tenant/functions/backoffice/support/ticket_cancel.sql
+
+-- Backoffice: Support — Player Notes
+\i tenant/functions/backoffice/support/player_note_create.sql
+\i tenant/functions/backoffice/support/player_note_update.sql
+\i tenant/functions/backoffice/support/player_note_delete.sql
+\i tenant/functions/backoffice/support/player_note_list.sql
+
+-- Backoffice: Support — Agent Settings
+\i tenant/functions/backoffice/support/agent_setting_upsert.sql
+\i tenant/functions/backoffice/support/agent_setting_get.sql
+\i tenant/functions/backoffice/support/agent_setting_list.sql
+
+-- Backoffice: Support — Canned Responses
+\i tenant/functions/backoffice/support/canned_response_create.sql
+\i tenant/functions/backoffice/support/canned_response_update.sql
+\i tenant/functions/backoffice/support/canned_response_delete.sql
+\i tenant/functions/backoffice/support/canned_response_list.sql
+
+-- Backoffice: Support — Representative
+\i tenant/functions/backoffice/support/player_representative_assign.sql
+\i tenant/functions/backoffice/support/player_representative_get.sql
+\i tenant/functions/backoffice/support/player_representative_history_list.sql
+
+-- Backoffice: Support — Welcome Call
+\i tenant/functions/backoffice/support/welcome_call_task_list.sql
+\i tenant/functions/backoffice/support/welcome_call_task_assign.sql
+\i tenant/functions/backoffice/support/welcome_call_task_complete.sql
+\i tenant/functions/backoffice/support/welcome_call_task_reschedule.sql
+
+-- Backoffice: Support — Ticket Category
+\i tenant/functions/backoffice/support/ticket_category_create.sql
+\i tenant/functions/backoffice/support/ticket_category_update.sql
+\i tenant/functions/backoffice/support/ticket_category_delete.sql
+\i tenant/functions/backoffice/support/ticket_category_list.sql
+
+-- Backoffice: Support — Ticket Tag
+\i tenant/functions/backoffice/support/ticket_tag_create.sql
+\i tenant/functions/backoffice/support/ticket_tag_update.sql
+\i tenant/functions/backoffice/support/ticket_tag_list.sql
+
+-- Backoffice: Support — Dashboard
+\i tenant/functions/backoffice/support/ticket_queue_list.sql
+\i tenant/functions/backoffice/support/ticket_dashboard_stats.sql
 
 -- =============================================================================
--- FUNCTIONS - Support Ticket (BO — Ticket yönetimi)
+-- FUNCTIONS - FRONTEND (Oyuncu frontend fonksiyonları)
 -- =============================================================================
-\i tenant/functions/support/ticket_create.sql
-\i tenant/functions/support/ticket_get.sql
-\i tenant/functions/support/ticket_list.sql
-\i tenant/functions/support/ticket_update.sql
-\i tenant/functions/support/ticket_assign.sql
-\i tenant/functions/support/ticket_add_note.sql
-\i tenant/functions/support/ticket_reply_player.sql
-\i tenant/functions/support/ticket_resolve.sql
-\i tenant/functions/support/ticket_close.sql
-\i tenant/functions/support/ticket_reopen.sql
-\i tenant/functions/support/ticket_cancel.sql
 
--- FUNCTIONS - Support Ticket (Oyuncu — Self-service)
-\i tenant/functions/support/player_ticket_create.sql
-\i tenant/functions/support/player_ticket_list.sql
-\i tenant/functions/support/player_ticket_get.sql
-\i tenant/functions/support/player_ticket_reply.sql
+-- Frontend: Messaging (Mesaj okuma/silme)
+\i tenant/functions/frontend/messaging/player_message_list.sql
+\i tenant/functions/frontend/messaging/player_message_read.sql
+\i tenant/functions/frontend/messaging/player_message_delete.sql
 
--- =============================================================================
--- FUNCTIONS - Support Player Notes (Oyuncu notları — Standart)
--- =============================================================================
-\i tenant/functions/support/player_note_create.sql
-\i tenant/functions/support/player_note_update.sql
-\i tenant/functions/support/player_note_delete.sql
-\i tenant/functions/support/player_note_list.sql
+-- Frontend: Bonus (Promo ve bonus talep)
+\i tenant/functions/frontend/bonus/promo_redeem.sql
+\i tenant/functions/frontend/bonus/player_requestable_bonus_types.sql
+\i tenant/functions/frontend/bonus/player_bonus_request_create.sql
+\i tenant/functions/frontend/bonus/player_bonus_request_list.sql
+\i tenant/functions/frontend/bonus/player_bonus_request_cancel.sql
 
--- =============================================================================
--- FUNCTIONS - Support Agent Settings (Agent ayarları — Standart)
--- =============================================================================
-\i tenant/functions/support/agent_setting_upsert.sql
-\i tenant/functions/support/agent_setting_get.sql
-\i tenant/functions/support/agent_setting_list.sql
-
--- =============================================================================
--- FUNCTIONS - Support Canned Responses (Hazır yanıtlar)
--- =============================================================================
-\i tenant/functions/support/canned_response_create.sql
-\i tenant/functions/support/canned_response_update.sql
-\i tenant/functions/support/canned_response_delete.sql
-\i tenant/functions/support/canned_response_list.sql
-
--- =============================================================================
--- FUNCTIONS - Support Representative (Temsilci atama — Standart)
--- =============================================================================
-\i tenant/functions/support/player_representative_assign.sql
-\i tenant/functions/support/player_representative_get.sql
-\i tenant/functions/support/player_representative_history_list.sql
-
--- =============================================================================
--- FUNCTIONS - Support Welcome Call (Hoşgeldin araması — Standart)
--- =============================================================================
-\i tenant/functions/support/welcome_call_task_list.sql
-\i tenant/functions/support/welcome_call_task_assign.sql
-\i tenant/functions/support/welcome_call_task_complete.sql
-\i tenant/functions/support/welcome_call_task_reschedule.sql
-
--- =============================================================================
--- FUNCTIONS - Support Ticket Category (Kategori CRUD)
--- =============================================================================
-\i tenant/functions/support/ticket_category_create.sql
-\i tenant/functions/support/ticket_category_update.sql
-\i tenant/functions/support/ticket_category_delete.sql
-\i tenant/functions/support/ticket_category_list.sql
-
--- =============================================================================
--- FUNCTIONS - Support Ticket Tag (Etiket yönetimi)
--- =============================================================================
-\i tenant/functions/support/ticket_tag_create.sql
-\i tenant/functions/support/ticket_tag_update.sql
-\i tenant/functions/support/ticket_tag_list.sql
-
--- =============================================================================
--- FUNCTIONS - Support Dashboard (İstatistik ve kuyruk)
--- =============================================================================
-\i tenant/functions/support/ticket_queue_list.sql
-\i tenant/functions/support/ticket_dashboard_stats.sql
+-- Frontend: Support (Ticket self-service)
+\i tenant/functions/frontend/support/player_ticket_create.sql
+\i tenant/functions/frontend/support/player_ticket_list.sql
+\i tenant/functions/frontend/support/player_ticket_get.sql
+\i tenant/functions/frontend/support/player_ticket_reply.sql
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created
@@ -511,13 +466,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 -- FUNCTIONS - MAINTENANCE (Partition yönetimi)
 -- =============================================================================
-\i tenant/functions/maintenance/create_partitions.sql
-\i tenant/functions/maintenance/drop_expired_partitions.sql
-\i tenant/functions/maintenance/partition_info.sql
-\i tenant/functions/maintenance/run_maintenance.sql
+\i tenant/functions/maintenance/partition/create_partitions.sql
+\i tenant/functions/maintenance/partition/drop_expired_partitions.sql
+\i tenant/functions/maintenance/partition/partition_info.sql
+\i tenant/functions/maintenance/partition/run_maintenance.sql
+
+-- MAINTENANCE — Bonus (Request expire/cleanup)
+\i tenant/functions/maintenance/bonus/bonus_request_expire.sql
+\i tenant/functions/maintenance/bonus/bonus_request_cleanup.sql
 
 -- MAINTENANCE — Support (Welcome call cleanup)
-\i tenant/functions/support/maintenance/welcome_call_task_cleanup.sql
+\i tenant/functions/maintenance/support/welcome_call_task_cleanup.sql
 
 -- INITIAL PARTITIONS
 SELECT * FROM maintenance.create_partitions();

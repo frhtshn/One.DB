@@ -677,17 +677,17 @@ BO kullanıcıları (`ticket_create`) anti-abuse kısıtlamalarından **muaftır
 
 | Grup | Adet | Dosya Konumu |
 |------|------|-------------|
-| Ticket BO | 11 | `tenant/functions/support/ticket_*.sql` |
-| Ticket Oyuncu | 4 | `tenant/functions/support/player_ticket_*.sql` |
-| Player Notes | 4 | `tenant/functions/support/player_note_*.sql` |
-| Agent Settings | 3 | `tenant/functions/support/agent_setting_*.sql` |
-| Kategori | 4 | `tenant/functions/support/ticket_category_*.sql` |
-| Tag | 3 | `tenant/functions/support/ticket_tag_*.sql` |
-| Canned Response | 4 | `tenant/functions/support/canned_response_*.sql` |
-| Temsilci Atama | 3 | `tenant/functions/support/player_representative_*.sql` |
-| Hoşgeldin Araması | 4 | `tenant/functions/support/welcome_call_task_*.sql` |
-| Dashboard | 2 | `tenant/functions/support/ticket_queue_list.sql`, `ticket_dashboard_stats.sql` |
-| Maintenance | 1 | `tenant/functions/support/maintenance/welcome_call_task_cleanup.sql` |
+| Ticket BO | 11 | `tenant/functions/backoffice/support/ticket_*.sql` |
+| Ticket Oyuncu | 4 | `tenant/functions/frontend/support/player_ticket_*.sql` |
+| Player Notes | 4 | `tenant/functions/backoffice/support/player_note_*.sql` |
+| Agent Settings | 3 | `tenant/functions/backoffice/support/agent_setting_*.sql` |
+| Kategori | 4 | `tenant/functions/backoffice/support/ticket_category_*.sql` |
+| Tag | 3 | `tenant/functions/backoffice/support/ticket_tag_*.sql` |
+| Canned Response | 4 | `tenant/functions/backoffice/support/canned_response_*.sql` |
+| Temsilci Atama | 3 | `tenant/functions/backoffice/support/player_representative_*.sql` |
+| Hoşgeldin Araması | 4 | `tenant/functions/backoffice/support/welcome_call_task_*.sql` |
+| Dashboard | 2 | `tenant/functions/backoffice/support/ticket_queue_list.sql`, `ticket_dashboard_stats.sql` |
+| Maintenance | 1 | `tenant/functions/maintenance/support/welcome_call_task_cleanup.sql` |
 
 ### Güncellenecek Dosyalar (9)
 
