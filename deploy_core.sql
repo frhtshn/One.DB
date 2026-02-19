@@ -487,6 +487,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/users/user_list.sql
 \i core/functions/security/users/user_reset_password.sql
 \i core/functions/security/users/user_change_password.sql
+\i core/functions/security/users/user_migrate_password_hash.sql
 \i core/functions/security/users/user_login_failed_increment.sql
 \i core/functions/security/users/user_login_failed_reset.sql
 \i core/functions/security/users/user_unlock.sql
