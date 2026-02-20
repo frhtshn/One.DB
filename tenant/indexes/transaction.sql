@@ -2,6 +2,12 @@
 -- Tenant Transaction Schema Indexes
 -- =============================================
 
+-- operation_types
+CREATE UNIQUE INDEX IF NOT EXISTS idx_operation_types_code ON transaction.operation_types USING btree(code);
+
+-- transaction_types
+CREATE UNIQUE INDEX IF NOT EXISTS idx_transaction_types_code ON transaction.transaction_types USING btree(code);
+
 -- transactions (high-volume table - optimized indexes)
 CREATE INDEX IF NOT EXISTS idx_transactions_player ON transaction.transactions USING btree(player_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_wallet ON transaction.transactions USING btree(wallet_id);

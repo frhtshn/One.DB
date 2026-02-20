@@ -104,7 +104,7 @@ flowchart TD
 
 | Hedef DB | Tablolar |
 |---|---|
-| **Tenant** | `wallet.wallets`, `finance.currency_rates*`, `finance.crypto_rates*`, `finance.payment_player_limits`, `transaction.transactions`, `bonus.bonus_awards` |
+| **Tenant** | `wallet.wallets`, `finance.currency_rates*`, `finance.crypto_rates*`, `finance.payment_player_limits`, `finance.player_financial_limits`, `transaction.transactions`, `bonus.bonus_awards` |
 | **Tenant Report** | Tüm 5 tablo (`currency` alanı) |
 | **Core Report** | 4/5 tablo (`currency` alanı) |
 | **Tenant Affiliate** | ~15 tablo (`currency` alanı: commissions, payouts, stats, tracking) |

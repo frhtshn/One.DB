@@ -59,7 +59,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 |-----------|----------|
 | `player_get_segmentation` | Bonus eligibility için oyuncu segmentasyon verisi. Tek giriş noktası → JSONB |
 
-### Finance Schema (17)
+### Finance Schema (20)
 
 #### Döviz Kurları (4)
 
@@ -89,13 +89,21 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `payment_method_limit_list` | Ödeme yöntemi limitleri listesi |
 | `payment_provider_rollout_sync` | Ödeme sağlayıcı rollout durumunu senkronize et |
 
-#### Oyuncu Limitleri (3)
+#### Oyuncu Ödeme Limitleri (3)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `payment_player_limit_set` | Oyuncu bazlı ödeme limiti ata |
-| `payment_player_limit_get` | Oyuncu ödeme limitini getir |
-| `payment_player_limit_list` | Oyuncu ödeme limitleri listesi |
+| `payment_player_limit_set` | Oyuncu bazlı ödeme yöntemi limiti ata |
+| `payment_player_limit_get` | Oyuncu ödeme yöntemi limitini getir |
+| `payment_player_limit_list` | Oyuncu ödeme yöntemi limitleri listesi |
+
+#### Oyuncu Genel Finansal Limitleri (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_financial_limit_set` | Oyuncu genel finansal limit ata (yöntemden bağımsız) |
+| `player_financial_limit_get` | Oyuncu genel finansal limitini getir |
+| `player_financial_limit_list` | Oyuncu genel finansal limitleri listesi |
 
 #### Ücret Hesaplama (1)
 
@@ -132,7 +140,14 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `game_session_validate` | Session token doğrula. Expire kontrolü, last_activity güncelle → JSONB |
 | `game_session_end` | Oyun oturumunu kapat. İdempotent (zaten kapalı ise sessizce true) → BOOL |
 
-### Transaction Schema (17)
+### Transaction Schema (19)
+
+#### Lookup Sync (2)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `transaction_types_sync` | Core→Tenant işlem tipi kataloğu senkronizasyonu (UPSERT by id) |
+| `operation_types_sync` | Core→Tenant operasyon tipi kataloğu senkronizasyonu (UPSERT by id) |
 
 #### Payment Sessions (3)
 

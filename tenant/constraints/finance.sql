@@ -38,3 +38,10 @@ DO $$ BEGIN
         ALTER TABLE finance.payment_player_limits ADD CONSTRAINT uq_payment_player_limits_player_method_currency UNIQUE (player_id, payment_method_id, currency_code);
     END IF;
 END $$;
+
+-- player_financial_limits unique constraint (per-currency, per-type — self_imposed ve admin_imposed ayrı)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_player_financial_limits_player_currency_type') THEN
+        ALTER TABLE finance.player_financial_limits ADD CONSTRAINT uq_player_financial_limits_player_currency_type UNIQUE (player_id, currency_code, limit_type);
+    END IF;
+END $$;

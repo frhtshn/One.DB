@@ -2,11 +2,6 @@
 -- Tenant Auth Schema Foreign Key Constraints
 -- =============================================
 
--- player_credentials -> players
-ALTER TABLE auth.player_credentials
-    ADD CONSTRAINT fk_player_credentials_player
-    FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
-
 -- player_classification -> players
 ALTER TABLE auth.player_classification
     ADD CONSTRAINT fk_player_classification_player

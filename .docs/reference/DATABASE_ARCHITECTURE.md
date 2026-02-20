@@ -361,15 +361,14 @@ Döviz kurları, ödeme metodu ayarları ve limit yönetimi.
 
 | Tablo                     | Açıklama                                              |
 | ------------------------- | ----------------------------------------------------- |
-| `operation_types`         | Cüzdan operasyon tipleri (CREDIT, DEBIT, LOCK, UNLOCK)|
-| `transaction_types`       | İşlem tipi tanımları (DEPOSIT, WITHDRAW, BET, WIN)    |
 | `currency_rates`          | Döviz kuru tarihçesi (audit/raporlama)                |
 | `currency_rates_latest`   | Güncel döviz kurları (hızlı erişim cache)             |
 | `crypto_rates`            | Kripto kur tarihçesi (CryptoManager gRPC, audit/raporlama) |
 | `crypto_rates_latest`     | Güncel kripto kurları (hızlı erişim, change verileri) |
 | `payment_method_settings` | Tenant ödeme metodu yapılandırması                    |
 | `payment_method_limits`   | Para birimi bazlı ödeme limitleri ve ücretler         |
-| `payment_player_limits`   | Oyuncu bazlı işlem limitleri                          |
+| `payment_player_limits`      | Oyuncu bazlı ödeme yöntemi limitleri                  |
+| `player_financial_limits`    | Oyuncu genel finansal limitleri (yöntemden bağımsız)   |
 
 **Views:**
 
@@ -386,6 +385,8 @@ Döviz kurları, ödeme metodu ayarları ve limit yönetimi.
 
 | Tablo                         | Açıklama                                              |
 | ----------------------------- | ----------------------------------------------------- |
+| `operation_types`             | Cüzdan operasyon tipleri (CREDIT, DEBIT, LOCK, UNLOCK)|
+| `transaction_types`           | İşlem tipi tanımları (DEPOSIT, WITHDRAW, BET, WIN)    |
 | `transactions`                | Ana işlem tablosu (partitioned monthly). Deposit/withdrawal/bet/win tüm mali hareketler |
 | `transaction_workflows`       | İşlem onay iş akışları (pending → approved/rejected). `transaction_id` nullable (ADJUSTMENT workflow'ları için) |
 | `transaction_workflow_actions` | İş akışı adım geçmişi (audit trail)                  |

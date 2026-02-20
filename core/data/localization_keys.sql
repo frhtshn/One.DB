@@ -597,6 +597,20 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.player-limit.invalid-type', 'error', 'player-limit', 'Geçersiz limit tipi'),
 
 -- ============================================================================
+-- FINANCIAL LIMIT (Oyuncu Genel Finansal Limitleri)
+-- ============================================================================
+('error.financial-limit.currency-code-required', 'error', 'financial-limit', 'Para birimi kodu zorunlu'),
+('error.financial-limit.invalid-type', 'error', 'financial-limit', 'Geçersiz finansal limit tipi'),
+
+-- ============================================================================
+-- TRANSACTION / OPERATION TYPE SYNC
+-- ============================================================================
+('error.transaction-type.data-required', 'error', 'transaction-type', 'İşlem tipi verisi zorunlu'),
+('error.transaction-type.invalid-format', 'error', 'transaction-type', 'İşlem tipi verisi geçersiz format'),
+('error.operation-type.data-required', 'error', 'operation-type', 'Operasyon tipi verisi zorunlu'),
+('error.operation-type.invalid-format', 'error', 'operation-type', 'Operasyon tipi verisi geçersiz format'),
+
+-- ============================================================================
 -- SHADOW MODE
 -- ============================================================================
 ('error.shadow-tester.player-id-required', 'error', 'shadow-tester', 'Oyuncu ID zorunlu'),

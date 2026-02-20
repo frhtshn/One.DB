@@ -3,6 +3,8 @@
 -- Çapraz kur hesaplaması
 -- =============================================
 
+DROP VIEW IF EXISTS finance.v_cross_rates CASCADE;
+
 CREATE VIEW finance.v_cross_rates AS
 SELECT
     r1.rate_date,

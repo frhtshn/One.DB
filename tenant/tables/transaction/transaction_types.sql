@@ -1,12 +1,13 @@
 -- =============================================
--- Transaction Types (İşlem Tipleri)
--- Finansal işlem kategorileri
+-- Tablo: transaction.transaction_types
+-- Açıklama: İşlem tipi kataloğu
 -- Deposit, Withdraw, Bet, Win, Bonus vb.
+-- Tüm parasal hareketlerin ortak referans tablosu.
 -- =============================================
 
-DROP TABLE IF EXISTS finance.transaction_types CASCADE;
+DROP TABLE IF EXISTS transaction.transaction_types CASCADE;
 
-CREATE TABLE finance.transaction_types (
+CREATE TABLE transaction.transaction_types (
     id              smallserial PRIMARY KEY,
     code            varchar(50) NOT NULL,          -- Tip kodu: DEPOSIT, WITHDRAW, BET, WIN
     category        varchar(30) NOT NULL,          -- Kategori: PAYMENT, GAME, BONUS, ADMIN
@@ -19,4 +20,4 @@ CREATE TABLE finance.transaction_types (
     is_active       boolean NOT NULL DEFAULT true  -- Aktif mi?
 );
 
-COMMENT ON TABLE finance.transaction_types IS 'Financial transaction type catalog for deposits, withdrawals, bets, wins, bonuses, and adjustments';
+COMMENT ON TABLE transaction.transaction_types IS 'Transaction type catalog for deposits, withdrawals, bets, wins, bonuses, and adjustments across all domains';

@@ -3,7 +3,6 @@
 -- Her gün için son kur değerlerini döner
 -- =============================================
 
-DROP VIEW IF EXISTS finance.v_cross_rates CASCADE;
 DROP VIEW IF EXISTS finance.v_daily_base_rates CASCADE;
 
 CREATE VIEW finance.v_daily_base_rates AS

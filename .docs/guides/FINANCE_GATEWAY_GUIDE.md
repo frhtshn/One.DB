@@ -45,7 +45,8 @@ flowchart TD
     subgraph TENANT["Tenant DB (İzole)"]
         PMS["finance.payment_method_settings<br/>(tenant özelleştirmesi)"]
         PML["finance.payment_method_limits<br/>(Katman 3 — tenant limit)"]
-        PPL["finance.payment_player_limits<br/>(Katman 4 — oyuncu limit)"]
+        PPL["finance.payment_player_limits<br/>(Katman 4 — metot bazlı oyuncu limit)"]
+        PFL["finance.player_financial_limits<br/>(Katman 5 — global oyuncu limit)"]
         PS["transaction.payment_sessions<br/>(aktif ödeme oturumları)"]
         TX["transaction.transactions<br/>(finansal işlem defteri)"]
         WF["transaction.transaction_workflows<br/>(onay akışları)"]
@@ -139,12 +140,14 @@ flowchart TD
     L1["Katman 1: Provider (Finance DB)<br/>Global PSP limitleri<br/>Backend kontrol eder"] --> L2
     L2["Katman 2: Platform (Core DB)<br/>Tenant→method atama limitleri<br/>Backend kontrol eder"] --> L3
     L3["Katman 3: Tenant (Tenant DB)<br/>payment_method_limits tablosu<br/>DB fonksiyonu kontrol eder"] --> L4
-    L4["Katman 4: Player (Tenant DB)<br/>payment_player_limits tablosu<br/>DB fonksiyonu kontrol eder"]
+    L4["Katman 4: Player/Metot (Tenant DB)<br/>payment_player_limits tablosu<br/>DB fonksiyonu kontrol eder"] --> L5
+    L5["Katman 5: Player/Global (Tenant DB)<br/>player_financial_limits tablosu<br/>DB fonksiyonu kontrol eder"]
 
     style L1 fill:#e1f5fe,color:#222
     style L2 fill:#e8f5e9,color:#222
     style L3 fill:#fff3e0,color:#222
     style L4 fill:#fce4ec,color:#222
+    style L5 fill:#f3e5f5,color:#222
 ```
 
 | Katman | DB | Kontrol Eden | Tablo |
@@ -152,17 +155,24 @@ flowchart TD
 | L1 — Provider | Finance DB | Backend | `catalog.payment_method_currency_limits` |
 | L2 — Platform | Core DB | Backend | `core.tenant_provider_limits` |
 | L3 — Tenant | Tenant DB | DB fonksiyonu | `finance.payment_method_limits` |
-| L4 — Player | Tenant DB | DB fonksiyonu | `finance.payment_player_limits` |
+| L4 — Player/Metot | Tenant DB | DB fonksiyonu | `finance.payment_player_limits` |
+| L5 — Player/Global | Tenant DB | DB fonksiyonu | `finance.player_financial_limits` |
 
-> L1+L2: Backend uygulama katmanında kontrol (farklı DB'ler arası join yapılamaz). L3+L4: Tenant DB fonksiyonu ile kontrol. En kısıtlayıcı limit geçerli olur.
+> L1+L2: Backend uygulama katmanında kontrol (farklı DB'ler arası join yapılamaz). L3-L5: Tenant DB fonksiyonu ile kontrol. En kısıtlayıcı limit geçerli olur.
+
+### Player Limit Katmanları
+
+| Tablo | Kapsam | Örnek |
+|-------|--------|-------|
+| `payment_player_limits` | Per-metot, per-currency | "Papara ile günde max 1000 TRY" |
+| `player_financial_limits` | Global, per-currency | "Tüm yöntemlerle günde max 5000 TRY" |
 
 ### Player Limit Tipleri
 
 | Tip | Belirleyen | Açıklama |
 |-----|-----------|----------|
-| `self` | Oyuncu | Kendi koyduğu limit (sorumlu oyun) |
-| `admin` | BO Admin | Admin tarafından konulan limit |
-| `responsible_gaming` | Sistem | RG politikası gereği otomatik |
+| `self_imposed` | Oyuncu | Kendi koyduğu limit (sorumlu oyun) |
+| `admin_imposed` | BO Admin | Admin tarafından konulan limit |
 
 ---
 

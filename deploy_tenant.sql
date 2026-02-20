@@ -59,14 +59,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/player_auth/players.sql
 \i tenant/tables/player_auth/player_categories.sql
 \i tenant/tables/player_auth/player_classification.sql
-\i tenant/tables/player_auth/player_credentials.sql
 \i tenant/tables/player_auth/player_groups.sql
 \i tenant/tables/player_auth/player_password_history.sql
 \i tenant/tables/player_auth/shadow_testers.sql
 
 -- FINANCE TABLES
-\i tenant/tables/finance/operation_types.sql
-\i tenant/tables/finance/transaction_types.sql
 \i tenant/tables/finance/currency_rates.sql
 \i tenant/tables/finance/currency_rates_latest.sql
 \i tenant/tables/finance/crypto_rates.sql
@@ -74,6 +71,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/finance/payment_method_settings.sql
 \i tenant/tables/finance/payment_method_limits.sql
 \i tenant/tables/finance/payment_player_limits.sql
+\i tenant/tables/finance/player_financial_limits.sql
 
 -- GAME TABLES
 \i tenant/tables/game/game_settings.sql
@@ -85,6 +83,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/player_profile/player_profile.sql
 
 -- TRANSACTION TABLES
+\i tenant/tables/transaction/operation_types.sql
+\i tenant/tables/transaction/transaction_types.sql
 \i tenant/tables/transaction/transactions.sql
 \i tenant/tables/transaction/transaction_workflows.sql
 \i tenant/tables/transaction/transaction_workflow_actions.sql
@@ -278,6 +278,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/finance/payment_player_limit_set.sql
 \i tenant/functions/backoffice/finance/payment_player_limit_get.sql
 \i tenant/functions/backoffice/finance/payment_player_limit_list.sql
+\i tenant/functions/backoffice/finance/player_financial_limit_set.sql
+\i tenant/functions/backoffice/finance/player_financial_limit_get.sql
+\i tenant/functions/backoffice/finance/player_financial_limit_list.sql
 
 -- Backoffice: Game (Oyun ayarları ve limitler)
 \i tenant/functions/backoffice/game/game_settings_sync.sql
@@ -302,6 +305,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/messaging/admin_campaign_get.sql
 \i tenant/functions/backoffice/messaging/admin_campaign_list.sql
 \i tenant/functions/backoffice/messaging/admin_player_message_send.sql
+
+-- Backoffice: Transaction — Lookup Sync (Core→Tenant katalog senkronizasyonu)
+\i tenant/functions/backoffice/transaction/transaction_types_sync.sql
+\i tenant/functions/backoffice/transaction/operation_types_sync.sql
 
 -- Backoffice: Transaction — Workflow (İşlem onay akışları)
 \i tenant/functions/backoffice/transaction/workflow_create.sql

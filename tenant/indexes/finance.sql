@@ -20,12 +20,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_crypto_rates_lookup ON finance.crypto_rate
 -- crypto_rates_latest
 CREATE INDEX IF NOT EXISTS idx_crypto_rates_latest_symbol ON finance.crypto_rates_latest USING btree(symbol);
 
--- operation_types
-CREATE UNIQUE INDEX IF NOT EXISTS idx_operation_types_code ON finance.operation_types USING btree(code);
-
--- transaction_types
-CREATE UNIQUE INDEX IF NOT EXISTS idx_transaction_types_code ON finance.transaction_types USING btree(code);
-
 -- payment_method_settings - Temel indexler
 CREATE INDEX IF NOT EXISTS idx_payment_method_settings_provider ON finance.payment_method_settings USING btree(provider_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_method_settings_method_unique ON finance.payment_method_settings USING btree(payment_method_id);
@@ -67,3 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_payment_player_limits_method ON finance.payment_p
 
 -- payment_player_limits - currency_code filtresi (per-currency limit arama)
 CREATE INDEX IF NOT EXISTS idx_payment_player_limits_currency ON finance.payment_player_limits USING btree(currency_code);
+
+-- player_financial_limits
+CREATE INDEX IF NOT EXISTS idx_player_financial_limits_player ON finance.player_financial_limits USING btree(player_id);
+CREATE INDEX IF NOT EXISTS idx_player_financial_limits_currency ON finance.player_financial_limits USING btree(currency_code);

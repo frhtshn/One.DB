@@ -518,6 +518,16 @@ JOIN (VALUES
     ('error.player.id-required', 'Oyuncu ID zorunludur'),
     ('error.player-limit.invalid-type', 'Geçersiz limit tipi'),
 
+    -- Finansal Limit
+    ('error.financial-limit.currency-code-required', 'Para birimi kodu zorunludur'),
+    ('error.financial-limit.invalid-type', 'Geçersiz finansal limit tipi'),
+
+    -- İşlem / Operasyon Tipi Senkronizasyonu
+    ('error.transaction-type.data-required', 'İşlem tipi verisi zorunludur'),
+    ('error.transaction-type.invalid-format', 'İşlem tipi verisi JSON dizisi olmalıdır'),
+    ('error.operation-type.data-required', 'Operasyon tipi verisi zorunludur'),
+    ('error.operation-type.invalid-format', 'Operasyon tipi verisi JSON dizisi olmalıdır'),
+
     -- Shadow Mode
     ('error.shadow-tester.player-id-required', 'Oyuncu ID zorunludur'),
     ('error.shadow-tester.not-found', 'Shadow tester bulunamadı'),

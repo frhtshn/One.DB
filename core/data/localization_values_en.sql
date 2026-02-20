@@ -516,6 +516,16 @@ JOIN (VALUES
     ('error.player.id-required', 'Player ID is required'),
     ('error.player-limit.invalid-type', 'Invalid limit type'),
 
+    -- Financial Limit
+    ('error.financial-limit.currency-code-required', 'Currency code is required'),
+    ('error.financial-limit.invalid-type', 'Invalid financial limit type'),
+
+    -- Transaction / Operation Type Sync
+    ('error.transaction-type.data-required', 'Transaction type data is required'),
+    ('error.transaction-type.invalid-format', 'Transaction type data must be a JSON array'),
+    ('error.operation-type.data-required', 'Operation type data is required'),
+    ('error.operation-type.invalid-format', 'Operation type data must be a JSON array'),
+
     -- Shadow Mode
     ('error.shadow-tester.player-id-required', 'Player ID is required'),
     ('error.shadow-tester.not-found', 'Shadow tester not found'),

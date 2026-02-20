@@ -18,12 +18,12 @@ ALTER TABLE transaction.transactions
 -- transactions -> transaction_types (partitioned tablodan regular tabloya FK = OK)
 ALTER TABLE transaction.transactions
     ADD CONSTRAINT fk_transactions_type
-    FOREIGN KEY (transaction_type_id) REFERENCES finance.transaction_types(id);
+    FOREIGN KEY (transaction_type_id) REFERENCES transaction.transaction_types(id);
 
 -- transactions -> operation_types (partitioned tablodan regular tabloya FK = OK)
 ALTER TABLE transaction.transactions
     ADD CONSTRAINT fk_transactions_operation
-    FOREIGN KEY (operation_type_id) REFERENCES finance.operation_types(id);
+    FOREIGN KEY (operation_type_id) REFERENCES transaction.operation_types(id);
 
 -- transaction_workflow_actions -> transaction_workflows (regular tabloya FK = OK)
 ALTER TABLE transaction.transaction_workflow_actions
