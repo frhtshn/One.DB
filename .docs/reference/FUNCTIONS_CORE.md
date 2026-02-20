@@ -3,11 +3,11 @@
 Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 **Veritabanları:** `core`, `core_audit`, `core_log`, `core_report`
-**Toplam:** 349 fonksiyon, 3 trigger
+**Toplam:** 357 fonksiyon, 3 trigger
 
 ---
 
-## Core Database (318 fonksiyon, 3 trigger)
+## Core Database (326 fonksiyon, 3 trigger)
 
 ### Catalog Schema (115)
 
@@ -449,12 +449,13 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `user_role_list` | List user roles (optional tenant scope). IDOR |
 | `user_role_remove` | Remove role from user. IDOR |
 
-#### Session Management (7)
+#### Session Management (8)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `session_save` | Save session with full GeoIP data. UPDATE-then-INSERT for partitioned table |
 | `session_belongs_to_user` | Check if session belongs to user |
+| `session_enforce_limit` | Atomic session limit enforcement. Revokes oldest session if limit exceeded |
 | `session_update_activity` | Update last activity timestamp (on refresh token use) |
 | `session_list` | List user sessions |
 | `session_revoke` | Revoke single session |
@@ -497,9 +498,9 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-### Messaging Schema (12)
+### Messaging Schema (19)
 
-#### Admin Functions (9)
+#### Admin Functions (12)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
@@ -507,19 +508,31 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `admin_message_draft_update` | Update draft/scheduled. Caller scope validation. Returns BOOL |
 | `admin_message_draft_get` | Get draft details with read statistics. Returns JSONB |
 | `admin_message_draft_list` | Paginated list with sender/status/type/search filters. Returns JSONB |
+| `admin_message_draft_list_due_scheduled` | List scheduled drafts past due time. Used by ScheduledPublishService |
 | `admin_message_draft_delete` | Soft delete draft. Published cannot be deleted (use recall). Returns BOOL |
 | `admin_message_draft_cancel` | Cancel draft/scheduled (status → cancelled). Returns BOOL |
+| `admin_message_draft_unschedule` | Revert scheduled draft back to draft status. Returns BOOL |
 | `admin_message_publish` | Publish draft. Resolves recipients with AND-combined filters. Returns INT (count) |
 | `admin_message_recall` | Recall published message. Soft deletes user_messages. Returns INT (count) |
 | `admin_message_send` | Direct message to single user. No draft. Returns BIGINT (message_id) |
+| `get_published_recipients` | Get recipient list with message IDs for published draft. Used by fan-out handler |
 
-#### User Inbox (3)
+#### User Inbox (6)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `user_message_list` | Inbox messages with read/priority filters. Excludes expired. Returns JSONB |
+| `user_message_get_by_ids` | Batch fetch messages by IDs. Used by GetPendingNotifications on reconnect |
 | `user_message_read` | Mark message as read. Recipient only. Returns BOOL |
+| `user_message_read_all` | Mark all unread messages as read. Returns INT (affected count) |
+| `user_message_unread_count` | Unread message count. Excludes deleted and expired. Returns INT |
 | `user_message_delete` | Soft delete from inbox. Recipient only. Returns BOOL |
+
+#### Background Jobs (1)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `user_message_cleanup_expired` | Soft-delete expired messages in batches. SKIP LOCKED for concurrency |
 
 ---
 

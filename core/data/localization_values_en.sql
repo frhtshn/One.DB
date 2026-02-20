@@ -458,6 +458,7 @@ JOIN (VALUES
     ('error.messaging.draft-not-editable', 'Draft is not in editable status'),
     ('error.messaging.draft-not-scheduled', 'Draft is not in scheduled status'),
     ('error.messaging.too-many-recipients', 'Too many recipients (maximum 10000)'),
+    ('error.messaging.draft-already-cancelled', 'Draft has already been cancelled'),
     ('validation.messaging.at-least-one-field', 'At least one field must be provided'),
     ('validation.messaging.invalid-priority', 'Priority must be normal, important, or urgent'),
     ('validation.messaging.invalid-message-type', 'Invalid message type'),

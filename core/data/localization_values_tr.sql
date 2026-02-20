@@ -460,6 +460,7 @@ JOIN (VALUES
     ('error.messaging.draft-not-editable', 'Taslak düzenlenebilir durumda değil'),
     ('error.messaging.draft-not-scheduled', 'Taslak zamanlanmış durumda değil'),
     ('error.messaging.too-many-recipients', 'Çok fazla alıcı (maksimum 10000)'),
+    ('error.messaging.draft-already-cancelled', 'Taslak zaten iptal edilmiş'),
     ('validation.messaging.at-least-one-field', 'En az bir alan doldurulmalıdır'),
     ('validation.messaging.invalid-priority', 'Öncelik normal, important veya urgent olmalıdır'),
     ('validation.messaging.invalid-message-type', 'Geçersiz mesaj tipi'),

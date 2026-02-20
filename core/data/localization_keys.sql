@@ -488,6 +488,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.draft-not-editable', 'error', 'messaging', 'Draft düzenlenebilir durumda değil'),
 ('error.messaging.draft-not-scheduled', 'error', 'messaging', 'Draft zamanlanmış durumda değil'),
 ('error.messaging.too-many-recipients', 'error', 'messaging', 'Çok fazla alıcı (maksimum 10000)'),
+('error.messaging.draft-already-cancelled', 'error', 'messaging', 'Draft zaten iptal edilmiş'),
 ('validation.messaging.at-least-one-field', 'validation', 'messaging', 'En az bir alan doldurulmalıdır'),
 ('validation.messaging.invalid-priority', 'validation', 'messaging', 'Öncelik normal, important veya urgent olmalıdır'),
 ('validation.messaging.invalid-message-type', 'validation', 'messaging', 'Geçersiz mesaj tipi'),

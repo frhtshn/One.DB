@@ -15,3 +15,4 @@ CREATE INDEX idx_user_messages_unread ON messaging.user_messages(recipient_id) W
 CREATE INDEX idx_user_messages_draft ON messaging.user_messages(draft_id) WHERE draft_id IS NOT NULL;
 CREATE INDEX idx_user_messages_priority ON messaging.user_messages(recipient_id, priority) WHERE is_deleted = FALSE;
 CREATE INDEX idx_user_messages_type ON messaging.user_messages(recipient_id, message_type) WHERE is_deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_user_messages_expires ON messaging.user_messages(expires_at) WHERE expires_at IS NOT NULL AND is_deleted = FALSE;

@@ -1,8 +1,8 @@
 -- =============================================
 -- Compliance Seed Data
--- 10 büyük iGaming jurisdiction için referans veriler
+-- 11 iGaming jurisdiction için referans veriler
 -- Kaynak: UKGC, MGA, GGL, CGA, DGOJ, ANJ, KSA,
---         SGA, Spelinspektionen, ONJN düzenlemeleri
+--         SGA, Spelinspektionen, ONJN + TR (dev/test)
 -- =============================================
 -- UPSERT pattern: INSERT ... ON CONFLICT DO UPDATE
 -- Sabit ID'ler kullanılır (referans bütünlüğü için)
@@ -23,7 +23,8 @@ VALUES
     (7,  'KSA',   'Kansspelautoriteit',                              'NL', NULL,                 'national',  'https://www.kansspelautoriteit.nl',        'KSA-',  true),
     (8,  'SGA',   'Spillemyndigheden',                               'DK', NULL,                 'national',  'https://www.spillemyndigheden.dk',         'SGA-',  true),
     (9,  'SPEL',  'Spelinspektionen',                                'SE', NULL,                 'national',  'https://www.spelinspektionen.se',          'SPEL-', true),
-    (10, 'ONJN',  'Oficiul Național pentru Jocuri de Noroc',         'RO', NULL,                 'national',  'https://www.onjn.gov.ro',                  'ONJN-', true)
+    (10, 'ONJN',  'Oficiul Național pentru Jocuri de Noroc',         'RO', NULL,                 'national',  'https://www.onjn.gov.ro',                  'ONJN-', true),
+    (11, 'TR',    'Türkiye (Gevşek KYC — Geliştirme)',               'TR', NULL,                 'offshore',  NULL,                                       'TR-',   true)
 ON CONFLICT (id) DO UPDATE SET
     code = EXCLUDED.code,
     name = EXCLUDED.name,
@@ -132,7 +133,15 @@ VALUES
      5000.00, 5000.00, 15000.00, 'EUR',
      18, true, true, 90,
      15000.00, true,
-     true, true, true)
+     true, true, true),
+
+    -- TR: Gevşek — kayıt sonrası, çekimde zorunlu, yüksek eşikler
+    (11, 11, 'after_registration',
+     NULL, 0,
+     50000.00, 25000.00, 100000.00, 'TRY',
+     18, true, false, NULL,
+     100000.00, false,
+     false, false, true)
 ON CONFLICT (id) DO UPDATE SET
     verification_timing = EXCLUDED.verification_timing,
     verification_deadline_hours = EXCLUDED.verification_deadline_hours,
@@ -387,7 +396,32 @@ VALUES
      NULL, NULL, NULL, NULL, NULL, NULL, 'EUR',
      '["identity", "proof_of_address", "source_of_funds"]'::jsonb,
      '["EMAIL", "PHONE", "PEP_CHECK", "SANCTIONS_CHECK"]'::jsonb,
-     NULL, 0, 'block_all', true)
+     NULL, 0, 'block_all', true),
+
+    -- ===================== TR (Gevşek) =====================
+    -- Basic: Sadece email, hiçbir belge gerekmez, limit yok
+    (31, 11, 'basic', 0,
+     NULL, NULL, NULL, NULL, NULL, 'TRY', NULL, false,
+     NULL, NULL, NULL, NULL, NULL, NULL, 'TRY',
+     '[]'::jsonb,
+     '["EMAIL"]'::jsonb,
+     NULL, 0, 'block_withdrawals', true),
+
+    -- Standard: İlk çekimde veya 50.000 TRY'de tetiklenir
+    (32, 11, 'standard', 1,
+     50000.00, NULL, NULL, NULL, NULL, 'TRY', NULL, true,
+     NULL, NULL, NULL, NULL, NULL, NULL, 'TRY',
+     '["identity"]'::jsonb,
+     '["EMAIL", "PHONE"]'::jsonb,
+     NULL, 0, 'block_withdrawals', true),
+
+    -- Enhanced: 100.000 TRY kümülatif
+    (33, 11, 'enhanced', 2,
+     100000.00, 50000.00, NULL, NULL, NULL, 'TRY', NULL, false,
+     NULL, NULL, NULL, NULL, NULL, NULL, 'TRY',
+     '["identity", "proof_of_address"]'::jsonb,
+     '["EMAIL", "PHONE"]'::jsonb,
+     NULL, 0, 'block_withdrawals', true)
 ON CONFLICT (id) DO UPDATE SET
     kyc_level = EXCLUDED.kyc_level,
     level_order = EXCLUDED.level_order,
@@ -506,7 +540,15 @@ VALUES
     (31, 10, 'proof_of_address', '["utility_bill", "bank_statement"]'::jsonb,
      true, 'all', 90, 365, 'manual', 2, true),
     (32, 10, 'source_of_funds',  '["payslip", "bank_statement"]'::jsonb,
-     true, 'edd', NULL, 180, 'manual', 3, true)
+     true, 'edd', NULL, 180, 'manual', 3, true),
+
+    -- ===================== TR (Gevşek) =====================
+    -- Kimlik: Sadece çekimde zorunlu, otomatik doğrulama yok
+    (33, 11, 'identity',         '["tc_kimlik", "passport", "ehliyet"]'::jsonb,
+     true, 'withdrawal', NULL, NULL, 'manual', 1, true),
+    -- Adres: Sadece enhanced seviyede
+    (34, 11, 'proof_of_address', '["utility_bill", "bank_statement", "ikametgah"]'::jsonb,
+     false, 'edd', 90, 365, 'manual', 2, true)
 ON CONFLICT (id) DO UPDATE SET
     document_type = EXCLUDED.document_type,
     accepted_subtypes = EXCLUDED.accepted_subtypes,
@@ -654,6 +696,18 @@ VALUES
      true, 6, true, false,
      'ONJN_REGISTRY', true, NULL,
      false, true, true,
+     false, true),
+
+    -- TR: Minimum kural — limitler opsiyonel, merkezi sistem yok, tüm ödeme yöntemleri açık
+    (11, 11,
+     false, '["DAILY","WEEKLY","MONTHLY"]'::jsonb, 24,
+     false, NULL,
+     false, NULL, false, NULL, NULL,
+     false, NULL,
+     true, 1, 180, true,
+     true, 6, true, true,
+     NULL, false, NULL,
+     true, true, true,
      false, true)
 ON CONFLICT (id) DO UPDATE SET
     deposit_limit_required = EXCLUDED.deposit_limit_required,
@@ -765,7 +819,14 @@ VALUES
     (47, 10, 'transaction_logs', 3650, 'Legea 129/2019 Art 21',        'Financial transaction records (10 years)', true),
     (48, 10, 'player_data',     1825, 'GDPR + Legea 129/2019',         'Player personal data', true),
     (49, 10, 'game_logs',        365, 'ONJN Licence Conditions',       'Game round and bet records', true),
-    (50, 10, 'audit_logs',      3650, 'Legea 129/2019 Art 21',         'System audit trail (10 years)', true)
+    (50, 10, 'audit_logs',      3650, 'Legea 129/2019 Art 21',         'System audit trail (10 years)', true),
+
+    -- ===================== TR — 5 yıl (MASAK) =====================
+    (51, 11, 'kyc_data',        1825, 'MASAK Yönetmeliği',             'KYC documents and verification records', true),
+    (52, 11, 'transaction_logs', 1825, 'MASAK Yönetmeliği',            'Financial transaction records', true),
+    (53, 11, 'player_data',     1825, 'KVKK Madde 7',                 'Player personal data', true),
+    (54, 11, 'game_logs',        365, 'Operatör politikası',           'Game round and bet records', true),
+    (55, 11, 'audit_logs',      1825, 'MASAK Yönetmeliği',            'System audit trail', true)
 ON CONFLICT (id) DO UPDATE SET
     data_category = EXCLUDED.data_category,
     retention_days = EXCLUDED.retention_days,
