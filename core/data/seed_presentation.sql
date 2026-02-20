@@ -100,7 +100,7 @@ FROM presentation.menus m
 CROSS JOIN (VALUES
     ('roles', 'ui.submenu.roles', '/rbac/roles', 1, 'platform.role.manage'),
     ('permissions', 'ui.submenu.permissions', '/rbac/permissions', 2, 'platform.permission.manage'),
-    ('menus', 'ui.submenu.menus', '/rbac/menus', 3, 'platform.presentation.manage'),
+    ('menus', 'ui.submenu.menus', '/rbac/menu-management', 3, 'platform.presentation.manage'),
     ('permission-templates', 'ui.submenu.permission-templates', '/rbac/permission-templates', 4, 'platform.permission-template.manage')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'rbac';
