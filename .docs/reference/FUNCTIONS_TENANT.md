@@ -3,11 +3,11 @@
 Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 **Veritabanları:** `tenant`, `tenant_log`, `tenant_report`, `tenant_audit`, `tenant_affiliate`
-**Toplam:** 260 fonksiyon
+**Toplam:** 331 fonksiyon
 
 ---
 
-## Tenant Database (221 fonksiyon)
+## Tenant Database (292 fonksiyon)
 
 > **Note:** Tenant database functions do NOT perform IDOR (access control) checks.
 > Authorization is handled in Core DB via `user_assert_access_tenant(caller_id, tenant_id)` before calling tenant functions.
@@ -410,11 +410,143 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `bonus_request_expire` | Süresi dolmuş pending/assigned talepleri expire et. SKIP LOCKED batch → INT |
 | `bonus_request_cleanup` | cancelled/expired talepleri retention sonrası sil. completed/rejected asla silinmez → INT |
 
-### Content Schema
+### Content Schema (50)
 
-> Functions will be documented here as they are implemented.
+> **Detaylı rehber:** [SITE_MANAGEMENT_GUIDE.md](../guides/SITE_MANAGEMENT_GUIDE.md)
 
-### Messaging Schema (14)
+#### BO: CMS Kategori (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `content_category_upsert` | Kategori oluştur/güncelle (çeviriler dahil). NULL id → create. Returns INT |
+| `content_category_delete` | Aktif tipleri varsa engelle, yoksa soft delete. Returns VOID |
+| `content_category_list` | Tüm kategoriler, aktiflik filtreli + çeviriler. Returns JSONB |
+
+#### BO: CMS Tip (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `content_type_upsert` | İçerik tipi oluştur/güncelle (çeviriler dahil). Returns INT |
+| `content_type_delete` | Aktif içerik varsa engelle, yoksa soft delete. Returns VOID |
+| `content_type_list` | Tipler, kategori/aktiflik filtreli + çeviriler. Returns JSONB |
+
+#### BO: CMS İçerik (5)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `content_create` | İçerik oluştur (çeviriler + ekler). status=draft. Returns INT |
+| `content_update` | İçerik güncelle (DELETE+INSERT çeviriler/ekler). Returns VOID |
+| `content_get` | Detay: çeviriler + ekler + versiyon geçmişi. Returns JSONB |
+| `content_list` | Sayfalanmış liste, tip/durum/arama filtreli. Returns JSONB |
+| `content_publish` | Versiyon artır, content_versions'a snapshot al. Returns VOID |
+
+#### BO: FAQ (5)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `faq_category_upsert` | FAQ kategori oluştur/güncelle + çeviriler. Returns INT |
+| `faq_category_delete` | Aktif öğeleri varsa engelle. Returns VOID |
+| `faq_category_list` | Kategoriler + öğe sayısı. Returns JSONB |
+| `faq_item_upsert` | FAQ öğesi oluştur/güncelle + çeviriler. Returns INT |
+| `faq_item_delete` | Soft delete. Returns VOID |
+
+#### BO: Popup (8)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `popup_type_upsert` | Popup tipi oluştur/güncelle + çeviriler. Returns INT |
+| `popup_type_list` | Tüm popup tipleri. Returns JSONB |
+| `popup_create` | Popup oluştur (config + targeting + çeviriler + görseller + zamanlama). Returns INT |
+| `popup_update` | Popup güncelle (DELETE+INSERT alt kayıtlar). Returns VOID |
+| `popup_get` | Detay: çeviriler + görseller + zamanlama. Returns JSONB |
+| `popup_list` | Sayfalanmış liste, tip/aktiflik filtreli. Returns JSONB |
+| `popup_delete` | Soft delete (is_deleted). Returns VOID |
+| `popup_toggle_active` | Aktif/pasif toggle. Returns JSONB |
+
+#### BO: Promosyon (8)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `promotion_type_upsert` | Promosyon tipi oluştur/güncelle + çeviriler. Returns INT |
+| `promotion_type_list` | Tüm promosyon tipleri. Returns JSONB |
+| `promotion_create` | Promosyon oluştur (çeviriler + bannerlar + segmentler + oyunlar + lokasyonlar). Returns INT |
+| `promotion_update` | Promosyon güncelle (DELETE+INSERT 5 alt kayıt tipi). Returns VOID |
+| `promotion_get` | Detay: tüm alt kayıtlar dahil. Returns JSONB |
+| `promotion_list` | Sayfalanmış liste, tip/aktiflik/öne çıkan filtreli. Returns JSONB |
+| `promotion_delete` | Soft delete (is_deleted). Returns VOID |
+| `promotion_toggle_featured` | Öne çıkan toggle. Returns JSONB |
+
+#### BO: Slide/Banner (10)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `slide_placement_upsert` | Placement oluştur/güncelle. Returns INT |
+| `slide_placement_list` | Placementler + slide sayısı. Returns JSONB |
+| `slide_category_upsert` | Slide kategorisi oluştur/güncelle + çeviriler. Returns INT |
+| `slide_category_list` | Tüm slide kategorileri. Returns JSONB |
+| `slide_create` | Slide oluştur (config + targeting + çeviriler + görseller + zamanlama). Returns INT |
+| `slide_update` | Slide güncelle (DELETE+INSERT alt kayıtlar). Returns VOID |
+| `slide_get` | Detay: çeviriler + görseller + zamanlama. Returns JSONB |
+| `slide_list` | Sayfalanmış liste, placement/kategori/aktiflik filtreli. Returns JSONB |
+| `slide_delete` | Soft delete (is_deleted). Returns VOID |
+| `slide_reorder` | Placement içi sıralama güncelle (array index → sort_order). Returns VOID |
+
+#### FE: Public Content APIs (8)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `public_content_get` | Slug ile yayınlanmış içerik getir + dil çevirisi. Returns JSONB |
+| `public_content_list` | Tip kodu ile içerik listesi, sayfalanmış. Returns JSONB |
+| `public_faq_list` | FAQ listesi: kategori/öne çıkan/arama filtreli. Returns JSONB |
+| `public_faq_get` | FAQ öğesi detay + view_count artır. Returns JSONB |
+| `public_popup_list` | Aktif popuplar: ülke, segment, sayfa URL, zamanlama filtreli. Returns JSONB |
+| `public_promotion_list` | Aktif promosyonlar: ülke, segment filtreli. Returns JSONB |
+| `public_promotion_get` | Promosyon detay: çeviriler + bannerlar. Returns JSONB |
+| `public_slide_list` | Placement slide'ları: max_slides + targeting + zamanlama filtreli. Returns JSONB |
+
+### Presentation Schema (18)
+
+> **Detaylı rehber:** [SITE_MANAGEMENT_GUIDE.md](../guides/SITE_MANAGEMENT_GUIDE.md)
+
+#### BO: Navigation (7)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `navigation_create` | Navigasyon öğesi oluştur. is_locked/is_readonly her zaman FALSE. Returns BIGINT |
+| `navigation_update` | Güncelle. is_readonly ise target_type/url/action korunur. Returns VOID |
+| `navigation_delete` | Sil. is_locked engeli + alt öğe kontrolü. Returns VOID |
+| `navigation_get` | Detay: tüm alanlar + koruma bayrakları. Returns JSONB |
+| `navigation_list` | Recursive CTE ile hiyerarşik ağaç (children[] iç içe). Returns JSONB |
+| `navigation_reorder` | Sıralama güncelle (array index → display_order). Returns VOID |
+| `navigation_toggle_visible` | Görünürlük toggle + yeni durum dön. Returns JSONB |
+
+#### BO: Theme (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `theme_upsert` | Tema config oluştur/güncelle. ON CONFLICT (theme_id). Returns BIGINT |
+| `theme_activate` | Tüm temaları pasifle, seçileni aktifle. Returns VOID |
+| `theme_get` | ID veya aktif tema getir (dual mod). Returns JSONB |
+| `theme_list` | Tüm temalar, aktif önce sıralı. Returns JSONB |
+
+#### BO: Layout (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `layout_upsert` | Layout oluştur/güncelle (JSONB structure). Returns BIGINT |
+| `layout_delete` | Hard delete. Returns VOID |
+| `layout_get` | Layout detay. Returns JSONB |
+| `layout_list` | Tüm layoutlar, global önce sıralı. Returns JSONB |
+
+#### FE: Public Presentation APIs (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `public_navigation_get` | Konum bazlı menü: auth/guest/cihaz filtreleme + dil çözümleme. Returns JSONB |
+| `public_theme_get` | Aktif tema config. Tema yoksa boş config dön. Returns JSONB |
+| `public_layout_get` | Layout getir: page_id → layout_name → 'default' fallback zinciri. Returns JSONB |
+
+### Messaging Schema (17)
 
 #### Admin Campaign (6)
 
@@ -449,6 +581,14 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `player_message_list` | Inbox messages with read/unread filter. Returns JSONB (total + unread counts) |
 | `player_message_read` | Mark message as read. Owning player only. Returns BOOL |
 | `player_message_delete` | Soft delete from inbox. Owning player only. Data preserved for audit. Returns BOOL |
+
+#### Player Message Preferences (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_message_preference_get` | Oyuncu kanal tercihlerini getir (email/sms/local varsayılanlarla). Returns JSONB |
+| `player_message_preference_upsert` | Oyuncu kanal tercihi oluştur/güncelle. ON CONFLICT (player_id, channel_type). Returns VOID |
+| `player_message_preference_bo_get` | BO için oyuncu kanal tercihlerini getir. Returns JSONB |
 
 ### Support Schema (43)
 

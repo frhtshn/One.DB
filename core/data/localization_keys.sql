@@ -1049,6 +1049,100 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- KYC — Provider Log (tenant_log)
 ('error.kyc-provider-log.player-required', 'error', 'kyc-provider-log', 'Oyuncu ID zorunlu'),
 ('error.kyc-provider-log.case-required', 'error', 'kyc-provider-log', 'Case ID zorunlu'),
-('error.kyc-provider-log.provider-required', 'error', 'kyc-provider-log', 'Sağlayıcı kodu zorunlu')
+('error.kyc-provider-log.provider-required', 'error', 'kyc-provider-log', 'Sağlayıcı kodu zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Content Management (CMS)
+-- ============================================================================
+('error.content.id-required', 'error', 'content', 'İçerik ID zorunlu'),
+('error.content.not-found', 'error', 'content', 'İçerik bulunamadı'),
+('error.content.slug-required', 'error', 'content', 'Slug zorunlu'),
+('error.content.translations-required', 'error', 'content', 'En az bir çeviri zorunlu'),
+('error.content.user-id-required', 'error', 'content', 'Kullanıcı ID zorunlu'),
+('error.content.category-code-required', 'error', 'content', 'Kategori kodu zorunlu'),
+('error.content.category-id-required', 'error', 'content', 'Kategori ID zorunlu'),
+('error.content.category-not-found', 'error', 'content', 'Kategori bulunamadı'),
+('error.content.category-has-active-types', 'error', 'content', 'Aktif içerik tipleri olan kategori silinemez'),
+('error.content.type-code-required', 'error', 'content', 'İçerik tipi kodu zorunlu'),
+('error.content.type-id-required', 'error', 'content', 'İçerik tipi ID zorunlu'),
+('error.content.type-not-found', 'error', 'content', 'İçerik tipi bulunamadı'),
+('error.content.type-has-active-contents', 'error', 'content', 'Aktif içerikleri olan tip silinemez'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — FAQ Yönetimi
+-- ============================================================================
+('error.faq.user-id-required', 'error', 'faq', 'Kullanıcı ID zorunlu'),
+('error.faq.category-code-required', 'error', 'faq', 'FAQ kategori kodu zorunlu'),
+('error.faq.category-id-required', 'error', 'faq', 'FAQ kategori ID zorunlu'),
+('error.faq.category-not-found', 'error', 'faq', 'FAQ kategorisi bulunamadı'),
+('error.faq.category-has-active-items', 'error', 'faq', 'Aktif öğeleri olan FAQ kategorisi silinemez'),
+('error.faq.item-id-required', 'error', 'faq', 'FAQ öğesi ID zorunlu'),
+('error.faq.item-not-found', 'error', 'faq', 'FAQ öğesi bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Layout Yönetimi
+-- ============================================================================
+('error.layout.id-required', 'error', 'layout', 'Layout ID zorunlu'),
+('error.layout.not-found', 'error', 'layout', 'Layout bulunamadı'),
+('error.layout.name-required', 'error', 'layout', 'Layout adı zorunlu'),
+('error.layout.structure-required', 'error', 'layout', 'Layout yapısı zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Mesaj Tercihleri
+-- ============================================================================
+('error.messaging.preference.invalid-channel-type', 'error', 'messaging', 'Geçersiz tercih kanal tipi'),
+('error.messaging.preference.opted-in-required', 'error', 'messaging', 'Tercih durumu (opted_in) zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Navigation Yönetimi
+-- ============================================================================
+('error.navigation.id-required', 'error', 'navigation', 'Navigasyon öğesi ID zorunlu'),
+('error.navigation.item-not-found', 'error', 'navigation', 'Navigasyon öğesi bulunamadı'),
+('error.navigation.item-locked', 'error', 'navigation', 'Kilitli navigasyon öğesi silinemez'),
+('error.navigation.has-children', 'error', 'navigation', 'Alt öğeleri olan navigasyon öğesi silinemez'),
+('error.navigation.parent-not-found', 'error', 'navigation', 'Üst navigasyon öğesi bulunamadı'),
+('error.navigation.location-required', 'error', 'navigation', 'Menü konumu zorunlu'),
+('error.navigation.label-required', 'error', 'navigation', 'Etiket veya çeviri anahtarı zorunlu'),
+('error.navigation.item-ids-required', 'error', 'navigation', 'Öğe ID listesi zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Popup Yönetimi
+-- ============================================================================
+('error.popup.id-required', 'error', 'popup', 'Popup ID zorunlu'),
+('error.popup.not-found', 'error', 'popup', 'Popup bulunamadı'),
+('error.popup.user-id-required', 'error', 'popup', 'Kullanıcı ID zorunlu'),
+('error.popup.type-code-required', 'error', 'popup', 'Popup tipi kodu zorunlu'),
+('error.popup.type-id-required', 'error', 'popup', 'Popup tipi ID zorunlu'),
+('error.popup.type-not-found', 'error', 'popup', 'Popup tipi bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Promosyon Yönetimi
+-- ============================================================================
+('error.promotion.id-required', 'error', 'promotion', 'Promosyon ID zorunlu'),
+('error.promotion.not-found', 'error', 'promotion', 'Promosyon bulunamadı'),
+('error.promotion.code-required', 'error', 'promotion', 'Promosyon kodu zorunlu'),
+('error.promotion.user-id-required', 'error', 'promotion', 'Kullanıcı ID zorunlu'),
+('error.promotion.type-code-required', 'error', 'promotion', 'Promosyon tipi kodu zorunlu'),
+('error.promotion.type-id-required', 'error', 'promotion', 'Promosyon tipi ID zorunlu'),
+('error.promotion.type-not-found', 'error', 'promotion', 'Promosyon tipi bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Slide/Banner Yönetimi
+-- ============================================================================
+('error.slide.id-required', 'error', 'slide', 'Slide ID zorunlu'),
+('error.slide.not-found', 'error', 'slide', 'Slide bulunamadı'),
+('error.slide.user-id-required', 'error', 'slide', 'Kullanıcı ID zorunlu'),
+('error.slide.placement-id-required', 'error', 'slide', 'Placement ID zorunlu'),
+('error.slide.placement-code-required', 'error', 'slide', 'Placement kodu zorunlu'),
+('error.slide.placement-name-required', 'error', 'slide', 'Placement adı zorunlu'),
+('error.slide.placement-not-found', 'error', 'slide', 'Placement bulunamadı'),
+('error.slide.slide-ids-required', 'error', 'slide', 'Slide ID listesi zorunlu'),
+('error.slide.category-code-required', 'error', 'slide', 'Slide kategori kodu zorunlu'),
+('error.slide.category-not-found', 'error', 'slide', 'Slide kategorisi bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Tema Yönetimi (ek)
+-- ============================================================================
+('error.theme.theme-id-required', 'error', 'theme', 'Tema referans ID zorunlu')
 
 ON CONFLICT DO NOTHING;

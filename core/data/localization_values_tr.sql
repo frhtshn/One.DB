@@ -933,6 +933,82 @@ JOIN (VALUES
     -- KYC Sağlayıcı Log
     ('error.kyc-provider-log.player-required', 'Oyuncu ID zorunludur'),
     ('error.kyc-provider-log.case-required', 'Vaka ID zorunludur'),
-    ('error.kyc-provider-log.provider-required', 'Sağlayıcı kodu zorunludur')
+    ('error.kyc-provider-log.provider-required', 'Sağlayıcı kodu zorunludur'),
+
+    -- Tenant Backoffice — İçerik Yönetimi (CMS)
+    ('error.content.id-required', 'İçerik ID zorunludur'),
+    ('error.content.not-found', 'İçerik bulunamadı'),
+    ('error.content.slug-required', 'Slug zorunludur'),
+    ('error.content.translations-required', 'En az bir çeviri zorunludur'),
+    ('error.content.user-id-required', 'Kullanıcı ID zorunludur'),
+    ('error.content.category-code-required', 'Kategori kodu zorunludur'),
+    ('error.content.category-id-required', 'Kategori ID zorunludur'),
+    ('error.content.category-not-found', 'Kategori bulunamadı'),
+    ('error.content.category-has-active-types', 'Aktif içerik tipleri olan kategori silinemez'),
+    ('error.content.type-code-required', 'İçerik tipi kodu zorunludur'),
+    ('error.content.type-id-required', 'İçerik tipi ID zorunludur'),
+    ('error.content.type-not-found', 'İçerik tipi bulunamadı'),
+    ('error.content.type-has-active-contents', 'Aktif içerikleri olan tip silinemez'),
+
+    -- Tenant Backoffice — FAQ Yönetimi
+    ('error.faq.user-id-required', 'Kullanıcı ID zorunludur'),
+    ('error.faq.category-code-required', 'FAQ kategori kodu zorunludur'),
+    ('error.faq.category-id-required', 'FAQ kategori ID zorunludur'),
+    ('error.faq.category-not-found', 'FAQ kategorisi bulunamadı'),
+    ('error.faq.category-has-active-items', 'Aktif öğeleri olan FAQ kategorisi silinemez'),
+    ('error.faq.item-id-required', 'FAQ öğesi ID zorunludur'),
+    ('error.faq.item-not-found', 'FAQ öğesi bulunamadı'),
+
+    -- Tenant Backoffice — Layout Yönetimi
+    ('error.layout.id-required', 'Layout ID zorunludur'),
+    ('error.layout.not-found', 'Layout bulunamadı'),
+    ('error.layout.name-required', 'Layout adı zorunludur'),
+    ('error.layout.structure-required', 'Layout yapısı zorunludur'),
+
+    -- Tenant Backoffice — Mesaj Tercihleri
+    ('error.messaging.preference.invalid-channel-type', 'Geçersiz tercih kanal tipi'),
+    ('error.messaging.preference.opted-in-required', 'Tercih durumu (opted_in) zorunludur'),
+
+    -- Tenant Backoffice — Navigasyon Yönetimi
+    ('error.navigation.id-required', 'Navigasyon öğesi ID zorunludur'),
+    ('error.navigation.item-not-found', 'Navigasyon öğesi bulunamadı'),
+    ('error.navigation.item-locked', 'Kilitli navigasyon öğesi silinemez'),
+    ('error.navigation.has-children', 'Alt öğeleri olan navigasyon öğesi silinemez'),
+    ('error.navigation.parent-not-found', 'Üst navigasyon öğesi bulunamadı'),
+    ('error.navigation.location-required', 'Menü konumu zorunludur'),
+    ('error.navigation.label-required', 'Etiket veya çeviri anahtarı zorunludur'),
+    ('error.navigation.item-ids-required', 'Öğe ID listesi zorunludur'),
+
+    -- Tenant Backoffice — Popup Yönetimi
+    ('error.popup.id-required', 'Popup ID zorunludur'),
+    ('error.popup.not-found', 'Popup bulunamadı'),
+    ('error.popup.user-id-required', 'Kullanıcı ID zorunludur'),
+    ('error.popup.type-code-required', 'Popup tipi kodu zorunludur'),
+    ('error.popup.type-id-required', 'Popup tipi ID zorunludur'),
+    ('error.popup.type-not-found', 'Popup tipi bulunamadı'),
+
+    -- Tenant Backoffice — Promosyon Yönetimi
+    ('error.promotion.id-required', 'Promosyon ID zorunludur'),
+    ('error.promotion.not-found', 'Promosyon bulunamadı'),
+    ('error.promotion.code-required', 'Promosyon kodu zorunludur'),
+    ('error.promotion.user-id-required', 'Kullanıcı ID zorunludur'),
+    ('error.promotion.type-code-required', 'Promosyon tipi kodu zorunludur'),
+    ('error.promotion.type-id-required', 'Promosyon tipi ID zorunludur'),
+    ('error.promotion.type-not-found', 'Promosyon tipi bulunamadı'),
+
+    -- Tenant Backoffice — Slide/Banner Yönetimi
+    ('error.slide.id-required', 'Slide ID zorunludur'),
+    ('error.slide.not-found', 'Slide bulunamadı'),
+    ('error.slide.user-id-required', 'Kullanıcı ID zorunludur'),
+    ('error.slide.placement-id-required', 'Placement ID zorunludur'),
+    ('error.slide.placement-code-required', 'Placement kodu zorunludur'),
+    ('error.slide.placement-name-required', 'Placement adı zorunludur'),
+    ('error.slide.placement-not-found', 'Placement bulunamadı'),
+    ('error.slide.slide-ids-required', 'Slide ID listesi zorunludur'),
+    ('error.slide.category-code-required', 'Slide kategori kodu zorunludur'),
+    ('error.slide.category-not-found', 'Slide kategorisi bulunamadı'),
+
+    -- Tenant Backoffice — Tema Yönetimi (ek)
+    ('error.theme.theme-id-required', 'Tema referans ID zorunludur')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

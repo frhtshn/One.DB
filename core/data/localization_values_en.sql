@@ -931,6 +931,82 @@ JOIN (VALUES
     -- KYC Provider Log
     ('error.kyc-provider-log.player-required', 'Player ID is required'),
     ('error.kyc-provider-log.case-required', 'Case ID is required'),
-    ('error.kyc-provider-log.provider-required', 'Provider code is required')
+    ('error.kyc-provider-log.provider-required', 'Provider code is required'),
+
+    -- Tenant Backoffice — Content Management (CMS)
+    ('error.content.id-required', 'Content ID is required'),
+    ('error.content.not-found', 'Content not found'),
+    ('error.content.slug-required', 'Slug is required'),
+    ('error.content.translations-required', 'At least one translation is required'),
+    ('error.content.user-id-required', 'User ID is required'),
+    ('error.content.category-code-required', 'Category code is required'),
+    ('error.content.category-id-required', 'Category ID is required'),
+    ('error.content.category-not-found', 'Category not found'),
+    ('error.content.category-has-active-types', 'Cannot delete category with active content types'),
+    ('error.content.type-code-required', 'Content type code is required'),
+    ('error.content.type-id-required', 'Content type ID is required'),
+    ('error.content.type-not-found', 'Content type not found'),
+    ('error.content.type-has-active-contents', 'Cannot delete type with active contents'),
+
+    -- Tenant Backoffice — FAQ
+    ('error.faq.user-id-required', 'User ID is required'),
+    ('error.faq.category-code-required', 'FAQ category code is required'),
+    ('error.faq.category-id-required', 'FAQ category ID is required'),
+    ('error.faq.category-not-found', 'FAQ category not found'),
+    ('error.faq.category-has-active-items', 'Cannot delete FAQ category with active items'),
+    ('error.faq.item-id-required', 'FAQ item ID is required'),
+    ('error.faq.item-not-found', 'FAQ item not found'),
+
+    -- Tenant Backoffice — Layout
+    ('error.layout.id-required', 'Layout ID is required'),
+    ('error.layout.not-found', 'Layout not found'),
+    ('error.layout.name-required', 'Layout name is required'),
+    ('error.layout.structure-required', 'Layout structure is required'),
+
+    -- Tenant Backoffice — Message Preferences
+    ('error.messaging.preference.invalid-channel-type', 'Invalid preference channel type'),
+    ('error.messaging.preference.opted-in-required', 'Opted-in status is required'),
+
+    -- Tenant Backoffice — Navigation
+    ('error.navigation.id-required', 'Navigation item ID is required'),
+    ('error.navigation.item-not-found', 'Navigation item not found'),
+    ('error.navigation.item-locked', 'Locked navigation item cannot be deleted'),
+    ('error.navigation.has-children', 'Cannot delete navigation item with children'),
+    ('error.navigation.parent-not-found', 'Parent navigation item not found'),
+    ('error.navigation.location-required', 'Menu location is required'),
+    ('error.navigation.label-required', 'Label or translation key is required'),
+    ('error.navigation.item-ids-required', 'Item ID list is required'),
+
+    -- Tenant Backoffice — Popup
+    ('error.popup.id-required', 'Popup ID is required'),
+    ('error.popup.not-found', 'Popup not found'),
+    ('error.popup.user-id-required', 'User ID is required'),
+    ('error.popup.type-code-required', 'Popup type code is required'),
+    ('error.popup.type-id-required', 'Popup type ID is required'),
+    ('error.popup.type-not-found', 'Popup type not found'),
+
+    -- Tenant Backoffice — Promotion
+    ('error.promotion.id-required', 'Promotion ID is required'),
+    ('error.promotion.not-found', 'Promotion not found'),
+    ('error.promotion.code-required', 'Promotion code is required'),
+    ('error.promotion.user-id-required', 'User ID is required'),
+    ('error.promotion.type-code-required', 'Promotion type code is required'),
+    ('error.promotion.type-id-required', 'Promotion type ID is required'),
+    ('error.promotion.type-not-found', 'Promotion type not found'),
+
+    -- Tenant Backoffice — Slide/Banner
+    ('error.slide.id-required', 'Slide ID is required'),
+    ('error.slide.not-found', 'Slide not found'),
+    ('error.slide.user-id-required', 'User ID is required'),
+    ('error.slide.placement-id-required', 'Placement ID is required'),
+    ('error.slide.placement-code-required', 'Placement code is required'),
+    ('error.slide.placement-name-required', 'Placement name is required'),
+    ('error.slide.placement-not-found', 'Placement not found'),
+    ('error.slide.slide-ids-required', 'Slide ID list is required'),
+    ('error.slide.category-code-required', 'Slide category code is required'),
+    ('error.slide.category-not-found', 'Slide category not found'),
+
+    -- Tenant Backoffice — Theme (additional)
+    ('error.theme.theme-id-required', 'Theme reference ID is required')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

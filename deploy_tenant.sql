@@ -36,6 +36,9 @@ COMMENT ON SCHEMA content IS 'Content management system (CMS)';
 CREATE SCHEMA IF NOT EXISTS messaging;
 COMMENT ON SCHEMA messaging IS 'Player messaging and campaign management';
 
+CREATE SCHEMA IF NOT EXISTS presentation;
+COMMENT ON SCHEMA presentation IS 'Frontend presentation: navigation, themes, layouts';
+
 CREATE SCHEMA IF NOT EXISTS support;
 COMMENT ON SCHEMA support IS 'Customer support: tickets, agents, representatives, welcome calls';
 
@@ -162,6 +165,11 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/content/popup/popup_translations.sql
 \i tenant/tables/content/popup/popup_images.sql
 \i tenant/tables/content/popup/popup_schedules.sql
+
+-- PRESENTATION TABLES
+\i tenant/tables/presentation/navigation.sql
+\i tenant/tables/presentation/themes.sql
+\i tenant/tables/presentation/layouts.sql
 
 -- MESSAGING TABLES
 \i tenant/tables/messaging/message_templates.sql
@@ -462,6 +470,82 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/support/ticket_queue_list.sql
 \i tenant/functions/backoffice/support/ticket_dashboard_stats.sql
 
+-- Backoffice: Content — CMS (İçerik yönetimi)
+\i tenant/functions/backoffice/content/content_category_upsert.sql
+\i tenant/functions/backoffice/content/content_category_delete.sql
+\i tenant/functions/backoffice/content/content_category_list.sql
+\i tenant/functions/backoffice/content/content_type_upsert.sql
+\i tenant/functions/backoffice/content/content_type_delete.sql
+\i tenant/functions/backoffice/content/content_type_list.sql
+\i tenant/functions/backoffice/content/content_create.sql
+\i tenant/functions/backoffice/content/content_update.sql
+\i tenant/functions/backoffice/content/content_get.sql
+\i tenant/functions/backoffice/content/content_list.sql
+\i tenant/functions/backoffice/content/content_publish.sql
+
+-- Backoffice: Content — FAQ
+\i tenant/functions/backoffice/content/faq_category_upsert.sql
+\i tenant/functions/backoffice/content/faq_category_delete.sql
+\i tenant/functions/backoffice/content/faq_category_list.sql
+\i tenant/functions/backoffice/content/faq_item_upsert.sql
+\i tenant/functions/backoffice/content/faq_item_delete.sql
+
+-- Backoffice: Content — Popup
+\i tenant/functions/backoffice/content/popup_type_upsert.sql
+\i tenant/functions/backoffice/content/popup_type_list.sql
+\i tenant/functions/backoffice/content/popup_create.sql
+\i tenant/functions/backoffice/content/popup_update.sql
+\i tenant/functions/backoffice/content/popup_get.sql
+\i tenant/functions/backoffice/content/popup_list.sql
+\i tenant/functions/backoffice/content/popup_delete.sql
+\i tenant/functions/backoffice/content/popup_toggle_active.sql
+
+-- Backoffice: Content — Promotion
+\i tenant/functions/backoffice/content/promotion_type_upsert.sql
+\i tenant/functions/backoffice/content/promotion_type_list.sql
+\i tenant/functions/backoffice/content/promotion_create.sql
+\i tenant/functions/backoffice/content/promotion_update.sql
+\i tenant/functions/backoffice/content/promotion_get.sql
+\i tenant/functions/backoffice/content/promotion_list.sql
+\i tenant/functions/backoffice/content/promotion_delete.sql
+\i tenant/functions/backoffice/content/promotion_toggle_featured.sql
+
+-- Backoffice: Content — Slide/Banner
+\i tenant/functions/backoffice/content/slide_placement_upsert.sql
+\i tenant/functions/backoffice/content/slide_placement_list.sql
+\i tenant/functions/backoffice/content/slide_category_upsert.sql
+\i tenant/functions/backoffice/content/slide_category_list.sql
+\i tenant/functions/backoffice/content/slide_create.sql
+\i tenant/functions/backoffice/content/slide_update.sql
+\i tenant/functions/backoffice/content/slide_get.sql
+\i tenant/functions/backoffice/content/slide_list.sql
+\i tenant/functions/backoffice/content/slide_delete.sql
+\i tenant/functions/backoffice/content/slide_reorder.sql
+
+-- Backoffice: Presentation — Navigation
+\i tenant/functions/backoffice/presentation/navigation_create.sql
+\i tenant/functions/backoffice/presentation/navigation_update.sql
+\i tenant/functions/backoffice/presentation/navigation_delete.sql
+\i tenant/functions/backoffice/presentation/navigation_get.sql
+\i tenant/functions/backoffice/presentation/navigation_list.sql
+\i tenant/functions/backoffice/presentation/navigation_reorder.sql
+\i tenant/functions/backoffice/presentation/navigation_toggle_visible.sql
+
+-- Backoffice: Presentation — Theme
+\i tenant/functions/backoffice/presentation/theme_upsert.sql
+\i tenant/functions/backoffice/presentation/theme_activate.sql
+\i tenant/functions/backoffice/presentation/theme_get.sql
+\i tenant/functions/backoffice/presentation/theme_list.sql
+
+-- Backoffice: Presentation — Layout
+\i tenant/functions/backoffice/presentation/layout_upsert.sql
+\i tenant/functions/backoffice/presentation/layout_delete.sql
+\i tenant/functions/backoffice/presentation/layout_get.sql
+\i tenant/functions/backoffice/presentation/layout_list.sql
+
+-- Backoffice: Messaging — Player Message Preferences
+\i tenant/functions/backoffice/messaging/player_message_preference_bo_get.sql
+
 -- =============================================================================
 -- FUNCTIONS - FRONTEND (Oyuncu frontend fonksiyonları)
 -- =============================================================================
@@ -502,6 +586,25 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/frontend/support/player_ticket_get.sql
 \i tenant/functions/frontend/support/player_ticket_reply.sql
 
+-- Frontend: Messaging — Preferences
+\i tenant/functions/frontend/messaging/player_message_preference_get.sql
+\i tenant/functions/frontend/messaging/player_message_preference_upsert.sql
+
+-- Frontend: Content — Public APIs
+\i tenant/functions/frontend/content/public_content_get.sql
+\i tenant/functions/frontend/content/public_content_list.sql
+\i tenant/functions/frontend/content/public_faq_list.sql
+\i tenant/functions/frontend/content/public_faq_get.sql
+\i tenant/functions/frontend/content/public_popup_list.sql
+\i tenant/functions/frontend/content/public_promotion_list.sql
+\i tenant/functions/frontend/content/public_promotion_get.sql
+\i tenant/functions/frontend/content/public_slide_list.sql
+
+-- Frontend: Presentation — Public APIs
+\i tenant/functions/frontend/presentation/public_navigation_get.sql
+\i tenant/functions/frontend/presentation/public_theme_get.sql
+\i tenant/functions/frontend/presentation/public_layout_get.sql
+
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created
 -- =============================================================================
@@ -516,6 +619,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/constraints/finance.sql
 \i tenant/constraints/content.sql
 \i tenant/constraints/messaging.sql
+\i tenant/constraints/presentation.sql
 \i tenant/constraints/support.sql
 
 -- =============================================================================
@@ -532,6 +636,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/indexes/game.sql
 \i tenant/indexes/content.sql
 \i tenant/indexes/messaging.sql
+\i tenant/indexes/presentation.sql
 \i tenant/indexes/support.sql
 
 -- =============================================================================
