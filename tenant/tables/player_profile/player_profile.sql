@@ -14,7 +14,7 @@ CREATE TABLE profile.player_profile (
     middle_name BYTEA,                            -- İkinci ad (şifreli)
     last_name BYTEA,                              -- Soyad (şifreli)
     last_name_hash BYTEA,                         -- Soyad hash (arama için)
-    birth_date BYTEA,                             -- Doğum tarihi (şifreli)
+    birth_date DATE,                               -- Doğum tarihi (düz metin, aranabilir)
     address BYTEA,                                -- Adres (şifreli)
     phone BYTEA,                                  -- Telefon (şifreli)
     phone_hash BYTEA,                             -- Telefon hash (arama için)

@@ -61,6 +61,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/player_auth/player_classification.sql
 \i tenant/tables/player_auth/player_groups.sql
 \i tenant/tables/player_auth/player_password_history.sql
+\i tenant/tables/player_auth/email_verification_tokens.sql
+\i tenant/tables/player_auth/password_reset_tokens.sql
 \i tenant/tables/player_auth/shadow_testers.sql
 
 -- FINANCE TABLES
@@ -229,6 +231,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/gateway/wallet/withdrawal_confirm.sql
 \i tenant/functions/gateway/wallet/withdrawal_cancel.sql
 \i tenant/functions/gateway/wallet/withdrawal_fail.sql
+\i tenant/functions/gateway/wallet/wallet_create.sql
 
 -- Gateway: Bonus Provider Mapping (Provider bonus takibi)
 \i tenant/tables/bonus/provider_bonus_mappings.sql
@@ -264,6 +267,51 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/auth/player_classification_list.sql
 \i tenant/functions/backoffice/auth/player_classification_bulk_assign.sql
 \i tenant/functions/backoffice/auth/player_get_segmentation.sql
+
+-- Backoffice: Auth — Player Management (BO oyuncu yönetimi)
+\i tenant/functions/backoffice/auth/player_get.sql
+\i tenant/functions/backoffice/auth/player_list.sql
+\i tenant/functions/backoffice/auth/player_update_status.sql
+
+-- Backoffice: KYC — Case Management
+\i tenant/functions/backoffice/kyc/kyc_case_create.sql
+\i tenant/functions/backoffice/kyc/kyc_case_update_status.sql
+\i tenant/functions/backoffice/kyc/kyc_case_assign_reviewer.sql
+\i tenant/functions/backoffice/kyc/kyc_case_get.sql
+\i tenant/functions/backoffice/kyc/kyc_case_list.sql
+
+-- Backoffice: KYC — Document Management
+\i tenant/functions/backoffice/kyc/document_upload.sql
+\i tenant/functions/backoffice/kyc/document_review.sql
+\i tenant/functions/backoffice/kyc/document_get.sql
+\i tenant/functions/backoffice/kyc/document_list.sql
+
+-- Backoffice: KYC — Restriction Management
+\i tenant/functions/backoffice/kyc/restriction_create.sql
+\i tenant/functions/backoffice/kyc/restriction_revoke.sql
+\i tenant/functions/backoffice/kyc/restriction_get.sql
+\i tenant/functions/backoffice/kyc/restriction_list.sql
+
+-- Backoffice: KYC — Limit Management
+\i tenant/functions/backoffice/kyc/limit_set.sql
+\i tenant/functions/backoffice/kyc/limit_remove.sql
+\i tenant/functions/backoffice/kyc/limit_activate_pending.sql
+\i tenant/functions/backoffice/kyc/limit_get.sql
+\i tenant/functions/backoffice/kyc/limit_history_list.sql
+
+-- Backoffice: KYC — AML Flag Management
+\i tenant/functions/backoffice/kyc/aml_flag_create.sql
+\i tenant/functions/backoffice/kyc/aml_flag_assign.sql
+\i tenant/functions/backoffice/kyc/aml_flag_update_status.sql
+\i tenant/functions/backoffice/kyc/aml_flag_add_decision.sql
+\i tenant/functions/backoffice/kyc/aml_flag_get.sql
+\i tenant/functions/backoffice/kyc/aml_flag_list.sql
+
+-- Backoffice: KYC — Jurisdiction Management
+\i tenant/functions/backoffice/kyc/jurisdiction_create.sql
+\i tenant/functions/backoffice/kyc/jurisdiction_update.sql
+\i tenant/functions/backoffice/kyc/jurisdiction_update_geo.sql
+\i tenant/functions/backoffice/kyc/jurisdiction_get.sql
 
 -- Backoffice: Finance (Ödeme ayarları ve limitler)
 \i tenant/functions/backoffice/finance/payment_method_settings_sync.sql
@@ -417,6 +465,24 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 -- FUNCTIONS - FRONTEND (Oyuncu frontend fonksiyonları)
 -- =============================================================================
+
+-- Frontend: Auth (Oyuncu kayıt, giriş, şifre)
+\i tenant/functions/frontend/auth/player_register.sql
+\i tenant/functions/frontend/auth/player_verify_email.sql
+\i tenant/functions/frontend/auth/player_resend_verification.sql
+\i tenant/functions/frontend/auth/player_authenticate.sql
+\i tenant/functions/frontend/auth/player_login_failed_increment.sql
+\i tenant/functions/frontend/auth/player_login_failed_reset.sql
+\i tenant/functions/frontend/auth/player_change_password.sql
+\i tenant/functions/frontend/auth/player_reset_password_request.sql
+\i tenant/functions/frontend/auth/player_reset_password_confirm.sql
+
+-- Frontend: Profile (Profil ve kimlik yönetimi)
+\i tenant/functions/frontend/profile/player_profile_create.sql
+\i tenant/functions/frontend/profile/player_profile_get.sql
+\i tenant/functions/frontend/profile/player_profile_update.sql
+\i tenant/functions/frontend/profile/player_identity_upsert.sql
+\i tenant/functions/frontend/profile/player_identity_get.sql
 
 -- Frontend: Messaging (Mesaj okuma/silme)
 \i tenant/functions/frontend/messaging/player_message_list.sql

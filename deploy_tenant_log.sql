@@ -117,6 +117,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_log/functions/game_log/reconciliation_report_list.sql
 
 -- =============================================================================
+-- FUNCTIONS - KYC Log (Provider API logları)
+-- =============================================================================
+\i tenant_log/functions/kyc_log/provider_log_create.sql
+\i tenant_log/functions/kyc_log/provider_log_list.sql
+
+-- =============================================================================
 -- FUNCTIONS - MAINTENANCE (Partition yönetimi)
 -- =============================================================================
 \i tenant_log/functions/maintenance/create_partitions.sql

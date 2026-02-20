@@ -71,6 +71,21 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant_audit/functions/player_audit/login_session_end_all.sql
 
 -- =============================================================================
+-- KYC AUDIT FUNCTIONS (Tarama ve risk değerlendirme)
+-- =============================================================================
+
+-- KYC Audit: Screening Results
+\i tenant_audit/functions/kyc_audit/screening_result_create.sql
+\i tenant_audit/functions/kyc_audit/screening_result_review.sql
+\i tenant_audit/functions/kyc_audit/screening_result_get.sql
+\i tenant_audit/functions/kyc_audit/screening_result_list.sql
+
+-- KYC Audit: Risk Assessment
+\i tenant_audit/functions/kyc_audit/risk_assessment_create.sql
+\i tenant_audit/functions/kyc_audit/risk_assessment_get.sql
+\i tenant_audit/functions/kyc_audit/risk_assessment_list.sql
+
+-- =============================================================================
 -- MAINTENANCE FUNCTIONS (Partition Yönetimi)
 -- =============================================================================
 \i tenant_audit/functions/maintenance/create_partitions.sql

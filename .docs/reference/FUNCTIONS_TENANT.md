@@ -3,17 +3,19 @@
 Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 **Veritabanları:** `tenant`, `tenant_log`, `tenant_report`, `tenant_audit`, `tenant_affiliate`
-**Toplam:** 205 fonksiyon
+**Toplam:** 260 fonksiyon
 
 ---
 
-## Tenant Database (175 fonksiyon)
+## Tenant Database (221 fonksiyon)
 
 > **Note:** Tenant database functions do NOT perform IDOR (access control) checks.
 > Authorization is handled in Core DB via `user_assert_access_tenant(caller_id, tenant_id)` before calling tenant functions.
 > This follows the cross-database security pattern: **Core DB (auth) → Tenant DB (business logic)**.
 
-### Auth Schema (19)
+### Auth Schema (31)
+
+> **Detaylı rehber:** [PLAYER_AUTH_KYC_GUIDE.md](../guides/PLAYER_AUTH_KYC_GUIDE.md)
 
 #### Shadow Test (4)
 
@@ -58,6 +60,119 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `player_get_segmentation` | Bonus eligibility için oyuncu segmentasyon verisi. Tek giriş noktası → JSONB |
+
+#### Player Registration & Email Verification (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_register` | Oyuncu kayıt. Username/email uniqueness, email_verification_token oluştur → JSONB |
+| `player_verify_email` | Email doğrulama tokenı ile email onaylama. status=0→1 geçişi → JSONB |
+| `player_resend_verification` | Yeni doğrulama tokeni oluştur. Eski tokenları sil → VOID |
+
+#### Player Authentication (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_authenticate` | Email hash ile oyuncu bilgilerini getir (STABLE). Backend Argon2id doğrular → JSONB |
+| `player_login_failed_increment` | Başarısız giriş sayacını artır. Eşik aşılınca hesabı kilitle → JSONB |
+| `player_login_failed_reset` | Başarısız giriş sayacını sıfırla → VOID |
+
+#### Password Management (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_change_password` | Şifre değiştir. Geçmiş kontrol (history_count) → VOID |
+| `player_reset_password_request` | Şifre sıfırlama tokeni oluştur. Mevcut tokenları sil → VOID |
+| `player_reset_password_confirm` | Token ile şifre sıfırla. Token doğrulama + expire kontrolü → JSONB |
+
+#### BO Player Management (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_get` | Oyuncu detay: profil, kimlik, KYC, sınıflandırma, cüzdanlar, kısıtlamalar → JSONB |
+| `player_list` | Sayfalı oyuncu listesi. Hash-based filtreler, LEFT JOIN LATERAL sınıflandırma → JSONB |
+| `player_update_status` | Oyuncu durumunu güncelle (aktif/askı/kapalı). Sebep zorunlu → VOID |
+
+### Profile Schema (5)
+
+> **Detaylı rehber:** [PLAYER_AUTH_KYC_GUIDE.md](../guides/PLAYER_AUTH_KYC_GUIDE.md)
+
+#### Player Profile (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_profile_create` | Profil oluştur. BYTEA (AES-256) şifreli PII alanları → BIGINT |
+| `player_profile_get` | Profil getir. BYTEA→base64 encode. STABLE → JSONB |
+| `player_profile_update` | Profil güncelle. COALESCE partial update → VOID |
+
+#### Player Identity (2)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_identity_upsert` | Kimlik belgesi oluştur/güncelle. Şifreli no + hash → BIGINT |
+| `player_identity_get` | Kimlik belgesi getir. Bulunamazsa NULL (hata değil). STABLE → JSONB |
+
+### KYC Schema (28)
+
+> **Detaylı rehber:** [PLAYER_AUTH_KYC_GUIDE.md](../guides/PLAYER_AUTH_KYC_GUIDE.md)
+
+#### KYC Case (5)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `kyc_case_create` | KYC vakası oluştur. Oyuncu durum kontrolü → BIGINT |
+| `kyc_case_update_status` | Vaka durumunu güncelle. kyc_workflows tarihçe kaydı → VOID |
+| `kyc_case_assign_reviewer` | İnceleyici ata. kyc_workflows tarihçe kaydı → VOID |
+| `kyc_case_get` | Vaka detay: belgeler, kısıtlamalar, workflow tarihçesi dahil. STABLE → JSONB |
+| `kyc_case_list` | Sayfalı vaka listesi. Status/level/reviewer filtreleri → JSONB |
+
+#### KYC Document (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `document_upload` | Belge kaydı oluştur. Vaka kontrolü, storage bilgileri → BIGINT |
+| `document_review` | Belge inceleme kararı. Durum güncelle → VOID |
+| `document_get` | Belge detayı. STABLE → JSONB |
+| `document_list` | Oyuncunun belgelerini listele → JSONB |
+
+#### KYC Restriction (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `restriction_create` | Kısıtlama oluştur. Tip (deposit/withdrawal/login/gameplay) → BIGINT |
+| `restriction_revoke` | Kısıtlamayı kaldır. Min süre kontrolü → VOID |
+| `restriction_get` | Kısıtlama detayı. STABLE → JSONB |
+| `restriction_list` | Oyuncunun kısıtlamaları. Opsiyonel aktif/pasif filtresi → JSONB |
+
+#### KYC Limit (5)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `limit_set` | Limit ata. Oyuncu azaltma=anında, artırma=24s bekleme, admin=anında → BIGINT |
+| `limit_remove` | Limiti kaldır (soft delete) → VOID |
+| `limit_activate_pending` | 24 saati dolmuş bekleyen limitleri aktifleştir. Batch → INT |
+| `limit_get` | Mevcut aktif limitler. STABLE → JSONB |
+| `limit_history_list` | Limit değişiklik tarihçesi → JSONB |
+
+#### KYC AML (6)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `aml_flag_create` | AML işareti oluştur. Tip/ciddiyet/açıklama → BIGINT |
+| `aml_flag_assign` | AML işaretini soruşturmacıya ata → VOID |
+| `aml_flag_update_status` | Durum güncelle (open→investigating→closed) → VOID |
+| `aml_flag_add_decision` | Karar ekle. SAR bilgileri opsiyonel → VOID |
+| `aml_flag_get` | AML işaret detayı. STABLE → JSONB |
+| `aml_flag_list` | Sayfalı AML işaret listesi. Durum/tip/ciddiyet filtreleri → JSONB |
+
+#### KYC Jurisdiction (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `jurisdiction_create` | Oyuncu yetki alanı kaydı oluştur → BIGINT |
+| `jurisdiction_update` | Yetki alanı bilgilerini güncelle. COALESCE partial update → VOID |
+| `jurisdiction_update_geo` | GeoIP verileri güncelle (backend çağrısı) → VOID |
+| `jurisdiction_get` | Yetki alanı detayı. STABLE → JSONB |
 
 ### Finance Schema (20)
 
@@ -181,7 +296,13 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `adjustment_get` | Düzeltme detayı + workflow durumu → JSONB |
 | `adjustment_list` | Filtrelemeli + sayfalı liste (status, player, adjustment_type) → JSONB |
 
-### Wallet Schema (22)
+### Wallet Schema (23)
+
+#### Wallet Setup (1)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `wallet_create` | REAL + BONUS cüzdan oluştur. Oyuncu aktiflik kontrolü, idempotent (ON CONFLICT DO NOTHING) → JSONB |
 
 #### Balance & Info (3)
 
@@ -442,7 +563,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Tenant Log Database (10 fonksiyon)
+## Tenant Log Database (12 fonksiyon)
 
 ### Game Log Schema (6)
 
@@ -461,6 +582,13 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `reconciliation_report_create` | Günlük reconciliation raporu oluştur/güncelle. game_rounds tablosundan aggregate hesaplar → BIGINT |
 | `reconciliation_mismatch_upsert` | Round bazlı mismatch kaydı oluştur/güncelle → BIGINT |
 | `reconciliation_report_list` | Raporları filtrele ve listele. Mismatch sayısı dahil, pagination destekli. STABLE → JSONB |
+
+### KYC Log Schema (2)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `provider_log_create` | KYC sağlayıcı API istek/yanıt logu oluştur → BIGINT |
+| `provider_log_list` | Sayfalı KYC sağlayıcı log listesi. Vaka/oyuncu/sağlayıcı filtreleri → JSONB |
 
 ### Maintenance Schema (4)
 
@@ -486,7 +614,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Tenant Audit Database (12 fonksiyon)
+## Tenant Audit Database (19 fonksiyon)
 
 ### Player Audit Schema (8)
 
@@ -507,6 +635,25 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `login_session_end` | End player session. Returns BOOL |
 | `login_session_list` | List sessions with optional active-only filter. Returns JSONB array |
 | `login_session_end_all` | End all active sessions (optional exclude one). Returns INT (count) |
+
+### KYC Audit Schema (7)
+
+#### Screening Results (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `screening_result_create` | PEP/Sanctions tarama sonucu oluştur. Sağlayıcı bilgileri + match detayları → BIGINT |
+| `screening_result_review` | Tarama sonucunu incele. Karar + notlar → VOID |
+| `screening_result_get` | Tarama sonucu detayı. İnceleme bilgileri dahil. STABLE → JSONB |
+| `screening_result_list` | Sayfalı tarama sonuçları. Durum/tip/sağlayıcı filtreleri → JSONB |
+
+#### Risk Assessment (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `risk_assessment_create` | Risk değerlendirmesi oluştur. Skor + faktörler + öneri → BIGINT |
+| `risk_assessment_get` | Risk değerlendirmesi detayı. STABLE → JSONB |
+| `risk_assessment_list` | Sayfalı risk değerlendirmesi listesi. Tip/seviye filtreleri → JSONB |
 
 ### Maintenance Schema (4)
 

@@ -794,6 +794,142 @@ JOIN (VALUES
     ('error.support.canned-response-not-found', 'Canned response not found'),
 
     -- Support — General
-    ('error.support.no-fields-to-update', 'At least one field to update is required')
+    ('error.support.no-fields-to-update', 'At least one field to update is required'),
+
+    -- Player Registration
+    ('error.player-register.username-required', 'Username is required'),
+    ('error.player-register.email-required', 'Email is required'),
+    ('error.player-register.password-required', 'Password is required'),
+    ('error.player-register.token-required', 'Verification token is required'),
+    ('error.player-register.username-exists', 'Username already exists'),
+    ('error.player-register.email-exists', 'Email is already registered'),
+
+    -- Player Email Verification
+    ('error.player-verify.token-required', 'Verification token is required'),
+    ('error.player-verify.token-not-found', 'Verification token not found'),
+    ('error.player-verify.token-expired', 'Verification token has expired'),
+    ('error.player-verify.already-verified', 'Email is already verified'),
+    ('error.player-verify.player-required', 'Player ID is required'),
+    ('error.player-verify.player-not-found', 'Player not found'),
+
+    -- Player Authentication
+    ('error.player-auth.email-required', 'Email is required'),
+    ('error.player-auth.invalid-credentials', 'Invalid credentials'),
+    ('error.player-auth.account-locked', 'Account is locked'),
+    ('error.player-auth.account-suspended', 'Account is suspended'),
+    ('error.player-auth.account-closed', 'Account is closed'),
+    ('error.player-auth.player-required', 'Player ID is required'),
+    ('error.player-auth.player-not-found', 'Player not found'),
+
+    -- Player Password
+    ('error.player-password.player-required', 'Player ID is required'),
+    ('error.player-password.password-required', 'Password is required'),
+    ('error.player-password.player-not-found', 'Player not found'),
+    ('error.player-password.account-inactive', 'Account is not active'),
+    ('error.player-password.token-required', 'Reset token is required'),
+    ('error.player-password.token-not-found', 'Reset token not found'),
+    ('error.player-password.token-expired', 'Reset token has expired'),
+
+    -- Player Profile
+    ('error.player-profile.player-required', 'Player ID is required'),
+    ('error.player-profile.player-not-found', 'Player not found'),
+    ('error.player-profile.already-exists', 'Profile already exists'),
+    ('error.player-profile.not-found', 'Profile not found'),
+
+    -- Player Identity
+    ('error.player-identity.player-required', 'Player ID is required'),
+    ('error.player-identity.identity-required', 'Identity number is required'),
+    ('error.player-identity.player-not-found', 'Player not found'),
+
+    -- Player BO Management
+    ('error.player.player-required', 'Player ID is required'),
+    ('error.player.not-found', 'Player not found'),
+    ('error.player.invalid-status', 'Invalid player status'),
+    ('error.player.status-unchanged', 'Status is already the same'),
+
+    -- Wallet
+    ('error.wallet.player-required', 'Player ID is required'),
+    ('error.wallet.currency-required', 'Currency code is required'),
+    ('error.wallet.player-not-active', 'Player account is not active'),
+
+    -- KYC Case
+    ('error.kyc-case.player-required', 'Player ID is required'),
+    ('error.kyc-case.player-not-found', 'Player not found'),
+    ('error.kyc-case.case-required', 'Case ID is required'),
+    ('error.kyc-case.not-found', 'KYC case not found'),
+    ('error.kyc-case.status-required', 'Status is required'),
+    ('error.kyc-case.status-unchanged', 'Status is already the same'),
+    ('error.kyc-case.reviewer-required', 'Reviewer ID is required'),
+
+    -- KYC Document
+    ('error.kyc-document.player-required', 'Player ID is required'),
+    ('error.kyc-document.player-not-found', 'Player not found'),
+    ('error.kyc-document.document-required', 'Document ID is required'),
+    ('error.kyc-document.not-found', 'Document not found'),
+    ('error.kyc-document.type-required', 'Document type is required'),
+    ('error.kyc-document.storage-type-required', 'Storage type is required'),
+    ('error.kyc-document.hash-required', 'File hash is required'),
+    ('error.kyc-document.status-required', 'Status is required'),
+    ('error.kyc-document.case-not-found', 'KYC case not found'),
+
+    -- KYC Restriction
+    ('error.kyc-restriction.player-required', 'Player ID is required'),
+    ('error.kyc-restriction.player-not-found', 'Player not found'),
+    ('error.kyc-restriction.restriction-required', 'Restriction ID is required'),
+    ('error.kyc-restriction.type-required', 'Restriction type is required'),
+    ('error.kyc-restriction.not-found', 'Restriction not found'),
+    ('error.kyc-restriction.not-active', 'Restriction is not active'),
+    ('error.kyc-restriction.cannot-revoke', 'Restriction cannot be revoked'),
+    ('error.kyc-restriction.min-duration-not-met', 'Minimum duration has not been met'),
+
+    -- KYC Limit
+    ('error.kyc-limit.player-required', 'Player ID is required'),
+    ('error.kyc-limit.player-not-found', 'Player not found'),
+    ('error.kyc-limit.limit-required', 'Limit ID is required'),
+    ('error.kyc-limit.type-required', 'Limit type is required'),
+    ('error.kyc-limit.value-required', 'Limit value is required'),
+    ('error.kyc-limit.not-found', 'Limit not found'),
+    ('error.kyc-limit.not-active', 'Limit is not active'),
+
+    -- KYC AML
+    ('error.kyc-aml.player-required', 'Player ID is required'),
+    ('error.kyc-aml.player-not-found', 'Player not found'),
+    ('error.kyc-aml.flag-required', 'AML flag ID is required'),
+    ('error.kyc-aml.flag-type-required', 'Flag type is required'),
+    ('error.kyc-aml.severity-required', 'Severity is required'),
+    ('error.kyc-aml.description-required', 'Description is required'),
+    ('error.kyc-aml.not-found', 'AML flag not found'),
+    ('error.kyc-aml.status-required', 'Status is required'),
+    ('error.kyc-aml.status-unchanged', 'Status is already the same'),
+    ('error.kyc-aml.assignee-required', 'Assignee ID is required'),
+    ('error.kyc-aml.decision-required', 'Decision is required'),
+    ('error.kyc-aml.decision-by-required', 'Decision maker ID is required'),
+
+    -- KYC Jurisdiction
+    ('error.kyc-jurisdiction.player-required', 'Player ID is required'),
+    ('error.kyc-jurisdiction.player-not-found', 'Player not found'),
+    ('error.kyc-jurisdiction.country-required', 'Country code is required'),
+    ('error.kyc-jurisdiction.already-exists', 'Jurisdiction record already exists'),
+    ('error.kyc-jurisdiction.not-found', 'Jurisdiction record not found'),
+
+    -- KYC Screening
+    ('error.kyc-screening.player-required', 'Player ID is required'),
+    ('error.kyc-screening.screening-required', 'Screening ID is required'),
+    ('error.kyc-screening.type-required', 'Screening type is required'),
+    ('error.kyc-screening.provider-required', 'Provider code is required'),
+    ('error.kyc-screening.status-required', 'Result status is required'),
+    ('error.kyc-screening.decision-required', 'Review decision is required'),
+    ('error.kyc-screening.reviewer-required', 'Reviewer ID is required'),
+    ('error.kyc-screening.not-found', 'Screening result not found'),
+
+    -- KYC Risk
+    ('error.kyc-risk.player-required', 'Player ID is required'),
+    ('error.kyc-risk.type-required', 'Assessment type is required'),
+    ('error.kyc-risk.level-required', 'Risk level is required'),
+
+    -- KYC Provider Log
+    ('error.kyc-provider-log.player-required', 'Player ID is required'),
+    ('error.kyc-provider-log.case-required', 'Case ID is required'),
+    ('error.kyc-provider-log.provider-required', 'Provider code is required')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

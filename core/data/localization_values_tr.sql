@@ -796,6 +796,142 @@ JOIN (VALUES
     ('error.support.canned-response-not-found', 'Hazır yanıt bulunamadı'),
 
     -- Support — Genel
-    ('error.support.no-fields-to-update', 'Güncellenecek en az bir alan gereklidir')
+    ('error.support.no-fields-to-update', 'Güncellenecek en az bir alan gereklidir'),
+
+    -- Oyuncu Kayıt
+    ('error.player-register.username-required', 'Kullanıcı adı zorunludur'),
+    ('error.player-register.email-required', 'E-posta adresi zorunludur'),
+    ('error.player-register.password-required', 'Şifre zorunludur'),
+    ('error.player-register.token-required', 'Doğrulama tokeni zorunludur'),
+    ('error.player-register.username-exists', 'Kullanıcı adı zaten mevcut'),
+    ('error.player-register.email-exists', 'E-posta adresi zaten kayıtlı'),
+
+    -- Oyuncu E-posta Doğrulama
+    ('error.player-verify.token-required', 'Doğrulama tokeni zorunludur'),
+    ('error.player-verify.token-not-found', 'Doğrulama tokeni bulunamadı'),
+    ('error.player-verify.token-expired', 'Doğrulama tokeninin süresi dolmuş'),
+    ('error.player-verify.already-verified', 'E-posta zaten doğrulanmış'),
+    ('error.player-verify.player-required', 'Oyuncu ID zorunludur'),
+    ('error.player-verify.player-not-found', 'Oyuncu bulunamadı'),
+
+    -- Oyuncu Kimlik Doğrulama
+    ('error.player-auth.email-required', 'E-posta adresi zorunludur'),
+    ('error.player-auth.invalid-credentials', 'Geçersiz kimlik bilgileri'),
+    ('error.player-auth.account-locked', 'Hesap kilitli'),
+    ('error.player-auth.account-suspended', 'Hesap askıya alınmış'),
+    ('error.player-auth.account-closed', 'Hesap kapatılmış'),
+    ('error.player-auth.player-required', 'Oyuncu ID zorunludur'),
+    ('error.player-auth.player-not-found', 'Oyuncu bulunamadı'),
+
+    -- Oyuncu Şifre
+    ('error.player-password.player-required', 'Oyuncu ID zorunludur'),
+    ('error.player-password.password-required', 'Şifre zorunludur'),
+    ('error.player-password.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.player-password.account-inactive', 'Hesap aktif değil'),
+    ('error.player-password.token-required', 'Sıfırlama tokeni zorunludur'),
+    ('error.player-password.token-not-found', 'Sıfırlama tokeni bulunamadı'),
+    ('error.player-password.token-expired', 'Sıfırlama tokeninin süresi dolmuş'),
+
+    -- Oyuncu Profil
+    ('error.player-profile.player-required', 'Oyuncu ID zorunludur'),
+    ('error.player-profile.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.player-profile.already-exists', 'Profil zaten mevcut'),
+    ('error.player-profile.not-found', 'Profil bulunamadı'),
+
+    -- Oyuncu Kimlik Belgesi
+    ('error.player-identity.player-required', 'Oyuncu ID zorunludur'),
+    ('error.player-identity.identity-required', 'Kimlik numarası zorunludur'),
+    ('error.player-identity.player-not-found', 'Oyuncu bulunamadı'),
+
+    -- Oyuncu BO Yönetimi
+    ('error.player.player-required', 'Oyuncu ID zorunludur'),
+    ('error.player.not-found', 'Oyuncu bulunamadı'),
+    ('error.player.invalid-status', 'Geçersiz oyuncu durumu'),
+    ('error.player.status-unchanged', 'Durum zaten aynı'),
+
+    -- Cüzdan
+    ('error.wallet.player-required', 'Oyuncu ID zorunludur'),
+    ('error.wallet.currency-required', 'Para birimi kodu zorunludur'),
+    ('error.wallet.player-not-active', 'Oyuncu hesabı aktif değil'),
+
+    -- KYC Vaka
+    ('error.kyc-case.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-case.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.kyc-case.case-required', 'Vaka ID zorunludur'),
+    ('error.kyc-case.not-found', 'KYC vakası bulunamadı'),
+    ('error.kyc-case.status-required', 'Durum zorunludur'),
+    ('error.kyc-case.status-unchanged', 'Durum zaten aynı'),
+    ('error.kyc-case.reviewer-required', 'İnceleyici ID zorunludur'),
+
+    -- KYC Belge
+    ('error.kyc-document.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-document.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.kyc-document.document-required', 'Belge ID zorunludur'),
+    ('error.kyc-document.not-found', 'Belge bulunamadı'),
+    ('error.kyc-document.type-required', 'Belge türü zorunludur'),
+    ('error.kyc-document.storage-type-required', 'Depolama türü zorunludur'),
+    ('error.kyc-document.hash-required', 'Dosya hash değeri zorunludur'),
+    ('error.kyc-document.status-required', 'Durum zorunludur'),
+    ('error.kyc-document.case-not-found', 'KYC vakası bulunamadı'),
+
+    -- KYC Kısıtlama
+    ('error.kyc-restriction.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-restriction.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.kyc-restriction.restriction-required', 'Kısıtlama ID zorunludur'),
+    ('error.kyc-restriction.type-required', 'Kısıtlama türü zorunludur'),
+    ('error.kyc-restriction.not-found', 'Kısıtlama bulunamadı'),
+    ('error.kyc-restriction.not-active', 'Kısıtlama aktif değil'),
+    ('error.kyc-restriction.cannot-revoke', 'Kısıtlama kaldırılamaz'),
+    ('error.kyc-restriction.min-duration-not-met', 'Minimum süre henüz dolmadı'),
+
+    -- KYC Limit
+    ('error.kyc-limit.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-limit.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.kyc-limit.limit-required', 'Limit ID zorunludur'),
+    ('error.kyc-limit.type-required', 'Limit türü zorunludur'),
+    ('error.kyc-limit.value-required', 'Limit değeri zorunludur'),
+    ('error.kyc-limit.not-found', 'Limit bulunamadı'),
+    ('error.kyc-limit.not-active', 'Limit aktif değil'),
+
+    -- KYC AML
+    ('error.kyc-aml.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-aml.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.kyc-aml.flag-required', 'AML işareti ID zorunludur'),
+    ('error.kyc-aml.flag-type-required', 'İşaret türü zorunludur'),
+    ('error.kyc-aml.severity-required', 'Ciddiyet seviyesi zorunludur'),
+    ('error.kyc-aml.description-required', 'Açıklama zorunludur'),
+    ('error.kyc-aml.not-found', 'AML işareti bulunamadı'),
+    ('error.kyc-aml.status-required', 'Durum zorunludur'),
+    ('error.kyc-aml.status-unchanged', 'Durum zaten aynı'),
+    ('error.kyc-aml.assignee-required', 'Atanan kişi ID zorunludur'),
+    ('error.kyc-aml.decision-required', 'Karar zorunludur'),
+    ('error.kyc-aml.decision-by-required', 'Karar veren kişi ID zorunludur'),
+
+    -- KYC Yetki Alanı
+    ('error.kyc-jurisdiction.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-jurisdiction.player-not-found', 'Oyuncu bulunamadı'),
+    ('error.kyc-jurisdiction.country-required', 'Ülke kodu zorunludur'),
+    ('error.kyc-jurisdiction.already-exists', 'Yetki alanı kaydı zaten mevcut'),
+    ('error.kyc-jurisdiction.not-found', 'Yetki alanı kaydı bulunamadı'),
+
+    -- KYC Tarama
+    ('error.kyc-screening.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-screening.screening-required', 'Tarama ID zorunludur'),
+    ('error.kyc-screening.type-required', 'Tarama türü zorunludur'),
+    ('error.kyc-screening.provider-required', 'Sağlayıcı kodu zorunludur'),
+    ('error.kyc-screening.status-required', 'Sonuç durumu zorunludur'),
+    ('error.kyc-screening.decision-required', 'İnceleme kararı zorunludur'),
+    ('error.kyc-screening.reviewer-required', 'İnceleyici ID zorunludur'),
+    ('error.kyc-screening.not-found', 'Tarama sonucu bulunamadı'),
+
+    -- KYC Risk
+    ('error.kyc-risk.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-risk.type-required', 'Değerlendirme türü zorunludur'),
+    ('error.kyc-risk.level-required', 'Risk seviyesi zorunludur'),
+
+    -- KYC Sağlayıcı Log
+    ('error.kyc-provider-log.player-required', 'Oyuncu ID zorunludur'),
+    ('error.kyc-provider-log.case-required', 'Vaka ID zorunludur'),
+    ('error.kyc-provider-log.provider-required', 'Sağlayıcı kodu zorunludur')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

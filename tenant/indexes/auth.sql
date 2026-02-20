@@ -9,6 +9,9 @@ CREATE INDEX idx_players_status ON auth.players USING btree(status);
 CREATE INDEX idx_players_registered ON auth.players USING btree(registered_at DESC);
 CREATE INDEX idx_players_last_login ON auth.players USING btree(last_login_at DESC) WHERE last_login_at IS NOT NULL;
 
+-- players - email doğrulama
+CREATE INDEX IF NOT EXISTS idx_players_email_verified ON auth.players USING btree(email_verified) WHERE email_verified = FALSE;
+
 -- players - güvenlik indexleri
 CREATE INDEX IF NOT EXISTS idx_players_lockout ON auth.players USING btree(lockout_enabled, lockout_end_at) WHERE lockout_enabled = true;
 
@@ -25,6 +28,16 @@ CREATE INDEX idx_player_classification_player ON auth.player_classification USIN
 CREATE INDEX idx_player_classification_category ON auth.player_classification USING btree(player_category_id) WHERE player_category_id IS NOT NULL;
 CREATE INDEX idx_player_classification_group ON auth.player_classification USING btree(player_group_id) WHERE player_group_id IS NOT NULL;
 CREATE UNIQUE INDEX idx_player_classification_unique ON auth.player_classification USING btree(player_id, player_category_id, player_group_id);
+
+-- email_verification_tokens
+CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verification_tokens_token ON auth.email_verification_tokens USING btree(token);
+CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_player ON auth.email_verification_tokens USING btree(player_id);
+CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_expires ON auth.email_verification_tokens USING btree(expires_at) WHERE used_at IS NULL;
+
+-- password_reset_tokens
+CREATE UNIQUE INDEX IF NOT EXISTS idx_password_reset_tokens_token ON auth.password_reset_tokens USING btree(token);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_player ON auth.password_reset_tokens USING btree(player_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expires ON auth.password_reset_tokens USING btree(expires_at) WHERE used_at IS NULL;
 
 -- player_password_history (son şifreleri hızlı çekmek için)
 CREATE INDEX idx_player_password_history_lookup ON auth.player_password_history USING btree(player_id, changed_at DESC);

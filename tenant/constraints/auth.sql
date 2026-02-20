@@ -22,6 +22,16 @@ ALTER TABLE auth.player_password_history
     ADD CONSTRAINT fk_player_password_history_player
     FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
 
+-- email_verification_tokens -> players
+ALTER TABLE auth.email_verification_tokens
+    ADD CONSTRAINT fk_email_verification_tokens_player
+    FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+
+-- password_reset_tokens -> players
+ALTER TABLE auth.password_reset_tokens
+    ADD CONSTRAINT fk_password_reset_tokens_player
+    FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+
 -- shadow_testers -> players (SHADOW_MODE)
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_shadow_testers_player') THEN

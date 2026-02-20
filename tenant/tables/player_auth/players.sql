@@ -12,7 +12,9 @@ CREATE TABLE auth.players (
     username varchar(150) NOT NULL,               -- Kullanıcı adı (benzersiz olmalı)
     email_encrypted BYTEA NOT NULL,               -- Şifrelenmiş email (AES-256)
     email_hash BYTEA NOT NULL,                    -- Email hash (arama için)
-    status smallint NOT NULL DEFAULT 1,           -- Durum: 0=Pasif, 1=Aktif, 2=Askıya Alınmış, 3=Kapatılmış
+    status smallint NOT NULL DEFAULT 0,           -- Durum: 0=Beklemede, 1=Aktif, 2=Askıya Alınmış, 3=Kapatılmış
+    email_verified BOOLEAN NOT NULL DEFAULT FALSE,  -- Email doğrulandı mı?
+    email_verified_at TIMESTAMPTZ,                  -- Email doğrulama zamanı
     -- Kimlik doğrulama alanları
     password VARCHAR(255) NOT NULL,               -- Argon2d hash (şifre + salt)
     two_factor_enabled BOOLEAN NOT NULL DEFAULT false,  -- 2FA aktif mi?
