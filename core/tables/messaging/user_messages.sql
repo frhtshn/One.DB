@@ -20,17 +20,17 @@ CREATE TABLE messaging.user_messages (
     body TEXT NOT NULL,                                        -- Mesaj içeriği (HTML)
     message_type VARCHAR(30) NOT NULL DEFAULT 'direct',        -- Mesaj tipi: direct, announcement, maintenance, policy, system
     priority VARCHAR(10) NOT NULL DEFAULT 'normal',            -- Öncelik: normal, important, urgent
-    expires_at TIMESTAMP WITHOUT TIME ZONE,                    -- Opsiyonel süre sonu
+    expires_at TIMESTAMPTZ,                                    -- Opsiyonel süre sonu
 
     -- Okunma durumu
     is_read BOOLEAN NOT NULL DEFAULT FALSE,                    -- Okundu mu?
-    read_at TIMESTAMP WITHOUT TIME ZONE,                       -- Okunma zamanı
+    read_at TIMESTAMPTZ,                                       -- Okunma zamanı
 
     -- Kullanıcı perspektifinden soft delete
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,                 -- Kullanıcı sildi mi?
-    deleted_at TIMESTAMP WITHOUT TIME ZONE,                    -- Silinme zamanı
+    deleted_at TIMESTAMPTZ,                                    -- Silinme zamanı
 
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     PRIMARY KEY (id, created_at)                               -- Partition key PK'ya dahil
 ) PARTITION BY RANGE (created_at);

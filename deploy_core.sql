@@ -477,6 +477,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/session/session_cleanup_expired.sql
 \i core/functions/security/session/session_belongs_to_user.sql
 \i core/functions/security/session/session_update_activity.sql
+\i core/functions/security/session/session_enforce_limit.sql
 
 -- User Functions
 \i core/functions/security/users/user_check_email_exists.sql
@@ -639,13 +640,21 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/messaging/admin_message_draft_list.sql
 \i core/functions/messaging/admin_message_draft_delete.sql
 \i core/functions/messaging/admin_message_draft_cancel.sql
+\i core/functions/messaging/admin_message_draft_unschedule.sql
 \i core/functions/messaging/admin_message_publish.sql
 \i core/functions/messaging/admin_message_recall.sql
 \i core/functions/messaging/admin_message_send.sql
+\i core/functions/messaging/get_published_recipients.sql
 -- Messaging Functions - User (Inbox)
 \i core/functions/messaging/user_message_list.sql
 \i core/functions/messaging/user_message_read.sql
+\i core/functions/messaging/user_message_read_all.sql
 \i core/functions/messaging/user_message_delete.sql
+\i core/functions/messaging/user_message_get_by_ids.sql
+-- Messaging Functions - Scheduled & Cleanup
+\i core/functions/messaging/admin_message_draft_list_due_scheduled.sql
+\i core/functions/messaging/user_message_cleanup_expired.sql
+\i core/functions/messaging/user_message_unread_count.sql
 
 -- Maintenance Functions (Partition Yönetimi)
 \i core/functions/maintenance/create_partitions.sql

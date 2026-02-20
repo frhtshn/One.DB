@@ -454,6 +454,13 @@ JOIN (VALUES
     ('error.messaging.cannot-send-to-self', 'Cannot send a message to yourself'),
     ('error.messaging.recipient-not-found', 'Recipient not found or inactive'),
     ('error.messaging.no-recipients', 'No recipients matched the specified filters'),
+    ('error.messaging.not-draft-owner', 'You are not the owner of this draft'),
+    ('error.messaging.draft-not-editable', 'Draft is not in editable status'),
+    ('error.messaging.draft-not-scheduled', 'Draft is not in scheduled status'),
+    ('error.messaging.too-many-recipients', 'Too many recipients (maximum 10000)'),
+    ('validation.messaging.at-least-one-field', 'At least one field must be provided'),
+    ('validation.messaging.invalid-priority', 'Priority must be normal, important, or urgent'),
+    ('validation.messaging.invalid-message-type', 'Invalid message type'),
     ('error.field.unauthorized-modification', 'You do not have permission to modify this field'),
 
     -- Access Control (new)

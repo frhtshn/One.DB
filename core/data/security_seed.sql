@@ -5,7 +5,7 @@
 
 -- Superadmin create
 INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency, country)
-VALUES (0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin', '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c', 1, 'tr', 'Europe/Istanbul', 'TRY', 'TR')
+VALUES (0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin', '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s', 1, 'tr', 'Europe/Istanbul', 'TRY', 'TR')
 ON CONFLICT (email) DO NOTHING;
 
 -- Superadmin role create

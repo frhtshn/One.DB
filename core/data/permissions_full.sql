@@ -14,9 +14,9 @@
 -- ================================================================
 -- PERMISSIONS - FULL LIST (UPSERT)
 -- ================================================================
--- Toplam: 131 permission (92 API/System + 39 Field)
+-- Toplam: 143 permission (104 API/System + 39 Field)
 -- Kategoriler (category kolonu bazinda):
---   platform (8), company (13), tenant (52), catalog (17),
+--   platform (8), company (25), tenant (52), catalog (17),
 --   audit (2), field (39)
 -- ================================================================
 
@@ -167,6 +167,25 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 -- Bonus (2)
 ('catalog.bonus.list', 'Bonus Rule List', 'List bonus types, rules, campaigns, promo codes', 'catalog', 1),
 ('catalog.bonus.manage', 'Bonus Rule Management', 'Bonus type/rule/campaign/promo CRUD', 'catalog', 1),
+
+-- ================================================================
+-- MESSAGING (12) — Admin+
+-- ================================================================
+-- Draft Management (8)
+('messaging.draft.create', 'Create Draft', 'Create message drafts', 'company', 1),
+('messaging.draft.read', 'Read Draft', 'List and view message drafts', 'company', 1),
+('messaging.draft.update', 'Update Draft', 'Update message drafts', 'company', 1),
+('messaging.draft.delete', 'Delete Draft', 'Delete message drafts', 'company', 1),
+('messaging.draft.cancel', 'Cancel Draft', 'Cancel draft or scheduled messages', 'company', 1),
+('messaging.draft.unschedule', 'Unschedule Draft', 'Remove scheduling from a draft', 'company', 1),
+('messaging.draft.publish', 'Publish Draft', 'Publish message drafts to recipients', 'company', 1),
+('messaging.draft.recall', 'Recall Message', 'Recall published messages', 'company', 1),
+-- Direct Messaging (1)
+('messaging.send', 'Send Direct Message', 'Send direct messages to users', 'company', 1),
+-- Inbox (3)
+('messaging.inbox.read', 'Read Inbox', 'Access user inbox messages', 'company', 1),
+('messaging.inbox.read-all', 'Mark All Read', 'Mark all inbox messages as read', 'company', 1),
+('messaging.inbox.delete', 'Delete Inbox Message', 'Delete inbox messages', 'company', 1),
 
 -- ================================================================
 -- PLATFORM.INFRASTRUCTURE (1) — SuperAdmin

@@ -16,7 +16,7 @@ DECLARE
     v_updated INTEGER;
 BEGIN
     IF p_user_id IS NULL OR p_message_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.invalid-parameters';
+        RAISE EXCEPTION 'error.messaging.invalid-parameters' USING ERRCODE = 'P0400';
     END IF;
 
     -- Mesajı okundu işaretle

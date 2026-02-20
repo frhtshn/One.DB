@@ -1,15 +1,14 @@
 -- ================================================================
--- ADMIN_MESSAGE_DRAFT_CANCEL: Zamanlanmış mesajı iptal eder
--- Sadece draft veya scheduled durumundakiler iptal edilebilir
+-- ADMIN_MESSAGE_DRAFT_UNSCHEDULE: Scheduled draft'ı draft'a döndürür
+-- scheduled_at = NULL, status = 'draft'
 -- Ownership kontrolü: sender_id != p_caller_id AND NOT p_is_admin → RAISE
 -- ================================================================
 
-DROP FUNCTION IF EXISTS messaging.admin_message_draft_cancel(INTEGER);
-DROP FUNCTION IF EXISTS messaging.admin_message_draft_cancel(BIGINT, INTEGER, BOOLEAN);
+DROP FUNCTION IF EXISTS messaging.admin_message_draft_unschedule(BIGINT, INTEGER, BOOLEAN);
 
-CREATE OR REPLACE FUNCTION messaging.admin_message_draft_cancel(
+CREATE OR REPLACE FUNCTION messaging.admin_message_draft_unschedule(
     p_caller_id BIGINT,                    -- İşlemi yapan kullanıcı ID
-    p_draft_id  INTEGER,                   -- İptal edilecek draft ID
+    p_draft_id  INTEGER,                   -- Unschedule edilecek draft ID
     p_is_admin  BOOLEAN DEFAULT FALSE      -- SuperAdmin bypass
 )
 RETURNS BOOLEAN
@@ -39,18 +38,14 @@ BEGIN
     END IF;
 
     -- Status kontrolü
-    IF v_status = 'published' THEN
-        RAISE EXCEPTION 'error.messaging.draft-already-published' USING ERRCODE = 'P0400';
-    ELSIF v_status = 'cancelled' THEN
-        RAISE EXCEPTION 'error.messaging.draft-already-cancelled' USING ERRCODE = 'P0409';
-    ELSIF v_status NOT IN ('draft', 'scheduled') THEN
-        RAISE EXCEPTION 'error.messaging.draft-not-editable' USING ERRCODE = 'P0400';
+    IF v_status != 'scheduled' THEN
+        RAISE EXCEPTION 'error.messaging.draft-not-scheduled' USING ERRCODE = 'P0400';
     END IF;
 
-    -- İptal et
+    -- Unschedule: scheduled_at = NULL, status = draft
     UPDATE messaging.user_message_drafts
-    SET status = 'cancelled',
-        cancelled_by = p_caller_id,
+    SET scheduled_at = NULL,
+        status = 'draft',
         updated_at = NOW()
     WHERE id = p_draft_id;
 
@@ -58,4 +53,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_draft_cancel(BIGINT, INTEGER, BOOLEAN) IS 'Cancel a draft or scheduled message with ownership validation. Only draft/scheduled status can be cancelled.';
+COMMENT ON FUNCTION messaging.admin_message_draft_unschedule(BIGINT, INTEGER, BOOLEAN) IS 'Unschedule a scheduled draft — sets scheduled_at to NULL and status back to draft. Only scheduled drafts can be unscheduled.';

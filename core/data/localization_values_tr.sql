@@ -456,6 +456,13 @@ JOIN (VALUES
     ('error.messaging.cannot-send-to-self', 'Kendinize mesaj gönderemezsiniz'),
     ('error.messaging.recipient-not-found', 'Alıcı bulunamadı veya aktif değil'),
     ('error.messaging.no-recipients', 'Belirtilen filtrelerle eşleşen alıcı bulunamadı'),
+    ('error.messaging.not-draft-owner', 'Bu taslağın sahibi değilsiniz'),
+    ('error.messaging.draft-not-editable', 'Taslak düzenlenebilir durumda değil'),
+    ('error.messaging.draft-not-scheduled', 'Taslak zamanlanmış durumda değil'),
+    ('error.messaging.too-many-recipients', 'Çok fazla alıcı (maksimum 10000)'),
+    ('validation.messaging.at-least-one-field', 'En az bir alan doldurulmalıdır'),
+    ('validation.messaging.invalid-priority', 'Öncelik normal, important veya urgent olmalıdır'),
+    ('validation.messaging.invalid-message-type', 'Geçersiz mesaj tipi'),
     ('error.field.unauthorized-modification', 'Bu alanı değiştirme yetkiniz bulunmamaktadır'),
 
     -- Erişim Kontrolü (yeni)

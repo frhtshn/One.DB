@@ -6,15 +6,16 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP);
+DROP FUNCTION IF EXISTS messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMPTZ);
 
 CREATE OR REPLACE FUNCTION messaging.admin_message_send(
-    p_sender_id     BIGINT,                      -- Gönderen kullanıcı ID
-    p_recipient_id  BIGINT,                      -- Alıcı kullanıcı ID
-    p_subject       VARCHAR(500),                -- Mesaj konusu
-    p_body          TEXT,                         -- Mesaj içeriği (HTML)
-    p_message_type  VARCHAR(30) DEFAULT 'direct', -- Mesaj tipi
-    p_priority      VARCHAR(10) DEFAULT 'normal', -- Öncelik seviyesi
-    p_expires_at    TIMESTAMP DEFAULT NULL        -- Opsiyonel süre sonu
+    p_sender_id     BIGINT,                        -- Gönderen kullanıcı ID
+    p_recipient_id  BIGINT,                        -- Alıcı kullanıcı ID
+    p_subject       VARCHAR(500),                  -- Mesaj konusu
+    p_body          TEXT,                           -- Mesaj içeriği (HTML)
+    p_message_type  VARCHAR(30) DEFAULT 'direct',  -- Mesaj tipi
+    p_priority      VARCHAR(10) DEFAULT 'normal',  -- Öncelik seviyesi
+    p_expires_at    TIMESTAMPTZ DEFAULT NULL        -- Opsiyonel süre sonu
 )
 RETURNS BIGINT
 LANGUAGE plpgsql
@@ -25,24 +26,24 @@ DECLARE
 BEGIN
     -- Zorunlu alan kontrolleri
     IF p_sender_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.sender-id-required';
+        RAISE EXCEPTION 'error.messaging.sender-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     IF p_recipient_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.recipient-id-required';
+        RAISE EXCEPTION 'error.messaging.recipient-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     IF p_subject IS NULL OR p_subject = '' THEN
-        RAISE EXCEPTION 'error.messaging.subject-required';
+        RAISE EXCEPTION 'error.messaging.subject-required' USING ERRCODE = 'P0400';
     END IF;
 
     IF p_body IS NULL OR p_body = '' THEN
-        RAISE EXCEPTION 'error.messaging.body-required';
+        RAISE EXCEPTION 'error.messaging.body-required' USING ERRCODE = 'P0400';
     END IF;
 
     -- Kendine mesaj gönderim engeli
     IF p_sender_id = p_recipient_id THEN
-        RAISE EXCEPTION 'error.messaging.cannot-send-to-self';
+        RAISE EXCEPTION 'error.messaging.cannot-send-to-self' USING ERRCODE = 'P0400';
     END IF;
 
     -- Alıcı varlık ve aktiflik kontrolü + company bilgisini al
@@ -51,7 +52,7 @@ BEGIN
     WHERE id = p_recipient_id AND status = 1;
 
     IF v_recipient_company_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.recipient-not-found';
+        RAISE EXCEPTION 'error.messaging.recipient-not-found' USING ERRCODE = 'P0404';
     END IF;
 
     -- Scope kontrolü: sender alıcının company'sine erişebilir mi?
@@ -71,4 +72,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMP) IS 'Send a direct message to a single user inbox. Validates recipient exists/active, prevents self-messaging, and validates sender access to recipient company scope.';
+COMMENT ON FUNCTION messaging.admin_message_send(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, TIMESTAMPTZ) IS 'Send a direct message to a single user inbox. Validates recipient exists/active, prevents self-messaging, and validates sender access to recipient company scope.';

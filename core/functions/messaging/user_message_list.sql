@@ -23,7 +23,7 @@ DECLARE
     v_items JSONB;
 BEGIN
     IF p_user_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.user-id-required';
+        RAISE EXCEPTION 'error.messaging.user-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     -- Okunmamış sayısı

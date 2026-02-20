@@ -6,14 +6,18 @@
 -- Her alıcı için ayrı mesaj satırı oluşturur (draft_id ile)
 -- Draft status → published, total_recipients güncellenir
 -- 0 alıcı çözümlenirse exception fırlatır (yayınlamaz)
+-- >10K alıcı hard limit — atomik rollback
 -- Caller scope kontrolü: draft'ın company_id ve tenant_ids erişim doğrulaması
+-- Ownership kontrolü: sender_id != p_caller_id AND NOT p_is_admin → RAISE
 -- ================================================================
 
 DROP FUNCTION IF EXISTS messaging.admin_message_publish(BIGINT, INTEGER);
+DROP FUNCTION IF EXISTS messaging.admin_message_publish(BIGINT, INTEGER, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION messaging.admin_message_publish(
-    p_caller_id BIGINT,   -- İşlemi yapan kullanıcı ID
-    p_draft_id  INTEGER   -- Yayınlanacak draft ID
+    p_caller_id BIGINT,                    -- İşlemi yapan kullanıcı ID
+    p_draft_id  INTEGER,                   -- Yayınlanacak draft ID
+    p_is_admin  BOOLEAN DEFAULT FALSE      -- SuperAdmin bypass
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -24,11 +28,11 @@ DECLARE
     v_has_tenant_filter BOOLEAN;
 BEGIN
     IF p_caller_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.sender-id-required';
+        RAISE EXCEPTION 'error.messaging.sender-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     IF p_draft_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.draft-id-required';
+        RAISE EXCEPTION 'error.messaging.draft-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     -- Draft bilgilerini al
@@ -38,12 +42,17 @@ BEGIN
       AND is_deleted = FALSE;
 
     IF v_draft IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.draft-not-found';
+        RAISE EXCEPTION 'error.messaging.draft-not-found' USING ERRCODE = 'P0404';
+    END IF;
+
+    -- Ownership kontrolü
+    IF v_draft.sender_id != p_caller_id AND NOT p_is_admin THEN
+        RAISE EXCEPTION 'error.messaging.not-draft-owner' USING ERRCODE = 'P0403';
     END IF;
 
     -- Sadece draft/scheduled yayınlanabilir
     IF v_draft.status NOT IN ('draft', 'scheduled') THEN
-        RAISE EXCEPTION 'error.messaging.draft-already-published';
+        RAISE EXCEPTION 'error.messaging.draft-already-published' USING ERRCODE = 'P0400';
     END IF;
 
     -- Scope kontrolü: caller draft'ın hedef company'sine erişebilir mi?
@@ -122,7 +131,12 @@ BEGIN
 
     -- 0 alıcı kontrolü: filtreler hiç alıcı çözümleyemediyse yayınlama
     IF v_recipient_count = 0 THEN
-        RAISE EXCEPTION 'error.messaging.no-recipients';
+        RAISE EXCEPTION 'error.messaging.no-recipients' USING ERRCODE = 'P0400';
+    END IF;
+
+    -- Hard limit: 10K alıcı
+    IF v_recipient_count > 10000 THEN
+        RAISE EXCEPTION 'error.messaging.too-many-recipients' USING ERRCODE = 'P0400';
     END IF;
 
     -- Draft'ı published olarak güncelle
@@ -137,4 +151,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_publish(BIGINT, INTEGER) IS 'Publish a draft message with caller scope validation. Validates caller access to draft company_id and tenant_ids. Resolves recipients using AND-combined filters. Raises error if no recipients matched. Returns recipient count.';
+COMMENT ON FUNCTION messaging.admin_message_publish(BIGINT, INTEGER, BOOLEAN) IS 'Publish a draft message with ownership and scope validation. Resolves recipients using AND-combined filters. Hard limit: 10K recipients. Raises error if no recipients matched. Returns recipient count.';

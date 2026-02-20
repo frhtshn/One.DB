@@ -15,7 +15,7 @@ DECLARE
     v_result JSONB;
 BEGIN
     IF p_draft_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.draft-id-required';
+        RAISE EXCEPTION 'error.messaging.draft-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     SELECT jsonb_build_object(
@@ -54,7 +54,7 @@ BEGIN
       AND d.is_deleted = FALSE;
 
     IF v_result IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.draft-not-found';
+        RAISE EXCEPTION 'error.messaging.draft-not-found' USING ERRCODE = 'P0404';
     END IF;
 
     RETURN v_result;

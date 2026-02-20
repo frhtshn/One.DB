@@ -484,6 +484,13 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.cannot-send-to-self', 'error', 'messaging', 'Kendine mesaj gönderilemez'),
 ('error.messaging.recipient-not-found', 'error', 'messaging', 'Alıcı bulunamadı veya aktif değil'),
 ('error.messaging.no-recipients', 'error', 'messaging', 'Filtreler hiç alıcı çözümleyemedi'),
+('error.messaging.not-draft-owner', 'error', 'messaging', 'Draft sahibi değilsiniz'),
+('error.messaging.draft-not-editable', 'error', 'messaging', 'Draft düzenlenebilir durumda değil'),
+('error.messaging.draft-not-scheduled', 'error', 'messaging', 'Draft zamanlanmış durumda değil'),
+('error.messaging.too-many-recipients', 'error', 'messaging', 'Çok fazla alıcı (maksimum 10000)'),
+('validation.messaging.at-least-one-field', 'validation', 'messaging', 'En az bir alan doldurulmalıdır'),
+('validation.messaging.invalid-priority', 'validation', 'messaging', 'Öncelik normal, important veya urgent olmalıdır'),
+('validation.messaging.invalid-message-type', 'validation', 'messaging', 'Geçersiz mesaj tipi'),
 
 -- Protected Field System
 ('error.field.unauthorized-modification', 'error', 'field', 'Korunmalı alanı değiştirme yetkisi yok'),

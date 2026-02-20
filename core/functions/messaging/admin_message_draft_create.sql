@@ -6,21 +6,22 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT);
+DROP FUNCTION IF EXISTS messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMPTZ, TIMESTAMPTZ, BIGINT);
 
 CREATE OR REPLACE FUNCTION messaging.admin_message_draft_create(
-    p_caller_id     BIGINT,                           -- İşlemi yapan kullanıcı ID
-    p_sender_id     BIGINT,                           -- Gönderen admin ID
-    p_subject       VARCHAR(500),                     -- Mesaj konusu
-    p_body          TEXT,                              -- Mesaj içeriği (HTML)
-    p_message_type  VARCHAR(30) DEFAULT 'announcement', -- Mesaj tipi
-    p_priority      VARCHAR(10) DEFAULT 'normal',     -- Öncelik seviyesi
-    p_company_id    BIGINT DEFAULT NULL,              -- Şirket filtresi
-    p_tenant_ids    BIGINT[] DEFAULT NULL,            -- Tenant filtresi (çoklu)
-    p_department_id BIGINT DEFAULT NULL,              -- Departman filtresi
-    p_role_id       BIGINT DEFAULT NULL,              -- Rol filtresi
-    p_scheduled_at  TIMESTAMP DEFAULT NULL,           -- Zamanlama (NULL = draft)
-    p_expires_at    TIMESTAMP DEFAULT NULL,           -- Mesaj süre sonu
-    p_created_by    BIGINT DEFAULT NULL               -- Oluşturan (NULL ise caller_id)
+    p_caller_id     BIGINT,                                   -- İşlemi yapan kullanıcı ID
+    p_sender_id     BIGINT,                                   -- Gönderen admin ID
+    p_subject       VARCHAR(500),                             -- Mesaj konusu
+    p_body          TEXT,                                      -- Mesaj içeriği (HTML)
+    p_message_type  VARCHAR(30) DEFAULT 'announcement',       -- Mesaj tipi
+    p_priority      VARCHAR(10) DEFAULT 'normal',             -- Öncelik seviyesi
+    p_company_id    BIGINT DEFAULT NULL,                      -- Şirket filtresi
+    p_tenant_ids    BIGINT[] DEFAULT NULL,                    -- Tenant filtresi (çoklu)
+    p_department_id BIGINT DEFAULT NULL,                      -- Departman filtresi
+    p_role_id       BIGINT DEFAULT NULL,                      -- Rol filtresi
+    p_scheduled_at  TIMESTAMPTZ DEFAULT NULL,                 -- Zamanlama (NULL = draft)
+    p_expires_at    TIMESTAMPTZ DEFAULT NULL,                 -- Mesaj süre sonu
+    p_created_by    BIGINT DEFAULT NULL                       -- Oluşturan (NULL ise caller_id)
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -31,15 +32,15 @@ DECLARE
 BEGIN
     -- Zorunlu alan kontrolleri
     IF p_caller_id IS NULL THEN
-        RAISE EXCEPTION 'error.messaging.sender-id-required';
+        RAISE EXCEPTION 'error.messaging.sender-id-required' USING ERRCODE = 'P0400';
     END IF;
 
     IF p_subject IS NULL OR p_subject = '' THEN
-        RAISE EXCEPTION 'error.messaging.subject-required';
+        RAISE EXCEPTION 'error.messaging.subject-required' USING ERRCODE = 'P0400';
     END IF;
 
     IF p_body IS NULL OR p_body = '' THEN
-        RAISE EXCEPTION 'error.messaging.body-required';
+        RAISE EXCEPTION 'error.messaging.body-required' USING ERRCODE = 'P0400';
     END IF;
 
     -- Scope kontrolü: caller hedef company'ye erişebilir mi?
@@ -74,4 +75,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT) IS 'Create a message draft with caller scope validation. Validates caller access to company_id and tenant_ids. Returns draft ID.';
+COMMENT ON FUNCTION messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMPTZ, TIMESTAMPTZ, BIGINT) IS 'Create a message draft with caller scope validation. Validates caller access to company_id and tenant_ids. Returns draft ID.';

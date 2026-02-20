@@ -23,7 +23,7 @@ DELETE FROM security.role_permissions;
 -- role_permissions tablosunda 0 satir.
 
 -- ================================================================
--- 3. ADMIN (Level 90) — 77 API + 13 field(edit) = 90
+-- 3. ADMIN (Level 90) — 89 API + 13 field(edit) = 102
 -- ================================================================
 -- Platform haric TUM scope'lara erisim. Tenant sub-entity yazma dahil.
 
@@ -72,7 +72,12 @@ WHERE r.code = 'admin'
     'tenant.support-representative.view', 'tenant.support-representative.manage',
     'tenant.support-agent.manage', 'tenant.support-category.manage',
     'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage'
+    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    -- messaging (12)
+    'messaging.draft.create', 'messaging.draft.read', 'messaging.draft.update', 'messaging.draft.delete',
+    'messaging.draft.cancel', 'messaging.draft.unschedule', 'messaging.draft.publish', 'messaging.draft.recall',
+    'messaging.send',
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
 
 -- ADMIN: Field protection (edit level — tam erisim, 13 alan)
@@ -85,7 +90,7 @@ WHERE r.code = 'admin'
   AND p.code LIKE 'field.%.edit';
 
 -- ================================================================
--- 4. COMPANYADMIN (Level 80) — 39 API + 13 field(edit) = 52
+-- 4. COMPANYADMIN (Level 80) — 42 API + 13 field(edit) = 55
 -- ================================================================
 -- Tenant okuma + sub-entity okuma + user yonetimi + RBAC + audit + template.
 -- Tenant CRUD (create/edit/delete) YAPAMAZ. Sub-entity yazma YAPAMAZ.
@@ -121,7 +126,9 @@ WHERE r.code = 'companyadmin'
     'tenant.support-representative.view', 'tenant.support-representative.manage',
     'tenant.support-agent.manage', 'tenant.support-category.manage',
     'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage'
+    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    -- messaging inbox (3)
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
 
 -- COMPANYADMIN: Field protection (edit level — tam erisim, 13 alan)
@@ -134,7 +141,7 @@ WHERE r.code = 'companyadmin'
   AND p.code LIKE 'field.%.edit';
 
 -- ================================================================
--- 5. TENANTADMIN (Level 70) — 36 API + 13 field(view) = 49
+-- 5. TENANTADMIN (Level 70) — 39 API + 13 field(view) = 52
 -- ================================================================
 -- User yonetimi + RBAC + presentation + audit + template atama.
 -- Tenant list/view YOK. Sub-entity okuma YOK.
@@ -167,7 +174,9 @@ WHERE r.code = 'tenantadmin'
     'tenant.support-representative.view', 'tenant.support-representative.manage',
     'tenant.support-agent.manage', 'tenant.support-category.manage',
     'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage'
+    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    -- messaging inbox (3)
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
 
 -- TENANTADMIN: Field protection (view level — acik okuma, 13 alan)
@@ -180,7 +189,7 @@ WHERE r.code = 'tenantadmin'
   AND p.code LIKE 'field.%.view';
 
 -- ================================================================
--- 6. MODERATOR (Level 60) — 17 API + 13 field(view) = 30
+-- 6. MODERATOR (Level 60) — 20 API + 13 field(view) = 33
 -- ================================================================
 -- Audit erisimi. Player/finance API endpoint'leri eklendikce genisleyecek.
 
@@ -202,7 +211,9 @@ WHERE r.code = 'moderator'
     'tenant.support-ticket.assign', 'tenant.support-ticket.manage',
     'tenant.support-player-note.list', 'tenant.support-player-note.manage',
     'tenant.support-representative.view',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage'
+    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    -- messaging inbox (3)
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
 
 -- MODERATOR: Field protection (view level — acik okuma, 13 alan)
@@ -215,7 +226,7 @@ WHERE r.code = 'moderator'
   AND p.code LIKE 'field.%.view';
 
 -- ================================================================
--- 7. EDITOR (Level 50) — 1 API + 13 field(mask) = 14
+-- 7. EDITOR (Level 50) — 4 API + 13 field(mask) = 17
 -- ================================================================
 -- Presentation yonetimi. Game/bonus/content API endpoint'leri eklendikce genisleyecek.
 
@@ -226,7 +237,9 @@ CROSS JOIN security.permissions p
 WHERE r.code = 'editor'
   AND p.code IN (
     -- tenant presentation (1)
-    'tenant.presentation.manage'
+    'tenant.presentation.manage',
+    -- messaging inbox (3)
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
 
 -- EDITOR: Field protection (mask level — maskeli okuma, 13 alan)
@@ -239,7 +252,7 @@ WHERE r.code = 'editor'
   AND p.code LIKE 'field.%.mask';
 
 -- ================================================================
--- 8. OPERATOR (Level 40) — 10 API + 13 field(mask) = 23
+-- 8. OPERATOR (Level 40) — 13 API + 13 field(mask) = 26
 -- ================================================================
 -- Bonus request list/view/create. Review ve settings yok.
 
@@ -255,7 +268,9 @@ WHERE r.code = 'operator'
     'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
     'tenant.support-player-note.list', 'tenant.support-player-note.manage',
     'tenant.support-representative.view',
-    'tenant.support-welcome-call.manage'
+    'tenant.support-welcome-call.manage',
+    -- messaging inbox (3)
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
 
 -- OPERATOR: Field protection (mask level — maskeli okuma, 13 alan)
@@ -318,38 +333,38 @@ BEGIN
     RAISE NOTICE 'ROLE-PERMISSION MAPPING COMPLETED';
     RAISE NOTICE '================================================';
     RAISE NOTICE 'superadmin:   % (expected: 0 — bypass)', v_superadmin;
-    RAISE NOTICE 'admin:        % (expected: 90 = 77 API + 13 field)', v_admin;
-    RAISE NOTICE 'companyadmin: % (expected: 52 = 39 API + 13 field)', v_companyadmin;
-    RAISE NOTICE 'tenantadmin:  % (expected: 49 = 36 API + 13 field)', v_tenantadmin;
-    RAISE NOTICE 'moderator:    % (expected: 30 = 17 API + 13 field)', v_moderator;
-    RAISE NOTICE 'editor:       % (expected: 14 = 1 API + 13 field)', v_editor;
-    RAISE NOTICE 'operator:     % (expected: 23 = 10 API + 13 field)', v_operator;
+    RAISE NOTICE 'admin:        % (expected: 102 = 89 API + 13 field)', v_admin;
+    RAISE NOTICE 'companyadmin: % (expected: 55 = 42 API + 13 field)', v_companyadmin;
+    RAISE NOTICE 'tenantadmin:  % (expected: 52 = 39 API + 13 field)', v_tenantadmin;
+    RAISE NOTICE 'moderator:    % (expected: 33 = 20 API + 13 field)', v_moderator;
+    RAISE NOTICE 'editor:       % (expected: 17 = 4 API + 13 field)', v_editor;
+    RAISE NOTICE 'operator:     % (expected: 26 = 13 API + 13 field)', v_operator;
     RAISE NOTICE 'user:         % (expected: 0)', v_user;
     RAISE NOTICE '------------------------------------------------';
-    RAISE NOTICE 'TOTAL:        % (expected: 258)', v_total;
+    RAISE NOTICE 'TOTAL:        % (expected: 285)', v_total;
     RAISE NOTICE '================================================';
 
     -- Strict validation
     IF v_superadmin != 0 THEN
         RAISE WARNING 'SuperAdmin permission atamasi olmamali! Gercek: %', v_superadmin;
     END IF;
-    IF v_admin != 90 THEN
-        RAISE WARNING 'Admin permission sayisi hatali! Beklenen: 90, Gercek: %', v_admin;
+    IF v_admin != 102 THEN
+        RAISE WARNING 'Admin permission sayisi hatali! Beklenen: 102, Gercek: %', v_admin;
     END IF;
-    IF v_companyadmin != 52 THEN
-        RAISE WARNING 'CompanyAdmin permission sayisi hatali! Beklenen: 52, Gercek: %', v_companyadmin;
+    IF v_companyadmin != 55 THEN
+        RAISE WARNING 'CompanyAdmin permission sayisi hatali! Beklenen: 55, Gercek: %', v_companyadmin;
     END IF;
-    IF v_tenantadmin != 49 THEN
-        RAISE WARNING 'TenantAdmin permission sayisi hatali! Beklenen: 49, Gercek: %', v_tenantadmin;
+    IF v_tenantadmin != 52 THEN
+        RAISE WARNING 'TenantAdmin permission sayisi hatali! Beklenen: 52, Gercek: %', v_tenantadmin;
     END IF;
-    IF v_moderator != 30 THEN
-        RAISE WARNING 'Moderator permission sayisi hatali! Beklenen: 30, Gercek: %', v_moderator;
+    IF v_moderator != 33 THEN
+        RAISE WARNING 'Moderator permission sayisi hatali! Beklenen: 33, Gercek: %', v_moderator;
     END IF;
-    IF v_editor != 14 THEN
-        RAISE WARNING 'Editor permission sayisi hatali! Beklenen: 14, Gercek: %', v_editor;
+    IF v_editor != 17 THEN
+        RAISE WARNING 'Editor permission sayisi hatali! Beklenen: 17, Gercek: %', v_editor;
     END IF;
-    IF v_operator != 23 THEN
-        RAISE WARNING 'Operator permission sayisi hatali! Beklenen: 23, Gercek: %', v_operator;
+    IF v_operator != 26 THEN
+        RAISE WARNING 'Operator permission sayisi hatali! Beklenen: 26, Gercek: %', v_operator;
     END IF;
     IF v_user != 0 THEN
         RAISE WARNING 'User permission atamasi olmamali! Gercek: %', v_user;

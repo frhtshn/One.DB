@@ -12,11 +12,11 @@ DO $$ BEGIN
 END $$;
 
 -- Action type check constraint
--- Values: cache.invalidate, event.publish (C# OutboxActionTypes constants ile uyumlu)
+-- Values: cache.invalidate, event.publish, signalr.notify (C# OutboxActionTypes constants ile uyumlu)
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_outbox_action_type') THEN
         ALTER TABLE outbox.messages ADD CONSTRAINT chk_outbox_action_type
-            CHECK (action_type IN ('cache.invalidate', 'event.publish'));
+            CHECK (action_type IN ('cache.invalidate', 'event.publish', 'signalr.notify'));
     END IF;
 END $$;
 

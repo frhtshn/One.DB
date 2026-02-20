@@ -24,16 +24,18 @@ CREATE TABLE messaging.user_message_drafts (
 
     -- Durum ve zamanlama
     status VARCHAR(20) NOT NULL DEFAULT 'draft',               -- draft / scheduled / published / cancelled
-    scheduled_at TIMESTAMP WITHOUT TIME ZONE,                  -- Zamanlanmış yayın tarihi (NULL = draft)
-    published_at TIMESTAMP WITHOUT TIME ZONE,                  -- Gerçek yayınlanma zamanı
-    expires_at TIMESTAMP WITHOUT TIME ZONE,                    -- Mesaj süre sonu
+    scheduled_at TIMESTAMPTZ,                                   -- Zamanlanmış yayın tarihi (NULL = draft)
+    published_at TIMESTAMPTZ,                                   -- Gerçek yayınlanma zamanı
+    expires_at TIMESTAMPTZ,                                     -- Mesaj süre sonu
 
     -- İstatistik
     total_recipients INTEGER NOT NULL DEFAULT 0,               -- Yayınlanan alıcı sayısı
 
     -- Soft delete
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,                 -- Silindi mi?
-    deleted_at TIMESTAMP WITHOUT TIME ZONE,                    -- Silinme zamanı
+    deleted_at TIMESTAMPTZ,                                    -- Silinme zamanı
+    deleted_by BIGINT,                                         -- Silen kullanıcı ID
+    cancelled_by BIGINT,                                       -- İptal eden kullanıcı ID
 
     -- Audit
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- Oluşturulma zamanı

@@ -72,12 +72,12 @@ INSERT INTO security.roles (code, name, description, level, status, is_platform_
 -- 4. USERS
 -- ================================================================
 -- Password: deneme
--- Hash: $argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c
+-- Hash: $argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s
 -- WARNING: Change this password immediately after first login!
 
 INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency, country) VALUES
 (0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin',
- '$argon2id$v=19$m=65536,t=3,p=1$EKg4u96C3h8HhUmaP592LA$imDEmjEWAr/I2WGMlHwuCiDwskwRdsBoLUGr0vDFS6c',
+ '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Europe/Istanbul', 'EUR', 'MT');
 
 -- ================================================================
