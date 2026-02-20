@@ -113,23 +113,25 @@ flowchart TD
 | 3  | `core_audit`       | Backoffice güvenlik denetim kayıtları      | Shared   | Daily (1)      | 90 gün        |
 | 4  | `core_report`      | Merkezi raporlama ve BI verileri           | Shared   | Monthly (5)    | Sınırsız      |
 | 5  | `game`             | Oyun gateway entegrasyon durumu            | Shared   | -              | -             |
-| 6  | `game_log`         | Oyun gateway teknik logları                | Shared   | -              | -             |
+| 6  | `game_log`         | Oyun gateway teknik logları                | Shared   | Daily (2)      | 7 gün         |
 | 7  | `finance`          | Finans gateway entegrasyon durumu          | Shared   | -              | -             |
-| 8  | `finance_log`      | Finans gateway teknik logları              | Shared   | -              | -             |
+| 8  | `finance_log`      | Finans gateway teknik logları              | Shared   | Daily (2)      | 14 gün        |
 | 9  | `bonus`            | Bonus ve promosyon yapılandırması          | Shared   | -              | Sınırsız      |
 | 10 | `tenant`           | Kiracıya özel iş verileri                  | Isolated | Monthly (2)    | Sınırsız*     |
-| 11 | `tenant_log`       | Kiracıya özel operasyonel loglar           | Isolated | Daily (5)      | 30-90 gün     |
+| 11 | `tenant_log`       | Kiracıya özel operasyonel loglar           | Isolated | Daily (8)      | 30-90 gün     |
 | 12 | `tenant_audit`     | Kiracıya özel audit kayıtları              | Isolated | Hybrid (2)     | 1-5 yıl       |
-| 13 | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | Isolated | Monthly (5)    | Sınırsız      |
+| 13 | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | Isolated | Monthly (6)    | Sınırsız      |
 | 14 | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | Isolated | Monthly (7)    | Sınırsız      |
 
-> **Toplam:** 14 veritabanı, 37 partitioned tablo, 10 DB'de partition yönetimi
+> **Toplam:** 14 veritabanı, 41 partitioned tablo, 11 DB'de partition yönetimi, ~671 fonksiyon
 >
 > \* `core` Monthly: `messaging.user_messages` (180 gün) + `security.user_sessions` (90 gün)
 > \* `tenant` Monthly: `transaction.transactions` (sınırsız) + `messaging.player_messages` (180 gün)
 > \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily (365 gün) + `player_audit.login_sessions` Monthly (5 yıl)
 > \* `game_log` Daily: `game_log.provider_api_requests` + `game_log.provider_api_callbacks` (7 gün)
-> \* `tenant_log/game_log` Daily: `game_log.game_rounds` (30 gün)
+> \* `finance_log` Daily: `finance_log.provider_api_requests` + `finance_log.provider_api_callbacks` (14 gün)
+> \* `tenant_log` Daily (8): affiliate (3) + kyc (1) + messaging (1) + game_rounds (1) + bonus_log (1) + support_log (1)
+> \* `tenant_report` Monthly (6): finance (3) + game (2) + support (1)
 
 ### 3.2 Core Veritabanı (Merkezi)
 
@@ -186,17 +188,18 @@ Her tenant (marka) için `tenant` şablon DB'si klonlanarak `tenant_<tenantid>` 
 
 ```
 TENANT DATABASE (per tenant)
-├── auth         → Oyuncu kimlik, kategori, şifre yönetimi
-├── profile      → Oyuncu profil ve kimlik bilgileri
-├── wallet       → Cüzdan bakiyeleri ve snapshot'ları (fiat + kripto)
-├── transaction  → Finansal işlemler ve workflow'lar (monthly partitioned)
-├── finance      → Döviz/kripto kurları, ödeme limitleri, player limitleri
-├── game         → Oyun limitleri ve ayarları
-├── bonus        → Bonus kazanımları ve promosyon kullanımları
-├── content      → CMS, FAQ, promosyon, slide, popup yönetimi
-├── kyc          → KYC süreçleri, belgeler, limitler, kısıtlamalar
-├── messaging    → Kampanya, şablon, oyuncu mesaj kutusu (monthly partitioned)
-└── maintenance  → Partition yönetim fonksiyonları
+├── player_auth    → Oyuncu kimlik, kategori/grup, şifre yönetimi, shadow testers
+├── player_profile → Oyuncu profil, kimlik bilgileri, adres/iletişim
+├── wallet         → Cüzdan bakiyeleri ve snapshot'ları (fiat + kripto)
+├── transaction    → Finansal işlemler ve workflow'lar (monthly partitioned)
+├── finance        → Döviz/kripto kurları, ödeme limitleri, player limitleri
+├── game           → Oyun limitleri ve ayarları
+├── bonus          → Bonus kazanımları ve promosyon kullanımları
+├── content        → CMS, FAQ, promosyon, slide, popup yönetimi
+├── kyc            → KYC süreçleri, belgeler, limitler, kısıtlamalar, AML bayrakları
+├── messaging      → Kampanya, şablon, oyuncu mesaj kutusu (monthly partitioned)
+├── support        → Destek talepleri, ticket yönetimi
+└── maintenance    → Partition yönetimi, bonus temizliği, destek bakımı
 ```
 
 > Detaylı tablo listeleri için bkz: **[DATABASE_ARCHITECTURE.md](DATABASE_ARCHITECTURE.md)**
@@ -287,14 +290,25 @@ nucleoDb/
 ├── .context/                    # Claude AI context ve proje talimatları
 │   └── CLAUDE.md               # Proje geliştirme kuralları
 ├── .docs/                       # Proje dokümantasyonu
-│   ├── PROJECT_OVERVIEW.md      # Bu dosya
-│   ├── DATABASE_ARCHITECTURE.md # Detaylı DB mimarisi
-│   ├── DATABASE_FUNCTIONS.md    # Fonksiyon referansı (index)
-│   ├── FUNCTIONS_CORE.md        # Core katmanı fonksiyonları
-│   ├── FUNCTIONS_TENANT.md      # Tenant katmanı fonksiyonları
-│   ├── FUNCTIONS_GATEWAY.md     # Gateway katmanı fonksiyonları
-│   ├── PARTITION_ARCHITECTURE.md# Partition yapısı
-│   └── LOGSTRATEGY.md           # Log/audit stratejisi
+│   ├── reference/               # Mimari ve referans dökümanları
+│   │   ├── PROJECT_OVERVIEW.md      # Bu dosya
+│   │   ├── DATABASE_ARCHITECTURE.md # Detaylı DB mimarisi
+│   │   ├── DATABASE_FUNCTIONS.md    # Fonksiyon referansı (index)
+│   │   ├── FUNCTIONS_CORE.md        # Core katmanı fonksiyonları
+│   │   ├── FUNCTIONS_TENANT.md      # Tenant katmanı fonksiyonları
+│   │   ├── FUNCTIONS_GATEWAY.md     # Gateway katmanı fonksiyonları
+│   │   ├── PARTITION_ARCHITECTURE.md# Partition yapısı
+│   │   └── LOGSTRATEGY.md           # Log/audit stratejisi
+│   └── guides/                  # Geliştirici rehberleri
+│       ├── GAME_GATEWAY_GUIDE.md         # Oyun gateway entegrasyon rehberi
+│       ├── FINANCE_GATEWAY_GUIDE.md      # Finans gateway entegrasyon rehberi
+│       ├── BONUS_ENGINE_GUIDE.md         # Bonus motoru rehberi
+│       ├── PROVISIONING_GUIDE.md         # Tenant provisioning rehberi
+│       ├── SHADOW_MODE_GUIDE.md          # Shadow mode test rehberi
+│       ├── CROSS_DB_JOIN_GUIDE.md        # Cross-DB join rehberi
+│       ├── CALL_CENTER_GUIDE.md          # Çağrı merkezi rehberi
+│       ├── PLAYER_AUTH_KYC_GUIDE.md      # Oyuncu auth & KYC rehberi
+│       └── IMPLEMENTATION_CHANGE_GUIDE.md# Implementasyon değişiklik rehberi
 │
 ├── core/                        # Core veritabanı
 │   ├── tables/
@@ -349,10 +363,11 @@ nucleoDb/
 │   │   ├── bonus/              # Bonus kazanımları
 │   │   ├── content/            # CMS, FAQ, promosyon, slide, popup
 │   │   └── messaging/          # Kampanya, şablon, oyuncu inbox
-│   ├── functions/
-│   │   ├── finance/            # Kur fonksiyonları
-│   │   ├── messaging/          # 14 messaging fonksiyonu
-│   │   └── maintenance/        # Partition yönetimi
+│   ├── functions/              # ~219 iş fonksiyonu + maintenance
+│   │   ├── backoffice/         # Backoffice CRUD (auth, bonus, finance, game, kyc, messaging, support, transaction, wallet)
+│   │   ├── frontend/           # Oyuncu-facing (auth, bonus, messaging, profile, support)
+│   │   ├── gateway/            # Provider entegrasyon (bonus, finance, game, transaction, wallet)
+│   │   └── maintenance/        # Partition, bonus temizliği, destek bakımı
 │   ├── views/                   # Kur view'ları (cross rates)
 │   ├── constraints/             # FK constraint'ler
 │   └── indexes/                 # Performance index'ler
@@ -481,7 +496,7 @@ Veritabanları aşağıdaki sırada deploy edilmelidir:
 
 8 sistem rolü: `superadmin`, `admin`, `companyadmin`, `tenantadmin`, `moderator`, `editor`, `operator`, `user`
 
-175 permission, 12 kategori (`core/data/permissions_full.sql`). Yetkiler UPSERT pattern ile tanımlanır.
+143 permission (`core/data/permissions_full.sql`). Yetkiler UPSERT pattern ile tanımlanır.
 
 ### 9.2 IDOR Koruması (Insecure Direct Object Reference)
 
@@ -536,14 +551,35 @@ Tüm login ve oturum olayları 22 GeoIP alanı ile zenginleştirilir (ip-api.com
 
 ## İlgili Dökümanlar
 
+### Referans Dökümanları
+
 | Doküman | Açıklama |
 |---------|----------|
 | [DATABASE_ARCHITECTURE.md](DATABASE_ARCHITECTURE.md) | Detaylı veritabanı mimarisi, şemalar ve tablolar |
 | [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md) | Fonksiyon referansı (index → [Core](FUNCTIONS_CORE.md) · [Tenant](FUNCTIONS_TENANT.md) · [Gateway](FUNCTIONS_GATEWAY.md)) |
 | [LOGSTRATEGY.md](LOGSTRATEGY.md) | Log, audit ve retention stratejisi |
 | [PARTITION_ARCHITECTURE.md](PARTITION_ARCHITECTURE.md) | Partition yapısı ve yönetim fonksiyonları |
+
+### Geliştirici Rehberleri
+
+| Doküman | Açıklama |
+|---------|----------|
+| [GAME_GATEWAY_GUIDE.md](../guides/GAME_GATEWAY_GUIDE.md) | Oyun gateway entegrasyon rehberi (PP + Hub88) |
+| [FINANCE_GATEWAY_GUIDE.md](../guides/FINANCE_GATEWAY_GUIDE.md) | Finans gateway entegrasyon rehberi |
+| [BONUS_ENGINE_GUIDE.md](../guides/BONUS_ENGINE_GUIDE.md) | Bonus motoru ve kural sistemi rehberi |
+| [PROVISIONING_GUIDE.md](../guides/PROVISIONING_GUIDE.md) | Tenant provisioning rehberi |
+| [SHADOW_MODE_GUIDE.md](../guides/SHADOW_MODE_GUIDE.md) | Shadow mode test rehberi |
+| [CROSS_DB_JOIN_GUIDE.md](../guides/CROSS_DB_JOIN_GUIDE.md) | Cross-DB join rehberi |
+| [CALL_CENTER_GUIDE.md](../guides/CALL_CENTER_GUIDE.md) | Çağrı merkezi ve ticket sistemi rehberi |
+| [PLAYER_AUTH_KYC_GUIDE.md](../guides/PLAYER_AUTH_KYC_GUIDE.md) | Oyuncu auth & KYC rehberi |
+| [IMPLEMENTATION_CHANGE_GUIDE.md](../guides/IMPLEMENTATION_CHANGE_GUIDE.md) | Implementasyon değişiklik rehberi |
+
+### Diğer
+
+| Doküman | Açıklama |
+|---------|----------|
 | [README.md](../../README.md) | Kurulum ve deploy kılavuzu |
 
 ---
 
-_Son Güncelleme: 2026-02-10_
+_Son Güncelleme: 2026-02-20_
