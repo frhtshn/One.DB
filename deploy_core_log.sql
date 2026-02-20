@@ -32,6 +32,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core_log/tables/backoffice/audit_logs.sql
 \i core_log/tables/logs/error_logs.sql
 \i core_log/tables/logs/dead_letter_messages.sql
+\i core_log/tables/logs/dead_letter_audit.sql
 \i core_log/tables/logs/audit_logs.sql
 
 -- CONSTRAINTS
@@ -45,7 +46,6 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core_log/functions/logs/error_list.sql
 \i core_log/functions/logs/error_get.sql
 \i core_log/functions/logs/error_stats.sql
-\i core_log/tables/logs/dead_letter_audit.sql
 \i core_log/functions/logs/dead_letter_create.sql
 \i core_log/functions/logs/dead_letter_get.sql
 \i core_log/functions/logs/dead_letter_update_status.sql

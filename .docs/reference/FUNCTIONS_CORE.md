@@ -3,7 +3,7 @@
 Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 **Veritabanları:** `core`, `core_audit`, `core_log`, `core_report`
-**Toplam:** 357 fonksiyon, 3 trigger
+**Toplam:** 363 fonksiyon, 3 trigger
 
 ---
 
@@ -579,7 +579,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Core Log Database (19 fonksiyon)
+## Core Log Database (25 fonksiyon)
 
 ### Backoffice Schema (3)
 
@@ -589,17 +589,23 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `audit_get` | Get entity audit log by ID |
 | `audit_list` | Paginated entity audit logs with filters |
 
-### Logs Schema (12)
+### Logs Schema (18)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `core_audit_create` | Create core audit log |
 | `core_audit_list` | Core audit logs with filtering |
+| `dead_letter_archive` | Archive resolved, failed, ignored messages before date |
+| `dead_letter_bulk_ignore` | Bulk mark messages as ignored with reason |
+| `dead_letter_bulk_resolve` | Bulk mark messages as resolved with notes |
+| `dead_letter_bulk_retry` | Bulk reset messages to pending for retry |
 | `dead_letter_create` | Create dead letter entry |
 | `dead_letter_get` | Get dead letter by ID |
-| `dead_letter_list_pending` | Get pending dead letters for retry |
-| `dead_letter_retry` | Increment retry count, set status to retrying |
-| `dead_letter_stats` | Dead letter statistics |
+| `dead_letter_get_for_auto_retry` | Claim pending messages eligible for automatic retry |
+| `dead_letter_list` | Paginated filtered list with search and sorting |
+| `dead_letter_purge` | Permanently delete archived messages before date |
+| `dead_letter_schedule_retry` | Schedule single message retry at specified time |
+| `dead_letter_stats_detailed` | Comprehensive statistics by multiple dimensions |
 | `dead_letter_update_status` | Update dead letter status with resolution notes |
 | `error_get` | Get error by ID |
 | `error_list` | Recent errors with filtering |

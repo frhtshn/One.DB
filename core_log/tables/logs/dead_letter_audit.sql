@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: logs.dead_letter_audit
--- Aciklama: Dead letter admin islemleri audit log
--- No FK - DL silindikten sonra da kayit kalir
+-- Açıklama: Dead letter admin işlemleri audit log
+-- No FK - DL silindikten sonra da kayıt kalır
 -- =============================================
 
 DROP TABLE IF EXISTS logs.dead_letter_audit CASCADE;

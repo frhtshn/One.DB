@@ -44,7 +44,7 @@ JOIN (VALUES
     -- Error Messages - Logs
     ('error.logs.errornotfound', 'Error log bulunamadı'),
     ('error.deadletter.notfound', 'Dead letter bulunamadı'),
-    ('error.deadletter.bulklimitexceeded', 'Toplu islem limiti asildi (maksimum 500 kayit)'),
+    ('error.deadletter.bulklimitexceeded', 'Toplu işlem limiti aşıldı (maksimum 500 kayıt)'),
     ('error.logs.auditnotfound', 'Audit log bulunamadı'),
 
     -- Error Messages - Auth Account Status
