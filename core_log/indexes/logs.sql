@@ -61,6 +61,39 @@ CREATE INDEX IF NOT EXISTS idx_dead_letter_retry ON logs.dead_letter_messages US
 -- Time-based cleanup
 CREATE INDEX IF NOT EXISTS idx_dead_letter_created ON logs.dead_letter_messages USING btree(created_at);
 
+-- Active messages (dead_letter_list, dead_letter_stats_detailed)
+CREATE INDEX IF NOT EXISTS idx_dead_letter_active
+    ON logs.dead_letter_messages USING btree(status, created_at DESC) WHERE is_archived = FALSE;
+
+-- Next retry scheduling (dead_letter_get_for_auto_retry)
+CREATE INDEX IF NOT EXISTS idx_dead_letter_next_retry
+    ON logs.dead_letter_messages USING btree(next_retry_at)
+    WHERE next_retry_at IS NOT NULL AND status = 'pending' AND is_archived = FALSE;
+
+-- Status + event type composite (dead_letter_list filtering)
+CREATE INDEX IF NOT EXISTS idx_dead_letter_status_type
+    ON logs.dead_letter_messages USING btree(status, event_type);
+
+-- Correlation ID lookup
+CREATE INDEX IF NOT EXISTS idx_dead_letter_correlation
+    ON logs.dead_letter_messages USING btree(correlation_id) WHERE correlation_id IS NOT NULL;
+
+-- Failure category filtering
+CREATE INDEX IF NOT EXISTS idx_dead_letter_failure_cat
+    ON logs.dead_letter_messages USING btree(failure_category) WHERE failure_category IS NOT NULL;
+
+-- =============================================
+-- logs.dead_letter_audit
+-- =============================================
+
+-- Dead letter ID lookup (audit trail)
+CREATE INDEX IF NOT EXISTS idx_dla_dead_letter_id
+    ON logs.dead_letter_audit USING btree(dead_letter_id);
+
+-- Time-based audit queries
+CREATE INDEX IF NOT EXISTS idx_dla_performed_at
+    ON logs.dead_letter_audit USING btree(performed_at DESC);
+
 
 -- =============================================
 -- logs.audit_logs (Core Audit)

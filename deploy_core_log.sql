@@ -45,12 +45,19 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core_log/functions/logs/error_list.sql
 \i core_log/functions/logs/error_get.sql
 \i core_log/functions/logs/error_stats.sql
+\i core_log/tables/logs/dead_letter_audit.sql
 \i core_log/functions/logs/dead_letter_create.sql
-\i core_log/functions/logs/dead_letter_list_pending.sql
 \i core_log/functions/logs/dead_letter_get.sql
 \i core_log/functions/logs/dead_letter_update_status.sql
-\i core_log/functions/logs/dead_letter_stats.sql
-\i core_log/functions/logs/dead_letter_retry.sql
+\i core_log/functions/logs/dead_letter_list.sql
+\i core_log/functions/logs/dead_letter_bulk_retry.sql
+\i core_log/functions/logs/dead_letter_bulk_resolve.sql
+\i core_log/functions/logs/dead_letter_bulk_ignore.sql
+\i core_log/functions/logs/dead_letter_archive.sql
+\i core_log/functions/logs/dead_letter_purge.sql
+\i core_log/functions/logs/dead_letter_stats_detailed.sql
+\i core_log/functions/logs/dead_letter_get_for_auto_retry.sql
+\i core_log/functions/logs/dead_letter_schedule_retry.sql
 \i core_log/functions/logs/core_audit_create.sql
 \i core_log/functions/logs/core_audit_list.sql
 

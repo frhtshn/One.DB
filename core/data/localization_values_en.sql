@@ -43,7 +43,8 @@ JOIN (VALUES
 
     -- Error Messages - Logs
     ('error.logs.errornotfound', 'Error log not found'),
-    ('error.logs.deadletternotfound', 'Dead letter not found'),
+    ('error.deadletter.notfound', 'Dead letter not found'),
+    ('error.deadletter.bulklimitexceeded', 'Bulk operation limit exceeded (max 500 items)'),
     ('error.logs.auditnotfound', 'Audit log not found'),
 
     -- Error Messages - Auth Account Status

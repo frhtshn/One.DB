@@ -55,7 +55,8 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 
 -- Logs Exceptions (Dead Letter, Error, Audit)
 ('error.logs.errornotfound', 'error', 'logs', 'Error log bulunamadı'),
-('error.logs.deadletternotfound', 'error', 'logs', 'Dead letter bulunamadı'),
+('error.deadletter.notfound', 'error', 'deadletter', 'Dead letter bulunamadı'),
+('error.deadletter.bulklimitexceeded', 'error', 'deadletter', 'Toplu islem limiti asildi (max 500)'),
 ('error.logs.auditnotfound', 'error', 'logs', 'Audit log bulunamadı'),
 
 -- Auth - Account Status
