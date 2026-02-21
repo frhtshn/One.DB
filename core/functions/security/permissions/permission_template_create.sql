@@ -74,6 +74,15 @@ BEGIN
     END IF;
 
     -- ========================================
+    -- COMPANY VARLIK KONTROLU
+    -- ========================================
+    IF p_company_id IS NOT NULL THEN
+        IF NOT EXISTS(SELECT 1 FROM core.companies WHERE id = p_company_id AND status = 1) THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.company.not-found';
+        END IF;
+    END IF;
+
+    -- ========================================
     -- DUPLICATE KONTROLU
     -- ========================================
     IF p_company_id IS NULL THEN
