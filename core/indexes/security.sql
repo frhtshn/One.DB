@@ -133,3 +133,15 @@ CREATE INDEX IF NOT EXISTS idx_pti_permission_id ON security.permission_template
 -- permission_template_assignments (cleanup expired - permission_template_cleanup_expired)
 CREATE INDEX IF NOT EXISTS idx_pta_expires_at ON security.permission_template_assignments USING btree(expires_at) WHERE expires_at IS NOT NULL;
 
+-- auth_tokens (user lookup - auth_user_tokens_list)
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_user_id ON security.auth_tokens USING btree(user_id);
+
+-- auth_tokens (session lookup)
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_session_id ON security.auth_tokens USING btree(session_id);
+
+-- auth_tokens (user+tenant lookup - auth_user_tokens_list with tenant filter)
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_user_tenant ON security.auth_tokens USING btree(user_id, tenant_id) WHERE tenant_id IS NOT NULL;
+
+-- auth_tokens (cleanup - auth_token_cleanup, expires_at < NOW())
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_expires_at ON security.auth_tokens USING btree(expires_at);
+

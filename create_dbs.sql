@@ -95,6 +95,20 @@ COMMENT ON DATABASE bonus IS 'Bonus, promotion and campaign management (Plugin)'
 
 
 -- ============================================================
+-- INFRASTRUCTURE VERİTABANLARI
+-- ============================================================
+
+-- Orleans veritabanı: Orleans Clustering, Persistence ve Reminders (ADO.NET provider)
+SELECT
+  'CREATE DATABASE orleans'
+WHERE NOT EXISTS (
+  SELECT 1 FROM pg_database WHERE datname = 'orleans'
+)
+\gexec
+COMMENT ON DATABASE orleans IS 'Orleans clustering, persistence and reminders (ADO.NET PostgreSQL provider)';
+
+
+-- ============================================================
 -- TENANT VERİTABANLARI (Kiracıya Özel)
 -- ============================================================
 
