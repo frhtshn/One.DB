@@ -184,12 +184,11 @@ JOIN (VALUES
     ('error.permission.grant.failed', 'Yetki verme başarısız'),
     ('error.permission.deny.failed', 'Yetki reddetme başarısız'),
     ('error.permission.remove.failed', 'Yetki kaldırma başarısız'),
-    ('error.permission.deleted', 'Yetki silinmiş'),
+    ('error.permission.inactive', 'Pasif yetki üzerinde işlem yapılamaz'),
     ('error.permission.create.code-required', 'Yetki kodu zorunlu'),
     ('error.permission.create.code-exists', 'Yetki kodu zaten mevcut'),
     ('error.permission.create.code-deleted', 'Yetki kodu silinmiş. Restore kullanın'),
     ('error.permission.update.is-deleted', 'Silinmiş yetki güncellenemez'),
-    ('error.permission.delete.already-deleted', 'Yetki zaten silinmiş'),
     ('error.permission.restore.not-deleted', 'Yetki silinmiş değil'),
     ('error.permission.create.failed', 'Yetki oluşturulamadı'),
     ('error.permission.update.failed', 'Yetki güncellenemedi'),
@@ -200,8 +199,7 @@ JOIN (VALUES
     ('error.role.not-found', 'Rol bulunamadı'),
     ('error.role.create.code-exists', 'Rol kodu zaten mevcut'),
     ('error.role.create.code-deleted', 'Rol kodu silinmiş. Restore kullanın'),
-    ('error.role.deleted', 'Silinmiş rol üzerinde işlem yapılamaz'),
-    ('error.role.delete.already-deleted', 'Rol zaten silinmiş'),
+    ('error.role.inactive', 'Pasif rol üzerinde işlem yapılamaz'),
     ('error.role.restore.not-deleted', 'Rol silinmiş değil'),
     ('error.role.system-protected', 'Sistem rolü değiştirilemez'),
     ('error.role.list.failed', 'Rol listesi alınamadı'),
@@ -289,14 +287,12 @@ JOIN (VALUES
     ('error.company.create.name-exists', 'Şirket adı zaten mevcut'),
     ('error.company.update.code-exists', 'Şirket kodu başka bir şirkette kullanılıyor'),
     ('error.company.update.name-exists', 'Şirket adı başka bir şirkette kullanılıyor'),
-    ('error.company.delete.already-deleted', 'Şirket zaten silinmiş'),
     ('error.country.not-found', 'Ülke kodu bulunamadı'),
     ('error.pagination.invalid', 'Geçersiz sayfa veya sayfa boyutu'),
 
     -- Error Messages - Tenant
     ('error.tenant.code-exists', 'Tenant kodu zaten mevcut'),
     ('error.tenant.not-found', 'Tenant bulunamadı'),
-    ('error.tenant.already-deleted', 'Tenant zaten silinmiş'),
 
     -- Error Messages - Access Control
     ('error.access.superadmin-required', 'Bu işlem için SuperAdmin yetkisi gerekli'),

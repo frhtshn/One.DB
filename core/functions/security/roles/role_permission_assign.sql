@@ -29,7 +29,7 @@ BEGIN
     END IF;
 
     IF v_role_status = 0 THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.role.deleted';
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.role.inactive';
     END IF;
 
 
@@ -43,7 +43,7 @@ BEGIN
     END IF;
 
     IF v_permission_status = 0 THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.permission.deleted';
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.permission.inactive';
     END IF;
 
     -- Check if already assigned

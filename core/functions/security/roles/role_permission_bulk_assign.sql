@@ -34,7 +34,7 @@ BEGIN
     END IF;
 
     IF v_role_status = 0 THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.role.deleted';
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.role.inactive';
     END IF;
 
     -- Protect system roles
