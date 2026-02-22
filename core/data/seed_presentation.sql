@@ -96,16 +96,19 @@ CROSS JOIN (VALUES
 WHERE mg.code = 'audit';
 
 -- ================================================================
--- 4. SUBMENUS (24)
+-- 4. SUBMENUS (42)
 -- ================================================================
 
--- System Menu (2 submenu)
+-- System Menu (5 submenu)
 INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
 SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
 FROM presentation.menus m
 CROSS JOIN (VALUES
-    ('monitoring',    'ui.submenu.monitoring',    '/system/monitoring',    1, 'platform.health.view'),
-    ('localization',  'ui.submenu.localization',  '/system/localization',  2, 'platform.localization.manage')
+    ('monitoring',                'ui.submenu.monitoring',                '/system/monitoring',                1, 'platform.health.view'),
+    ('error-logs',                'ui.submenu.error-logs',                '/system/error-logs',                2, 'platform.health.view'),
+    ('dead-letters',              'ui.submenu.dead-letters',              '/system/dead-letters',              3, 'platform.health.view'),
+    ('localization-management',   'ui.submenu.localization-management',   '/system/localization-management',   4, 'platform.localization.manage'),
+    ('language-management',       'ui.submenu.language-management',       '/system/language-management',       5, 'platform.language.manage')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'system';
 
@@ -114,43 +117,68 @@ INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route,
 SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
 FROM presentation.menus m
 CROSS JOIN (VALUES
-    ('roles',                  'ui.submenu.roles',                  '/rbac/roles',                  1, 'platform.role.manage'),
-    ('permissions',            'ui.submenu.permissions',            '/rbac/permissions',            2, 'platform.permission.manage'),
+    ('roles',                  'ui.submenu.roles',                  '/rbac/role-management',                  1, 'platform.role.manage'),
+    ('permissions',            'ui.submenu.permissions',            '/rbac/permissions-management',            2, 'platform.permission.manage'),
     ('menus',                  'ui.submenu.menus',                  '/rbac/menu-management',        3, 'platform.presentation.manage'),
     ('permission-templates',   'ui.submenu.permission-templates',   '/rbac/permission-templates',   4, 'platform.permission-template.manage')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'rbac';
 
--- Catalog Menu (4 submenu)
+-- Catalog Menu (14 submenu)
 INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
 SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
 FROM presentation.menus m
 CROSS JOIN (VALUES
-    ('providers',       'ui.submenu.providers',       '/catalog/providers',       1, 'catalog.provider.list'),
-    ('payment-methods', 'ui.submenu.payment-methods', '/catalog/payment-methods', 2, 'catalog.payment.list'),
-    ('compliance',      'ui.submenu.compliance',      '/catalog/compliance',      3, 'catalog.compliance.list'),
-    ('uikit',           'ui.submenu.uikit',           '/catalog/uikit',           4, 'catalog.uikit.list')
+    -- Provider
+    ('providers',              'ui.submenu.providers',              '/catalog/providers',                       1,  'catalog.provider.list'),
+    ('provider-types',         'ui.submenu.provider-types',         '/catalog/provider-types',                  2,  'catalog.provider.list'),
+    -- Finance
+    ('currencies',             'ui.submenu.currencies',             '/catalog/currencies',                      3,  'catalog.currency.list'),
+    ('cryptocurrencies',       'ui.submenu.cryptocurrencies',       '/catalog/cryptocurrencies',                4,  'catalog.currency.list'),
+    ('payment-methods',        'ui.submenu.payment-methods',        '/catalog/payment-methods',                 5,  'catalog.payment.list'),
+    -- Compliance
+    ('jurisdictions',          'ui.submenu.jurisdictions',          '/catalog/compliance/jurisdictions',         6,  'catalog.compliance.list'),
+    ('kyc-policies',           'ui.submenu.kyc-policies',           '/catalog/compliance/kyc-policies',          7,  'catalog.compliance.list'),
+    ('kyc-doc-requirements',   'ui.submenu.kyc-doc-requirements',   '/catalog/compliance/kyc-doc-requirements',  8,  'catalog.compliance.list'),
+    ('kyc-level-requirements', 'ui.submenu.kyc-level-requirements', '/catalog/compliance/kyc-level-requirements', 9, 'catalog.compliance.list'),
+    ('rg-policies',            'ui.submenu.rg-policies',            '/catalog/compliance/rg-policies',          10, 'catalog.compliance.list'),
+    -- UI Kit
+    ('themes',                 'ui.submenu.themes',                 '/catalog/uikit/themes',                    11, 'catalog.uikit.list'),
+    ('nav-templates',          'ui.submenu.nav-templates',          '/catalog/uikit/nav-templates',             12, 'catalog.uikit.list'),
+    ('widgets',                'ui.submenu.widgets',                '/catalog/uikit/widgets',                   13, 'catalog.uikit.list'),
+    ('ui-positions',           'ui.submenu.ui-positions',           '/catalog/uikit/ui-positions',              14, 'catalog.uikit.list')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'catalog';
 
--- Companies Menu (2 submenu — password policy menü genişletmesi)
+-- Companies Menu (1 submenu)
 INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
 SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
 FROM presentation.menus m
 CROSS JOIN (VALUES
-    ('company-list',      'ui.submenu.company-list',      '/companies',                   1, 'company.list'),
-    ('password-policies', 'ui.submenu.password-policies', '/companies/password-policies', 2, 'company.password-policy.view')
+    ('company-list', 'ui.submenu.company-list', '/companies', 1, 'company.list')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'companies';
 
--- Site Content Menu (3 submenu)
+-- Site Identity Menu (2 submenu)
 INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
 SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
 FROM presentation.menus m
 CROSS JOIN (VALUES
-    ('cms',     'ui.submenu.cms',     '/site/content/cms',     1, 'tenant.content.manage'),
-    ('notices', 'ui.submenu.notices', '/site/content/notices', 2, 'tenant.content.manage'),
-    ('seo',     'ui.submenu.seo',     '/site/seo',             3, 'tenant.content.manage')
+    ('site-settings', 'ui.submenu.site-settings', '/site/settings',     1, 'tenant.site-settings.manage'),
+    ('social-links',  'ui.submenu.social-links',  '/site/social-links', 2, 'tenant.site-settings.manage')
+) AS v(code, title_key, route, ord, perm)
+WHERE m.code = 'site-identity';
+
+-- Site Content Menu (5 submenu)
+INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
+SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
+FROM presentation.menus m
+CROSS JOIN (VALUES
+    ('content-pages',     'ui.submenu.content-pages',     '/site/content/pages',         1, 'tenant.content.manage'),
+    ('faq',               'ui.submenu.faq',               '/site/content/faq',           2, 'tenant.content.manage'),
+    ('announcement-bars', 'ui.submenu.announcement-bars', '/site/content/announcements', 3, 'tenant.content.manage'),
+    ('trust-logos',       'ui.submenu.trust-logos',       '/site/content/trust-logos',   4, 'tenant.content.manage'),
+    ('seo',               'ui.submenu.seo',               '/site/seo',                   5, 'tenant.content.manage')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'site-content';
 
@@ -164,6 +192,16 @@ CROSS JOIN (VALUES
     ('popups',     'ui.submenu.popups',     '/site/popups',     3, 'tenant.presentation.manage')
 ) AS v(code, title_key, route, ord, perm)
 WHERE m.code = 'site-promotions';
+
+-- Site Lobby Menu (2 submenu)
+INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
+SELECT m.id, v.code, v.title_key, v.route, v.ord, v.perm, TRUE
+FROM presentation.menus m
+CROSS JOIN (VALUES
+    ('lobby-sections', 'ui.submenu.lobby-sections', '/site/lobby/sections', 1, 'tenant.content.manage'),
+    ('game-labels',    'ui.submenu.game-labels',    '/site/lobby/labels',   2, 'tenant.content.manage')
+) AS v(code, title_key, route, ord, perm)
+WHERE m.code = 'site-lobby';
 
 -- Support Standard Menu (3 submenu)
 INSERT INTO presentation.submenus (menu_id, code, title_localization_key, route, order_index, required_permission, is_active)
@@ -188,7 +226,7 @@ CROSS JOIN (VALUES
 WHERE m.code = 'support-tickets';
 
 -- ================================================================
--- 5. PAGES (53)
+-- 5. PAGES (54)
 -- ================================================================
 
 -- ----------------------------------------------------------------
@@ -210,99 +248,72 @@ INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localiza
 (NULL, NULL, 'page-permission-template-detail','/rbac/permission-templates/:id',     'ui.page.permission-template-detail','platform.permission-template.manage', 0, TRUE);
 
 -- ----------------------------------------------------------------
--- 5.2 SYSTEM PAGES (4)
+-- 5.2 SYSTEM PAGES (5) — her submenu 1 page
 -- ----------------------------------------------------------------
 
--- Monitoring (2)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('monitoring', 'page-error-logs',    '/system/error-logs',    'ui.page.error-logs',    'platform.health.view', 1),
-    ('monitoring', 'page-dead-letters',  '/system/dead-letters',  'ui.page.dead-letters',  'platform.health.view', 2)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
-
--- Localization (2)
-INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.submenus s
-JOIN (VALUES
-    ('localization', 'page-languages',          '/system/languages',          'ui.page.languages',          'platform.language.manage',    1),
-    ('localization', 'page-localization-keys',  '/system/localization-keys',  'ui.page.localization-keys',  'platform.localization.manage', 2)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('monitoring',              'page-monitoring',        'ui.page.monitoring',        'platform.health.view',        1),
+    ('error-logs',              'page-error-logs',        'ui.page.error-logs',        'platform.health.view',        1),
+    ('dead-letters',            'page-dead-letters',      'ui.page.dead-letters',      'platform.health.view',        1),
+    ('localization-management', 'page-localization-keys', 'ui.page.localization-keys', 'platform.localization.manage', 1),
+    ('language-management',     'page-languages',         'ui.page.languages',         'platform.language.manage',     1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- ----------------------------------------------------------------
 -- 5.3 RBAC PAGES (4)
 -- ----------------------------------------------------------------
 
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('roles',               'page-role-list',               '/rbac/roles',               'ui.page.roles',               'platform.role.manage',                1),
-    ('permissions',         'page-permission-list',         '/rbac/permissions',         'ui.page.permissions',         'platform.permission.manage',           1),
-    ('menus',               'page-menu-management',         '/rbac/menus',               'ui.page.menu-management',     'platform.presentation.manage',         1),
-    ('permission-templates','page-permission-template-list','/rbac/permission-templates','ui.page.permission-templates','platform.permission-template.manage',  1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('roles',               'page-role-list',               'ui.page.roles',               'platform.role.manage',                1),
+    ('permissions',         'page-permission-list',         'ui.page.permissions',         'platform.permission.manage',           1),
+    ('menus',               'page-menu-management',         'ui.page.menu-management',     'platform.presentation.manage',         1),
+    ('permission-templates','page-permission-template-list','ui.page.permission-templates','platform.permission-template.manage',  1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- ----------------------------------------------------------------
--- 5.4 CATALOG PAGES (14)
+-- 5.4 CATALOG PAGES (14) — her submenu 1 page, route NULL
 -- ----------------------------------------------------------------
 
--- Providers (4)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('providers', 'page-provider-list',        '/catalog/providers',          'ui.page.providers',        'catalog.provider.list',  1),
-    ('providers', 'page-provider-type-list',   '/catalog/provider-types',     'ui.page.provider-types',   'catalog.provider.list',  2),
-    ('providers', 'page-currency-list',        '/catalog/currencies',         'ui.page.currencies',       'catalog.currency.list',  3),
-    ('providers', 'page-cryptocurrency-list',  '/catalog/cryptocurrencies',   'ui.page.cryptocurrencies', 'catalog.currency.list',  4)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
-
--- Payment Methods (1)
-INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.submenus s
-JOIN (VALUES
-    ('payment-methods', 'page-payment-methods', '/catalog/payment-methods', 'ui.page.payment-methods', 'catalog.payment.list', 1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
-
--- Compliance (5)
-INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.submenus s
-JOIN (VALUES
-    ('compliance', 'page-jurisdictions',        '/catalog/compliance/jurisdictions',      'ui.page.jurisdictions',       'catalog.compliance.list', 1),
-    ('compliance', 'page-kyc-policies',         '/catalog/compliance/kyc-policies',       'ui.page.kyc-policies',        'catalog.compliance.list', 2),
-    ('compliance', 'page-kyc-doc-requirements', '/catalog/compliance/kyc-doc-requirements','ui.page.kyc-doc-requirements','catalog.compliance.list', 3),
-    ('compliance', 'page-kyc-level-requirements','/catalog/compliance/kyc-level-requirements','ui.page.kyc-level-requirements','catalog.compliance.list',4),
-    ('compliance', 'page-rg-policies',          '/catalog/compliance/rg-policies',        'ui.page.rg-policies',         'catalog.compliance.list', 5)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
-
--- UI Kit (4)
-INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.submenus s
-JOIN (VALUES
-    ('uikit', 'page-themes',       '/catalog/uikit/themes',        'ui.page.themes',       'catalog.uikit.list', 1),
-    ('uikit', 'page-nav-templates','/catalog/uikit/nav-templates',  'ui.page.nav-templates','catalog.uikit.list', 2),
-    ('uikit', 'page-widgets',      '/catalog/uikit/widgets',        'ui.page.widgets',      'catalog.uikit.list', 3),
-    ('uikit', 'page-ui-positions', '/catalog/uikit/ui-positions',   'ui.page.ui-positions', 'catalog.uikit.list', 4)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    -- Provider
+    ('providers',              'page-provider-list',          'ui.page.providers',              'catalog.provider.list',    1),
+    ('provider-types',         'page-provider-type-list',     'ui.page.provider-types',         'catalog.provider.list',    1),
+    -- Finance
+    ('currencies',             'page-currency-list',          'ui.page.currencies',             'catalog.currency.list',    1),
+    ('cryptocurrencies',       'page-cryptocurrency-list',    'ui.page.cryptocurrencies',       'catalog.currency.list',    1),
+    ('payment-methods',        'page-payment-methods',        'ui.page.payment-methods',        'catalog.payment.list',     1),
+    -- Compliance
+    ('jurisdictions',          'page-jurisdictions',          'ui.page.jurisdictions',          'catalog.compliance.list',  1),
+    ('kyc-policies',           'page-kyc-policies',           'ui.page.kyc-policies',           'catalog.compliance.list',  1),
+    ('kyc-doc-requirements',   'page-kyc-doc-requirements',   'ui.page.kyc-doc-requirements',   'catalog.compliance.list',  1),
+    ('kyc-level-requirements', 'page-kyc-level-requirements', 'ui.page.kyc-level-requirements', 'catalog.compliance.list',  1),
+    ('rg-policies',            'page-rg-policies',            'ui.page.rg-policies',            'catalog.compliance.list',  1),
+    -- UI Kit
+    ('themes',                 'page-themes',                 'ui.page.themes',                 'catalog.uikit.list',       1),
+    ('nav-templates',          'page-nav-templates',          'ui.page.nav-templates',          'catalog.uikit.list',       1),
+    ('widgets',                'page-widgets',                'ui.page.widgets',                'catalog.uikit.list',       1),
+    ('ui-positions',           'page-ui-positions',           'ui.page.ui-positions',           'catalog.uikit.list',       1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- ----------------------------------------------------------------
--- 5.5 COMPANIES PAGES (2) — submenu'lü yapı
+-- 5.5 COMPANIES PAGES (1) — submenu'lü yapı
 -- ----------------------------------------------------------------
 
--- page-company-list artık submenu altında (company-list submenu'sü)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('company-list',      'page-company-list',               '/companies',                       'ui.page.companies',                  'company.list',                1),
-    ('password-policies', 'page-company-password-policy-list','/companies/password-policies',     'ui.page.company-password-policy-list','company.password-policy.view', 1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('company-list', 'page-company-list', 'ui.page.companies', 'company.list', 1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- ----------------------------------------------------------------
 -- 5.6 TENANTS PAGES (2)
@@ -331,45 +342,45 @@ JOIN (VALUES
 -- 5.8 SITE MANAGEMENT PAGES (12)
 -- ----------------------------------------------------------------
 
--- Site Identity pages (menu'ye direkt bağlı, submenu yok)
+-- Site Identity submenu pages (2)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.menus m
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.submenus s
 JOIN (VALUES
-    ('site-identity', 'page-site-settings', '/site/settings',     'ui.page.site-settings', 'tenant.site-settings.manage', 1),
-    ('site-identity', 'page-social-links',  '/site/social-links', 'ui.page.social-links',  'tenant.site-settings.manage', 2)
-) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+    ('site-settings', 'page-site-settings', 'ui.page.site-settings', 'tenant.site-settings.manage', 1),
+    ('social-links',  'page-social-links',  'ui.page.social-links',  'tenant.site-settings.manage', 1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- Site Content submenu pages (5)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('cms',     'page-content-list',     '/site/content/cms',          'ui.page.content-list',     'tenant.content.manage', 1),
-    ('cms',     'page-faq-list',         '/site/content/faq',          'ui.page.faq-list',         'tenant.content.manage', 2),
-    ('notices', 'page-announcement-bars','/site/content/notices',      'ui.page.announcement-bars','tenant.content.manage', 1),
-    ('notices', 'page-trust-logos',      '/site/content/trust-logos',  'ui.page.trust-logos',      'tenant.content.manage', 2),
-    ('seo',     'page-seo-redirects',    '/site/seo/redirects',        'ui.page.seo-redirects',    'tenant.content.manage', 1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('content-pages',     'page-content-list',      'ui.page.content-list',      'tenant.content.manage', 1),
+    ('faq',               'page-faq-list',          'ui.page.faq-list',          'tenant.content.manage', 1),
+    ('announcement-bars', 'page-announcement-bars', 'ui.page.announcement-bars', 'tenant.content.manage', 1),
+    ('trust-logos',       'page-trust-logos',       'ui.page.trust-logos',       'tenant.content.manage', 1),
+    ('seo',               'page-seo-redirects',     'ui.page.seo-redirects',     'tenant.content.manage', 1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- Site Promotions submenu pages (3)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('promotions', 'page-promotions', '/site/promotions', 'ui.page.promotions', 'tenant.presentation.manage', 1),
-    ('slides',     'page-slides',     '/site/slides',     'ui.page.slides',     'tenant.presentation.manage', 1),
-    ('popups',     'page-popups',     '/site/popups',     'ui.page.popups',     'tenant.presentation.manage', 1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('promotions', 'page-promotions', 'ui.page.promotions', 'tenant.presentation.manage', 1),
+    ('slides',     'page-slides',     'ui.page.slides',     'tenant.presentation.manage', 1),
+    ('popups',     'page-popups',     'ui.page.popups',     'tenant.presentation.manage', 1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
--- Site Lobby pages (menu'ye direkt bağlı, submenu yok)
+-- Site Lobby submenu pages (2)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT m.id, NULL, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
-FROM presentation.menus m
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
+FROM presentation.submenus s
 JOIN (VALUES
-    ('site-lobby', 'page-lobby-sections', '/site/lobby/sections', 'ui.page.lobby-sections', 'tenant.content.manage', 1),
-    ('site-lobby', 'page-game-labels',    '/site/lobby/labels',   'ui.page.game-labels',    'tenant.content.manage', 2)
-) AS v(menu_code, code, route, title_key, perm, ord) ON m.code = v.menu_code;
+    ('lobby-sections', 'page-lobby-sections', 'ui.page.lobby-sections', 'tenant.content.manage', 1),
+    ('game-labels',    'page-game-labels',    'ui.page.game-labels',    'tenant.content.manage', 1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- ----------------------------------------------------------------
 -- 5.9 CALL CENTER PAGES (6)
@@ -377,23 +388,23 @@ JOIN (VALUES
 
 -- Support Standard submenu pages (3)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('representatives', 'page-representative-list', '/support/representatives', 'ui.page.representative-list', 'tenant.support-representative.view',  1),
-    ('welcome-calls',   'page-welcome-call-list',   '/support/welcome-calls',   'ui.page.welcome-call-list',   'tenant.support-welcome-call.manage',   1),
-    ('player-notes',    'page-player-note-list',    '/support/player-notes',    'ui.page.player-note-list',    'tenant.support-player-note.list',       1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('representatives', 'page-representative-list', 'ui.page.representative-list', 'tenant.support-representative.view',  1),
+    ('welcome-calls',   'page-welcome-call-list',   'ui.page.welcome-call-list',   'tenant.support-welcome-call.manage',  1),
+    ('player-notes',    'page-player-note-list',    'ui.page.player-note-list',    'tenant.support-player-note.list',     1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- Support Tickets submenu pages (3)
 INSERT INTO presentation.pages (menu_id, submenu_id, code, route, title_localization_key, required_permission, order_index, is_active)
-SELECT NULL, s.id, v.code, v.route, v.title_key, v.perm, v.ord, TRUE
+SELECT NULL, s.id, v.code, NULL, v.title_key, v.perm, v.ord, TRUE
 FROM presentation.submenus s
 JOIN (VALUES
-    ('ticket-queue',  'page-ticket-queue',  '/support/ticket-queue',  'ui.page.ticket-queue',  'tenant.support-ticket.list',    1),
-    ('ticket-config', 'page-ticket-config', '/support/ticket-config', 'ui.page.ticket-config', 'tenant.support-category.manage',1),
-    ('agent-settings','page-agent-settings','/support/agent-settings','ui.page.agent-settings','tenant.support-agent.manage',   1)
-) AS v(submenu_code, code, route, title_key, perm, ord) ON s.code = v.submenu_code;
+    ('ticket-queue',  'page-ticket-queue',  'ui.page.ticket-queue',  'tenant.support-ticket.list',    1),
+    ('ticket-config', 'page-ticket-config', 'ui.page.ticket-config', 'tenant.support-category.manage',1),
+    ('agent-settings','page-agent-settings','ui.page.agent-settings','tenant.support-agent.manage',   1)
+) AS v(submenu_code, code, title_key, perm, ord) ON s.code = v.submenu_code;
 
 -- ================================================================
 -- 6. TABS (24)
@@ -603,20 +614,6 @@ SELECT p.id, t.id, 'ctx-company-pp-edit', 'button', 'ui.context.company-pp-edit'
 FROM presentation.pages p
 JOIN presentation.tabs t ON t.page_id = p.id AND t.code = 'tab-company-password-policy'
 WHERE p.code = 'page-company-detail';
-
--- ----------------------------------------------------------------
--- 7.3 COMPANY PASSWORD POLICY LIST CONTEXTS (2)
--- ----------------------------------------------------------------
-
--- page-company-password-policy-list (perm: company.password-policy.view)
-INSERT INTO presentation.contexts (page_id, tab_id, code, context_type, label_localization_key, permission_edit, permission_readonly, permission_mask, is_active)
-SELECT p.id, NULL, v.code, v.ctx_type, v.label_key, v.perm_edit, NULL, NULL, TRUE
-FROM presentation.pages p
-CROSS JOIN (VALUES
-    ('ctx-company-pp-list-edit', 'button', 'ui.context.company-pp-list-edit', 'company.password-policy.edit'),
-    ('ctx-company-pp-reset',     'action', 'ui.context.company-pp-reset',     'company.password-policy.edit')
-) AS v(code, ctx_type, label_key, perm_edit)
-WHERE p.code = 'page-company-password-policy-list';
 
 -- ----------------------------------------------------------------
 -- 7.4 TENANT DETAIL CONTEXTS (6 + 1 yeni: license-add)
@@ -864,9 +861,9 @@ BEGIN
     RAISE NOTICE '================================================';
     RAISE NOTICE 'Menu Groups: % (beklenen: 5)', v_menu_groups;
     RAISE NOTICE 'Menus: % (beklenen: 13)', v_menus;
-    RAISE NOTICE 'Submenus: % (beklenen: 24)', v_submenus;
+    RAISE NOTICE 'Submenus: % (beklenen: 42)', v_submenus;
     RAISE NOTICE 'Pages: % (beklenen: 53)', v_pages;
     RAISE NOTICE 'Tabs: % (beklenen: 24)', v_tabs;
-    RAISE NOTICE 'Contexts: % (beklenen: 56)', v_contexts;
+    RAISE NOTICE 'Contexts: % (beklenen: 54)', v_contexts;
     RAISE NOTICE '================================================';
 END $$;

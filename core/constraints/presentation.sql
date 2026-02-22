@@ -74,6 +74,32 @@ DO $$ BEGIN
     END IF;
 END $$;
 
+-- Unique Constraints: 1 submenu = 1 page, 1 menu = 1 page (submenu'suz)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_pages_one_per_submenu') THEN
+        CREATE UNIQUE INDEX uq_pages_one_per_submenu
+            ON presentation.pages (submenu_id) WHERE submenu_id IS NOT NULL;
+    END IF;
+END $$;
+
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'uq_pages_one_per_menu') THEN
+        CREATE UNIQUE INDEX uq_pages_one_per_menu
+            ON presentation.pages (menu_id) WHERE menu_id IS NOT NULL AND submenu_id IS NULL;
+    END IF;
+END $$;
+
+-- Route kuralı: submenu_id varsa route NULL olmalı, yoksa route zorunlu
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_pages_route') THEN
+        ALTER TABLE presentation.pages ADD CONSTRAINT chk_pages_route
+            CHECK (
+                (submenu_id IS NOT NULL AND route IS NULL)
+                OR (submenu_id IS NULL AND route IS NOT NULL)
+            );
+    END IF;
+END $$;
+
 -- Theme & Navigation Constraints
 -- Using DO block for idempotent execution
 

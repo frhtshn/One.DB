@@ -9,11 +9,11 @@
 -- Key Pattern: ui.{element-type}.{code}
 -- Element Types: menu-group, menu, submenu, page, tab, context
 -- ================================================================
--- Toplam: 115 key (4 group + 7 menu + 10 submenu + 34 page + 23 tab + 37 context)
+-- Toplam: 119 key (4 group + 7 menu + 13 submenu + 35 page + 23 tab + 37 context)
 -- ================================================================
 
 -- ================================================================
--- 1. LOCALIZATION KEYS (115)
+-- 1. LOCALIZATION KEYS (119)
 -- ================================================================
 
 INSERT INTO catalog.localization_keys (localization_key, domain, category, description) VALUES
@@ -38,21 +38,34 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.menu.audit-logs', 'ui', 'menu', 'Audit Logs menüsü'),
 
 -- ----------------------------------------------------------------
--- SUBMENUS (10)
+-- SUBMENUS (13)
 -- ----------------------------------------------------------------
 -- System
 ('ui.submenu.monitoring', 'ui', 'menu', 'Monitoring alt menüsü'),
-('ui.submenu.localization', 'ui', 'menu', 'Localization alt menüsü'),
+('ui.submenu.error-logs', 'ui', 'menu', 'Error Logs alt menüsü'),
+('ui.submenu.dead-letters', 'ui', 'menu', 'Dead Letters alt menüsü'),
+('ui.submenu.localization-management', 'ui', 'menu', 'Localization Management alt menüsü'),
+('ui.submenu.language-management', 'ui', 'menu', 'Language Management alt menüsü'),
 -- RBAC
 ('ui.submenu.roles', 'ui', 'menu', 'Roles alt menüsü'),
 ('ui.submenu.permissions', 'ui', 'menu', 'Permissions alt menüsü'),
 ('ui.submenu.menus', 'ui', 'menu', 'Menu Management alt menüsü'),
 ('ui.submenu.permission-templates', 'ui', 'menu', 'Permission Templates alt menüsü'),
--- Catalog
+-- Catalog (14)
 ('ui.submenu.providers', 'ui', 'menu', 'Providers alt menüsü'),
+('ui.submenu.provider-types', 'ui', 'menu', 'Provider Types alt menüsü'),
+('ui.submenu.currencies', 'ui', 'menu', 'Currencies alt menüsü'),
+('ui.submenu.cryptocurrencies', 'ui', 'menu', 'Cryptocurrencies alt menüsü'),
 ('ui.submenu.payment-methods', 'ui', 'menu', 'Payment Methods alt menüsü'),
-('ui.submenu.compliance', 'ui', 'menu', 'Compliance alt menüsü'),
-('ui.submenu.uikit', 'ui', 'menu', 'UI Kit alt menüsü'),
+('ui.submenu.jurisdictions', 'ui', 'menu', 'Jurisdictions alt menüsü'),
+('ui.submenu.kyc-policies', 'ui', 'menu', 'KYC Policies alt menüsü'),
+('ui.submenu.kyc-doc-requirements', 'ui', 'menu', 'KYC Document Requirements alt menüsü'),
+('ui.submenu.kyc-level-requirements', 'ui', 'menu', 'KYC Level Requirements alt menüsü'),
+('ui.submenu.rg-policies', 'ui', 'menu', 'Responsible Gaming Policies alt menüsü'),
+('ui.submenu.themes', 'ui', 'menu', 'Themes alt menüsü'),
+('ui.submenu.nav-templates', 'ui', 'menu', 'Navigation Templates alt menüsü'),
+('ui.submenu.widgets', 'ui', 'menu', 'Widgets alt menüsü'),
+('ui.submenu.ui-positions', 'ui', 'menu', 'UI Positions alt menüsü'),
 
 -- ----------------------------------------------------------------
 -- PAGES - Standalone (8)
@@ -67,8 +80,9 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.page.permission-template-detail', 'ui', 'page', 'Permission template detail sayfası'),
 
 -- ----------------------------------------------------------------
--- PAGES - System (4)
+-- PAGES - System (5)
 -- ----------------------------------------------------------------
+('ui.page.monitoring', 'ui', 'page', 'Monitoring sayfası'),
 ('ui.page.error-logs', 'ui', 'page', 'Error logs sayfası'),
 ('ui.page.dead-letters', 'ui', 'page', 'Dead letters sayfası'),
 ('ui.page.languages', 'ui', 'page', 'Languages sayfası'),
@@ -234,17 +248,30 @@ JOIN (VALUES
     ('ui.menu.users', 'Users'),
     ('ui.menu.audit-logs', 'Audit Logs'),
 
-    -- Submenus (10)
+    -- Submenus (13)
     ('ui.submenu.monitoring', 'Monitoring'),
-    ('ui.submenu.localization', 'Localization'),
+    ('ui.submenu.error-logs', 'Error Logs'),
+    ('ui.submenu.dead-letters', 'Dead Letters'),
+    ('ui.submenu.localization-management', 'Localization Management'),
+    ('ui.submenu.language-management', 'Language Management'),
     ('ui.submenu.roles', 'Roles'),
     ('ui.submenu.permissions', 'Permissions'),
     ('ui.submenu.menus', 'Menu Management'),
     ('ui.submenu.permission-templates', 'Permission Templates'),
     ('ui.submenu.providers', 'Providers'),
+    ('ui.submenu.provider-types', 'Provider Types'),
+    ('ui.submenu.currencies', 'Currencies'),
+    ('ui.submenu.cryptocurrencies', 'Cryptocurrencies'),
     ('ui.submenu.payment-methods', 'Payment Methods'),
-    ('ui.submenu.compliance', 'Compliance'),
-    ('ui.submenu.uikit', 'UI Kit'),
+    ('ui.submenu.jurisdictions', 'Jurisdictions'),
+    ('ui.submenu.kyc-policies', 'KYC Policies'),
+    ('ui.submenu.kyc-doc-requirements', 'KYC Document Requirements'),
+    ('ui.submenu.kyc-level-requirements', 'KYC Level Requirements'),
+    ('ui.submenu.rg-policies', 'Responsible Gaming Policies'),
+    ('ui.submenu.themes', 'Themes'),
+    ('ui.submenu.nav-templates', 'Navigation Templates'),
+    ('ui.submenu.widgets', 'Widgets'),
+    ('ui.submenu.ui-positions', 'UI Positions'),
 
     -- Pages - Standalone (8)
     ('ui.page.dashboard', 'Dashboard'),
@@ -256,7 +283,8 @@ JOIN (VALUES
     ('ui.page.nav-template-detail', 'Navigation Template Details'),
     ('ui.page.permission-template-detail', 'Permission Template Details'),
 
-    -- Pages - System (4)
+    -- Pages - System (5)
+    ('ui.page.monitoring', 'Monitoring'),
     ('ui.page.error-logs', 'Error Logs'),
     ('ui.page.dead-letters', 'Dead Letters'),
     ('ui.page.languages', 'Languages'),
@@ -366,7 +394,7 @@ JOIN (VALUES
     -- Contexts - Audit (1)
     ('ui.context.audit-view', 'View Details')
 ) AS v(key, text) ON k.localization_key = v.key
-ON CONFLICT DO NOTHING;
+ON CONFLICT (localization_key_id, language_code) DO NOTHING;
 
 -- ================================================================
 -- 3. LOCALIZATION VALUES - TURKISH (tr)
@@ -391,17 +419,30 @@ JOIN (VALUES
     ('ui.menu.users', 'Kullanıcılar'),
     ('ui.menu.audit-logs', 'Denetim Kayıtları'),
 
-    -- Submenus (10)
+    -- Submenus (13)
     ('ui.submenu.monitoring', 'İzleme'),
-    ('ui.submenu.localization', 'Dil Çevirileri'),
+    ('ui.submenu.error-logs', 'Hata Kayıtları'),
+    ('ui.submenu.dead-letters', 'Dead Letters'),
+    ('ui.submenu.localization-management', 'Çeviri Yönetimi'),
+    ('ui.submenu.language-management', 'Dil Yönetimi'),
     ('ui.submenu.roles', 'Roller'),
     ('ui.submenu.permissions', 'Yetkiler'),
     ('ui.submenu.menus', 'Menü Yönetimi'),
     ('ui.submenu.permission-templates', 'Yetki Şablonları'),
     ('ui.submenu.providers', 'Sağlayıcılar'),
+    ('ui.submenu.provider-types', 'Sağlayıcı Tipleri'),
+    ('ui.submenu.currencies', 'Para Birimleri'),
+    ('ui.submenu.cryptocurrencies', 'Kripto Para Birimleri'),
     ('ui.submenu.payment-methods', 'Ödeme Yöntemleri'),
-    ('ui.submenu.compliance', 'Uyumluluk'),
-    ('ui.submenu.uikit', 'UI Kit'),
+    ('ui.submenu.jurisdictions', 'Yetki Alanları'),
+    ('ui.submenu.kyc-policies', 'KYC Politikaları'),
+    ('ui.submenu.kyc-doc-requirements', 'KYC Belge Gereksinimleri'),
+    ('ui.submenu.kyc-level-requirements', 'KYC Seviye Gereksinimleri'),
+    ('ui.submenu.rg-policies', 'Sorumlu Oyun Politikaları'),
+    ('ui.submenu.themes', 'Temalar'),
+    ('ui.submenu.nav-templates', 'Navigasyon Şablonları'),
+    ('ui.submenu.widgets', 'Widget''lar'),
+    ('ui.submenu.ui-positions', 'UI Pozisyonları'),
 
     -- Pages - Standalone (8)
     ('ui.page.dashboard', 'Dashboard'),
@@ -413,7 +454,8 @@ JOIN (VALUES
     ('ui.page.nav-template-detail', 'Nav Şablon Detayı'),
     ('ui.page.permission-template-detail', 'Yetki Şablonu Detayı'),
 
-    -- Pages - System (4)
+    -- Pages - System (5)
+    ('ui.page.monitoring', 'İzleme'),
     ('ui.page.error-logs', 'Hata Kayıtları'),
     ('ui.page.dead-letters', 'Dead Letters'),
     ('ui.page.languages', 'Diller'),
@@ -523,7 +565,7 @@ JOIN (VALUES
     -- Contexts - Audit (1)
     ('ui.context.audit-view', 'Detay Gör')
 ) AS v(key, text) ON k.localization_key = v.key
-ON CONFLICT DO NOTHING;
+ON CONFLICT (localization_key_id, language_code) DO NOTHING;
 
 -- ================================================================
 -- 4. DOĞRULAMA

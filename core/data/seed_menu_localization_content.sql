@@ -6,10 +6,10 @@
 -- ================================================================
 -- Kapsam:
 --   FRONTEND_CONTENT_DESIGN: site-management grubu + call center menüleri (+55 key)
---   SECURITY_POLICY_DESIGN:  companies submenü + password-policies (+5 key)
+--   SECURITY_POLICY_DESIGN:  companies submenü (+1 key)
 -- ================================================================
--- Toplam bu dosya: 60 key
--- Genel toplam (tüm seed dosyaları): 175 key
+-- Toplam bu dosya: 72 key
+-- Genel toplam (tüm seed dosyaları): 187 key
 -- ================================================================
 
 -- ================================================================
@@ -32,14 +32,20 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.menu.site-lobby',      'ui', 'menu', 'Game Lobby menüsü'),
 
 -- ----------------------------------------------------------------
--- FRONTEND_CONTENT — SUBMENUS (6)
+-- FRONTEND_CONTENT — SUBMENUS (12)
 -- ----------------------------------------------------------------
-('ui.submenu.cms',        'ui', 'menu', 'CMS alt menüsü'),
-('ui.submenu.notices',    'ui', 'menu', 'Notices & Badges alt menüsü'),
-('ui.submenu.seo',        'ui', 'menu', 'SEO alt menüsü'),
+('ui.submenu.site-settings',     'ui', 'menu', 'Site Settings alt menüsü'),
+('ui.submenu.social-links',      'ui', 'menu', 'Social Links alt menüsü'),
+('ui.submenu.content-pages',     'ui', 'menu', 'Content Pages alt menüsü'),
+('ui.submenu.faq',               'ui', 'menu', 'FAQ alt menüsü'),
+('ui.submenu.announcement-bars', 'ui', 'menu', 'Announcement Bars alt menüsü'),
+('ui.submenu.trust-logos',       'ui', 'menu', 'Trust Logos alt menüsü'),
+('ui.submenu.seo',               'ui', 'menu', 'SEO alt menüsü'),
 ('ui.submenu.promotions', 'ui', 'menu', 'Promotions alt menüsü'),
 ('ui.submenu.slides',     'ui', 'menu', 'Slides alt menüsü'),
-('ui.submenu.popups',     'ui', 'menu', 'Pop-ups alt menüsü'),
+('ui.submenu.popups',          'ui', 'menu', 'Pop-ups alt menüsü'),
+('ui.submenu.lobby-sections',  'ui', 'menu', 'Lobby Sections alt menüsü'),
+('ui.submenu.game-labels',     'ui', 'menu', 'Game Labels alt menüsü'),
 
 -- ----------------------------------------------------------------
 -- FRONTEND_CONTENT — PAGES (12)
@@ -114,21 +120,9 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.context.canned-response-create',  'ui', 'context', 'Canned response create button'),
 
 -- ----------------------------------------------------------------
--- SECURITY_POLICY — SUBMENUS (2)
+-- SECURITY_POLICY — SUBMENUS (1)
 -- ----------------------------------------------------------------
-('ui.submenu.company-list',      'ui', 'menu', 'Companies list alt menüsü'),
-('ui.submenu.password-policies', 'ui', 'menu', 'Password Policies alt menüsü'),
-
--- ----------------------------------------------------------------
--- SECURITY_POLICY — PAGES (1)
--- ----------------------------------------------------------------
-('ui.page.company-password-policy-list', 'ui', 'page', 'Company password policy list sayfası'),
-
--- ----------------------------------------------------------------
--- SECURITY_POLICY — CONTEXTS (2)
--- ----------------------------------------------------------------
-('ui.context.company-pp-list-edit', 'ui', 'context', 'Company password policy edit button (list sayfası)'),
-('ui.context.company-pp-reset',     'ui', 'context', 'Company password policy reset button')
+('ui.submenu.company-list', 'ui', 'menu', 'Companies list alt menüsü')
 
 ON CONFLICT (localization_key) DO NOTHING;
 
@@ -136,186 +130,190 @@ ON CONFLICT (localization_key) DO NOTHING;
 -- 2. ENGLISH VALUES
 -- ================================================================
 
-INSERT INTO catalog.localization_values (localization_key, language_code, value) VALUES
+INSERT INTO catalog.localization_values (localization_key_id, language_code, localized_text, created_at)
+SELECT k.id, 'en', v.text, NOW()
+FROM catalog.localization_keys k
+JOIN (VALUES
 
 -- Menu Group (1)
-('ui.menu-group.site-management', 'en', 'Site Management'),
+('ui.menu-group.site-management', 'Site Management'),
 
 -- Menus (4)
-('ui.menu.site-identity',   'en', 'Site Identity'),
-('ui.menu.site-content',    'en', 'Content'),
-('ui.menu.site-promotions', 'en', 'Promotions'),
-('ui.menu.site-lobby',      'en', 'Game Lobby'),
+('ui.menu.site-identity',   'Site Identity'),
+('ui.menu.site-content',    'Content'),
+('ui.menu.site-promotions', 'Promotions'),
+('ui.menu.site-lobby',      'Game Lobby'),
 
--- Submenus (6)
-('ui.submenu.cms',        'en', 'CMS Pages'),
-('ui.submenu.notices',    'en', 'Notices & Badges'),
-('ui.submenu.seo',        'en', 'SEO'),
-('ui.submenu.promotions', 'en', 'Promotions'),
-('ui.submenu.slides',     'en', 'Slides'),
-('ui.submenu.popups',     'en', 'Pop-ups'),
+-- Submenus (12)
+('ui.submenu.site-settings',     'Site Settings'),
+('ui.submenu.social-links',      'Social Links'),
+('ui.submenu.content-pages',     'Content Pages'),
+('ui.submenu.faq',               'FAQ'),
+('ui.submenu.announcement-bars', 'Announcement Bars'),
+('ui.submenu.trust-logos',       'Trust Logos'),
+('ui.submenu.seo',               'SEO'),
+('ui.submenu.promotions', 'Promotions'),
+('ui.submenu.slides',     'Slides'),
+('ui.submenu.popups',          'Pop-ups'),
+('ui.submenu.lobby-sections',  'Lobby Sections'),
+('ui.submenu.game-labels',     'Game Labels'),
 
 -- Pages (12)
-('ui.page.site-settings',      'en', 'Site Settings'),
-('ui.page.social-links',       'en', 'Social Links'),
-('ui.page.content-list',       'en', 'Content Pages'),
-('ui.page.faq-list',           'en', 'FAQ'),
-('ui.page.announcement-bars',  'en', 'Announcement Bars'),
-('ui.page.trust-logos',        'en', 'Trust Logos'),
-('ui.page.seo-redirects',      'en', 'SEO Redirects'),
-('ui.page.promotions',         'en', 'Promotions'),
-('ui.page.slides',             'en', 'Slides'),
-('ui.page.popups',             'en', 'Pop-ups'),
-('ui.page.lobby-sections',     'en', 'Lobby Sections'),
-('ui.page.game-labels',        'en', 'Game Labels'),
+('ui.page.site-settings',      'Site Settings'),
+('ui.page.social-links',       'Social Links'),
+('ui.page.content-list',       'Content Pages'),
+('ui.page.faq-list',           'FAQ'),
+('ui.page.announcement-bars',  'Announcement Bars'),
+('ui.page.trust-logos',        'Trust Logos'),
+('ui.page.seo-redirects',      'SEO Redirects'),
+('ui.page.promotions',         'Promotions'),
+('ui.page.slides',             'Slides'),
+('ui.page.popups',             'Pop-ups'),
+('ui.page.lobby-sections',     'Lobby Sections'),
+('ui.page.game-labels',        'Game Labels'),
 
 -- Tabs (1)
-('ui.tab.tenant-licenses', 'en', 'Licenses'),
+('ui.tab.tenant-licenses', 'Licenses'),
 
 -- Contexts - Site Management (10)
-('ui.context.tenant-license-add',      'en', 'Add License'),
-('ui.context.social-link-create',      'en', 'Add Social Link'),
-('ui.context.social-link-edit',        'en', 'Edit Social Link'),
-('ui.context.announcement-bar-create', 'en', 'Create Announcement'),
-('ui.context.announcement-bar-edit',   'en', 'Edit Announcement'),
-('ui.context.trust-logo-create',       'en', 'Add Logo'),
-('ui.context.trust-logo-edit',         'en', 'Edit Logo'),
-('ui.context.lobby-section-create',    'en', 'Create Section'),
-('ui.context.game-label-create',       'en', 'Create Label'),
-('ui.context.seo-redirect-create',     'en', 'Add Redirect'),
+('ui.context.tenant-license-add',      'Add License'),
+('ui.context.social-link-create',      'Add Social Link'),
+('ui.context.social-link-edit',        'Edit Social Link'),
+('ui.context.announcement-bar-create', 'Create Announcement'),
+('ui.context.announcement-bar-edit',   'Edit Announcement'),
+('ui.context.trust-logo-create',       'Add Logo'),
+('ui.context.trust-logo-edit',         'Edit Logo'),
+('ui.context.lobby-section-create',    'Create Section'),
+('ui.context.game-label-create',       'Create Label'),
+('ui.context.seo-redirect-create',     'Add Redirect'),
 
 -- Call Center Menus (2)
-('ui.menu.support-standard', 'en', 'Support'),
-('ui.menu.support-tickets',  'en', 'Ticket Management'),
+('ui.menu.support-standard', 'Support'),
+('ui.menu.support-tickets',  'Ticket Management'),
 
 -- Call Center Submenus (6)
-('ui.submenu.representatives', 'en', 'Representatives'),
-('ui.submenu.welcome-calls',   'en', 'Welcome Calls'),
-('ui.submenu.player-notes',    'en', 'Player Notes'),
-('ui.submenu.ticket-queue',    'en', 'Ticket Queue'),
-('ui.submenu.ticket-config',   'en', 'Configuration'),
-('ui.submenu.agent-settings',  'en', 'Agent Settings'),
+('ui.submenu.representatives', 'Representatives'),
+('ui.submenu.welcome-calls',   'Welcome Calls'),
+('ui.submenu.player-notes',    'Player Notes'),
+('ui.submenu.ticket-queue',    'Ticket Queue'),
+('ui.submenu.ticket-config',   'Configuration'),
+('ui.submenu.agent-settings',  'Agent Settings'),
 
 -- Call Center Pages (6)
-('ui.page.representative-list', 'en', 'Representatives'),
-('ui.page.welcome-call-list',   'en', 'Welcome Calls'),
-('ui.page.player-note-list',    'en', 'Player Notes'),
-('ui.page.ticket-queue',        'en', 'Ticket Queue'),
-('ui.page.ticket-config',       'en', 'Configuration'),
-('ui.page.agent-settings',      'en', 'Agent Settings'),
+('ui.page.representative-list', 'Representatives'),
+('ui.page.welcome-call-list',   'Welcome Calls'),
+('ui.page.player-note-list',    'Player Notes'),
+('ui.page.ticket-queue',        'Ticket Queue'),
+('ui.page.ticket-config',       'Configuration'),
+('ui.page.agent-settings',      'Agent Settings'),
 
 -- Call Center Contexts (7)
-('ui.context.representative-assign',   'en', 'Assign Representative'),
-('ui.context.welcome-call-assign',     'en', 'Take Task'),
-('ui.context.player-note-create',      'en', 'Add Note'),
-('ui.context.ticket-create',           'en', 'Create Ticket'),
-('ui.context.ticket-assign',           'en', 'Assign Ticket'),
-('ui.context.ticket-category-create',  'en', 'Create Category'),
-('ui.context.canned-response-create',  'en', 'Create Template'),
+('ui.context.representative-assign',   'Assign Representative'),
+('ui.context.welcome-call-assign',     'Take Task'),
+('ui.context.player-note-create',      'Add Note'),
+('ui.context.ticket-create',           'Create Ticket'),
+('ui.context.ticket-assign',           'Assign Ticket'),
+('ui.context.ticket-category-create',  'Create Category'),
+('ui.context.canned-response-create',  'Create Template'),
 
--- Security Policy - Submenus (2)
-('ui.submenu.company-list',      'en', 'Companies'),
-('ui.submenu.password-policies', 'en', 'Password Policies'),
+-- Security Policy - Submenus (1)
+('ui.submenu.company-list', 'Companies')
 
--- Security Policy - Page (1)
-('ui.page.company-password-policy-list', 'en', 'Password Policies'),
-
--- Security Policy - Contexts (2)
-('ui.context.company-pp-list-edit', 'en', 'Edit Policy'),
-('ui.context.company-pp-reset',     'en', 'Reset to Default')
-
-ON CONFLICT (localization_key, language_code) DO NOTHING;
+) AS v(key, text) ON k.localization_key = v.key
+ON CONFLICT (localization_key_id, language_code) DO NOTHING;
 
 -- ================================================================
 -- 3. TURKISH VALUES (tr)
 -- ================================================================
 
-INSERT INTO catalog.localization_values (localization_key, language_code, value) VALUES
+INSERT INTO catalog.localization_values (localization_key_id, language_code, localized_text, created_at)
+SELECT k.id, 'tr', v.text, NOW()
+FROM catalog.localization_keys k
+JOIN (VALUES
 
 -- Menu Group (1)
-('ui.menu-group.site-management', 'tr', 'Site Yönetimi'),
+('ui.menu-group.site-management', 'Site Yönetimi'),
 
 -- Menus (4)
-('ui.menu.site-identity',   'tr', 'Site Kimliği'),
-('ui.menu.site-content',    'tr', 'İçerik'),
-('ui.menu.site-promotions', 'tr', 'Promosyonlar'),
-('ui.menu.site-lobby',      'tr', 'Oyun Lobisi'),
+('ui.menu.site-identity',   'Site Kimliği'),
+('ui.menu.site-content',    'İçerik'),
+('ui.menu.site-promotions', 'Promosyonlar'),
+('ui.menu.site-lobby',      'Oyun Lobisi'),
 
--- Submenus (6)
-('ui.submenu.cms',        'tr', 'CMS Sayfaları'),
-('ui.submenu.notices',    'tr', 'Duyurular & Rozetler'),
-('ui.submenu.seo',        'tr', 'SEO'),
-('ui.submenu.promotions', 'tr', 'Promosyonlar'),
-('ui.submenu.slides',     'tr', 'Slaytlar'),
-('ui.submenu.popups',     'tr', 'Pop-up''lar'),
+-- Submenus (12)
+('ui.submenu.site-settings',     'Site Ayarları'),
+('ui.submenu.social-links',      'Sosyal Linkler'),
+('ui.submenu.content-pages',     'İçerik Sayfaları'),
+('ui.submenu.faq',               'SSS'),
+('ui.submenu.announcement-bars', 'Duyuru Barları'),
+('ui.submenu.trust-logos',       'Güven Logoları'),
+('ui.submenu.seo',               'SEO'),
+('ui.submenu.promotions', 'Promosyonlar'),
+('ui.submenu.slides',     'Slaytlar'),
+('ui.submenu.popups',          'Pop-up''lar'),
+('ui.submenu.lobby-sections',  'Lobi Bölümleri'),
+('ui.submenu.game-labels',     'Oyun Etiketleri'),
 
 -- Pages (12)
-('ui.page.site-settings',      'tr', 'Site Ayarları'),
-('ui.page.social-links',       'tr', 'Sosyal Linkler'),
-('ui.page.content-list',       'tr', 'İçerik Sayfaları'),
-('ui.page.faq-list',           'tr', 'SSS'),
-('ui.page.announcement-bars',  'tr', 'Duyuru Çubukları'),
-('ui.page.trust-logos',        'tr', 'Güven Logoları'),
-('ui.page.seo-redirects',      'tr', 'SEO Yönlendirmeleri'),
-('ui.page.promotions',         'tr', 'Promosyonlar'),
-('ui.page.slides',             'tr', 'Slaytlar'),
-('ui.page.popups',             'tr', 'Pop-up''lar'),
-('ui.page.lobby-sections',     'tr', 'Lobi Bölümleri'),
-('ui.page.game-labels',        'tr', 'Oyun Etiketleri'),
+('ui.page.site-settings',      'Site Ayarları'),
+('ui.page.social-links',       'Sosyal Linkler'),
+('ui.page.content-list',       'İçerik Sayfaları'),
+('ui.page.faq-list',           'SSS'),
+('ui.page.announcement-bars',  'Duyuru Çubukları'),
+('ui.page.trust-logos',        'Güven Logoları'),
+('ui.page.seo-redirects',      'SEO Yönlendirmeleri'),
+('ui.page.promotions',         'Promosyonlar'),
+('ui.page.slides',             'Slaytlar'),
+('ui.page.popups',             'Pop-up''lar'),
+('ui.page.lobby-sections',     'Lobi Bölümleri'),
+('ui.page.game-labels',        'Oyun Etiketleri'),
 
 -- Tabs (1)
-('ui.tab.tenant-licenses', 'tr', 'Lisanslar'),
+('ui.tab.tenant-licenses', 'Lisanslar'),
 
 -- Contexts - Site Management (10)
-('ui.context.tenant-license-add',      'tr', 'Lisans Ekle'),
-('ui.context.social-link-create',      'tr', 'Sosyal Link Ekle'),
-('ui.context.social-link-edit',        'tr', 'Sosyal Linki Düzenle'),
-('ui.context.announcement-bar-create', 'tr', 'Duyuru Oluştur'),
-('ui.context.announcement-bar-edit',   'tr', 'Duyuruyu Düzenle'),
-('ui.context.trust-logo-create',       'tr', 'Logo Ekle'),
-('ui.context.trust-logo-edit',         'tr', 'Logoyu Düzenle'),
-('ui.context.lobby-section-create',    'tr', 'Bölüm Oluştur'),
-('ui.context.game-label-create',       'tr', 'Etiket Oluştur'),
-('ui.context.seo-redirect-create',     'tr', 'Yönlendirme Ekle'),
+('ui.context.tenant-license-add',      'Lisans Ekle'),
+('ui.context.social-link-create',      'Sosyal Link Ekle'),
+('ui.context.social-link-edit',        'Sosyal Linki Düzenle'),
+('ui.context.announcement-bar-create', 'Duyuru Oluştur'),
+('ui.context.announcement-bar-edit',   'Duyuruyu Düzenle'),
+('ui.context.trust-logo-create',       'Logo Ekle'),
+('ui.context.trust-logo-edit',         'Logoyu Düzenle'),
+('ui.context.lobby-section-create',    'Bölüm Oluştur'),
+('ui.context.game-label-create',       'Etiket Oluştur'),
+('ui.context.seo-redirect-create',     'Yönlendirme Ekle'),
 
 -- Call Center Menüler (2)
-('ui.menu.support-standard', 'tr', 'Destek'),
-('ui.menu.support-tickets',  'tr', 'Ticket Yönetimi'),
+('ui.menu.support-standard', 'Destek'),
+('ui.menu.support-tickets',  'Ticket Yönetimi'),
 
 -- Call Center Alt Menüler (6)
-('ui.submenu.representatives', 'tr', 'Temsilciler'),
-('ui.submenu.welcome-calls',   'tr', 'Hoşgeldin Aramaları'),
-('ui.submenu.player-notes',    'tr', 'Oyuncu Notları'),
-('ui.submenu.ticket-queue',    'tr', 'Ticket Kuyruğu'),
-('ui.submenu.ticket-config',   'tr', 'Yapılandırma'),
-('ui.submenu.agent-settings',  'tr', 'Agent Ayarları'),
+('ui.submenu.representatives', 'Temsilciler'),
+('ui.submenu.welcome-calls',   'Hoşgeldin Aramaları'),
+('ui.submenu.player-notes',    'Oyuncu Notları'),
+('ui.submenu.ticket-queue',    'Ticket Kuyruğu'),
+('ui.submenu.ticket-config',   'Yapılandırma'),
+('ui.submenu.agent-settings',  'Agent Ayarları'),
 
 -- Call Center Sayfalar (6)
-('ui.page.representative-list', 'tr', 'Temsilciler'),
-('ui.page.welcome-call-list',   'tr', 'Hoşgeldin Aramaları'),
-('ui.page.player-note-list',    'tr', 'Oyuncu Notları'),
-('ui.page.ticket-queue',        'tr', 'Ticket Kuyruğu'),
-('ui.page.ticket-config',       'tr', 'Yapılandırma'),
-('ui.page.agent-settings',      'tr', 'Agent Ayarları'),
+('ui.page.representative-list', 'Temsilciler'),
+('ui.page.welcome-call-list',   'Hoşgeldin Aramaları'),
+('ui.page.player-note-list',    'Oyuncu Notları'),
+('ui.page.ticket-queue',        'Ticket Kuyruğu'),
+('ui.page.ticket-config',       'Yapılandırma'),
+('ui.page.agent-settings',      'Agent Ayarları'),
 
 -- Call Center Context'ler (7)
-('ui.context.representative-assign',   'tr', 'Temsilci Ata'),
-('ui.context.welcome-call-assign',     'tr', 'Görevi Al'),
-('ui.context.player-note-create',      'tr', 'Not Ekle'),
-('ui.context.ticket-create',           'tr', 'Ticket Oluştur'),
-('ui.context.ticket-assign',           'tr', 'Ticket Ata'),
-('ui.context.ticket-category-create',  'tr', 'Kategori Oluştur'),
-('ui.context.canned-response-create',  'tr', 'Şablon Oluştur'),
+('ui.context.representative-assign',   'Temsilci Ata'),
+('ui.context.welcome-call-assign',     'Görevi Al'),
+('ui.context.player-note-create',      'Not Ekle'),
+('ui.context.ticket-create',           'Ticket Oluştur'),
+('ui.context.ticket-assign',           'Ticket Ata'),
+('ui.context.ticket-category-create',  'Kategori Oluştur'),
+('ui.context.canned-response-create',  'Şablon Oluştur'),
 
--- Security Policy - Submenüler (2)
-('ui.submenu.company-list',      'tr', 'Şirketler'),
-('ui.submenu.password-policies', 'tr', 'Şifre Politikaları'),
+-- Security Policy - Submenüler (1)
+('ui.submenu.company-list', 'Şirketler')
 
--- Security Policy - Sayfa (1)
-('ui.page.company-password-policy-list', 'tr', 'Şifre Politikaları'),
-
--- Security Policy - Context'ler (2)
-('ui.context.company-pp-list-edit', 'tr', 'Politikayı Düzenle'),
-('ui.context.company-pp-reset',     'tr', 'Varsayılana Döndür')
-
-ON CONFLICT (localization_key, language_code) DO NOTHING;
+) AS v(key, text) ON k.localization_key = v.key
+ON CONFLICT (localization_key_id, language_code) DO NOTHING;

@@ -25,9 +25,18 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.page.code-exists';
     END IF;
 
-    -- Ebeveyn kontrolü (menu_id XOR submenu_id)
-    IF (p_menu_id IS NULL AND p_submenu_id IS NULL) OR (p_menu_id IS NOT NULL AND p_submenu_id IS NOT NULL) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0406', MESSAGE = 'error.page.parent-required';
+    -- Ebeveyn kontrolü: menu_id ve submenu_id ayni anda dolu olamaz (ikisi de NULL = standalone page)
+    IF p_menu_id IS NOT NULL AND p_submenu_id IS NOT NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.page.only-one-parent';
+    END IF;
+
+    -- Route kontrolü: submenu_id varsa route NULL olmali, yoksa route zorunlu
+    IF p_submenu_id IS NOT NULL AND p_route IS NOT NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.page.route-must-be-null-for-submenu';
+    END IF;
+
+    IF p_submenu_id IS NULL AND (p_route IS NULL OR TRIM(p_route) = '') THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.page.route-required';
     END IF;
 
     INSERT INTO presentation.pages (

@@ -11,7 +11,7 @@ CREATE TABLE presentation.pages (
     menu_id BIGINT,                                        -- Ana menü ID
     submenu_id BIGINT,                                     -- Alt menü ID
     code VARCHAR(50) NOT NULL,                             -- Sayfa kodu
-    route VARCHAR(200) NOT NULL,                           -- Yönlendirme adresi
+    route VARCHAR(200),                                     -- Yönlendirme adresi (submenu'lu page'lerde NULL — route submenu'dan gelir)
     title_localization_key VARCHAR(150) NOT NULL,          -- Çeviri anahtarı
     required_permission VARCHAR(100) NOT NULL,             -- Gerekli yetki kodu
     order_index INT NOT NULL DEFAULT 0,                    -- Sıralama indeksi

@@ -232,6 +232,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/tenant_settings/tenant_setting_get.sql
 \i core/functions/core/tenant_settings/tenant_setting_list.sql
 \i core/functions/core/tenant_settings/tenant_setting_delete.sql
+\i core/functions/core/tenant_settings/tenant_setting_list_by_key.sql
 
 -- Tenant Configs - Currencies
 \i core/functions/core/tenant_currencies/tenant_currency_upsert.sql

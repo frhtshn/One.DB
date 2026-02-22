@@ -470,6 +470,40 @@ SELECT t.id, 'Security', 'password_min_length',
     'Minimum password length requirement'
 FROM core.tenants t;
 
+-- Silo Placement Ayarlari (Tenant Cluster grain placement)
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Infrastructure', 'silo_placement',
+    '"general"'::jsonb,
+    'Silo placement pool assignment (general, dedicated-1, shared-2-3, etc.)'
+FROM core.tenants t;
+
+-- Dedicated Redis Bağlantıları (sadece shared olmayan tenant'lar)
+-- eurobet_uk → 207.180.241.193:7003
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Infrastructure', 'redis_connection',
+    '"207.180.241.193:7003"'::jsonb,
+    'Dedicated Redis connection string'
+FROM core.tenants t WHERE t.tenant_code = 'eurobet_uk';
+
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Infrastructure', 'redis_password',
+    '"NucleoRedis2026!"'::jsonb,
+    'Dedicated Redis password'
+FROM core.tenants t WHERE t.tenant_code = 'eurobet_uk';
+
+-- cyprus_main → 207.180.241.142:7003
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Infrastructure', 'redis_connection',
+    '"207.180.241.142:7003"'::jsonb,
+    'Dedicated Redis connection string'
+FROM core.tenants t WHERE t.tenant_code = 'cyprus_main';
+
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Infrastructure', 'redis_password',
+    '"NucleoRedis2026!"'::jsonb,
+    'Dedicated Redis password'
+FROM core.tenants t WHERE t.tenant_code = 'cyprus_main';
+
 -- ================================================================
 -- 15. JURISDICTIONS & KYC COMPLIANCE DATA
 -- ================================================================
@@ -722,7 +756,7 @@ BEGIN
     RAISE NOTICE 'Tenant Currencies: % (beklenen: 11)', v_currencies;
     RAISE NOTICE 'Tenant Cryptocurrencies: % (beklenen: 9)', v_cryptocurrencies;
     RAISE NOTICE 'Tenant Languages: % (beklenen: 8)', v_languages;
-    RAISE NOTICE 'Tenant Settings: % (beklenen: 40)', v_settings;
+    RAISE NOTICE 'Tenant Settings: % (beklenen: 48)', v_settings;
     RAISE NOTICE '================================================';
 END $$;
 
