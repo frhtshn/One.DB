@@ -28,7 +28,7 @@ VALUES
    },
    "fonts": {
      "header": "Rajdhani, sans-serif",
-     "body": "Inter, sans-serif"
+     "body": "Manrope, sans-serif"
    },
    "borderRadius": "8px",
    "cardStyle": "elevated"
