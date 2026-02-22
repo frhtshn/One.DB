@@ -47,9 +47,9 @@ INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, ico
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
-    ('system',  'ui.menu.system',  'pi pi-cog',      1, 'platform.health.view'),
-    ('rbac',    'ui.menu.rbac',    'pi pi-shield',   2, 'platform.role.manage'),
-    ('catalog', 'ui.menu.catalog', 'pi pi-database', 3, 'catalog.provider.list')
+    ('system',  'ui.menu.system',  'settings',  1, 'platform.health.view'),
+    ('rbac',    'ui.menu.rbac',    'shield',    2, 'platform.role.manage'),
+    ('catalog', 'ui.menu.catalog', 'database',  3, 'catalog.provider.list')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'platform';
 
@@ -58,7 +58,7 @@ INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, ico
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
-    ('companies', 'ui.menu.companies', 'pi pi-building', 1, 'company.list')
+    ('companies', 'ui.menu.companies', 'building-2', 1, 'company.list')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'companies';
 
@@ -67,10 +67,10 @@ INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, ico
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
-    ('tenants',           'ui.menu.tenants',           'pi pi-sitemap',    1, 'tenant.list'),
-    ('users',             'ui.menu.users',             'pi pi-users',      2, 'tenant.user.list'),
-    ('support-standard',  'ui.menu.support-standard',  'pi pi-headphones', 3, 'tenant.support-ticket.list'),
-    ('support-tickets',   'ui.menu.support-tickets',   'pi pi-ticket',     4, 'tenant.support-ticket.list')
+    ('tenants',           'ui.menu.tenants',           'network',     1, 'tenant.list'),
+    ('users',             'ui.menu.users',             'users',       2, 'tenant.user.list'),
+    ('support-standard',  'ui.menu.support-standard',  'headphones',  3, 'tenant.support-ticket.list'),
+    ('support-tickets',   'ui.menu.support-tickets',   'ticket',      4, 'tenant.support-ticket.list')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'tenants';
 
@@ -79,10 +79,10 @@ INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, ico
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
-    ('site-identity',   'ui.menu.site-identity',   'pi pi-home',      1, 'tenant.site-settings.manage'),
-    ('site-content',    'ui.menu.site-content',    'pi pi-file-edit', 2, 'tenant.content.manage'),
-    ('site-promotions', 'ui.menu.site-promotions', 'pi pi-tag',       3, 'tenant.presentation.manage'),
-    ('site-lobby',      'ui.menu.site-lobby',      'pi pi-th-large',  4, 'tenant.content.manage')
+    ('site-identity',   'ui.menu.site-identity',   'home',         1, 'tenant.site-settings.manage'),
+    ('site-content',    'ui.menu.site-content',    'file-pen',     2, 'tenant.content.manage'),
+    ('site-promotions', 'ui.menu.site-promotions', 'tag',          3, 'tenant.presentation.manage'),
+    ('site-lobby',      'ui.menu.site-lobby',      'layout-grid',  4, 'tenant.content.manage')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'site-management';
 
@@ -91,7 +91,7 @@ INSERT INTO presentation.menus (menu_group_id, code, title_localization_key, ico
 SELECT mg.id, v.code, v.title_key, v.icon, v.ord, v.perm, TRUE
 FROM presentation.menu_groups mg
 CROSS JOIN (VALUES
-    ('audit-logs', 'ui.menu.audit-logs', 'pi pi-list', 1, 'audit.list')
+    ('audit-logs', 'ui.menu.audit-logs', 'list', 1, 'audit.list')
 ) AS v(code, title_key, icon, ord, perm)
 WHERE mg.code = 'audit';
 
