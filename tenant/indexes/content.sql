@@ -163,3 +163,22 @@ CREATE INDEX idx_popup_images_language ON content.popup_images(popup_id, languag
 -- popup_schedules
 CREATE INDEX idx_popup_schedules_popup ON content.popup_schedules(popup_id);
 CREATE INDEX idx_popup_schedules_active ON content.popup_schedules(popup_id, is_active) WHERE is_active = TRUE;
+
+-- =============================================
+-- trust_logos
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_trust_logos_type_active ON content.trust_logos(logo_type, is_active);
+CREATE INDEX IF NOT EXISTS idx_trust_logos_display_order ON content.trust_logos(display_order) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_trust_logos_country_codes ON content.trust_logos USING GIN(country_codes);
+
+-- =============================================
+-- operator_licenses
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_operator_licenses_jurisdiction ON content.operator_licenses(jurisdiction_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_operator_licenses_expiry ON content.operator_licenses(expiry_date) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_operator_licenses_country_codes ON content.operator_licenses USING GIN(country_codes);
+
+-- =============================================
+-- seo_redirects
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_seo_redirects_active ON content.seo_redirects(is_active);

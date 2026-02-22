@@ -51,3 +51,20 @@ CREATE INDEX IF NOT EXISTS idx_game_sessions_expires ON game.game_sessions USING
 
 -- game_sessions - provider bazlı listeleme
 CREATE INDEX IF NOT EXISTS idx_game_sessions_provider ON game.game_sessions USING btree(provider_code, status);
+
+-- =============================================
+-- lobby_sections
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_lobby_sections_active_order ON game.lobby_sections(is_active, display_order);
+CREATE INDEX IF NOT EXISTS idx_lobby_sections_type ON game.lobby_sections(section_type) WHERE is_active = TRUE;
+
+-- =============================================
+-- lobby_section_games
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_lobby_section_games_lookup ON game.lobby_section_games(lobby_section_id, is_active, display_order);
+
+-- =============================================
+-- game_labels
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_game_labels_game_active ON game.game_labels(game_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_game_labels_expires ON game.game_labels(expires_at) WHERE expires_at IS NOT NULL AND is_active = TRUE;

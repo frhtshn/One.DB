@@ -14,9 +14,9 @@
 -- ================================================================
 -- PERMISSIONS - FULL LIST (UPSERT)
 -- ================================================================
--- Toplam: 143 permission (104 API/System + 39 Field)
+-- Toplam: 147 permission (108 API/System + 39 Field)
 -- Kategoriler (category kolonu bazinda):
---   platform (8), company (25), tenant (52), catalog (17),
+--   platform (8), company (25), tenant (56), catalog (17),
 --   audit (2), field (39)
 -- ================================================================
 
@@ -116,6 +116,14 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('tenant.player-category.manage', 'Manage Player Categories', 'Create, update, delete player VIP categories', 'tenant', 1),
 ('tenant.player-group.manage', 'Manage Player Groups', 'Create, update, delete player behavioral groups', 'tenant', 1),
 ('tenant.player-classification.manage', 'Manage Player Classification', 'Assign/remove player category and group memberships', 'tenant', 1),
+
+-- ================================================================
+-- TENANT.CONTENT (4) — Frontend İçerik Yönetimi
+-- ================================================================
+('tenant.content.manage', 'Manage Tenant Content', 'Manage trust logos, game lobby sections, game labels, SEO redirects', 'tenant', 1),
+('tenant.site-settings.manage', 'Manage Site Settings', 'Manage site settings: analytics config, cookie consent, age gate, live chat', 'tenant', 1),
+('tenant.operator-license.view', 'View Operator Licenses', 'View operator licenses (read-only)', 'tenant', 1),
+('tenant.operator-license.manage', 'Manage Operator Licenses', 'Full CRUD for operator licenses', 'tenant', 1),
 
 -- ================================================================
 -- TENANT.SUPPORT (15) — Çağrı Merkezi & Müşteri Temsilcisi

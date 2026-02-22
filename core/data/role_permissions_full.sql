@@ -65,6 +65,9 @@ WHERE r.code = 'admin'
     -- bonus-request (6)
     'tenant.bonus-request.list', 'tenant.bonus-request.view', 'tenant.bonus-request.create',
     'tenant.bonus-request.review', 'tenant.bonus-request.assign', 'tenant.bonus-request-settings.manage',
+    -- content (4)
+    'tenant.content.manage', 'tenant.site-settings.manage',
+    'tenant.operator-license.view', 'tenant.operator-license.manage',
     -- support (15)
     'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
     'tenant.support-ticket.assign', 'tenant.support-ticket.manage',
@@ -108,6 +111,8 @@ WHERE r.code = 'companyadmin'
     'tenant.currency.list',
     'tenant.cryptocurrency.list',
     'tenant.language.list',
+    -- content (1 — sadece lisans okuma)
+    'tenant.operator-license.view',
     -- tenant.user (5)
     'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
     -- RBAC (3)
@@ -154,6 +159,8 @@ WHERE r.code = 'tenantadmin'
   AND p.code IN (
     -- tenant presentation (1)
     'tenant.presentation.manage',
+    -- content (3 — site settings + içerik yönetimi + lisans okuma)
+    'tenant.content.manage', 'tenant.site-settings.manage', 'tenant.operator-license.view',
     -- tenant.user (5)
     'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
     -- RBAC (3)
@@ -238,6 +245,8 @@ WHERE r.code = 'editor'
   AND p.code IN (
     -- tenant presentation (1)
     'tenant.presentation.manage',
+    -- content (1 — içerik yönetimi, site-settings ve lisans YOK)
+    'tenant.content.manage',
     -- messaging inbox (3)
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );

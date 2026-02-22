@@ -1003,6 +1003,81 @@ JOIN (VALUES
     ('error.slide.category-not-found', 'Slide category not found'),
 
     -- Tenant Backoffice — Theme (additional)
-    ('error.theme.theme-id-required', 'Theme reference ID is required')
+    ('error.theme.theme-id-required', 'Theme reference ID is required'),
+
+    -- Tenant Backoffice — Trust Logos
+    ('error.trust-logo.code-required', 'Logo code is required'),
+    ('error.trust-logo.type-required', 'Logo type is required'),
+    ('error.trust-logo.name-required', 'Logo name is required'),
+    ('error.trust-logo.logo-url-required', 'Logo URL is required'),
+    ('error.trust-logo.items-required', 'Logo list is required'),
+    ('error.trust-logo.id-required', 'Logo ID is required'),
+    ('error.trust-logo.not-found', 'Logo not found'),
+
+    -- Tenant Backoffice — Operator Licenses
+    ('error.operator-license.jurisdiction-required', 'Jurisdiction is required'),
+    ('error.operator-license.license-number-required', 'License number is required'),
+    ('error.operator-license.expiry-before-issued', 'Expiry date cannot be before issued date'),
+    ('error.operator-license.id-required', 'License ID is required'),
+    ('error.operator-license.not-found', 'License not found'),
+
+    -- Tenant Backoffice — SEO Redirects
+    ('error.seo-redirect.from-slug-required', 'Source URL is required'),
+    ('error.seo-redirect.to-url-required', 'Target URL is required'),
+    ('error.seo-redirect.invalid-redirect-type', 'Invalid redirect type (must be 301 or 302)'),
+    ('error.seo-redirect.circular-redirect', 'Circular redirect detected'),
+    ('error.seo-redirect.items-required', 'Redirect list is required'),
+    ('error.seo-redirect.id-required', 'Redirect ID is required'),
+    ('error.seo-redirect.not-found', 'Redirect not found'),
+
+    -- Tenant Backoffice — Content SEO Meta
+    ('error.content-seo-meta.content-id-required', 'Content ID is required'),
+    ('error.content-seo-meta.language-required', 'Language code is required'),
+    ('error.content-seo-meta.invalid-twitter-card', 'Invalid Twitter card type'),
+    ('error.content-seo-meta.translation-not-found', 'Content translation not found'),
+
+    -- Tenant Backoffice — Social Links
+    ('error.social-link.platform-required', 'Platform name is required'),
+    ('error.social-link.url-required', 'URL is required'),
+    ('error.social-link.items-required', 'Link list is required'),
+    ('error.social-link.id-required', 'Link ID is required'),
+    ('error.social-link.not-found', 'Social link not found'),
+
+    -- Tenant Backoffice — Site Settings
+    ('error.site-settings.field-name-required', 'Field name is required'),
+    ('error.site-settings.value-required', 'Field value is required'),
+    ('error.site-settings.invalid-field', 'Invalid field name'),
+    ('error.site-settings.not-found', 'Site settings not found'),
+
+    -- Tenant Backoffice — Announcement Bars
+    ('error.announcement-bar.code-required', 'Announcement bar code is required'),
+    ('error.announcement-bar.invalid-audience', 'Invalid target audience'),
+    ('error.announcement-bar.ends-before-starts', 'End date cannot be before start date'),
+    ('error.announcement-bar.id-required', 'Announcement bar ID is required'),
+    ('error.announcement-bar.not-found', 'Announcement bar not found'),
+    ('error.announcement-bar-translation.bar-id-required', 'Announcement bar ID is required'),
+    ('error.announcement-bar-translation.language-required', 'Language code is required'),
+    ('error.announcement-bar-translation.text-required', 'Announcement text is required'),
+
+    -- Tenant Backoffice — Lobby Sections
+    ('error.lobby-section.code-required', 'Section code is required'),
+    ('error.lobby-section.max-items-invalid', 'Maximum items count is invalid'),
+    ('error.lobby-section.id-required', 'Section ID is required'),
+    ('error.lobby-section.not-found', 'Lobby section not found'),
+    ('error.lobby-section-translation.section-id-required', 'Section ID is required'),
+    ('error.lobby-section-translation.language-required', 'Language code is required'),
+    ('error.lobby-section-translation.title-required', 'Title is required'),
+    ('error.lobby-section-game.section-id-required', 'Section ID is required'),
+    ('error.lobby-section-game.game-id-required', 'Game ID is required'),
+    ('error.lobby-section-game.section-not-found', 'Lobby section not found'),
+    ('error.lobby-section-game.section-not-manual', 'Section is not of manual curation type'),
+    ('error.lobby-section-game.not-found', 'Section-game assignment not found'),
+
+    -- Tenant Backoffice — Game Labels
+    ('error.game-label.game-id-required', 'Game ID is required'),
+    ('error.game-label.label-type-required', 'Label type is required'),
+    ('error.game-label.expires-in-past', 'Expiry date cannot be in the past'),
+    ('error.game-label.id-required', 'Label ID is required'),
+    ('error.game-label.not-found', 'Game label not found')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

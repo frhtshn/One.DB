@@ -1139,6 +1139,99 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- ============================================================================
 -- TENANT BACKOFFICE — Tema Yönetimi (ek)
 -- ============================================================================
-('error.theme.theme-id-required', 'error', 'theme', 'Tema referans ID zorunlu')
+('error.theme.theme-id-required', 'error', 'theme', 'Tema referans ID zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Güven Elementleri (Trust Logos)
+-- ============================================================================
+('error.trust-logo.code-required', 'error', 'trust-logo', 'Logo kodu zorunlu'),
+('error.trust-logo.type-required', 'error', 'trust-logo', 'Logo tipi zorunlu'),
+('error.trust-logo.name-required', 'error', 'trust-logo', 'Logo adı zorunlu'),
+('error.trust-logo.logo-url-required', 'error', 'trust-logo', 'Logo URL zorunlu'),
+('error.trust-logo.items-required', 'error', 'trust-logo', 'Logo listesi zorunlu'),
+('error.trust-logo.not-found', 'error', 'trust-logo', 'Logo bulunamadı'),
+('error.trust-logo.id-required', 'error', 'trust-logo', 'Logo ID zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Operatör Lisansları
+-- ============================================================================
+('error.operator-license.jurisdiction-required', 'error', 'operator-license', 'Yetki alanı zorunlu'),
+('error.operator-license.license-number-required', 'error', 'operator-license', 'Lisans numarası zorunlu'),
+('error.operator-license.expiry-before-issued', 'error', 'operator-license', 'Bitiş tarihi başlangıç tarihinden önce olamaz'),
+('error.operator-license.id-required', 'error', 'operator-license', 'Lisans ID zorunlu'),
+('error.operator-license.not-found', 'error', 'operator-license', 'Lisans bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — SEO Yönlendirme
+-- ============================================================================
+('error.seo-redirect.from-slug-required', 'error', 'seo-redirect', 'Kaynak URL zorunlu'),
+('error.seo-redirect.to-url-required', 'error', 'seo-redirect', 'Hedef URL zorunlu'),
+('error.seo-redirect.invalid-redirect-type', 'error', 'seo-redirect', 'Geçersiz yönlendirme tipi (301 veya 302 olmalı)'),
+('error.seo-redirect.circular-redirect', 'error', 'seo-redirect', 'Döngüsel yönlendirme tespit edildi'),
+('error.seo-redirect.items-required', 'error', 'seo-redirect', 'Yönlendirme listesi zorunlu'),
+('error.seo-redirect.id-required', 'error', 'seo-redirect', 'Yönlendirme ID zorunlu'),
+('error.seo-redirect.not-found', 'error', 'seo-redirect', 'Yönlendirme bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — İçerik SEO Meta
+-- ============================================================================
+('error.content-seo-meta.content-id-required', 'error', 'content-seo-meta', 'İçerik ID zorunlu'),
+('error.content-seo-meta.language-required', 'error', 'content-seo-meta', 'Dil kodu zorunlu'),
+('error.content-seo-meta.invalid-twitter-card', 'error', 'content-seo-meta', 'Geçersiz Twitter kart tipi'),
+('error.content-seo-meta.translation-not-found', 'error', 'content-seo-meta', 'İçerik çevirisi bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Sosyal Medya Bağlantıları
+-- ============================================================================
+('error.social-link.platform-required', 'error', 'social-link', 'Platform adı zorunlu'),
+('error.social-link.url-required', 'error', 'social-link', 'URL zorunlu'),
+('error.social-link.items-required', 'error', 'social-link', 'Bağlantı listesi zorunlu'),
+('error.social-link.id-required', 'error', 'social-link', 'Bağlantı ID zorunlu'),
+('error.social-link.not-found', 'error', 'social-link', 'Bağlantı bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Site Ayarları
+-- ============================================================================
+('error.site-settings.field-name-required', 'error', 'site-settings', 'Alan adı zorunlu'),
+('error.site-settings.value-required', 'error', 'site-settings', 'Alan değeri zorunlu'),
+('error.site-settings.invalid-field', 'error', 'site-settings', 'Geçersiz alan adı'),
+('error.site-settings.not-found', 'error', 'site-settings', 'Site ayarları bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Duyuru Çubukları
+-- ============================================================================
+('error.announcement-bar.code-required', 'error', 'announcement-bar', 'Duyuru çubuğu kodu zorunlu'),
+('error.announcement-bar.invalid-audience', 'error', 'announcement-bar', 'Geçersiz hedef kitle'),
+('error.announcement-bar.ends-before-starts', 'error', 'announcement-bar', 'Bitiş tarihi başlangıçtan önce olamaz'),
+('error.announcement-bar.id-required', 'error', 'announcement-bar', 'Duyuru çubuğu ID zorunlu'),
+('error.announcement-bar.not-found', 'error', 'announcement-bar', 'Duyuru çubuğu bulunamadı'),
+('error.announcement-bar-translation.bar-id-required', 'error', 'announcement-bar-translation', 'Duyuru çubuğu ID zorunlu'),
+('error.announcement-bar-translation.language-required', 'error', 'announcement-bar-translation', 'Dil kodu zorunlu'),
+('error.announcement-bar-translation.text-required', 'error', 'announcement-bar-translation', 'Duyuru metni zorunlu'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Lobi Bölümleri
+-- ============================================================================
+('error.lobby-section.code-required', 'error', 'lobby-section', 'Bölüm kodu zorunlu'),
+('error.lobby-section.max-items-invalid', 'error', 'lobby-section', 'Maksimum öğe sayısı geçersiz'),
+('error.lobby-section.id-required', 'error', 'lobby-section', 'Bölüm ID zorunlu'),
+('error.lobby-section.not-found', 'error', 'lobby-section', 'Bölüm bulunamadı'),
+('error.lobby-section-translation.section-id-required', 'error', 'lobby-section-translation', 'Bölüm ID zorunlu'),
+('error.lobby-section-translation.language-required', 'error', 'lobby-section-translation', 'Dil kodu zorunlu'),
+('error.lobby-section-translation.title-required', 'error', 'lobby-section-translation', 'Başlık zorunlu'),
+('error.lobby-section-game.section-id-required', 'error', 'lobby-section-game', 'Bölüm ID zorunlu'),
+('error.lobby-section-game.game-id-required', 'error', 'lobby-section-game', 'Oyun ID zorunlu'),
+('error.lobby-section-game.section-not-found', 'error', 'lobby-section-game', 'Bölüm bulunamadı'),
+('error.lobby-section-game.section-not-manual', 'error', 'lobby-section-game', 'Bölüm manuel küratörlük tipinde değil'),
+('error.lobby-section-game.not-found', 'error', 'lobby-section-game', 'Bölüm-oyun ilişkisi bulunamadı'),
+
+-- ============================================================================
+-- TENANT BACKOFFICE — Oyun Etiketleri
+-- ============================================================================
+('error.game-label.game-id-required', 'error', 'game-label', 'Oyun ID zorunlu'),
+('error.game-label.label-type-required', 'error', 'game-label', 'Etiket tipi zorunlu'),
+('error.game-label.expires-in-past', 'error', 'game-label', 'Bitiş tarihi geçmişte olamaz'),
+('error.game-label.id-required', 'error', 'game-label', 'Etiket ID zorunlu'),
+('error.game-label.not-found', 'error', 'game-label', 'Etiket bulunamadı')
 
 ON CONFLICT DO NOTHING;

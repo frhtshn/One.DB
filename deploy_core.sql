@@ -208,7 +208,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/companies/company_get.sql
 \i core/functions/core/companies/company_create.sql
 \i core/functions/core/companies/company_update.sql
-\i core/functions/core/companies/company_delete.sql
+
 \i core/functions/core/companies/company_lookup.sql
 
 -- Tenants
@@ -216,7 +216,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/tenants/tenant_get.sql
 \i core/functions/core/tenants/tenant_create.sql
 \i core/functions/core/tenants/tenant_update.sql
-\i core/functions/core/tenants/tenant_delete.sql
+
 \i core/functions/core/tenants/tenant_lookup.sql
 
 -- Platform Settings
@@ -505,7 +505,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/permissions/permission_get.sql
 \i core/functions/security/permissions/permission_create.sql
 \i core/functions/security/permissions/permission_update.sql
-\i core/functions/security/permissions/permission_delete.sql
+
 \i core/functions/security/permissions/permission_cleanup_expired.sql
 \i core/functions/security/permissions/permission_check.sql
 \i core/functions/security/permissions/user_permission_list.sql
@@ -536,7 +536,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/security/roles/role_get.sql
 \i core/functions/security/roles/role_create.sql
 \i core/functions/security/roles/role_update.sql
-\i core/functions/security/roles/role_delete.sql
+
 \i core/functions/security/roles/role_permission_list.sql
 \i core/functions/security/roles/role_permission_assign.sql
 \i core/functions/security/roles/role_permission_remove.sql
@@ -558,6 +558,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Password Policy Functions
 \i core/functions/security/policy/company_password_policy_get.sql
 \i core/functions/security/policy/company_password_policy_upsert.sql
+\i core/functions/security/policy/company_password_policy_list.sql
+\i core/functions/security/policy/company_password_policy_reset.sql
 
 -- Presentation Functions (Backoffice)
 -- Menu Groups

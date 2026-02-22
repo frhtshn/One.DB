@@ -33,6 +33,9 @@
 
 \i core/data/staging_seed_menu_localization.sql
 
+-- Frontend Content & Security Policy localization keys (seed_presentation'dan ÖNCE)
+\i core/data/seed_menu_localization_content.sql
+
 -- ============================================================================
 -- 3. TEST SEED DATA
 -- ============================================================================

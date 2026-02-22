@@ -353,6 +353,8 @@ Dinamik site içeriği ve pazarlama materyalleri yönetimi. Çoklu dil desteği 
 | `promotion/` | `promotion_types`, `promotion_type_translations`, `promotions`, `promotion_translations`, `promotion_banners`, `promotion_segments`, `promotion_games`, `promotion_display_locations` |
 | `slide/`     | `slide_placements`, `slide_categories`, `slide_category_translations`, `slides`, `slide_translations`, `slide_images`, `slide_schedules` |
 | `popup/`     | `popup_types`, `popup_type_translations`, `popups`, `popup_translations`, `popup_images`, `popup_schedules`                            |
+| `trust/`     | `trust_logos` (ödeme/güven logoları, rozet ve sertifikalar), `operator_licenses` (lisans bilgileri, yetki alanı bazlı)                 |
+| `seo/`       | `seo_redirects` (URL yönlendirme kuralları, 301/302, bulk import destekli)                                                             |
 
 ### 6.2b presentation Şeması (Site Arayüzü)
 
@@ -360,11 +362,15 @@ Frontend navigasyon, tema ve layout yönetimi. Core catalog'dan provisioning ile
 
 **Klasör Yapısı:** `tenant/tables/presentation/`
 
-| Tablo        | Açıklama                                                                            |
-| ------------ | ----------------------------------------------------------------------------------- |
-| `navigation` | Dinamik menü yönetimi. Hiyerarşik, is_locked/is_readonly korumalı                  |
-| `themes`     | Tenant tema seçimi ve config override. Tek aktif tema (UNIQUE partial index)        |
-| `layouts`    | Sayfa layout tanımları, JSONB structure ile widget pozisyonları                     |
+| Tablo                         | Açıklama                                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| `navigation`                  | Dinamik menü yönetimi. Hiyerarşik, is_locked/is_readonly korumalı                  |
+| `themes`                      | Tenant tema seçimi ve config override. Tek aktif tema (UNIQUE partial index)        |
+| `layouts`                     | Sayfa layout tanımları, JSONB structure ile widget pozisyonları                     |
+| `site_settings`               | Tek satırlık genel site ayarları (company_name, contact, JSONB config alanları)     |
+| `social_links`                | Sosyal medya ve iletişim kanalı bağlantıları (platform UNIQUE, display_order)      |
+| `announcement_bars`           | Duyuru çubukları (hedef kitle, zaman penceresi, ülke filtresi, öncelik)             |
+| `announcement_bar_translations` | Duyuru çubuğu metni çevirileri (UNIQUE: bar_id + language_code)                  |
 
 ### 6.3 finance Şeması
 
@@ -433,11 +439,15 @@ Oyun ayarları, limitleri ve oturum yönetimi.
 
 **Klasör Yapısı:** `tenant/tables/game/`
 
-| Tablo            | Açıklama                                              |
-| ---------------- | ----------------------------------------------------- |
-| `game_settings`  | Tenant oyun yapılandırması (aktiflik, limit yönetimi) |
-| `game_limits`    | Oyun bazlı bahis limitleri ve para birimi ayarları    |
-| `game_sessions`  | Aktif oyun oturumları ve token doğrulama              |
+| Tablo                        | Açıklama                                                                              |
+| ---------------------------- | ------------------------------------------------------------------------------------- |
+| `game_settings`              | Tenant oyun yapılandırması (aktiflik, görünürlük, özelleştirme, shadow mode)          |
+| `game_limits`                | Oyun bazlı bahis limitleri ve para birimi ayarları                                    |
+| `game_sessions`              | Aktif oyun oturumları ve token doğrulama                                              |
+| `lobby_sections`             | Lobi bölüm tanımları (code UNIQUE, section_type: manual/auto_*, max_items, sıralama)  |
+| `lobby_section_translations` | Lobi bölümü başlık/alt başlık çevirileri (UNIQUE: section_id + language_code)         |
+| `lobby_section_games`        | Manuel küratörlük: bölüm-oyun eşleştirmesi (UNIQUE: section_id + game_id)             |
+| `game_labels`                | Oyun kartı rozet/etiket yönetimi (new, hot, exclusive vb., süreli veya kalıcı)        |
 
 ### 6.6 bonus Şeması
 

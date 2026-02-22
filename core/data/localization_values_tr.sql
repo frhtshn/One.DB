@@ -1005,6 +1005,81 @@ JOIN (VALUES
     ('error.slide.category-not-found', 'Slide kategorisi bulunamadı'),
 
     -- Tenant Backoffice — Tema Yönetimi (ek)
-    ('error.theme.theme-id-required', 'Tema referans ID zorunludur')
+    ('error.theme.theme-id-required', 'Tema referans ID zorunludur'),
+
+    -- Tenant Backoffice — Güven Logoları
+    ('error.trust-logo.code-required', 'Logo kodu zorunludur'),
+    ('error.trust-logo.type-required', 'Logo tipi zorunludur'),
+    ('error.trust-logo.name-required', 'Logo adı zorunludur'),
+    ('error.trust-logo.logo-url-required', 'Logo URL zorunludur'),
+    ('error.trust-logo.items-required', 'Logo listesi zorunludur'),
+    ('error.trust-logo.id-required', 'Logo ID zorunludur'),
+    ('error.trust-logo.not-found', 'Logo bulunamadı'),
+
+    -- Tenant Backoffice — Operatör Lisansları
+    ('error.operator-license.jurisdiction-required', 'Yetki alanı zorunludur'),
+    ('error.operator-license.license-number-required', 'Lisans numarası zorunludur'),
+    ('error.operator-license.expiry-before-issued', 'Bitiş tarihi başlangıç tarihinden önce olamaz'),
+    ('error.operator-license.id-required', 'Lisans ID zorunludur'),
+    ('error.operator-license.not-found', 'Lisans bulunamadı'),
+
+    -- Tenant Backoffice — SEO Yönlendirme
+    ('error.seo-redirect.from-slug-required', 'Kaynak URL zorunludur'),
+    ('error.seo-redirect.to-url-required', 'Hedef URL zorunludur'),
+    ('error.seo-redirect.invalid-redirect-type', 'Geçersiz yönlendirme tipi (301 veya 302 olmalıdır)'),
+    ('error.seo-redirect.circular-redirect', 'Döngüsel yönlendirme tespit edildi'),
+    ('error.seo-redirect.items-required', 'Yönlendirme listesi zorunludur'),
+    ('error.seo-redirect.id-required', 'Yönlendirme ID zorunludur'),
+    ('error.seo-redirect.not-found', 'Yönlendirme bulunamadı'),
+
+    -- Tenant Backoffice — İçerik SEO Meta
+    ('error.content-seo-meta.content-id-required', 'İçerik ID zorunludur'),
+    ('error.content-seo-meta.language-required', 'Dil kodu zorunludur'),
+    ('error.content-seo-meta.invalid-twitter-card', 'Geçersiz Twitter kart tipi'),
+    ('error.content-seo-meta.translation-not-found', 'İçerik çevirisi bulunamadı'),
+
+    -- Tenant Backoffice — Sosyal Medya Bağlantıları
+    ('error.social-link.platform-required', 'Platform adı zorunludur'),
+    ('error.social-link.url-required', 'URL zorunludur'),
+    ('error.social-link.items-required', 'Bağlantı listesi zorunludur'),
+    ('error.social-link.id-required', 'Bağlantı ID zorunludur'),
+    ('error.social-link.not-found', 'Sosyal medya bağlantısı bulunamadı'),
+
+    -- Tenant Backoffice — Site Ayarları
+    ('error.site-settings.field-name-required', 'Alan adı zorunludur'),
+    ('error.site-settings.value-required', 'Alan değeri zorunludur'),
+    ('error.site-settings.invalid-field', 'Geçersiz alan adı'),
+    ('error.site-settings.not-found', 'Site ayarları bulunamadı'),
+
+    -- Tenant Backoffice — Duyuru Çubukları
+    ('error.announcement-bar.code-required', 'Duyuru çubuğu kodu zorunludur'),
+    ('error.announcement-bar.invalid-audience', 'Geçersiz hedef kitle'),
+    ('error.announcement-bar.ends-before-starts', 'Bitiş tarihi başlangıçtan önce olamaz'),
+    ('error.announcement-bar.id-required', 'Duyuru çubuğu ID zorunludur'),
+    ('error.announcement-bar.not-found', 'Duyuru çubuğu bulunamadı'),
+    ('error.announcement-bar-translation.bar-id-required', 'Duyuru çubuğu ID zorunludur'),
+    ('error.announcement-bar-translation.language-required', 'Dil kodu zorunludur'),
+    ('error.announcement-bar-translation.text-required', 'Duyuru metni zorunludur'),
+
+    -- Tenant Backoffice — Lobi Bölümleri
+    ('error.lobby-section.code-required', 'Bölüm kodu zorunludur'),
+    ('error.lobby-section.max-items-invalid', 'Maksimum öğe sayısı geçersiz'),
+    ('error.lobby-section.id-required', 'Bölüm ID zorunludur'),
+    ('error.lobby-section.not-found', 'Lobi bölümü bulunamadı'),
+    ('error.lobby-section-translation.section-id-required', 'Bölüm ID zorunludur'),
+    ('error.lobby-section-translation.language-required', 'Dil kodu zorunludur'),
+    ('error.lobby-section-translation.title-required', 'Başlık zorunludur'),
+    ('error.lobby-section-game.section-id-required', 'Bölüm ID zorunludur'),
+    ('error.lobby-section-game.game-id-required', 'Oyun ID zorunludur'),
+    ('error.lobby-section-game.section-not-found', 'Lobi bölümü bulunamadı'),
+    ('error.lobby-section-game.section-not-manual', 'Bölüm manuel küratörlük tipinde değil'),
+    ('error.lobby-section-game.not-found', 'Bölüm-oyun ilişkisi bulunamadı'),
+
+    -- Tenant Backoffice — Oyun Etiketleri
+    ('error.game-label.game-id-required', 'Oyun ID zorunludur'),
+    ('error.game-label.label-type-required', 'Etiket tipi zorunludur'),
+    ('error.game-label.expires-in-past', 'Bitiş tarihi geçmişte olamaz'),
+    ('error.game-label.id-required', 'Etiket ID zorunludur'),
+    ('error.game-label.not-found', 'Oyun etiketi bulunamadı')
 ) AS v(key, text) ON k.localization_key = v.key
 ON CONFLICT DO NOTHING;

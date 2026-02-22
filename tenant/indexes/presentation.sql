@@ -18,3 +18,15 @@ CREATE INDEX IF NOT EXISTS idx_layouts_page ON presentation.layouts(page_id) WHE
 CREATE INDEX IF NOT EXISTS idx_layouts_name ON presentation.layouts(layout_name);
 CREATE INDEX IF NOT EXISTS idx_layouts_active ON presentation.layouts(is_active) WHERE is_active = TRUE;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_layouts_page_name ON presentation.layouts(page_id, layout_name) WHERE is_active = TRUE;
+
+-- =============================================
+-- social_links
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_social_links_active_order ON presentation.social_links(is_active, display_order);
+
+-- =============================================
+-- announcement_bars
+-- =============================================
+CREATE INDEX IF NOT EXISTS idx_announcement_bars_active_schedule ON presentation.announcement_bars(is_active, starts_at, ends_at);
+CREATE INDEX IF NOT EXISTS idx_announcement_bars_country_codes ON presentation.announcement_bars USING GIN(country_codes);
+CREATE INDEX IF NOT EXISTS idx_announcement_bars_priority ON presentation.announcement_bars(priority DESC) WHERE is_active = TRUE;

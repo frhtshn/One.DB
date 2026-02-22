@@ -226,26 +226,47 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 |-----------|----------|
 | `calculate_fee` | Ödeme yöntemi ücreti hesapla. Formül: MAX(min, MIN(max, amount * percent + fixed)) → JSONB |
 
-### Game Schema (12)
+### Game Schema (25)
 
 #### Oyun Ayarları (5)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `game_settings_sync` | Oyun ayarlarını Core DB'den senkronize et |
-| `game_settings_remove` | Oyun ayarlarını kaldır |
-| `game_settings_get` | ID ile oyun ayarı getir |
-| `game_settings_update` | Oyun ayarını güncelle |
-| `game_settings_list` | Oyun ayarları listesi |
+| `game_settings_sync` | Core DB→Tenant oyun kataloğu senkronizasyonu (UPSERT, tenant override'ları korur) |
+| `game_settings_remove` | Oyunu devre dışı bırak (soft delete, is_enabled=FALSE) |
+| `game_settings_get` | Oyun ayarı detay. Returns JSONB |
+| `game_settings_update` | Tenant özelleştirmelerini güncelle (COALESCE, 14 parametre). Returns VOID |
+| `game_settings_list` | Cursor pagination, provider/tip/arama filtreli, shadow mode destekli. Returns JSONB |
 
 #### Oyun Limitleri (4)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `game_limits_sync` | Oyun limitlerini Core DB'den senkronize et |
-| `game_limit_upsert` | Oyun limiti oluştur/güncelle |
-| `game_limit_list` | Oyun limitleri listesi |
-| `game_provider_rollout_sync` | Oyun sağlayıcı rollout durumunu senkronize et |
+| `game_limits_sync` | Core DB'den oyun limiti senkronizasyonu (UPSERT, artık desteklenmeyen → is_active=FALSE) |
+| `game_limit_upsert` | Para birimi bazlı oyun limiti oluştur/güncelle. Returns BIGINT |
+| `game_limit_list` | Oyun limitleri listesi. Returns JSONB |
+| `game_provider_rollout_sync` | Provider rollout durumunu güncelle (production/shadow/disabled). Returns VOID |
+
+#### Lobi Bölümleri (8)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_lobby_section` | Lobi bölümü oluştur/güncelle (UPSERT by code). Returns BIGINT |
+| `upsert_lobby_section_translation` | Lobi bölümü çevirisi oluştur/güncelle. Returns BIGINT |
+| `list_lobby_sections` | Bölümler + iç içe çeviriler. Returns JSONB |
+| `delete_lobby_section` | Soft delete (oyun atamaları CASCADE). Returns VOID |
+| `reorder_lobby_sections` | Toplu sıralama güncelle. Returns VOID |
+| `add_game_to_lobby_section` | Manual bölüme oyun ekle (section_type='manual' kontrolü). Returns BIGINT |
+| `remove_game_from_lobby_section` | Bölümden oyun çıkar (soft delete). Returns VOID |
+| `list_lobby_section_games` | Bölümdeki oyun ID listesi. Returns JSONB |
+
+#### Oyun Etiketleri (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_game_label` | Oyun etiketi oluştur/güncelle (UPSERT by game_id+label_type). Returns BIGINT |
+| `list_game_labels` | Oyuna ait aktif etiketler, süresi dolmuş filtresi. Returns JSONB |
+| `delete_game_label` | Soft delete. Returns VOID |
 
 #### Game Sessions (3)
 
@@ -254,6 +275,13 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `game_session_create` | Yeni oyun oturumu oluştur. Token üret, oyuncu durum kontrolü → JSONB |
 | `game_session_validate` | Session token doğrula. Expire kontrolü, last_activity güncelle → JSONB |
 | `game_session_end` | Oyun oturumunu kapat. İdempotent (zaten kapalı ise sessizce true) → BOOL |
+
+#### FE: Public Game APIs (2)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `get_public_lobby` | Aktif lobi bölümleri + çeviriler + manual game_id listesi. auto_* → boş array (backend doldurur). Returns JSONB |
+| `get_public_game_list` | Oyuncu oyun listesi: is_enabled+is_visible zorlanır, shadow mode, bölüm filtresi, etiketler dahil, cursor pagination. Returns JSONB |
 
 ### Transaction Schema (19)
 
@@ -410,7 +438,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `bonus_request_expire` | Süresi dolmuş pending/assigned talepleri expire et. SKIP LOCKED batch → INT |
 | `bonus_request_cleanup` | cancelled/expired talepleri retention sonrası sil. completed/rejected asla silinmez → INT |
 
-### Content Schema (50)
+### Content Schema (67)
 
 > **Detaylı rehber:** [SITE_MANAGEMENT_GUIDE.md](../guides/SITE_MANAGEMENT_GUIDE.md)
 
@@ -491,7 +519,43 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `slide_delete` | Soft delete (is_deleted). Returns VOID |
 | `slide_reorder` | Placement içi sıralama güncelle (array index → sort_order). Returns VOID |
 
-#### FE: Public Content APIs (8)
+#### BO: Güven Logoları (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_trust_logo` | Logo oluştur/güncelle (UPSERT by code). Returns BIGINT |
+| `list_trust_logos` | Logo listesi, tip ve aktiflik filtreli. Returns JSONB |
+| `delete_trust_logo` | Soft delete. Returns VOID |
+| `reorder_trust_logos` | Toplu sıralama güncelle (JSONB array). Returns VOID |
+
+#### BO: Operatör Lisansları (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_operator_license` | Lisans oluştur/güncelle (UPSERT by jurisdiction+number). Returns BIGINT |
+| `list_operator_licenses` | Lisans listesi, ülke ve aktiflik filtreli. Returns JSONB |
+| `get_operator_license` | Lisans detay. Returns JSONB |
+| `delete_operator_license` | Soft delete. Returns VOID |
+
+#### BO: SEO Yönlendirme (5)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_seo_redirect` | Yönlendirme oluştur/güncelle, döngüsel redirect kontrolü. Returns BIGINT |
+| `list_seo_redirects` | Sayfalanmış liste, slug/URL arama destekli. Returns JSONB |
+| `get_seo_redirect_by_slug` | Middleware lookup: slug → {toUrl, redirectType} veya NULL. Returns JSONB |
+| `delete_seo_redirect` | Soft delete. Returns VOID |
+| `bulk_import_seo_redirects` | JSONB array toplu içe aktar. Returns {inserted, updated, skipped} JSONB |
+
+#### BO: İçerik SEO Meta (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `update_content_seo_meta` | İçerik çevirisine SEO meta alanlarını yaz (COALESCE ile kısmi güncelleme). Returns VOID |
+| `get_content_seo_meta` | İçerik çevirisi + slug + SEO meta detay. Returns JSONB |
+| `list_contents_seo_status` | İçerik SEO tamamlanma durumu (0–100 puan). Returns JSONB |
+
+#### FE: Public Content APIs (9)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
@@ -503,10 +567,37 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `public_promotion_list` | Aktif promosyonlar: ülke, segment filtreli. Returns JSONB |
 | `public_promotion_get` | Promosyon detay: çeviriler + bannerlar. Returns JSONB |
 | `public_slide_list` | Placement slide'ları: max_slides + targeting + zamanlama filtreli. Returns JSONB |
+| `get_public_trust_elements` | Aktif güven logoları + lisanslar ülke filtreli, tip bazlı gruplu. Returns JSONB |
 
-### Presentation Schema (18)
+### Presentation Schema (30)
 
 > **Detaylı rehber:** [SITE_MANAGEMENT_GUIDE.md](../guides/SITE_MANAGEMENT_GUIDE.md)
+
+#### BO: Sosyal Medya Bağlantıları (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_social_link` | Sosyal medya bağlantısı oluştur/güncelle (UPSERT by platform). Returns BIGINT |
+| `list_social_links` | Bağlantılar listesi, is_contact filtreli. Returns JSONB |
+| `delete_social_link` | Soft delete. Returns VOID |
+| `reorder_social_links` | Toplu sıralama güncelle. Returns VOID |
+
+#### BO: Site Ayarları (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_site_settings` | Tek satır site ayarları oluştur/güncelle (UPDATE-then-INSERT pattern). Returns BIGINT |
+| `get_site_settings` | Site ayarları getir. Returns JSONB (boş ise `{}`) |
+| `update_site_settings_partial` | Tek JSONB alanı güncelle (analyticsConfig, cookieConsentConfig vb.). Returns VOID |
+
+#### BO: Duyuru Çubukları (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `upsert_announcement_bar` | Duyuru çubuğu oluştur/güncelle (UPSERT by code). Returns BIGINT |
+| `upsert_announcement_bar_translation` | Duyuru çubuğu çevirisi oluştur/güncelle. Returns BIGINT |
+| `list_announcement_bars` | Liste + iç içe çeviriler. Returns JSONB |
+| `delete_announcement_bar` | Soft delete (çeviriler CASCADE). Returns VOID |
 
 #### BO: Navigation (7)
 
@@ -538,13 +629,14 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `layout_get` | Layout detay. Returns JSONB |
 | `layout_list` | Tüm layoutlar, global önce sıralı. Returns JSONB |
 
-#### FE: Public Presentation APIs (3)
+#### FE: Public Presentation APIs (4)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `public_navigation_get` | Konum bazlı menü: auth/guest/cihaz filtreleme + dil çözümleme. Returns JSONB |
 | `public_theme_get` | Aktif tema config. Tema yoksa boş config dön. Returns JSONB |
 | `public_layout_get` | Layout getir: page_id → layout_name → 'default' fallback zinciri. Returns JSONB |
+| `get_active_announcement_bars` | Aktif duyuru çubukları: zaman penceresi + ülke + hedef kitle filtreli, dil fallback. Returns JSONB |
 
 ### Messaging Schema (17)
 

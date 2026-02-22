@@ -1,6 +1,8 @@
 # Site Yönetimi — Geliştirici Rehberi
 
-Tenant bazlı site içeriği ve arayüz yönetimi. Üç ana modül: **Content Management** (CMS, FAQ, Popup, Promosyon, Slide/Banner), **Presentation** (Navigasyon, Tema, Layout) ve **Mesaj Tercihleri**. Tüm veriler Tenant DB'de tutulur; yetki kontrolleri Core DB üzerinden yapılır.
+Tenant bazlı site içeriği ve arayüz yönetimi. Dört ana alan: **Content Management** (CMS, FAQ, Popup, Promosyon, Slide/Banner, Güven Elementleri, SEO), **Presentation** (Navigasyon, Tema, Layout, Sosyal Medya, Site Ayarları, Duyuru Çubukları), **Game Lobby** (Lobi Bölümleri, Oyun Etiketleri) ve **Mesaj Tercihleri**. Tüm veriler Tenant DB'de tutulur; yetki kontrolleri Core DB üzerinden yapılır.
+
+> **⚠️ Kırıcı Değişiklik:** `security.company_password_policy_upsert` fonksiyonunun imzası değişti. Detaylar için bkz. [§15 Kırıcı Değişiklikler](#15-kırıcı-değişiklikler).
 
 ---
 
@@ -8,36 +10,56 @@ Tenant bazlı site içeriği ve arayüz yönetimi. Üç ana modül: **Content Ma
 
 ### 1.1 Modül Yapısı
 
-| # | Modül | Şema | BO Fonksiyon | FE Fonksiyon | Toplam |
-|---|-------|------|-------------|-------------|--------|
+| # | Modül | Şema | BO | FE | Toplam |
+|---|-------|------|----|----|--------|
 | 1 | **CMS İçerik** | `content` | 11 | 2 | 13 |
 | 2 | **FAQ** | `content` | 5 | 2 | 7 |
 | 3 | **Popup** | `content` | 8 | 1 | 9 |
 | 4 | **Promosyon** | `content` | 8 | 2 | 10 |
 | 5 | **Slide/Banner** | `content` | 10 | 1 | 11 |
-| 6 | **Navigasyon** | `presentation` | 7 | 1 | 8 |
-| 7 | **Tema** | `presentation` | 4 | 1 | 5 |
-| 8 | **Layout** | `presentation` | 4 | 1 | 5 |
-| 9 | **Mesaj Tercihleri** | `messaging` | 1 | 2 | 3 |
-| | **Toplam** | | **58** | **13** | **71** |
+| 6 | **Güven Logoları** | `content` | 4 | 1 | 5 |
+| 7 | **Operatör Lisansları** | `content` | 4 | (6 ile ortak) | 4 |
+| 8 | **SEO Yönlendirme** | `content` | 5 | — | 5 |
+| 9 | **İçerik SEO Meta** | `content` | 3 | — | 3 |
+| 10 | **Navigasyon** | `presentation` | 7 | 1 | 8 |
+| 11 | **Tema** | `presentation` | 4 | 1 | 5 |
+| 12 | **Layout** | `presentation` | 4 | 1 | 5 |
+| 13 | **Sosyal Medya** | `presentation` | 4 | — | 4 |
+| 14 | **Site Ayarları** | `presentation` | 3 | — | 3 |
+| 15 | **Duyuru Çubukları** | `presentation` | 4 | 1 | 5 |
+| 16 | **Lobi Bölümleri** | `game` | 8 | 1 | 9 |
+| 17 | **Oyun Etiketleri** | `game` | 3 | (16 ile ortak) | 3 |
+| 18 | **Mesaj Tercihleri** | `messaging` | 1 | 2 | 3 |
+| | **Toplam** | | **96** | **16** | **112** |
 
 ### 1.2 Veritabanı Dağılımı
 
 ```mermaid
 flowchart TD
     subgraph TENANT_DB["Tenant DB (İzole — Per-Tenant)"]
-        subgraph CONTENT["content Şeması (33 tablo)"]
+        subgraph CONTENT["content Şeması (40 tablo)"]
             CMS["CMS: categories, types, contents,<br/>translations, versions, attachments"]
             FAQ["FAQ: categories, items + translations"]
             PROMO["Promotions: types, promotions, banners,<br/>segments, games, display_locations"]
             SLIDE["Slides: placements, categories, slides,<br/>translations, images, schedules"]
             POPUP["Popups: types, popups, translations,<br/>images, schedules"]
+            TRUST["Trust: trust_logos, operator_licenses"]
+            SEO["SEO: seo_redirects<br/>(+ SEO fields on content_translations)"]
         end
 
-        subgraph PRES["presentation Şeması (3 tablo)"]
+        subgraph PRES["presentation Şeması (7 tablo)"]
             NAV["navigation<br/>(hiyerarşik, is_locked/is_readonly)"]
             THEME["themes<br/>(config override, tek aktif)"]
             LAYOUT["layouts<br/>(JSONB structure, fallback zinciri)"]
+            SOCIAL["social_links<br/>(platform UNIQUE, display_order)"]
+            SITESET["site_settings<br/>(tek satır, JSONB config alanları)"]
+            ANNBAR["announcement_bars<br/>+ announcement_bar_translations"]
+        end
+
+        subgraph GAME_SCHEMA["game Şeması (7 tablo)"]
+            GSET["game_settings, game_limits, game_sessions"]
+            LOBBY["lobby_sections, lobby_section_translations,<br/>lobby_section_games"]
+            GLABEL["game_labels"]
         end
 
         subgraph MSG["messaging Şeması"]
@@ -331,9 +353,106 @@ slide_placements (homepage_hero, max_slides=5)
 
 ---
 
-## 7. Presentation Modülü
+## 7. Güven Elementleri (Trust Logos & Operator Licenses)
 
-### 7.1 Navigasyon — Master Data Koruması
+### 7.1 Tablo Yapısı
+
+```
+content.trust_logos          → Ödeme/güven logoları, rozet ve sertifikalar
+content.operator_licenses    → Lisans bilgileri (jurisdiction bazlı)
+```
+
+Her iki tablo da `country_codes varchar(2)[]` kolonu ile GeoIP tabanlı ülke filtrelemesi destekler.
+
+### 7.2 FE Tek Endpoint: `get_public_trust_elements`
+
+Tek fonksiyon hem logoları hem lisansları döndürür. Tip bazlı gruplama:
+
+```json
+{
+  "licenses": [...],
+  "rgOrgs": [...],
+  "payments": [...],
+  "certs": [...],
+  "awards": [...],
+  "partners": [...]
+}
+```
+
+**Ülke filtreleme kuralı:**
+```sql
+country_codes = '{}' OR p_player_country IS NULL OR p_player_country = ANY(country_codes)
+```
+Boş array (`{}`) = tüm ülkelere göster. GeoIP yoksa (`p_player_country IS NULL`) = her ülkeye göster.
+
+### 7.3 `operator_licenses` — Özel Notlar
+
+- `jurisdiction_id` → Core DB `catalog.jurisdictions` referansı. Backend doğrular, tenant DB'de FK yok.
+- Lisans görüntüleme yetkisi `tenant.operator-license.view` ile ayrı kontrol edilir (bkz. [§14 Yetkiler](#14-yetkiler)).
+- `uq_operator_license` unique constraint: `(jurisdiction_id, license_number)`
+
+---
+
+## 8. SEO Yönetimi
+
+### 8.1 SEO Yönlendirme (`seo_redirects`)
+
+Middleware lookup için tasarlanmış. Backend her sayfa isteğinde şunu çağırır:
+
+```sql
+SELECT content.get_seo_redirect_by_slug(p_slug := '/eski-url');
+-- → {"toUrl": "/yeni-url", "redirectType": 301}
+-- → NULL (eşleşme yok)
+```
+
+**Döngüsel redirect koruması:** `upsert_seo_redirect` içinde `to_url = from_slug` kontrolü var.
+
+**Toplu içe aktarma:**
+```sql
+SELECT content.bulk_import_seo_redirects('[
+  {"fromSlug": "/old1", "toUrl": "/new1", "redirectType": 301},
+  {"fromSlug": "/old2", "toUrl": "/new2", "redirectType": 302}
+]');
+-- → {"inserted": 1, "updated": 1, "skipped": 0}
+```
+Geçersiz satırlar (eksik alan, geçersiz tip, döngüsel) atlanır (`skipped` sayacına eklenir).
+
+### 8.2 İçerik SEO Meta (`content_translations` üzerinde)
+
+SEO meta alanları `content_translations` tablosuna eklendi. Ayrı tablo değil.
+
+**Yeni kolonlar:**
+
+| Kolon | Açıklama |
+|-------|----------|
+| `og_title`, `og_description`, `og_image_url` | Open Graph |
+| `twitter_card`, `twitter_title`, `twitter_description`, `twitter_image_url` | Twitter Card |
+| `robots_directive` | `index,follow` / `noindex,nofollow` vb. NULL = `index,follow` varsayımı |
+| `canonical_url` | NULL = slug'dan otomatik hesaplanır |
+
+**⚠️ Mevcut `content_translations` sorguları etkilenmez** — yeni kolonlar NULL başlangıç değeriyle gelir, mevcut INSERT/SELECT'ler kırılmaz. Ancak `content_get` çıktısı artık SEO alanlarını da içerir — bunu parse eden tüketici kodlar güncellenmeli.
+
+**COALESCE güncelleme deseni:** `update_content_seo_meta` sadece `NULL olmayan` parametreleri yazar:
+```sql
+-- Sadece og_title'ı güncellemek için:
+SELECT content.update_content_seo_meta(
+    p_content_id := 42,
+    p_language_code := 'tr',
+    p_og_title := 'Yeni OG Başlık'
+    -- Diğer parametreler DEFAULT NULL → mevcut değer korunur
+);
+```
+
+**SEO Puanı:** `list_contents_seo_status` 0–100 puan hesaplar:
+- meta_title + meta_description = 40 puan
+- og_title + og_description + og_image_url = 30 puan
+- twitter_card + canonical_url = 30 puan
+
+---
+
+## 9. Presentation Modülü
+
+### 9.1 Navigasyon — Master Data Koruması
 
 Navigation öğeleri provisioning ile core catalog'dan kopyalanabilir. Bu öğeler koruma bayraklarına sahiptir:
 
@@ -353,7 +472,7 @@ END
 
 > **Tenant oluşturduğu öğeler:** `is_locked=FALSE, is_readonly=FALSE, template_item_id=NULL` — tam serbestlik.
 
-### 7.2 Navigasyon — Hiyerarşik Ağaç
+### 9.2 Navigasyon — Hiyerarşik Ağaç
 
 `navigation_list` recursive CTE ile iç içe ağaç yapısı döner:
 
@@ -371,7 +490,7 @@ END
 ]
 ```
 
-### 7.3 Navigasyon — FE Dil Çözümleme
+### 9.3 Navigasyon — FE Dil Çözümleme
 
 `public_navigation_get` hibrit lokalizasyon kullanır:
 
@@ -387,7 +506,7 @@ CASE
 END AS "label"
 ```
 
-### 7.4 Tema — Tek Aktif Tema
+### 9.4 Tema — Tek Aktif Tema
 
 Tenant'ın aynı anda sadece bir aktif teması olabilir (`UNIQUE partial index on is_active WHERE TRUE`).
 
@@ -399,7 +518,7 @@ UPDATE presentation.themes SET is_active = TRUE WHERE id = p_id;
 
 `theme_id` kolonu core `catalog.themes` tablosundaki tema referansıdır. Backend tarafında doğrulanır (cross-DB).
 
-### 7.5 Layout — Fallback Zinciri
+### 9.5 Layout — Fallback Zinciri
 
 `public_layout_get` üç aşamalı fallback ile çalışır:
 
@@ -420,11 +539,155 @@ flowchart LR
 | Varsayılan | otomatik | Global default layout |
 | Layout yok | — | Boş `[]` — FE varsayılan render |
 
+### 9.6 Sosyal Medya Bağlantıları (`social_links`)
+
+UPSERT by `platform` (LOWER normalize edilir):
+
+```sql
+SELECT presentation.upsert_social_link(
+    p_platform := 'instagram',     -- UNIQUE key (lower/trim sonrası)
+    p_url      := 'https://...',
+    p_icon_url := 'https://cdn.../instagram.svg',
+    p_is_contact := FALSE          -- TRUE = iletişim kanalı (WhatsApp, Telegram)
+);
+```
+
+**`p_is_contact` kullanımı:**
+- `FALSE` (default) → sosyal medya ikonları (footer)
+- `TRUE` → iletişim widget'ı (WhatsApp, Telegram, Signal)
+- `list_social_links(p_is_contact := NULL)` → tümünü döndürür
+
+### 9.7 Site Ayarları (`site_settings`)
+
+Tek satır tablo. UPDATE-then-INSERT pattern:
+
+```sql
+-- İlk çağrı: satır yoksa INSERT
+-- Sonraki çağrılar: UPDATE (COALESCE ile kısmi güncelleme)
+SELECT presentation.upsert_site_settings(
+    p_company_name := 'TurkBet',
+    p_support_email := 'support@turkbet.com'
+    -- Diğer parametreler NULL → mevcut değer korunur
+);
+```
+
+**JSONB config alanları kısmi güncelleme için `update_site_settings_partial`:**
+
+```sql
+SELECT presentation.update_site_settings_partial(
+    p_field_name := 'analyticsConfig',
+    p_value      := '{"googleAnalyticsId": "UA-12345", "enabled": true}'
+);
+```
+
+Geçerli `p_field_name` değerleri: `analyticsConfig`, `cookieConsentConfig`, `ageGateConfig`, `liveChatConfig`
+
+### 9.8 Duyuru Çubukları (`announcement_bars`)
+
+Zaman pencereli, hedef kitleye özel duyurular. Çeviri desteği vardır.
+
+**Hedef kitle (`target_audience`):**
+- `all` → herkese göster
+- `guest` → sadece misafir (giriş yapmamış) kullanıcılara
+- `logged_in` → sadece oturum açmış oyunculara
+
+**FE akışı (`get_active_announcement_bars`):**
+1. `is_active = TRUE` kontrolü
+2. `starts_at <= NOW() AND ends_at > NOW()` zaman penceresi
+3. `country_codes = '{}' OR p_player_country = ANY(country_codes)` ülke filtresi
+4. `target_audience` filtresi
+5. `priority DESC` sıralama
+6. Çeviri: önce `p_language_code`, bulunamazsa `'en'`
+
+```sql
+SELECT presentation.get_active_announcement_bars(
+    p_player_country   := 'TR',
+    p_language_code    := 'tr',
+    p_target_audience  := 'logged_in'
+);
+```
+
 ---
 
-## 8. Mesaj Tercihleri
+## 10. Lobi Yönetimi
 
-### 8.1 Kanal Tercihleri
+### 10.1 Bölüm Tipleri
+
+| `section_type` | Açıklama | Küratörlük |
+|----------------|----------|-----------|
+| `manual` | Elle seçilmiş oyunlar | `lobby_section_games` tablosu |
+| `auto_new` | Yeni oyunlar | Backend core DB'den doldurur |
+| `auto_popular` | Popüler oyunlar | Backend istatistikten belirler |
+| `auto_jackpot` | Jackpot oyunlar | Backend core DB'den filtreler |
+| `auto_top_rated` | Üst sıra oyunlar | Backend RTP/puan bazlı |
+
+**Kural:** `add_game_to_lobby_section` yalnızca `section_type = 'manual'` olan bölümlere oyun ekler. Diğer tipler için `error.lobby-section-game.section-not-manual` fırlatır.
+
+### 10.2 FE Lobi Akışı
+
+```
+Backend:
+  1. game.get_public_lobby(p_language_code, p_player_id)
+     → manual bölümler: game_id listesi dolu
+     → auto_* bölümler: gameIds = []
+
+  2. auto_* bölümler için backend Core DB'ye sorgu atar
+     → Provider/oyun kataloğundan filtreler
+
+  3. game.get_public_game_list(...) ile oyun detayları
+     → is_enabled=TRUE + is_visible=TRUE zorunlu
+     → Shadow mode filtresi otomatik
+     → labels dahil (new, hot, exclusive vb.)
+
+  4. Birleştirilmiş sonucu FE'ye döndürür
+```
+
+### 10.3 Cursor Pagination
+
+`get_public_game_list` cursor bazlı sayfalama kullanır:
+
+```sql
+-- İlk sayfa
+SELECT game.get_public_game_list(p_limit := 24);
+-- → {"items": [...], "hasMore": true, "nextCursorOrder": 10, "nextCursorId": 157}
+
+-- Sonraki sayfa
+SELECT game.get_public_game_list(
+    p_limit        := 24,
+    p_cursor_order := 10,
+    p_cursor_id    := 157
+);
+```
+
+`OFFSET` kullanılmaz — büyük kataloglarda performanslı.
+
+### 10.4 Oyun Etiketleri
+
+Oyun kartlarında rozet/etiket gösterimi:
+
+```sql
+-- Etiket ekle / güncelle (UPSERT by game_id + label_type)
+SELECT game.upsert_game_label(
+    p_game_id    := 1001,
+    p_label_type := 'new',          -- new, hot, exclusive, jackpot, featured
+    p_label_color := '#FF4444',     -- HEX renk
+    p_expires_at := NOW() + INTERVAL '7 days'  -- NULL = kalıcı
+);
+
+-- Etiket sil (soft delete)
+SELECT game.delete_game_label(p_id := 42);
+```
+
+`get_public_game_list` sonuçlarında her oyunda `labels` array'i otomatik dahildir:
+```json
+{"gameId": 1001, "labels": [{"labelType": "new", "labelColor": "#FF4444"}]}
+```
+
+---
+
+## 11. Mesaj Tercihleri
+
+### 11.1 Kanal Tercihleri
 
 Her oyuncu 3 kanal için tercih belirleyebilir:
 
@@ -434,7 +697,7 @@ Her oyuncu 3 kanal için tercih belirleyebilir:
 | `sms` | SMS bildirimleri |
 | `local` | Uygulama içi bildirimler |
 
-### 8.2 Varsayılan Değerler
+### 11.2 Varsayılan Değerler
 
 Tercih kaydı yoksa, `player_message_preference_get` varsayılan değerler üretir:
 
@@ -447,7 +710,7 @@ LEFT JOIN messaging.player_message_preferences pref
 
 Sonuç: Her zaman 3 satır döner — kayıt varsa gerçek değer, yoksa `opted_in = TRUE`.
 
-### 8.3 Upsert Mantığı
+### 11.3 Upsert Mantığı
 
 ```sql
 INSERT INTO messaging.player_message_preferences (player_id, channel_type, opted_in)
@@ -458,9 +721,9 @@ SET opted_in = EXCLUDED.opted_in, updated_at = NOW();
 
 ---
 
-## 9. Ortak Desenler
+## 12. Ortak Desenler
 
-### 9.1 Soft Delete vs Hard Delete
+### 12.1 Soft Delete vs Hard Delete
 
 | Modül | Silme Tipi | Kolon | Açıklama |
 |-------|-----------|-------|----------|
@@ -472,8 +735,16 @@ SET opted_in = EXCLUDED.opted_in, updated_at = NOW();
 | Slide | Soft | `is_deleted = TRUE` | `deleted_at` + `deleted_by` + `is_active = FALSE` |
 | Layout | Hard | `DELETE` | JSONB yapı, geri alma gereksiz |
 | Navigasyon | Hard | `DELETE` (CASCADE) | `is_locked` kontrolü ile |
+| Trust Logo | Soft | `is_active = FALSE` | — |
+| Operator License | Soft | `is_active = FALSE` | — |
+| SEO Redirect | Soft | `is_active = FALSE` | Middleware lookup'ta filtrelenir |
+| Social Link | Soft | `is_active = FALSE` | — |
+| Announcement Bar | Soft | `is_active = FALSE` | Çeviriler CASCADE |
+| Lobby Section | Soft | `is_active = FALSE` | Oyun atamaları CASCADE |
+| Lobby Section Game | Soft | `is_active = FALSE` | — |
+| Game Label | Soft | `is_active = FALSE` | — |
 
-### 9.2 Upsert Deseni (NULL id = Create)
+### 12.2 Upsert Deseni (NULL id = Create)
 
 Kategori, tip ve benzeri CRUD fonksiyonlarında:
 
@@ -485,7 +756,7 @@ ELSE
 END IF;
 ```
 
-### 9.3 Image/Schedule Replace-All Deseni
+### 12.3 Image/Schedule Replace-All Deseni
 
 Görseller ve zamanlama kayıtları update'de DELETE+INSERT yapılır:
 
@@ -500,7 +771,7 @@ FOR v_item IN SELECT * FROM jsonb_array_elements(p_images) LOOP
 END LOOP;
 ```
 
-### 9.4 FE Hedefleme Filtre Zinciri
+### 12.4 FE Hedefleme Filtre Zinciri
 
 Popup ve Slide modüllerinde FE sorgusu şu filtreleri sırayla uygular:
 
@@ -517,7 +788,7 @@ Popup ve Slide modüllerinde FE sorgusu şu filtreleri sırayla uygular:
 
 ---
 
-## 10. Cross-DB Güvenlik
+## 13. Cross-DB Güvenlik
 
 Tüm tenant fonksiyonları IDOR kontrolü **yapmaz**. Güvenlik Core DB üzerinden sağlanır:
 
@@ -532,12 +803,110 @@ Tüm tenant fonksiyonları IDOR kontrolü **yapmaz**. Güvenlik Core DB üzerind
 
 ---
 
-## 11. Fonksiyon Referansı
+## 14. Yetkiler (Permissions)
+
+Bu modülde tanımlanan 4 yeni permission:
+
+| Permission Key | Açıklama | Kullanım Alanı |
+|----------------|----------|----------------|
+| `tenant.content.manage` | Güven logoları, lobi bölümleri, oyun etiketleri, SEO yönlendirme | `upsert_trust_logo`, `add_game_to_lobby_section`, `upsert_seo_redirect` vb. |
+| `tenant.site-settings.manage` | Site ayarları yönetimi | `upsert_site_settings`, `update_site_settings_partial` |
+| `tenant.operator-license.view` | Lisans görüntüleme (sadece okuma) | `list_operator_licenses`, `get_operator_license` |
+| `tenant.operator-license.manage` | Lisans tam CRUD | `upsert_operator_license`, `delete_operator_license` |
+
+### Rol Atamaları
+
+| Rol | `content.manage` | `site-settings.manage` | `operator-license.view` | `operator-license.manage` |
+|-----|:-:|:-:|:-:|:-:|
+| `tenantadmin` | ✅ | ✅ | ✅ | ✅ |
+| `moderator` | — | — | ✅ | — |
+| `editor` | ✅ | ✅ | ✅ | — |
+| `operator` | ✅ | — | — | — |
+
+> **Operatör Lisansı Ayrımı:** `operator-license.view` ve `operator-license.manage` kasıtlı olarak ayrıldı. Lisans bilgileri yasal hassasiyet taşır — sadece tenantadmin ve editor görebilir, sadece tenantadmin düzenleyebilir.
+
+### Backend Yetki Kontrol Akışı
+
+```
+Backend API → Core DB: user_assert_tenant_permission(caller_id, tenant_id, 'tenant.content.manage')
+           → OK / error.access.forbidden
+           → Tenant DB: content.upsert_trust_logo(...)
+```
+
+Tenant DB fonksiyonları yetki kontrolü **yapmaz** — bu kontrol her zaman Core DB'de yapılır.
+
+---
+
+## 15. Kırıcı Değişiklikler (Breaking Changes)
+
+### 14.1 `security.company_password_policy_upsert` — İmza Değişikliği
+
+**Etkilenen DB:** Core DB (`security` şeması)
+
+**Eski imza (4 parametre):**
+```sql
+security.company_password_policy_upsert(
+    p_caller_id   BIGINT,
+    p_company_id  BIGINT,
+    p_expiry_days INT DEFAULT 30,
+    p_history_count INT DEFAULT 3
+)
+```
+
+**Yeni imza (11 parametre):**
+```sql
+security.company_password_policy_upsert(
+    p_caller_id                BIGINT,
+    p_company_id               BIGINT,
+    p_expiry_days              INT     DEFAULT 30,
+    p_history_count            INT     DEFAULT 3,
+    p_min_length               INT     DEFAULT 8,        -- YENİ
+    p_require_uppercase        BOOLEAN DEFAULT TRUE,     -- YENİ
+    p_require_lowercase        BOOLEAN DEFAULT TRUE,     -- YENİ
+    p_require_digit            BOOLEAN DEFAULT TRUE,     -- YENİ
+    p_require_special          BOOLEAN DEFAULT FALSE,    -- YENİ
+    p_max_login_attempts       INT     DEFAULT 5,        -- YENİ
+    p_lockout_duration_minutes INT     DEFAULT 30        -- YENİ
+)
+```
+
+**Gereken aksiyon:** Bu fonksiyonu çağıran tüm backend kodları güncellenmeli. Yeni parametreler `DEFAULT` değerli olduğu için mevcut çağrılar **hata vermez ama sadece 4 parametre geçilirse yeni alanlar DEFAULT değerle yazılır** — bu, mevcut politikaların üzerine yazılmasına neden olur.
+
+> ⚠️ Önerilen geçiş yöntemi: Mevcut politikaları `company_password_policy_get` ile okuyun, tüm alanları yeni parametrelerle birlikte `upsert`'e geçin.
+
+### 14.2 `security.company_password_policy_get` — Yanıt Genişletildi
+
+**Kırıcı değil** — yeni alanlar eklendi, mevcut alanlar değişmedi.
+
+Yanıta eklenen yeni alanlar:
+
+| Alan | Tip | Default |
+|------|-----|---------|
+| `minLength` | INT | 8 |
+| `requireUppercase` | BOOLEAN | true |
+| `requireLowercase` | BOOLEAN | true |
+| `requireDigit` | BOOLEAN | true |
+| `requireSpecial` | BOOLEAN | false |
+| `maxLoginAttempts` | INT | 5 |
+| `lockoutDurationMinutes` | INT | 30 |
+
+Bu alanları parse eden tüketici kodlar yeni alanları kullanabilir; parse etmeyenler eski davranışla çalışmaya devam eder.
+
+### 14.3 `content.content_get` — SEO Alanları Eklendi
+
+**Kırıcı değil** — `content_translations` tablosuna 9 yeni kolon eklendi. `content_get` sonucu bu alanları da içerir.
+
+Eğer backend bu sonucu bir DTO'ya deserialize ediyorsa ve DTO katı validasyon yapıyorsa (örn. `JsonException on unknown properties`), güncelleme gerekebilir.
+
+---
+
+## 16. Fonksiyon Referansı
 
 Detaylı fonksiyon listesi ve dönüş tipleri: [FUNCTIONS_TENANT.md](../reference/FUNCTIONS_TENANT.md)
 
 | Şema | Bölüm | Fonksiyon Sayısı |
 |------|-------|------------------|
-| `content` | Content Schema (50) | BO: 42, FE: 8 |
-| `presentation` | Presentation Schema (18) | BO: 15, FE: 3 |
+| `content` | Content Schema (67) | BO: 58, FE: 9 |
+| `presentation` | Presentation Schema (30) | BO: 26, FE: 4 |
+| `game` | Game Schema (25) | BO: 23, FE: 2 |
 | `messaging` | Player Message Preferences (3) | BO: 1, FE: 2 |

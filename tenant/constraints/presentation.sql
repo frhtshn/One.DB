@@ -20,3 +20,16 @@ ALTER TABLE presentation.themes
 -- layouts: Geçerli JSONB structure
 ALTER TABLE presentation.layouts
     ADD CONSTRAINT chk_layouts_structure_jsonb CHECK (jsonb_typeof(structure) = 'array');
+
+-- =============================================
+-- announcement_bar_translations FK
+-- =============================================
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_announcement_bar_translations_bar') THEN
+        ALTER TABLE presentation.announcement_bar_translations
+            ADD CONSTRAINT fk_announcement_bar_translations_bar
+            FOREIGN KEY (announcement_bar_id)
+            REFERENCES presentation.announcement_bars(id)
+            ON DELETE CASCADE;
+    END IF;
+END $$;

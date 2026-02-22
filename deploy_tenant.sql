@@ -83,6 +83,12 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/game/game_limits.sql
 \i tenant/tables/game/game_sessions.sql
 
+-- Lobby Curation
+\i tenant/tables/game/lobby_sections.sql
+\i tenant/tables/game/lobby_section_translations.sql
+\i tenant/tables/game/lobby_section_games.sql
+\i tenant/tables/game/game_labels.sql
+
 -- PROFILE TABLES
 \i tenant/tables/player_profile/player_identity.sql
 \i tenant/tables/player_profile/player_profile.sql
@@ -166,10 +172,23 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/content/popup/popup_images.sql
 \i tenant/tables/content/popup/popup_schedules.sql
 
+-- Trust & Compliance
+\i tenant/tables/content/trust/trust_logos.sql
+\i tenant/tables/content/trust/operator_licenses.sql
+
+-- SEO Redirects
+\i tenant/tables/content/seo/seo_redirects.sql
+
 -- PRESENTATION TABLES
 \i tenant/tables/presentation/navigation.sql
 \i tenant/tables/presentation/themes.sql
 \i tenant/tables/presentation/layouts.sql
+
+-- Site Identity & Settings
+\i tenant/tables/presentation/site_settings.sql
+\i tenant/tables/presentation/social_links.sql
+\i tenant/tables/presentation/announcement_bars.sql
+\i tenant/tables/presentation/announcement_bar_translations.sql
 
 -- MESSAGING TABLES
 \i tenant/tables/messaging/message_templates.sql
@@ -337,6 +356,19 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/finance/player_financial_limit_set.sql
 \i tenant/functions/backoffice/finance/player_financial_limit_get.sql
 \i tenant/functions/backoffice/finance/player_financial_limit_list.sql
+
+-- Backoffice: Game — Lobby Curation
+\i tenant/functions/backoffice/game/lobby_section_upsert.sql
+\i tenant/functions/backoffice/game/lobby_section_translation_upsert.sql
+\i tenant/functions/backoffice/game/lobby_section_list.sql
+\i tenant/functions/backoffice/game/lobby_section_delete.sql
+\i tenant/functions/backoffice/game/lobby_section_reorder.sql
+\i tenant/functions/backoffice/game/lobby_section_game_add.sql
+\i tenant/functions/backoffice/game/lobby_section_game_remove.sql
+\i tenant/functions/backoffice/game/lobby_section_game_list.sql
+\i tenant/functions/backoffice/game/game_label_upsert.sql
+\i tenant/functions/backoffice/game/game_label_list.sql
+\i tenant/functions/backoffice/game/game_label_delete.sql
 
 -- Backoffice: Game (Oyun ayarları ve limitler)
 \i tenant/functions/backoffice/game/game_settings_sync.sql
@@ -510,6 +542,28 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/content/promotion_delete.sql
 \i tenant/functions/backoffice/content/promotion_toggle_featured.sql
 
+-- Backoffice: Content — Trust Logos & Operator Licenses
+\i tenant/functions/backoffice/content/trust_logo_upsert.sql
+\i tenant/functions/backoffice/content/trust_logo_list.sql
+\i tenant/functions/backoffice/content/trust_logo_delete.sql
+\i tenant/functions/backoffice/content/trust_logo_reorder.sql
+\i tenant/functions/backoffice/content/operator_license_upsert.sql
+\i tenant/functions/backoffice/content/operator_license_list.sql
+\i tenant/functions/backoffice/content/operator_license_get.sql
+\i tenant/functions/backoffice/content/operator_license_delete.sql
+
+-- Backoffice: Content — SEO Redirects
+\i tenant/functions/backoffice/content/seo_redirect_upsert.sql
+\i tenant/functions/backoffice/content/seo_redirect_list.sql
+\i tenant/functions/backoffice/content/seo_redirect_get_by_slug.sql
+\i tenant/functions/backoffice/content/seo_redirect_delete.sql
+\i tenant/functions/backoffice/content/seo_redirect_bulk_import.sql
+
+-- Backoffice: Content — SEO Meta (CMS)
+\i tenant/functions/backoffice/content/content_seo_meta_update.sql
+\i tenant/functions/backoffice/content/content_seo_meta_get.sql
+\i tenant/functions/backoffice/content/content_seo_status_list.sql
+
 -- Backoffice: Content — Slide/Banner
 \i tenant/functions/backoffice/content/slide_placement_upsert.sql
 \i tenant/functions/backoffice/content/slide_placement_list.sql
@@ -521,6 +575,23 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/content/slide_list.sql
 \i tenant/functions/backoffice/content/slide_delete.sql
 \i tenant/functions/backoffice/content/slide_reorder.sql
+
+-- Backoffice: Presentation — Social Links
+\i tenant/functions/backoffice/presentation/social_link_upsert.sql
+\i tenant/functions/backoffice/presentation/social_link_list.sql
+\i tenant/functions/backoffice/presentation/social_link_delete.sql
+\i tenant/functions/backoffice/presentation/social_link_reorder.sql
+
+-- Backoffice: Presentation — Site Settings
+\i tenant/functions/backoffice/presentation/site_settings_upsert.sql
+\i tenant/functions/backoffice/presentation/site_settings_get.sql
+\i tenant/functions/backoffice/presentation/site_settings_update_partial.sql
+
+-- Backoffice: Presentation — Announcement Bars
+\i tenant/functions/backoffice/presentation/announcement_bar_upsert.sql
+\i tenant/functions/backoffice/presentation/announcement_bar_translation_upsert.sql
+\i tenant/functions/backoffice/presentation/announcement_bar_list.sql
+\i tenant/functions/backoffice/presentation/announcement_bar_delete.sql
 
 -- Backoffice: Presentation — Navigation
 \i tenant/functions/backoffice/presentation/navigation_create.sql
@@ -599,11 +670,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/frontend/content/public_promotion_list.sql
 \i tenant/functions/frontend/content/public_promotion_get.sql
 \i tenant/functions/frontend/content/public_slide_list.sql
+\i tenant/functions/frontend/content/get_public_trust_elements.sql
+
+-- Frontend: Game — Public APIs
+\i tenant/functions/frontend/game/public_lobby_get.sql
+\i tenant/functions/frontend/game/public_game_list.sql
 
 -- Frontend: Presentation — Public APIs
 \i tenant/functions/frontend/presentation/public_navigation_get.sql
 \i tenant/functions/frontend/presentation/public_theme_get.sql
 \i tenant/functions/frontend/presentation/public_layout_get.sql
+\i tenant/functions/frontend/presentation/get_active_announcement_bars.sql
 
 -- =============================================================================
 -- CONSTRAINTS - Must be loaded AFTER all tables are created

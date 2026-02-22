@@ -47,3 +47,29 @@ DO $$ BEGIN
             CHECK (mode IN ('real', 'demo', 'fun'));
     END IF;
 END $$;
+
+-- =============================================
+-- lobby_section_translations FK
+-- =============================================
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_lobby_section_translations_section') THEN
+        ALTER TABLE game.lobby_section_translations
+            ADD CONSTRAINT fk_lobby_section_translations_section
+            FOREIGN KEY (lobby_section_id)
+            REFERENCES game.lobby_sections(id)
+            ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- =============================================
+-- lobby_section_games FK
+-- =============================================
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_lobby_section_games_section') THEN
+        ALTER TABLE game.lobby_section_games
+            ADD CONSTRAINT fk_lobby_section_games_section
+            FOREIGN KEY (lobby_section_id)
+            REFERENCES game.lobby_sections(id)
+            ON DELETE CASCADE;
+    END IF;
+END $$;
