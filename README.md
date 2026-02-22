@@ -1,5 +1,34 @@
 # NucleoDB
 
+**Nucleo**, online gaming/betting platformları için tasarlanmış, core-centric mimariye sahip, multi-tenant (whitelabel) destekli bir orchestration platformunun veritabanı katmanıdır.
+
+| Metrik | Değer |
+|--------|-------|
+| Veritabanı | 14 |
+| Tablo | 279 |
+| Fonksiyon | 795 |
+| İzin (Permission) | 147 |
+| Rol | 8 |
+
+**Teknoloji:** PostgreSQL 16 · .NET 10 · Dapper ORM
+
+---
+
+## Mimari Özet
+
+### Veritabanı Katmanları
+
+| Katman | Veritabanları | Paylaşım |
+|--------|---------------|----------|
+| **Core** | core, core_log, core_audit, core_report | Tüm tenantlar (paylaşımlı) |
+| **Gateway** | game, game_log, finance, finance_log | Tüm tenantlar (paylaşımlı) |
+| **Plugin** | bonus | Tüm tenantlar (paylaşımlı) |
+| **Tenant** | tenant, tenant_log, tenant_audit, tenant_report, tenant_affiliate | İzole (her tenant'a özel) |
+
+> **Kritik:** Her klasör ayrı bir fiziksel PostgreSQL veritabanını temsil eder. Veritabanları arası doğrudan sorgu **yapılamaz** — cross-DB iletişim backend (.NET/Dapper) üzerinden yürütülür.
+
+---
+
 ## Kurulacak VS Code Extension'ları
 
 1. **SQLTools**  
@@ -38,6 +67,11 @@ Detaylı mimari ve yapı dokümantasyonu `.docs/` klasöründedir. Referans dok�
 | [BONUS_ENGINE_GUIDE.md](.docs/guides/BONUS_ENGINE_GUIDE.md)                   | Bonus motoru (JSON-driven rule engine) rehberi               |
 | [PROVISIONING_GUIDE.md](.docs/guides/PROVISIONING_GUIDE.md)                   | Tenant provisioning/decommission rehberi                     |
 | [SHADOW_MODE_GUIDE.md](.docs/guides/SHADOW_MODE_GUIDE.md)                     | Shadow mode (canlı test) rehberi                             |
+| [CROSS_DB_JOIN_GUIDE.md](.docs/guides/CROSS_DB_JOIN_GUIDE.md)                 | Cross-DB veri erişim ve join stratejileri                    |
+| [CALL_CENTER_GUIDE.md](.docs/guides/CALL_CENTER_GUIDE.md)                     | Çağrı merkezi ve ticket sistemi rehberi                      |
+| [PLAYER_AUTH_KYC_GUIDE.md](.docs/guides/PLAYER_AUTH_KYC_GUIDE.md)             | Oyuncu kimlik doğrulama ve KYC rehberi                       |
+| [SITE_MANAGEMENT_GUIDE.md](.docs/guides/SITE_MANAGEMENT_GUIDE.md)             | Site yönetimi ve yapılandırma rehberi                        |
+| [IMPLEMENTATION_CHANGE_GUIDE.md](.docs/guides/IMPLEMENTATION_CHANGE_GUIDE.md) | Geliştirme değişiklik yönetimi rehberi                       |
 
 
 ---
