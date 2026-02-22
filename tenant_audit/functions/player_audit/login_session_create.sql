@@ -5,11 +5,12 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS player_audit.login_session_create(UUID,BIGINT,INET,VARCHAR,VARCHAR,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN);
+DROP FUNCTION IF EXISTS player_audit.login_session_create(UUID,BIGINT,TEXT,VARCHAR,VARCHAR,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN);
 
 CREATE OR REPLACE FUNCTION player_audit.login_session_create(
     p_session_token      UUID,                       -- Oturum token'ı
     p_player_id          BIGINT,                     -- Player ID
-    p_ip_address         INET,                       -- IP adresi
+    p_ip_address         TEXT,                        -- IP adresi (TEXT olarak gelir, INSERT'te INET'e cast edilir)
     p_user_agent         VARCHAR(500) DEFAULT NULL,   -- Tarayıcı bilgisi
     p_device_fingerprint VARCHAR(64) DEFAULT NULL,    -- Cihaz parmak izi
     p_country            VARCHAR(100) DEFAULT NULL,   -- GeoIP ülke adı
@@ -50,7 +51,7 @@ BEGIN
         is_mobile, is_proxy, is_hosting
     )
     VALUES (
-        p_session_token, p_player_id, p_ip_address, p_user_agent, p_device_fingerprint,
+        p_session_token, p_player_id, p_ip_address::INET, p_user_agent, p_device_fingerprint,
         p_country, p_country_code, p_continent, p_continent_code,
         p_region, p_region_name, p_city, p_district, p_zip,
         p_lat, p_lon, p_timezone, p_utc_offset, p_currency,

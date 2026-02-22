@@ -5,11 +5,12 @@
 -- ================================================================
 
 DROP FUNCTION IF EXISTS player_audit.login_attempt_create(BIGINT,VARCHAR,INET,VARCHAR,BOOLEAN,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
+DROP FUNCTION IF EXISTS player_audit.login_attempt_create(BIGINT,VARCHAR,TEXT,VARCHAR,BOOLEAN,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
 
 CREATE OR REPLACE FUNCTION player_audit.login_attempt_create(
     p_player_id        BIGINT,                    -- Player ID (başarılıysa, NULL olabilir)
     p_identifier       VARCHAR(300),              -- Denenen email/username (encrypted)
-    p_ip_address       INET,                      -- IP adresi
+    p_ip_address       TEXT,                       -- IP adresi (TEXT olarak gelir, INSERT'te INET'e cast edilir)
     p_user_agent       VARCHAR(500),              -- Tarayıcı bilgisi
     p_is_successful    BOOLEAN,                   -- Başarılı mı?
     p_country          VARCHAR(100) DEFAULT NULL,  -- GeoIP ülke adı
@@ -52,7 +53,7 @@ BEGIN
         is_successful, failure_reason
     )
     VALUES (
-        p_player_id, p_identifier, p_ip_address, p_user_agent,
+        p_player_id, p_identifier, p_ip_address::INET, p_user_agent,
         p_country, p_country_code, p_continent, p_continent_code,
         p_region, p_region_name, p_city, p_district, p_zip,
         p_lat, p_lon, p_timezone, p_utc_offset, p_currency,
