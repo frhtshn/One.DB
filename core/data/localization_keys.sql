@@ -1232,6 +1232,62 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.game-label.label-type-required', 'error', 'game-label', 'Etiket tipi zorunlu'),
 ('error.game-label.expires-in-past', 'error', 'game-label', 'Bitiş tarihi geçmişte olamaz'),
 ('error.game-label.id-required', 'error', 'game-label', 'Etiket ID zorunlu'),
-('error.game-label.not-found', 'error', 'game-label', 'Etiket bulunamadı')
+('error.game-label.not-found', 'error', 'game-label', 'Etiket bulunamadı'),
+
+-- ============================================================================
+-- NAVIGATION MENU LABELS (UIKit navigasyon şablon öğeleri)
+-- Pattern: menu.{location}.{item}
+-- ============================================================================
+
+-- Main Header
+('menu.main.casino', 'menu', 'main', 'Ana menü: Casino'),
+('menu.main.live-casino', 'menu', 'main', 'Ana menü: Canlı Casino'),
+('menu.main.sports', 'menu', 'main', 'Ana menü: Spor'),
+('menu.main.promotions', 'menu', 'main', 'Ana menü: Promosyonlar'),
+('menu.main.tournaments', 'menu', 'main', 'Ana menü: Turnuvalar'),
+('menu.main.vip', 'menu', 'main', 'Ana menü: VIP'),
+('menu.main.login', 'menu', 'main', 'Ana menü: Giriş'),
+('menu.main.register', 'menu', 'main', 'Ana menü: Kayıt Ol'),
+
+-- Casino Alt Menü
+('menu.casino.slots', 'menu', 'casino', 'Casino alt menü: Slot Oyunları'),
+('menu.casino.table-games', 'menu', 'casino', 'Casino alt menü: Masa Oyunları'),
+('menu.casino.jackpots', 'menu', 'casino', 'Casino alt menü: Jackpot'),
+('menu.casino.new-games', 'menu', 'casino', 'Casino alt menü: Yeni Oyunlar'),
+
+-- Live Casino Alt Menü
+('menu.live-casino.roulette', 'menu', 'live-casino', 'Canlı Casino alt menü: Rulet'),
+('menu.live-casino.blackjack', 'menu', 'live-casino', 'Canlı Casino alt menü: Blackjack'),
+('menu.live-casino.baccarat', 'menu', 'live-casino', 'Canlı Casino alt menü: Baccarat'),
+('menu.live-casino.game-shows', 'menu', 'live-casino', 'Canlı Casino alt menü: Oyun Şovları'),
+
+-- Sports Alt Menü
+('menu.sports.football', 'menu', 'sports', 'Spor alt menü: Futbol'),
+('menu.sports.basketball', 'menu', 'sports', 'Spor alt menü: Basketbol'),
+('menu.sports.tennis', 'menu', 'sports', 'Spor alt menü: Tenis'),
+('menu.sports.live', 'menu', 'sports', 'Spor alt menü: Canlı Bahis'),
+
+-- Footer
+('menu.footer.about', 'menu', 'footer', 'Footer: Hakkımızda'),
+('menu.footer.responsible-gaming', 'menu', 'footer', 'Footer: Sorumlu Oyun'),
+('menu.footer.privacy', 'menu', 'footer', 'Footer: Gizlilik Politikası'),
+('menu.footer.terms', 'menu', 'footer', 'Footer: Şartlar ve Koşullar'),
+('menu.footer.casino', 'menu', 'footer', 'Footer: Casino'),
+('menu.footer.live-casino', 'menu', 'footer', 'Footer: Canlı Casino'),
+('menu.footer.sports', 'menu', 'footer', 'Footer: Spor'),
+('menu.footer.promotions', 'menu', 'footer', 'Footer: Promosyonlar'),
+('menu.footer.help', 'menu', 'footer', 'Footer: Yardım Merkezi'),
+('menu.footer.contact', 'menu', 'footer', 'Footer: Bize Ulaşın'),
+('menu.footer.affiliates', 'menu', 'footer', 'Footer: İş Ortaklığı'),
+('menu.footer.account', 'menu', 'footer', 'Footer: Hesabım'),
+('menu.footer.deposit', 'menu', 'footer', 'Footer: Para Yatır'),
+('menu.footer.withdraw', 'menu', 'footer', 'Footer: Para Çek'),
+
+-- Mobile Bottom
+('menu.mobile.home', 'menu', 'mobile', 'Mobil: Ana Sayfa'),
+('menu.mobile.casino', 'menu', 'mobile', 'Mobil: Casino'),
+('menu.mobile.sports', 'menu', 'mobile', 'Mobil: Spor'),
+('menu.mobile.promotions', 'menu', 'mobile', 'Mobil: Promosyonlar'),
+('menu.mobile.account', 'menu', 'mobile', 'Mobil: Hesabım')
 
 ON CONFLICT DO NOTHING;
