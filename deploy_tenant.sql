@@ -631,6 +631,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/frontend/auth/player_change_password.sql
 \i tenant/functions/frontend/auth/player_reset_password_request.sql
 \i tenant/functions/frontend/auth/player_reset_password_confirm.sql
+\i tenant/functions/frontend/auth/player_find_by_email_hash.sql
 
 -- Frontend: Profile (Profil ve kimlik yönetimi)
 \i tenant/functions/frontend/profile/player_profile_create.sql

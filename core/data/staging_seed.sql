@@ -471,37 +471,56 @@ SELECT t.id, 'Security', 'password_min_length',
 FROM core.tenants t;
 
 -- Silo Placement Ayarlari (Tenant Cluster grain placement)
+-- Tenant 2 (eurobet_uk) ve Tenant 3 (cyprus_main) dedicated-s2 pool'unda, digerleri general
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Infrastructure', 'silo_placement',
-    '"general"'::jsonb,
-    'Silo placement pool assignment (general, dedicated-1, shared-2-3, etc.)'
+    CASE WHEN t.tenant_code IN ('eurobet_uk', 'cyprus_main') THEN '"dedicated-s2"'::jsonb
+         ELSE '"general"'::jsonb
+    END,
+    'Silo placement pool assignment (general, dedicated-s2, etc.)'
 FROM core.tenants t;
 
--- Dedicated Redis Bağlantıları (sadece shared olmayan tenant'lar)
--- eurobet_uk → 207.180.241.193:7003
+-- ================================================================
+-- TENANT REDIS BAĞLANTILARI (HER TENANT İÇİN ZORUNLU)
+-- ================================================================
+
+-- eurobet_eu + turkbet_tr → Shared Redis (207.180.241.230:7003)
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Infrastructure', 'redis_connection',
-    '"207.180.241.193:7003"'::jsonb,
-    'Dedicated Redis connection string'
+SELECT t.id, 'Infrastructure', 'connection_redis',
+    jsonb_build_object(
+        'host', '207.180.241.230', 'port', 7003,
+        'password', 'NucleoRedis2026!',
+        'default_database', 0, 'cluster_mode', false, 'use_ssl', false,
+        'connect_timeout', 10000, 'sync_timeout', 5000, 'async_timeout', 5000,
+        'keep_alive', 60, 'client_name', t.tenant_code || '-redis'
+    ),
+    'Tenant Redis connection configuration'
+FROM core.tenants t WHERE t.tenant_code IN ('eurobet_eu', 'turkbet_tr');
+
+-- eurobet_uk → Dedicated Redis (207.180.241.193:7003)
+INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Infrastructure', 'connection_redis',
+    jsonb_build_object(
+        'host', '207.180.241.193', 'port', 7003,
+        'password', 'NucleoRedis2026!',
+        'default_database', 0, 'cluster_mode', false, 'use_ssl', false,
+        'connect_timeout', 10000, 'sync_timeout', 5000, 'async_timeout', 5000,
+        'keep_alive', 60, 'client_name', 'eurobet_uk-redis'
+    ),
+    'Tenant Redis connection configuration'
 FROM core.tenants t WHERE t.tenant_code = 'eurobet_uk';
 
+-- cyprus_main → Dedicated Redis (207.180.241.142:7003)
 INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Infrastructure', 'redis_password',
-    '"NucleoRedis2026!"'::jsonb,
-    'Dedicated Redis password'
-FROM core.tenants t WHERE t.tenant_code = 'eurobet_uk';
-
--- cyprus_main → 207.180.241.142:7003
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Infrastructure', 'redis_connection',
-    '"207.180.241.142:7003"'::jsonb,
-    'Dedicated Redis connection string'
-FROM core.tenants t WHERE t.tenant_code = 'cyprus_main';
-
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Infrastructure', 'redis_password',
-    '"NucleoRedis2026!"'::jsonb,
-    'Dedicated Redis password'
+SELECT t.id, 'Infrastructure', 'connection_redis',
+    jsonb_build_object(
+        'host', '207.180.241.142', 'port', 7003,
+        'password', 'NucleoRedis2026!',
+        'default_database', 0, 'cluster_mode', false, 'use_ssl', false,
+        'connect_timeout', 10000, 'sync_timeout', 5000, 'async_timeout', 5000,
+        'keep_alive', 60, 'client_name', 'cyprus_main-redis'
+    ),
+    'Tenant Redis connection configuration'
 FROM core.tenants t WHERE t.tenant_code = 'cyprus_main';
 
 -- ================================================================
