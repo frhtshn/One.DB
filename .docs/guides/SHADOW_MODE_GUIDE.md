@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_PLATFORM_OPERATIONS.md](SPEC_PLATFORM_OPERATIONS.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Shadow Mode (Staged Rollout) — Geliştirici Rehberi
 
 Yeni provider entegrasyonlarını production ortamında sadece belirli test oyuncularına açarak güvenli test yapma mekanizması.

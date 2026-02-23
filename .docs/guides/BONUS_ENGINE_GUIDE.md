@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_BONUS_ENGINE.md](SPEC_BONUS_ENGINE.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Bonus Engine — Geliştirici Rehberi
 
 Bonus sistemi **JSON-driven generic rule engine** mimarisi kullanır. Eski MSSQL'deki 14 tablolu rigid yapı yerine, 6 JSONB bileşen ile her bonus tipini tek genel yapıda tanımlar.

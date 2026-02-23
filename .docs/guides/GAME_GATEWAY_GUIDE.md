@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_GAME_GATEWAY.md](SPEC_GAME_GATEWAY.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Game Gateway — Geliştirici Rehberi
 
 Oyun entegrasyonu iki temel bileşenden oluşur: **Oyun Kataloğu** (Game DB + Core DB + Tenant DB) ve **Seamless Wallet Gateway** (wallet işlemleri + game session + round yaşam döngüsü). Bu rehber her iki bileşeni de kapsar.

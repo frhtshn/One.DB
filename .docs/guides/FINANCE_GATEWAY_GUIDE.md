@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_FINANCE_GATEWAY.md](SPEC_FINANCE_GATEWAY.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Finance Gateway — Geliştirici Rehberi
 
 Ödeme entegrasyonu iki temel bileşenden oluşur: **Ödeme Kataloğu** (Finance DB + Core DB + Tenant DB) ve **Ödeme İşlemleri** (deposit, withdrawal, manuel, workflow). Bu rehber her iki bileşeni de kapsar.

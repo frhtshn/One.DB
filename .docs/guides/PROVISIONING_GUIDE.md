@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_PLATFORM_OPERATIONS.md](SPEC_PLATFORM_OPERATIONS.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Whitelabel Provisioning — Geliştirici Rehberi
 
 Yeni whitelabel (tenant) açılışından canlıya alınmasına kadar tam provisioning yaşam döngüsü. **ProductionManager** gRPC servisi bu süreci orchestrate eder.

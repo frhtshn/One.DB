@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_PLAYER_AUTH_KYC.md](SPEC_PLAYER_AUTH_KYC.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Oyuncu Kimlik Doğrulama & KYC Rehberi
 
 Oyuncu yaşam döngüsünün tamamını kapsayan geliştirici rehberi: kayıt → e-posta doğrulama → profil → KYC → aktivasyon → cüzdan oluşturma.

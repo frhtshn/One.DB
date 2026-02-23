@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_CALL_CENTER.md](SPEC_CALL_CENTER.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Çağrı Merkezi & Müşteri Temsilcisi — Geliştirici Rehberi
 
 Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli plugin), **Temsilci Atama** ve **Hoşgeldin Araması** (standart hizmetler). Tüm veriler Tenant DB `support` şemasında tutulur; yetki kontrolleri Core DB üzerinden yapılır.

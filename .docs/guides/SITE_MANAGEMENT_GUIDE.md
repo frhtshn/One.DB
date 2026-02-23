@@ -1,3 +1,7 @@
+> **KULLANIM DIŞI:** Bu rehber artık güncel değildir.
+> Fonksiyonel spesifikasyon için bkz. [SPEC_SITE_MANAGEMENT.md](SPEC_SITE_MANAGEMENT.md).
+> Bu dosya yalnızca ek referans olarak korunmaktadır.
+
 # Site Yönetimi — Geliştirici Rehberi
 
 Tenant bazlı site içeriği ve arayüz yönetimi. Dört ana alan: **Content Management** (CMS, FAQ, Popup, Promosyon, Slide/Banner, Güven Elementleri, SEO), **Presentation** (Navigasyon, Tema, Layout, Sosyal Medya, Site Ayarları, Duyuru Çubukları), **Game Lobby** (Lobi Bölümleri, Oyun Etiketleri) ve **Mesaj Tercihleri**. Tüm veriler Tenant DB'de tutulur; yetki kontrolleri Core DB üzerinden yapılır.
