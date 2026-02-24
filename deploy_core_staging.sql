@@ -58,6 +58,13 @@
 \i core/data/role_permissions_full.sql
 
 -- ============================================================================
+-- 5b. NOTIFICATION TEMPLATES SEED
+-- ============================================================================
+-- Platform bildirim şablonları (messaging tabloları ve constraints'den sonra)
+
+\i core/data/notification_templates_seed.sql
+
+-- ============================================================================
 -- 6. PRESENTATION SEED
 -- ============================================================================
 -- Menu yapısı (localization + permissions'a depend — en son çalışmalı)

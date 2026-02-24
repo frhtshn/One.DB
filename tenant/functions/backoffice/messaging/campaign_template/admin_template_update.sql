@@ -43,7 +43,7 @@ BEGIN
 
         IF jsonb_array_length(p_translations) > 0 THEN
             INSERT INTO messaging.message_template_translations (
-                template_id, language_code, subject, body, preview_text, created_by
+                template_id, language_code, subject, body_html, preview_text, created_by
             )
             SELECT
                 p_template_id,

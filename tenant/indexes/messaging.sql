@@ -5,8 +5,10 @@
 -- message_templates
 CREATE UNIQUE INDEX idx_msg_templates_code ON messaging.message_templates(code) WHERE is_deleted = FALSE;
 CREATE INDEX idx_msg_templates_channel ON messaging.message_templates(channel_type);
+CREATE INDEX idx_msg_templates_category ON messaging.message_templates(category) WHERE is_deleted = FALSE;
 CREATE INDEX idx_msg_templates_status ON messaging.message_templates(status) WHERE is_deleted = FALSE;
 CREATE INDEX idx_msg_templates_active ON messaging.message_templates(channel_type, status) WHERE status = 'active' AND is_deleted = FALSE;
+CREATE INDEX idx_msg_templates_active_code ON messaging.message_templates(code) WHERE is_deleted = FALSE AND status = 'active';
 
 -- message_template_translations
 CREATE INDEX idx_msg_template_trans_template ON messaging.message_template_translations(template_id);

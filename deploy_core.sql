@@ -185,6 +185,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- MESSAGING TABLES
 \i core/tables/messaging/user_message_drafts.sql
 \i core/tables/messaging/user_messages.sql
+\i core/tables/messaging/message_templates.sql
+\i core/tables/messaging/message_template_translations.sql
 
 -- DATA SEEDING
 \i core/data/companies.sql
@@ -645,28 +647,35 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/outbox/outbox_stats.sql
 \i core/functions/outbox/outbox_cleanup.sql
 
--- Messaging Functions - Admin (Draft Yönetimi, Publish, Recall, Send)
-\i core/functions/messaging/admin_message_draft_create.sql
-\i core/functions/messaging/admin_message_draft_update.sql
-\i core/functions/messaging/admin_message_draft_get.sql
-\i core/functions/messaging/admin_message_draft_list.sql
-\i core/functions/messaging/admin_message_draft_delete.sql
-\i core/functions/messaging/admin_message_draft_cancel.sql
-\i core/functions/messaging/admin_message_draft_unschedule.sql
-\i core/functions/messaging/admin_message_publish.sql
-\i core/functions/messaging/admin_message_recall.sql
-\i core/functions/messaging/admin_message_send.sql
-\i core/functions/messaging/get_published_recipients.sql
+-- Messaging Functions - Admin (Draft Yönetimi)
+\i core/functions/messaging/draft/admin_message_draft_create.sql
+\i core/functions/messaging/draft/admin_message_draft_update.sql
+\i core/functions/messaging/draft/admin_message_draft_get.sql
+\i core/functions/messaging/draft/admin_message_draft_list.sql
+\i core/functions/messaging/draft/admin_message_draft_list_due_scheduled.sql
+\i core/functions/messaging/draft/admin_message_draft_delete.sql
+\i core/functions/messaging/draft/admin_message_draft_cancel.sql
+\i core/functions/messaging/draft/admin_message_draft_unschedule.sql
+-- Messaging Functions - Admin (Publish, Recall, Send)
+\i core/functions/messaging/publish/admin_message_publish.sql
+\i core/functions/messaging/publish/admin_message_recall.sql
+\i core/functions/messaging/publish/admin_message_send.sql
+\i core/functions/messaging/publish/get_published_recipients.sql
 -- Messaging Functions - User (Inbox)
-\i core/functions/messaging/user_message_list.sql
-\i core/functions/messaging/user_message_read.sql
-\i core/functions/messaging/user_message_read_all.sql
-\i core/functions/messaging/user_message_delete.sql
-\i core/functions/messaging/user_message_get_by_ids.sql
--- Messaging Functions - Scheduled & Cleanup
-\i core/functions/messaging/admin_message_draft_list_due_scheduled.sql
-\i core/functions/messaging/user_message_cleanup_expired.sql
-\i core/functions/messaging/user_message_unread_count.sql
+\i core/functions/messaging/inbox/user_message_list.sql
+\i core/functions/messaging/inbox/user_message_read.sql
+\i core/functions/messaging/inbox/user_message_read_all.sql
+\i core/functions/messaging/inbox/user_message_delete.sql
+\i core/functions/messaging/inbox/user_message_get_by_ids.sql
+\i core/functions/messaging/inbox/user_message_unread_count.sql
+\i core/functions/messaging/inbox/user_message_cleanup_expired.sql
+-- Messaging Functions - Message Templates
+\i core/functions/messaging/message_template/admin_message_template_create.sql
+\i core/functions/messaging/message_template/admin_message_template_update.sql
+\i core/functions/messaging/message_template/admin_message_template_get.sql
+\i core/functions/messaging/message_template/admin_message_template_list.sql
+\i core/functions/messaging/message_template/admin_message_template_delete.sql
+\i core/functions/messaging/message_template/message_template_get_by_code.sql
 
 -- Maintenance Functions (Partition Yönetimi)
 \i core/functions/maintenance/create_partitions.sql
@@ -688,6 +697,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/constraints/billing.sql
 \i core/constraints/outbox.sql
 \i core/constraints/messaging.sql
+\i core/constraints/messaging_notification_template.sql
 
 -- INDEXES (Performans indexleri - en sonda yükle)
 \i core/indexes/catalog.sql
@@ -698,6 +708,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/indexes/billing.sql
 \i core/indexes/outbox.sql
 \i core/indexes/messaging.sql
+\i core/indexes/messaging_notification_template.sql
 
 -- PARTITION INITIALIZATION
 SELECT * FROM maintenance.create_partitions();

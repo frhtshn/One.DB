@@ -3,7 +3,7 @@
 Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 **Veritabanları:** `core`, `core_audit`, `core_log`, `core_report`
-**Toplam:** 363 fonksiyon, 3 trigger
+**Toplam:** 369 fonksiyon, 3 trigger
 
 ---
 
@@ -498,7 +498,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-### Messaging Schema (19)
+### Messaging Schema (25)
 
 #### Admin Functions (12)
 
@@ -533,6 +533,17 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `user_message_cleanup_expired` | Soft-delete expired messages in batches. SKIP LOCKED for concurrency |
+
+#### Message Template (6)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `admin_message_template_create` | Create platform message template with multilingual translations. Validates channel-specific requirements → INT |
+| `admin_message_template_update` | Update template metadata and translations. Channel type immutable → BOOL |
+| `admin_message_template_get` | Get template details with all translations. Returns JSONB |
+| `admin_message_template_list` | Paginated list with channel/category/status/search filters. Returns JSONB |
+| `admin_message_template_delete` | Soft delete template. System templates cannot be deleted → VOID |
+| `message_template_get_by_code` | Get active template by code and language. Backend internal use. Returns JSONB |
 
 ---
 

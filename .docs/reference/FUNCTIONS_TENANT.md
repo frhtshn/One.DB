@@ -3,7 +3,7 @@
 Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 **Veritabanları:** `tenant`, `tenant_log`, `tenant_report`, `tenant_audit`, `tenant_affiliate`
-**Toplam:** 331 fonksiyon
+**Toplam:** 337 fonksiyon
 
 ---
 
@@ -638,7 +638,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `public_layout_get` | Layout getir: page_id → layout_name → 'default' fallback zinciri. Returns JSONB |
 | `get_active_announcement_bars` | Aktif duyuru çubukları: zaman penceresi + ülke + hedef kitle filtreli, dil fallback. Returns JSONB |
 
-### Messaging Schema (17)
+### Messaging Schema (23)
 
 #### Admin Campaign (6)
 
@@ -681,6 +681,17 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `player_message_preference_get` | Oyuncu kanal tercihlerini getir (email/sms/local varsayılanlarla). Returns JSONB |
 | `player_message_preference_upsert` | Oyuncu kanal tercihi oluştur/güncelle. ON CONFLICT (player_id, channel_type). Returns VOID |
 | `player_message_preference_bo_get` | BO için oyuncu kanal tercihlerini getir. Returns JSONB |
+
+#### Message Template (6)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `admin_message_template_create` | Create tenant message template with multilingual translations. Validates channel-specific requirements → INT |
+| `admin_message_template_update` | Update template metadata and translations. Channel type immutable → BOOL |
+| `admin_message_template_get` | Get template details with all translations. Returns JSONB |
+| `admin_message_template_list` | Paginated list with channel/category/status/search filters. Returns JSONB |
+| `admin_message_template_delete` | Soft delete template. System templates cannot be deleted → VOID |
+| `message_template_get_by_code` | Get active template by code and language. Backend internal use. Returns JSONB |
 
 ### Support Schema (43)
 

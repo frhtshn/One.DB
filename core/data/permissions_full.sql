@@ -14,9 +14,9 @@
 -- ================================================================
 -- PERMISSIONS - FULL LIST (UPSERT)
 -- ================================================================
--- Toplam: 147 permission (108 API/System + 39 Field)
+-- Toplam: 151 permission (112 API/System + 39 Field)
 -- Kategoriler (category kolonu bazinda):
---   platform (8), company (25), tenant (56), catalog (17),
+--   platform (10), company (25), tenant (58), catalog (17),
 --   audit (2), field (39)
 -- ================================================================
 
@@ -196,6 +196,16 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('messaging.inbox.delete', 'Delete Inbox Message', 'Delete inbox messages', 'company', 1),
 
 -- ================================================================
+-- NOTIFICATION TEMPLATES (4) — Platform + Tenant
+-- ================================================================
+-- Platform (2)
+('platform.notification-template.manage', 'Manage Notification Templates', 'Create, update, delete platform notification templates', 'platform', 1),
+('platform.notification-template.view', 'View Notification Templates', 'View platform notification templates', 'platform', 1),
+-- Tenant (2)
+('tenant.notification-template.manage', 'Manage Notification Templates', 'Create, update, delete tenant notification templates', 'tenant', 1),
+('tenant.notification-template.view', 'View Notification Templates', 'View tenant notification templates', 'tenant', 1),
+
+-- ================================================================
 -- PLATFORM.INFRASTRUCTURE (1) — SuperAdmin
 -- ================================================================
 ('platform.infrastructure.manage', 'Infrastructure Management', 'Infrastructure server CRUD and tenant server assignment', 'platform', 1),
@@ -305,19 +315,19 @@ BEGIN
     RAISE NOTICE '================================================';
     RAISE NOTICE 'PERMISSIONS SEED COMPLETED';
     RAISE NOTICE '================================================';
-    RAISE NOTICE 'Platform:     % (expected: 8)', v_platform;
+    RAISE NOTICE 'Platform:     % (expected: 10)', v_platform;
     RAISE NOTICE 'Company:      % (expected: 13)', v_company;
-    RAISE NOTICE 'Tenant:       % (expected: 52)', v_tenant;
+    RAISE NOTICE 'Tenant:       % (expected: 54)', v_tenant;
     RAISE NOTICE 'Catalog:      % (expected: 17)', v_catalog;
     RAISE NOTICE 'Audit:        % (expected: 2)', v_audit;
     RAISE NOTICE 'Field:        % (expected: 39)', v_field;
     RAISE NOTICE '------------------------------------------------';
-    RAISE NOTICE 'TOTAL:        % (expected: 131)', v_total;
+    RAISE NOTICE 'TOTAL:        % (expected: 135)', v_total;
     RAISE NOTICE '================================================';
 
     -- Strict validation: convention'daki 107 permission kontrol
-    IF v_platform < 8 THEN
-        RAISE WARNING 'Platform permission eksik! Beklenen: 8, Gercek: %', v_platform;
+    IF v_platform < 10 THEN
+        RAISE WARNING 'Platform permission eksik! Beklenen: 10, Gercek: %', v_platform;
     END IF;
     IF v_field < 39 THEN
         RAISE WARNING 'Field permission eksik! Beklenen: 39, Gercek: %', v_field;

@@ -381,18 +381,27 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/game/game_limit_list.sql
 \i tenant/functions/backoffice/game/game_provider_rollout_sync.sql
 
--- Backoffice: Messaging (Template ve kampanya yönetimi)
-\i tenant/functions/backoffice/messaging/admin_template_create.sql
-\i tenant/functions/backoffice/messaging/admin_template_update.sql
-\i tenant/functions/backoffice/messaging/admin_template_get.sql
-\i tenant/functions/backoffice/messaging/admin_template_list.sql
-\i tenant/functions/backoffice/messaging/admin_campaign_create.sql
-\i tenant/functions/backoffice/messaging/admin_campaign_update.sql
-\i tenant/functions/backoffice/messaging/admin_campaign_publish.sql
-\i tenant/functions/backoffice/messaging/admin_campaign_cancel.sql
-\i tenant/functions/backoffice/messaging/admin_campaign_get.sql
-\i tenant/functions/backoffice/messaging/admin_campaign_list.sql
-\i tenant/functions/backoffice/messaging/admin_player_message_send.sql
+-- Backoffice: Messaging — Campaign Templates
+\i tenant/functions/backoffice/messaging/campaign_template/admin_template_create.sql
+\i tenant/functions/backoffice/messaging/campaign_template/admin_template_update.sql
+\i tenant/functions/backoffice/messaging/campaign_template/admin_template_get.sql
+\i tenant/functions/backoffice/messaging/campaign_template/admin_template_list.sql
+-- Backoffice: Messaging — Campaigns
+\i tenant/functions/backoffice/messaging/campaign/admin_campaign_create.sql
+\i tenant/functions/backoffice/messaging/campaign/admin_campaign_update.sql
+\i tenant/functions/backoffice/messaging/campaign/admin_campaign_publish.sql
+\i tenant/functions/backoffice/messaging/campaign/admin_campaign_cancel.sql
+\i tenant/functions/backoffice/messaging/campaign/admin_campaign_get.sql
+\i tenant/functions/backoffice/messaging/campaign/admin_campaign_list.sql
+-- Backoffice: Messaging — Player Messages
+\i tenant/functions/backoffice/messaging/player_message/admin_player_message_send.sql
+-- Backoffice: Messaging — Message Templates (Bildirim Şablonları)
+\i tenant/functions/backoffice/messaging/message_template/admin_message_template_create.sql
+\i tenant/functions/backoffice/messaging/message_template/admin_message_template_update.sql
+\i tenant/functions/backoffice/messaging/message_template/admin_message_template_get.sql
+\i tenant/functions/backoffice/messaging/message_template/admin_message_template_list.sql
+\i tenant/functions/backoffice/messaging/message_template/admin_message_template_delete.sql
+\i tenant/functions/backoffice/messaging/message_template/message_template_get_by_code.sql
 
 -- Backoffice: Transaction — Lookup Sync (Core→Tenant katalog senkronizasyonu)
 \i tenant/functions/backoffice/transaction/transaction_types_sync.sql
@@ -615,7 +624,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/presentation/layout_list.sql
 
 -- Backoffice: Messaging — Player Message Preferences
-\i tenant/functions/backoffice/messaging/player_message_preference_bo_get.sql
+\i tenant/functions/backoffice/messaging/player_message/player_message_preference_bo_get.sql
 
 -- =============================================================================
 -- FUNCTIONS - FRONTEND (Oyuncu frontend fonksiyonları)

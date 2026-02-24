@@ -7,6 +7,9 @@ ALTER TABLE messaging.message_templates
     ADD CONSTRAINT chk_msg_templates_channel CHECK (channel_type IN ('email', 'sms', 'local'));
 
 ALTER TABLE messaging.message_templates
+    ADD CONSTRAINT chk_msg_templates_category CHECK (category IN ('campaign', 'transactional', 'notification', 'marketing'));
+
+ALTER TABLE messaging.message_templates
     ADD CONSTRAINT chk_msg_templates_status CHECK (status IN ('draft', 'active', 'archived'));
 
 -- message_template_translations

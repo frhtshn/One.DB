@@ -23,7 +23,7 @@ DELETE FROM security.role_permissions;
 -- role_permissions tablosunda 0 satir.
 
 -- ================================================================
--- 3. ADMIN (Level 90) — 89 API + 13 field(edit) = 102
+-- 3. ADMIN (Level 90) — 92 API + 13 field(edit) = 105
 -- ================================================================
 -- Platform haric TUM scope'lara erisim. Tenant sub-entity yazma dahil.
 
@@ -80,7 +80,10 @@ WHERE r.code = 'admin'
     'messaging.draft.create', 'messaging.draft.read', 'messaging.draft.update', 'messaging.draft.delete',
     'messaging.draft.cancel', 'messaging.draft.unschedule', 'messaging.draft.publish', 'messaging.draft.recall',
     'messaging.send',
-    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete',
+    -- notification templates (3)
+    'platform.notification-template.view',
+    'tenant.notification-template.manage', 'tenant.notification-template.view'
   );
 
 -- ADMIN: Field protection (edit level — tam erisim, 13 alan)
@@ -93,7 +96,7 @@ WHERE r.code = 'admin'
   AND p.code LIKE 'field.%.edit';
 
 -- ================================================================
--- 4. COMPANYADMIN (Level 80) — 42 API + 13 field(edit) = 55
+-- 4. COMPANYADMIN (Level 80) — 44 API + 13 field(edit) = 57
 -- ================================================================
 -- Tenant okuma + sub-entity okuma + user yonetimi + RBAC + audit + template.
 -- Tenant CRUD (create/edit/delete) YAPAMAZ. Sub-entity yazma YAPAMAZ.
@@ -133,7 +136,9 @@ WHERE r.code = 'companyadmin'
     'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
     'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
     -- messaging inbox (3)
-    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete',
+    -- notification templates (2)
+    'tenant.notification-template.manage', 'tenant.notification-template.view'
   );
 
 -- COMPANYADMIN: Field protection (edit level — tam erisim, 13 alan)
@@ -146,7 +151,7 @@ WHERE r.code = 'companyadmin'
   AND p.code LIKE 'field.%.edit';
 
 -- ================================================================
--- 5. TENANTADMIN (Level 70) — 39 API + 13 field(view) = 52
+-- 5. TENANTADMIN (Level 70) — 41 API + 13 field(view) = 54
 -- ================================================================
 -- User yonetimi + RBAC + presentation + audit + template atama.
 -- Tenant list/view YOK. Sub-entity okuma YOK.
@@ -183,7 +188,9 @@ WHERE r.code = 'tenantadmin'
     'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
     'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
     -- messaging inbox (3)
-    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
+    'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete',
+    -- notification templates (2)
+    'tenant.notification-template.manage', 'tenant.notification-template.view'
   );
 
 -- TENANTADMIN: Field protection (view level — acik okuma, 13 alan)
@@ -342,29 +349,29 @@ BEGIN
     RAISE NOTICE 'ROLE-PERMISSION MAPPING COMPLETED';
     RAISE NOTICE '================================================';
     RAISE NOTICE 'superadmin:   % (expected: 0 — bypass)', v_superadmin;
-    RAISE NOTICE 'admin:        % (expected: 102 = 89 API + 13 field)', v_admin;
-    RAISE NOTICE 'companyadmin: % (expected: 55 = 42 API + 13 field)', v_companyadmin;
-    RAISE NOTICE 'tenantadmin:  % (expected: 52 = 39 API + 13 field)', v_tenantadmin;
+    RAISE NOTICE 'admin:        % (expected: 105 = 92 API + 13 field)', v_admin;
+    RAISE NOTICE 'companyadmin: % (expected: 57 = 44 API + 13 field)', v_companyadmin;
+    RAISE NOTICE 'tenantadmin:  % (expected: 54 = 41 API + 13 field)', v_tenantadmin;
     RAISE NOTICE 'moderator:    % (expected: 33 = 20 API + 13 field)', v_moderator;
     RAISE NOTICE 'editor:       % (expected: 17 = 4 API + 13 field)', v_editor;
     RAISE NOTICE 'operator:     % (expected: 26 = 13 API + 13 field)', v_operator;
     RAISE NOTICE 'user:         % (expected: 0)', v_user;
     RAISE NOTICE '------------------------------------------------';
-    RAISE NOTICE 'TOTAL:        % (expected: 285)', v_total;
+    RAISE NOTICE 'TOTAL:        % (expected: 292)', v_total;
     RAISE NOTICE '================================================';
 
     -- Strict validation
     IF v_superadmin != 0 THEN
         RAISE WARNING 'SuperAdmin permission atamasi olmamali! Gercek: %', v_superadmin;
     END IF;
-    IF v_admin != 102 THEN
-        RAISE WARNING 'Admin permission sayisi hatali! Beklenen: 102, Gercek: %', v_admin;
+    IF v_admin != 105 THEN
+        RAISE WARNING 'Admin permission sayisi hatali! Beklenen: 105, Gercek: %', v_admin;
     END IF;
-    IF v_companyadmin != 55 THEN
-        RAISE WARNING 'CompanyAdmin permission sayisi hatali! Beklenen: 55, Gercek: %', v_companyadmin;
+    IF v_companyadmin != 57 THEN
+        RAISE WARNING 'CompanyAdmin permission sayisi hatali! Beklenen: 57, Gercek: %', v_companyadmin;
     END IF;
-    IF v_tenantadmin != 52 THEN
-        RAISE WARNING 'TenantAdmin permission sayisi hatali! Beklenen: 52, Gercek: %', v_tenantadmin;
+    IF v_tenantadmin != 54 THEN
+        RAISE WARNING 'TenantAdmin permission sayisi hatali! Beklenen: 54, Gercek: %', v_tenantadmin;
     END IF;
     IF v_moderator != 33 THEN
         RAISE WARNING 'Moderator permission sayisi hatali! Beklenen: 33, Gercek: %', v_moderator;

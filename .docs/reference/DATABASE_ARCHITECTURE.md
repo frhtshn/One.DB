@@ -271,10 +271,12 @@ Backoffice kullanıcıları arası mesajlaşma sistemi. Draft yönetimi, toplu (
 
 **Klasör Yapısı:** `core/tables/messaging/`
 
-| Tablo                  | Açıklama                                                          |
-| ---------------------- | ----------------------------------------------------------------- |
-| `user_message_drafts`  | Admin mesaj taslakları ve yönetimi (NOT partitioned)              |
-| `user_messages`        | Kullanıcı mesaj kutusu (**PARTITIONED** monthly, 180 gün)         |
+| Tablo                            | Açıklama                                                          |
+| -------------------------------- | ----------------------------------------------------------------- |
+| `user_message_drafts`            | Admin mesaj taslakları ve yönetimi (NOT partitioned)              |
+| `user_messages`                  | Kullanıcı mesaj kutusu (**PARTITIONED** monthly, 180 gün)         |
+| `message_templates`              | Platform bildirim şablonları (email/SMS, transactional/notification/system) |
+| `message_template_translations`  | Şablon çevirileri (dil bazlı: subject, body_html, body_text)     |
 
 > **Draft akışı:** Admin → `admin_message_draft_create` → (opsiyonel zamanlama) → `admin_message_publish(draft_id)` → alıcılar çözümlenir (0 alıcı = hata) → her alıcıya ayrı `user_messages` satırı (draft_id ile bağlı). Geri çekme: `admin_message_recall(draft_id)` → mesajlar soft delete + draft status → cancelled.
 > **Status akışı:** `draft → scheduled → published`, `draft → published`, `draft/scheduled → cancelled`, `published → cancelled` (recall)

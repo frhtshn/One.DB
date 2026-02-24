@@ -38,18 +38,18 @@ BEGIN
         RAISE EXCEPTION 'error.messaging.template-code-exists';
     END IF;
 
-    -- Şablon oluştur
+    -- Şablon oluştur (kampanya kategorisi)
     INSERT INTO messaging.message_templates (
-        code, name, channel_type, description, created_by
+        code, name, channel_type, category, description, created_by
     ) VALUES (
-        p_code, p_name, p_channel_type, p_description, p_created_by
+        p_code, p_name, p_channel_type, 'campaign', p_description, p_created_by
     )
     RETURNING id INTO v_template_id;
 
     -- Çevirileri ekle
     IF p_translations IS NOT NULL AND jsonb_array_length(p_translations) > 0 THEN
         INSERT INTO messaging.message_template_translations (
-            template_id, language_code, subject, body, preview_text, created_by
+            template_id, language_code, subject, body_html, preview_text, created_by
         )
         SELECT
             v_template_id,

@@ -30,7 +30,7 @@ BEGIN
                 'id', tt.id,
                 'language_code', tt.language_code,
                 'subject', tt.subject,
-                'body', tt.body,
+                'body', tt.body_html,
                 'preview_text', tt.preview_text
             ) ORDER BY tt.language_code)
             FROM messaging.message_template_translations tt

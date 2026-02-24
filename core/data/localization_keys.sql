@@ -700,6 +700,22 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.campaign-not-cancellable', 'error', 'messaging', 'Kampanya iptal edilemez'),
 
 -- ============================================================================
+-- NOTIFICATION TEMPLATES (platform + tenant)
+-- ============================================================================
+('error.notification-template.code-required', 'error', 'notification-template', 'Şablon kodu zorunlu'),
+('error.notification-template.name-required', 'error', 'notification-template', 'Şablon adı zorunlu'),
+('error.notification-template.invalid-channel-type', 'error', 'notification-template', 'Geçersiz kanal tipi'),
+('error.notification-template.invalid-category', 'error', 'notification-template', 'Geçersiz kategori'),
+('error.notification-template.invalid-status', 'error', 'notification-template', 'Geçersiz şablon durumu'),
+('error.notification-template.code-exists', 'error', 'notification-template', 'Şablon kodu zaten mevcut'),
+('error.notification-template.not-found', 'error', 'notification-template', 'Bildirim şablonu bulunamadı'),
+('error.notification-template.translation-not-found', 'error', 'notification-template', 'Şablon çevirisi bulunamadı'),
+('error.notification-template.email-subject-required', 'error', 'notification-template', 'E-posta konusu zorunlu'),
+('error.notification-template.email-body-html-required', 'error', 'notification-template', 'E-posta HTML gövdesi zorunlu'),
+('error.notification-template.sms-body-text-required', 'error', 'notification-template', 'SMS metin içeriği zorunlu'),
+('error.notification-template.system-template-cannot-be-deleted', 'error', 'notification-template', 'Sistem şablonu silinemez'),
+
+-- ============================================================================
 -- BONUS ENGINE — Bonus Types
 -- ============================================================================
 ('error.bonus-type.not-found', 'error', 'bonus-type', 'Bonus tipi bulunamadı'),

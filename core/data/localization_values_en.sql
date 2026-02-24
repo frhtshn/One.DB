@@ -600,6 +600,20 @@ JOIN (VALUES
     ('error.messaging.campaign-not-publishable', 'Campaign cannot be published'),
     ('error.messaging.campaign-not-cancellable', 'Campaign cannot be cancelled'),
 
+    -- Notification Templates
+    ('error.notification-template.code-required', 'Template code is required'),
+    ('error.notification-template.name-required', 'Template name is required'),
+    ('error.notification-template.invalid-channel-type', 'Invalid channel type'),
+    ('error.notification-template.invalid-category', 'Invalid category'),
+    ('error.notification-template.invalid-status', 'Invalid template status'),
+    ('error.notification-template.code-exists', 'Template code already exists'),
+    ('error.notification-template.not-found', 'Notification template not found'),
+    ('error.notification-template.translation-not-found', 'Template translation not found'),
+    ('error.notification-template.email-subject-required', 'Email subject is required'),
+    ('error.notification-template.email-body-html-required', 'Email HTML body is required'),
+    ('error.notification-template.sms-body-text-required', 'SMS body text is required'),
+    ('error.notification-template.system-template-cannot-be-deleted', 'System template cannot be deleted'),
+
     -- Bonus Engine — Bonus Types
     ('error.bonus-type.not-found', 'Bonus type not found'),
     ('error.bonus-type.id-required', 'Bonus type ID is required'),

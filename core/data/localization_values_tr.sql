@@ -602,6 +602,20 @@ JOIN (VALUES
     ('error.messaging.campaign-not-publishable', 'Kampanya yayınlanamaz'),
     ('error.messaging.campaign-not-cancellable', 'Kampanya iptal edilemez'),
 
+    -- Bildirim Şablonları
+    ('error.notification-template.code-required', 'Şablon kodu zorunludur'),
+    ('error.notification-template.name-required', 'Şablon adı zorunludur'),
+    ('error.notification-template.invalid-channel-type', 'Geçersiz kanal tipi'),
+    ('error.notification-template.invalid-category', 'Geçersiz kategori'),
+    ('error.notification-template.invalid-status', 'Geçersiz şablon durumu'),
+    ('error.notification-template.code-exists', 'Şablon kodu zaten mevcut'),
+    ('error.notification-template.not-found', 'Bildirim şablonu bulunamadı'),
+    ('error.notification-template.translation-not-found', 'Şablon çevirisi bulunamadı'),
+    ('error.notification-template.email-subject-required', 'E-posta konusu zorunludur'),
+    ('error.notification-template.email-body-html-required', 'E-posta HTML gövdesi zorunludur'),
+    ('error.notification-template.sms-body-text-required', 'SMS metin içeriği zorunludur'),
+    ('error.notification-template.system-template-cannot-be-deleted', 'Sistem şablonu silinemez'),
+
     -- Bonus Motoru — Bonus Tipleri
     ('error.bonus-type.not-found', 'Bonus tipi bulunamadı'),
     ('error.bonus-type.id-required', 'Bonus tip ID zorunludur'),
