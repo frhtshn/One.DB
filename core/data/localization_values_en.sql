@@ -840,6 +840,10 @@ JOIN (VALUES
     ('error.player-password.token-required', 'Reset token is required'),
     ('error.player-password.token-not-found', 'Reset token not found'),
     ('error.player-password.token-expired', 'Reset token has expired'),
+    ('error.player-password.current-invalid', 'Current password is incorrect'),
+    ('error.player-password.same-as-current', 'New password cannot be same as current'),
+    ('error.player-password.history-reuse', 'Cannot reuse a recent password'),
+    ('error.player-password.complexity-failed', 'Password must be at least 8 characters with at least 1 letter and 1 number'),
 
     -- Player Profile
     ('error.player-profile.player-required', 'Player ID is required'),

@@ -7,7 +7,7 @@
 -- Auth-agnostic: şifre hash'i backend'den gelir (Argon2id).
 -- ================================================================
 
-DROP FUNCTION IF EXISTS auth.player_register(VARCHAR, BYTEA, BYTEA, VARCHAR, UUID, INT, CHAR, CHAR);
+DROP FUNCTION IF EXISTS auth.player_register(VARCHAR, BYTEA, BYTEA, VARCHAR, UUID, INT, CHAR, CHAR, CHAR);
 
 CREATE OR REPLACE FUNCTION auth.player_register(
     p_username              VARCHAR(150),
@@ -16,8 +16,9 @@ CREATE OR REPLACE FUNCTION auth.player_register(
     p_password_hash         VARCHAR(255),
     p_verification_token    UUID,
     p_token_expires_minutes INT DEFAULT 1440,
-    p_country_code          CHAR(2) DEFAULT NULL,
-    p_language              CHAR(2) DEFAULT NULL
+    p_country_code              CHAR(2) DEFAULT NULL,
+    p_registration_ip_country   CHAR(2) DEFAULT NULL,
+    p_language                  CHAR(2) DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -65,6 +66,11 @@ BEGIN
         0, FALSE
     )
     RETURNING id INTO v_player_id;
+
+    -- Jurisdiction kaydı oluştur
+    IF p_country_code IS NOT NULL THEN
+        PERFORM kyc.jurisdiction_create(v_player_id, p_country_code, p_registration_ip_country);
+    END IF;
 
     -- Email doğrulama token'ı oluştur
     INSERT INTO auth.email_verification_tokens (

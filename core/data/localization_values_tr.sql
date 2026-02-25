@@ -842,6 +842,10 @@ JOIN (VALUES
     ('error.player-password.token-required', 'Sıfırlama tokeni zorunludur'),
     ('error.player-password.token-not-found', 'Sıfırlama tokeni bulunamadı'),
     ('error.player-password.token-expired', 'Sıfırlama tokeninin süresi dolmuş'),
+    ('error.player-password.current-invalid', 'Mevcut şifre yanlış'),
+    ('error.player-password.same-as-current', 'Yeni şifre mevcut şifre ile aynı olamaz'),
+    ('error.player-password.history-reuse', 'Son kullanılan şifreler tekrar kullanılamaz'),
+    ('error.player-password.complexity-failed', 'Şifre en az 8 karakter, 1 harf ve 1 rakam içermeli'),
 
     -- Oyuncu Profil
     ('error.player-profile.player-required', 'Oyuncu ID zorunludur'),

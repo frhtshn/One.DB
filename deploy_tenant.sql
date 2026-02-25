@@ -312,6 +312,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/kyc/document_review.sql
 \i tenant/functions/backoffice/kyc/document_get.sql
 \i tenant/functions/backoffice/kyc/document_list.sql
+\i tenant/functions/backoffice/kyc/document_list_encrypted.sql
+\i tenant/functions/backoffice/kyc/document_update_encrypted.sql
 
 -- Backoffice: KYC — Restriction Management
 \i tenant/functions/backoffice/kyc/restriction_create.sql
@@ -638,9 +640,16 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/frontend/auth/player_login_failed_increment.sql
 \i tenant/functions/frontend/auth/player_login_failed_reset.sql
 \i tenant/functions/frontend/auth/player_change_password.sql
+\i tenant/functions/frontend/auth/player_get_password_hash.sql
+\i tenant/functions/frontend/auth/player_get_password_history.sql
 \i tenant/functions/frontend/auth/player_reset_password_request.sql
 \i tenant/functions/frontend/auth/player_reset_password_confirm.sql
 \i tenant/functions/frontend/auth/player_find_by_email_hash.sql
+
+-- Frontend: Auth — PII Re-encryption (Key rotation batch job)
+\i tenant/functions/frontend/auth/player_list_ids.sql
+\i tenant/functions/frontend/auth/player_get_encrypted_email.sql
+\i tenant/functions/frontend/auth/player_update_encrypted_email.sql
 
 -- Frontend: Profile (Profil ve kimlik yönetimi)
 \i tenant/functions/frontend/profile/player_profile_create.sql
@@ -648,6 +657,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/frontend/profile/player_profile_update.sql
 \i tenant/functions/frontend/profile/player_identity_upsert.sql
 \i tenant/functions/frontend/profile/player_identity_get.sql
+\i tenant/functions/frontend/profile/player_identity_update_encrypted.sql
 
 -- Frontend: Messaging (Mesaj okuma/silme)
 \i tenant/functions/frontend/messaging/player_message_list.sql

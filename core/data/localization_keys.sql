@@ -958,6 +958,10 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.player-password.token-required', 'error', 'player-password', 'Sıfırlama token zorunlu'),
 ('error.player-password.token-not-found', 'error', 'player-password', 'Sıfırlama token bulunamadı'),
 ('error.player-password.token-expired', 'error', 'player-password', 'Sıfırlama token süresi dolmuş'),
+('error.player-password.current-invalid', 'error', 'player-password', 'Mevcut şifre yanlış'),
+('error.player-password.same-as-current', 'error', 'player-password', 'Yeni şifre mevcut şifre ile aynı olamaz'),
+('error.player-password.history-reuse', 'error', 'player-password', 'Son kullanılan şifreler tekrar kullanılamaz'),
+('error.player-password.complexity-failed', 'error', 'player-password', 'Şifre en az 8 karakter, 1 harf ve 1 rakam içermeli'),
 
 -- PLAYER — Profil
 ('error.player-profile.player-required', 'error', 'player-profile', 'Oyuncu ID zorunlu'),
