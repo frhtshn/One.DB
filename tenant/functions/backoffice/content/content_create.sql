@@ -4,15 +4,15 @@
 -- Başlangıç durumu: draft
 -- ================================================================
 
-DROP FUNCTION IF EXISTS content.content_create(INTEGER, VARCHAR, VARCHAR, JSONB, JSONB, INTEGER);
+DROP FUNCTION IF EXISTS content.content_create(INTEGER, VARCHAR, TEXT, INTEGER, VARCHAR, TEXT);
 
 CREATE OR REPLACE FUNCTION content.content_create(
-    p_content_type_id   INTEGER,                -- İçerik tipi
-    p_slug              VARCHAR(255),            -- URL slug (unique)
+    p_content_type_id    INTEGER,                 -- İçerik tipi
+    p_slug               VARCHAR(255),             -- URL slug (unique)
+    p_translations       TEXT,                     -- JSON: [{languageCode, title, subtitle, summary, body, metaTitle, metaDescription, metaKeywords}]
+    p_user_id            INTEGER,                  -- İşlemi yapan kullanıcı
     p_featured_image_url VARCHAR(500) DEFAULT NULL, -- Kapak görseli
-    p_translations      JSONB,                   -- [{languageCode, title, subtitle, summary, body, metaTitle, metaDescription, metaKeywords}]
-    p_attachments       JSONB        DEFAULT NULL, -- [{fileName, filePath, fileType, fileSize, altText, caption}]
-    p_user_id           INTEGER                  -- İşlemi yapan kullanıcı
+    p_attachments        TEXT         DEFAULT NULL  -- JSON: [{fileName, filePath, fileType, fileSize, altText, caption}]
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -21,7 +21,15 @@ DECLARE
     v_id INTEGER;
     v_item JSONB;
     v_idx INTEGER := 0;
+    v_translations JSONB;
+    v_attachments  JSONB;
 BEGIN
+    -- TEXT -> JSONB cast
+    v_translations := p_translations::jsonb;
+    IF p_attachments IS NOT NULL THEN
+        v_attachments := p_attachments::jsonb;
+    END IF;
+
     -- Parametre doğrulama
     IF p_content_type_id IS NULL THEN
         RAISE EXCEPTION 'error.content.type-id-required';
@@ -35,7 +43,7 @@ BEGIN
         RAISE EXCEPTION 'error.content.user-id-required';
     END IF;
 
-    IF p_translations IS NULL OR jsonb_array_length(p_translations) = 0 THEN
+    IF v_translations IS NULL OR jsonb_array_length(v_translations) = 0 THEN
         RAISE EXCEPTION 'error.content.translations-required';
     END IF;
 
@@ -51,7 +59,7 @@ BEGIN
     RETURNING id INTO v_id;
 
     -- Çeviriler
-    FOR v_item IN SELECT * FROM jsonb_array_elements(p_translations)
+    FOR v_item IN SELECT * FROM jsonb_array_elements(v_translations)
     LOOP
         INSERT INTO content.content_translations (
             content_id, language_code,
@@ -76,8 +84,8 @@ BEGIN
     END LOOP;
 
     -- Ekler (varsa)
-    IF p_attachments IS NOT NULL AND jsonb_array_length(p_attachments) > 0 THEN
-        FOR v_item IN SELECT * FROM jsonb_array_elements(p_attachments)
+    IF v_attachments IS NOT NULL AND jsonb_array_length(v_attachments) > 0 THEN
+        FOR v_item IN SELECT * FROM jsonb_array_elements(v_attachments)
         LOOP
             INSERT INTO content.content_attachments (
                 content_id, file_name, file_path, file_type, file_size,
@@ -102,4 +110,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION content.content_create(INTEGER, VARCHAR, VARCHAR, JSONB, JSONB, INTEGER) IS 'Create new content with translations and attachments. Initial status is draft.';
+COMMENT ON FUNCTION content.content_create(INTEGER, VARCHAR, TEXT, INTEGER, VARCHAR, TEXT) IS 'Create new content with translations and attachments. Initial status is draft.';

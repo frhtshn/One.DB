@@ -3,15 +3,15 @@
 -- Çeviriler ve ekler dahil (DELETE + INSERT semantiği)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS content.content_update(INTEGER, VARCHAR, VARCHAR, JSONB, JSONB, INTEGER);
+DROP FUNCTION IF EXISTS content.content_update(INTEGER, INTEGER, VARCHAR, VARCHAR, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION content.content_update(
-    p_id                INTEGER,                -- İçerik ID
-    p_slug              VARCHAR(255) DEFAULT NULL, -- URL slug
+    p_id                 INTEGER,                  -- İçerik ID
+    p_user_id            INTEGER,                   -- İşlemi yapan kullanıcı
+    p_slug               VARCHAR(255) DEFAULT NULL, -- URL slug
     p_featured_image_url VARCHAR(500) DEFAULT NULL, -- Kapak görseli
-    p_translations      JSONB        DEFAULT NULL, -- [{languageCode, title, subtitle, summary, body, metaTitle, metaDescription, metaKeywords}]
-    p_attachments       JSONB        DEFAULT NULL, -- [{fileName, filePath, fileType, fileSize, altText, caption}]
-    p_user_id           INTEGER                  -- İşlemi yapan kullanıcı
+    p_translations       TEXT         DEFAULT NULL, -- JSON: [{languageCode, title, subtitle, summary, body, metaTitle, metaDescription, metaKeywords}]
+    p_attachments        TEXT         DEFAULT NULL  -- JSON: [{fileName, filePath, fileType, fileSize, altText, caption}]
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -19,7 +19,17 @@ AS $$
 DECLARE
     v_item JSONB;
     v_idx INTEGER := 0;
+    v_translations JSONB;
+    v_attachments  JSONB;
 BEGIN
+    -- TEXT -> JSONB cast
+    IF p_translations IS NOT NULL THEN
+        v_translations := p_translations::jsonb;
+    END IF;
+    IF p_attachments IS NOT NULL THEN
+        v_attachments := p_attachments::jsonb;
+    END IF;
+
     -- Parametre doğrulama
     IF p_id IS NULL THEN
         RAISE EXCEPTION 'error.content.id-required';
@@ -43,10 +53,10 @@ BEGIN
     WHERE id = p_id;
 
     -- Çeviriler (varsa DELETE + INSERT)
-    IF p_translations IS NOT NULL AND jsonb_array_length(p_translations) > 0 THEN
+    IF v_translations IS NOT NULL AND jsonb_array_length(v_translations) > 0 THEN
         DELETE FROM content.content_translations WHERE content_id = p_id;
 
-        FOR v_item IN SELECT * FROM jsonb_array_elements(p_translations)
+        FOR v_item IN SELECT * FROM jsonb_array_elements(v_translations)
         LOOP
             INSERT INTO content.content_translations (
                 content_id, language_code,
@@ -72,11 +82,11 @@ BEGIN
     END IF;
 
     -- Ekler (varsa DELETE + INSERT)
-    IF p_attachments IS NOT NULL THEN
+    IF v_attachments IS NOT NULL THEN
         DELETE FROM content.content_attachments WHERE content_id = p_id;
 
-        IF jsonb_array_length(p_attachments) > 0 THEN
-            FOR v_item IN SELECT * FROM jsonb_array_elements(p_attachments)
+        IF jsonb_array_length(v_attachments) > 0 THEN
+            FOR v_item IN SELECT * FROM jsonb_array_elements(v_attachments)
             LOOP
                 INSERT INTO content.content_attachments (
                     content_id, file_name, file_path, file_type, file_size,
@@ -100,4 +110,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION content.content_update(INTEGER, VARCHAR, VARCHAR, JSONB, JSONB, INTEGER) IS 'Update content with translations and attachments. Sub-records use delete+insert semantics.';
+COMMENT ON FUNCTION content.content_update(INTEGER, INTEGER, VARCHAR, VARCHAR, TEXT, TEXT) IS 'Update content with translations and attachments. Sub-records use delete+insert semantics.';

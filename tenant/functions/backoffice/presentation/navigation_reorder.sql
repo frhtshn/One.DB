@@ -4,12 +4,12 @@
 -- Location ve parent seviyesinde çalışır
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.navigation_reorder(VARCHAR, BIGINT, BIGINT[]);
+DROP FUNCTION IF EXISTS presentation.navigation_reorder(VARCHAR, BIGINT[], BIGINT);
 
 CREATE OR REPLACE FUNCTION presentation.navigation_reorder(
-    p_menu_location     VARCHAR(50),        -- Menü konumu
-    p_parent_id         BIGINT DEFAULT NULL, -- Üst menü (NULL = root level)
-    p_item_ids          BIGINT[]            -- Yeni sıradaki ID'ler
+    p_menu_location     VARCHAR(50),         -- Menü konumu
+    p_item_ids          BIGINT[],            -- Yeni sıradaki ID'ler
+    p_parent_id         BIGINT DEFAULT NULL  -- Üst menü (NULL = root level)
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -42,4 +42,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.navigation_reorder(VARCHAR, BIGINT, BIGINT[]) IS 'Reorder navigation items within a menu location and parent level. Array index becomes display_order.';
+COMMENT ON FUNCTION presentation.navigation_reorder(VARCHAR, BIGINT[], BIGINT) IS 'Reorder navigation items within a menu location and parent level. Array index becomes display_order.';
