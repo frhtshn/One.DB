@@ -887,6 +887,24 @@ JOIN (VALUES
     ('error.kyc-document.status-required', 'Status is required'),
     ('error.kyc-document.case-not-found', 'KYC case not found'),
 
+    -- KYC Document Analysis (IDManager)
+    ('error.kyc-analysis.document-not-found', 'Document not found for analysis'),
+    ('error.kyc-analysis.case-not-found', 'KYC case not found or player mismatch'),
+    ('error.kyc-analysis.case-required', 'KYC case ID is required'),
+    ('error.kyc-analysis.request-id-required', 'Request ID is required'),
+    ('error.kyc-analysis.decision-required', 'AI decision is required'),
+    ('error.kyc-analysis.invalid-type', 'Invalid analysis type'),
+    ('error.kyc-analysis.invalid-document-type', 'Invalid IDManager document type'),
+
+    -- KYC Document Decision (Operator)
+    ('error.kyc-decision.document-not-found', 'Document not found for decision'),
+    ('error.kyc-decision.invalid-decision', 'Invalid decision (must be approved or rejected)'),
+    ('error.kyc-decision.decided-by-required', 'Decided by user ID is required'),
+
+    -- KYC Reanalysis
+    ('error.kyc-reanalysis.not-eligible', 'Document is not eligible for reanalysis'),
+    ('error.kyc-reanalysis.case-required', 'Case association is required for reanalysis'),
+
     -- KYC Restriction
     ('error.kyc-restriction.player-required', 'Player ID is required'),
     ('error.kyc-restriction.player-not-found', 'Player not found'),

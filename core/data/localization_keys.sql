@@ -1007,6 +1007,24 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.kyc-document.status-required', 'error', 'kyc-document', 'Durum zorunlu'),
 ('error.kyc-document.case-not-found', 'error', 'kyc-document', 'KYC case bulunamadı'),
 
+-- KYC — Belge Analizi (IDManager)
+('error.kyc-analysis.document-not-found', 'error', 'kyc-analysis', 'Analiz kaydedilecek belge bulunamadı'),
+('error.kyc-analysis.case-not-found', 'error', 'kyc-analysis', 'KYC case bulunamadı veya player uyuşmazlığı'),
+('error.kyc-analysis.case-required', 'error', 'kyc-analysis', 'KYC case ID zorunlu'),
+('error.kyc-analysis.request-id-required', 'error', 'kyc-analysis', 'Request ID zorunlu'),
+('error.kyc-analysis.decision-required', 'error', 'kyc-analysis', 'AI kararı zorunlu'),
+('error.kyc-analysis.invalid-type', 'error', 'kyc-analysis', 'Geçersiz analiz tipi'),
+('error.kyc-analysis.invalid-document-type', 'error', 'kyc-analysis', 'Geçersiz IDManager belge tipi'),
+
+-- KYC — Belge Karar (Operatör)
+('error.kyc-decision.document-not-found', 'error', 'kyc-decision', 'Karar verilecek belge bulunamadı'),
+('error.kyc-decision.invalid-decision', 'error', 'kyc-decision', 'Geçersiz karar (approved/rejected olmalı)'),
+('error.kyc-decision.decided-by-required', 'error', 'kyc-decision', 'Karar veren kişi ID zorunlu'),
+
+-- KYC — Tekrar Analiz
+('error.kyc-reanalysis.not-eligible', 'error', 'kyc-reanalysis', 'Belge tekrar analize uygun değil'),
+('error.kyc-reanalysis.case-required', 'error', 'kyc-reanalysis', 'Tekrar analiz için case bağlantısı zorunlu'),
+
 -- KYC — Kısıtlama Yönetimi
 ('error.kyc-restriction.player-required', 'error', 'kyc-restriction', 'Oyuncu ID zorunlu'),
 ('error.kyc-restriction.player-not-found', 'error', 'kyc-restriction', 'Oyuncu bulunamadı'),

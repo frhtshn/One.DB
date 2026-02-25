@@ -17,7 +17,7 @@ Fonksiyonlar veritabanı katmanına göre 3 ayrı dosyaya bölünmüştür.
 
 ## Fonksiyon İstatistikleri
 
-> **Toplam: 736 fonksiyon, 3 trigger**
+> **Toplam: 743 fonksiyon, 3 trigger**
 
 | Katman | DB | Fonksiyon | Trigger |
 |--------|----|-----------|---------|
@@ -26,12 +26,12 @@ Fonksiyonlar veritabanı katmanına göre 3 ayrı dosyaya bölünmüştür.
 | | `core_log` | 25 | - |
 | | `core_report` | 4 | - |
 | **Core Toplam** | | **363** | **3** |
-| **Tenant** | `tenant` | 292 | - |
+| **Tenant** | `tenant` | 299 | - |
 | | `tenant_log` | 12 | - |
 | | `tenant_report` | 4 | - |
 | | `tenant_audit` | 19 | - |
 | | `tenant_affiliate` | 4 | - |
-| **Tenant Toplam** | | **331** | - |
+| **Tenant Toplam** | | **338** | - |
 | **Gateway** | `game` | 8 | - |
 | | `game_log` | 4 | - |
 | | `finance` | 8 | - |

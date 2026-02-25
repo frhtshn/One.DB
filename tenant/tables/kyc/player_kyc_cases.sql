@@ -32,6 +32,8 @@ CREATE TABLE kyc.player_kyc_cases (
 
     last_decision_reason VARCHAR(255),            -- Son karar açıklaması
 
+    selfie_document_id BIGINT,                    -- Case'e ait selfie → player_documents.id
+
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );

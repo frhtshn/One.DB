@@ -82,3 +82,71 @@ DO $$ BEGIN
             FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
     END IF;
 END $$;
+
+-- =============================================
+-- IDManager Document Analysis & Decisions
+-- =============================================
+
+-- player_kyc_cases -> player_documents (selfie)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_kyc_cases_selfie') THEN
+        ALTER TABLE kyc.player_kyc_cases ADD CONSTRAINT fk_kyc_cases_selfie
+            FOREIGN KEY (selfie_document_id) REFERENCES kyc.player_documents(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
+-- document_analysis -> players
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_analysis_player') THEN
+        ALTER TABLE kyc.document_analysis ADD CONSTRAINT fk_document_analysis_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- document_analysis -> player_kyc_cases
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_analysis_case') THEN
+        ALTER TABLE kyc.document_analysis ADD CONSTRAINT fk_document_analysis_case
+            FOREIGN KEY (kyc_case_id) REFERENCES kyc.player_kyc_cases(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- document_analysis -> player_documents
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_analysis_document') THEN
+        ALTER TABLE kyc.document_analysis ADD CONSTRAINT fk_document_analysis_document
+            FOREIGN KEY (document_id) REFERENCES kyc.player_documents(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- document_decisions -> players
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_decisions_player') THEN
+        ALTER TABLE kyc.document_decisions ADD CONSTRAINT fk_document_decisions_player
+            FOREIGN KEY (player_id) REFERENCES auth.players(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- document_decisions -> player_kyc_cases
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_decisions_case') THEN
+        ALTER TABLE kyc.document_decisions ADD CONSTRAINT fk_document_decisions_case
+            FOREIGN KEY (kyc_case_id) REFERENCES kyc.player_kyc_cases(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- document_decisions -> player_documents
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_decisions_document') THEN
+        ALTER TABLE kyc.document_decisions ADD CONSTRAINT fk_document_decisions_document
+            FOREIGN KEY (document_id) REFERENCES kyc.player_documents(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- document_decisions -> document_analysis (opsiyonel bağlantı)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_document_decisions_analysis') THEN
+        ALTER TABLE kyc.document_decisions ADD CONSTRAINT fk_document_decisions_analysis
+            FOREIGN KEY (analysis_id) REFERENCES kyc.document_analysis(id) ON DELETE SET NULL;
+    END IF;
+END $$;

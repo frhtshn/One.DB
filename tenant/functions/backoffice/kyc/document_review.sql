@@ -1,9 +1,9 @@
 -- ================================================================
--- DOCUMENT_REVIEW: Doküman inceleme sonucu
+-- DOCUMENT_REVIEW: Doküman inceleme sonucu [DEPRECATED]
 -- ================================================================
--- Dokümanı onaylar veya reddeder.
--- KYC case bağlıysa workflow kaydı oluşturur.
--- Auth-agnostic (backend çağırır).
+-- DEPRECATED: Bu fonksiyon document_decision_create() lehine
+-- kullanımdan kaldırılmıştır. Geçiş süreci için korunmaktadır.
+-- Yeni kod document_decision_create() kullanmalıdır.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS kyc.document_review(BIGINT, VARCHAR, VARCHAR, BIGINT);
@@ -17,45 +17,26 @@ CREATE OR REPLACE FUNCTION kyc.document_review(
 RETURNS VOID
 LANGUAGE plpgsql
 AS $$
-DECLARE
-    v_doc RECORD;
 BEGIN
-    IF p_document_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-document.document-required';
-    END IF;
-
-    IF p_new_status IS NULL OR TRIM(p_new_status) = '' THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.kyc-document.status-required';
-    END IF;
-
-    -- Doküman kontrolü
-    SELECT d.id, d.kyc_case_id, d.status, d.document_type
-    INTO v_doc
-    FROM kyc.player_documents d
-    WHERE d.id = p_document_id;
-
-    IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.kyc-document.not-found';
-    END IF;
-
-    -- Doküman güncelle
-    UPDATE kyc.player_documents
-    SET status = p_new_status,
-        rejection_reason = p_rejection_reason,
-        reviewed_at = NOW()
-    WHERE id = p_document_id;
-
-    -- KYC case bağlıysa workflow kaydı
-    IF v_doc.kyc_case_id IS NOT NULL THEN
-        INSERT INTO kyc.player_kyc_workflows (
-            kyc_case_id, current_status, action, performed_by, reason
-        )
-        SELECT current_status, current_status, 'DOCUMENT_REVIEW', p_reviewed_by,
-               v_doc.document_type || ' → ' || p_new_status
-        FROM kyc.player_kyc_cases
-        WHERE id = v_doc.kyc_case_id;
+    -- DEPRECATED: document_decision_create() kullanın
+    -- Geriye uyumluluk için document_decision_create()'e yönlendir
+    IF p_new_status IN ('approved', 'rejected') THEN
+        PERFORM kyc.document_decision_create(
+            p_document_id  := p_document_id,
+            p_analysis_id  := NULL,
+            p_decision     := p_new_status,
+            p_reason       := p_rejection_reason,
+            p_decided_by   := COALESCE(p_reviewed_by, 0)
+        );
+    ELSE
+        -- approved/rejected dışı durumlar için eski mantığı koru
+        UPDATE kyc.player_documents
+        SET status = p_new_status,
+            rejection_reason = p_rejection_reason,
+            reviewed_at = NOW()
+        WHERE id = p_document_id;
     END IF;
 END;
 $$;
 
-COMMENT ON FUNCTION kyc.document_review IS 'Reviews a document (approve/reject). Creates workflow entry if linked to a KYC case.';
+COMMENT ON FUNCTION kyc.document_review IS 'DEPRECATED: Use document_decision_create() instead. Kept for backward compatibility during transition.';

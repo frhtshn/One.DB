@@ -116,6 +116,8 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/tables/kyc/player_limit_history.sql
 \i tenant/tables/kyc/player_jurisdiction.sql
 \i tenant/tables/kyc/player_aml_flags.sql
+\i tenant/tables/kyc/document_analysis.sql
+\i tenant/tables/kyc/document_decisions.sql
 -- NOTE: player_screening_results, player_risk_assessments -> tenant_audit DB
 -- NOTE: player_kyc_provider_logs -> tenant_log DB
 
@@ -314,6 +316,17 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i tenant/functions/backoffice/kyc/document_list.sql
 \i tenant/functions/backoffice/kyc/document_list_encrypted.sql
 \i tenant/functions/backoffice/kyc/document_update_encrypted.sql
+
+-- Backoffice: KYC — Document Analysis (IDManager)
+\i tenant/functions/backoffice/kyc/document_analysis_save.sql
+\i tenant/functions/backoffice/kyc/document_analysis_get.sql
+\i tenant/functions/backoffice/kyc/document_analysis_list_by_case.sql
+\i tenant/functions/backoffice/kyc/document_request_reanalysis.sql
+
+-- Backoffice: KYC — Document Decisions
+\i tenant/functions/backoffice/kyc/document_decision_create.sql
+\i tenant/functions/backoffice/kyc/document_decision_list.sql
+\i tenant/functions/backoffice/kyc/document_decision_list_by_case.sql
 
 -- Backoffice: KYC — Restriction Management
 \i tenant/functions/backoffice/kyc/restriction_create.sql

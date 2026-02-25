@@ -112,7 +112,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `player_identity_upsert` | Kimlik belgesi oluştur/güncelle. Şifreli no + hash → BIGINT |
 | `player_identity_get` | Kimlik belgesi getir. Bulunamazsa NULL (hata değil). STABLE → JSONB |
 
-### KYC Schema (28)
+### KYC Schema (35)
 
 > **Detaylı rehber:** [PLAYER_AUTH_KYC_GUIDE.md](../guides/PLAYER_AUTH_KYC_GUIDE.md)
 
@@ -131,9 +131,28 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `document_upload` | Belge kaydı oluştur. Vaka kontrolü, storage bilgileri → BIGINT |
-| `document_review` | Belge inceleme kararı. Durum güncelle → VOID |
-| `document_get` | Belge detayı. STABLE → JSONB |
+| `document_review` | **DEPRECATED** → `document_decision_create()` kullanın. Geriye uyumluluk → VOID |
+| `document_get` | Belge detayı + son analiz + son karar özeti. STABLE → JSONB |
 | `document_list` | Oyuncunun belgelerini listele → JSONB |
+
+#### KYC Document Analysis — IDManager (4)
+
+> **Detaylı spec:** [SPEC_IDMANAGER_INTEGRATION.md](../guides/SPEC_IDMANAGER_INTEGRATION.md)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `document_analysis_save` | IDManager analiz sonucunu kaydet. Kimlik + adres pipeline → BIGINT |
+| `document_analysis_get` | Belgenin tüm analiz kayıtları (en yeniden eskiye) → JSONB |
+| `document_analysis_list_by_case` | Case'e ait tüm belgelerin analizleri → JSONB |
+| `document_request_reanalysis` | Tekrar analiz talebi. Status → analyzing → VOID |
+
+#### KYC Document Decision (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `document_decision_create` | Operatör kararı (approved/rejected). Workflow kaydı → BIGINT |
+| `document_decision_list` | Belgenin karar geçmişi → JSONB |
+| `document_decision_list_by_case` | Case'e ait tüm kararlar → JSONB |
 
 #### KYC Restriction (4)
 

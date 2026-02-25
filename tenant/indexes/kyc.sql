@@ -75,3 +75,27 @@ CREATE INDEX IF NOT EXISTS idx_player_aml_detected ON kyc.player_aml_flags(detec
 CREATE INDEX IF NOT EXISTS idx_player_aml_transactions_gin ON kyc.player_aml_flags USING gin(related_transactions) WHERE related_transactions IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_player_aml_evidence_gin ON kyc.player_aml_flags USING gin(evidence_data) WHERE evidence_data IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_player_aml_actions_gin ON kyc.player_aml_flags USING gin(actions_taken) WHERE actions_taken IS NOT NULL;
+
+-- =============================================
+-- IDManager Document Analysis Indexes
+-- =============================================
+
+-- document_analysis
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_player ON kyc.document_analysis USING btree(player_id);
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_case ON kyc.document_analysis USING btree(kyc_case_id);
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_document ON kyc.document_analysis USING btree(document_id);
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_request ON kyc.document_analysis USING btree(request_id);
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_decision ON kyc.document_analysis USING btree(ai_decision);
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_pending ON kyc.document_analysis USING btree(kyc_case_id, ai_decision) WHERE ai_decision = 'REVIEW';
+CREATE INDEX IF NOT EXISTS idx_doc_analysis_quality_gin ON kyc.document_analysis USING gin(quality_details) WHERE quality_details IS NOT NULL;
+
+-- =============================================
+-- IDManager Document Decisions Indexes
+-- =============================================
+
+-- document_decisions
+CREATE INDEX IF NOT EXISTS idx_doc_decisions_player ON kyc.document_decisions USING btree(player_id);
+CREATE INDEX IF NOT EXISTS idx_doc_decisions_case ON kyc.document_decisions USING btree(kyc_case_id);
+CREATE INDEX IF NOT EXISTS idx_doc_decisions_document ON kyc.document_decisions USING btree(document_id);
+CREATE INDEX IF NOT EXISTS idx_doc_decisions_decided_by ON kyc.document_decisions USING btree(decided_by);
+CREATE INDEX IF NOT EXISTS idx_doc_decisions_latest ON kyc.document_decisions USING btree(document_id, decided_at DESC);

@@ -889,6 +889,24 @@ JOIN (VALUES
     ('error.kyc-document.status-required', 'Durum zorunludur'),
     ('error.kyc-document.case-not-found', 'KYC vakası bulunamadı'),
 
+    -- KYC Belge Analizi (IDManager)
+    ('error.kyc-analysis.document-not-found', 'Analiz kaydedilecek belge bulunamadı'),
+    ('error.kyc-analysis.case-not-found', 'KYC vakası bulunamadı veya oyuncu uyuşmazlığı'),
+    ('error.kyc-analysis.case-required', 'KYC vaka ID zorunludur'),
+    ('error.kyc-analysis.request-id-required', 'İstek ID zorunludur'),
+    ('error.kyc-analysis.decision-required', 'AI kararı zorunludur'),
+    ('error.kyc-analysis.invalid-type', 'Geçersiz analiz tipi'),
+    ('error.kyc-analysis.invalid-document-type', 'Geçersiz IDManager belge tipi'),
+
+    -- KYC Belge Kararı (Operatör)
+    ('error.kyc-decision.document-not-found', 'Karar verilecek belge bulunamadı'),
+    ('error.kyc-decision.invalid-decision', 'Geçersiz karar (onaylandı veya reddedildi olmalı)'),
+    ('error.kyc-decision.decided-by-required', 'Karar veren kişi ID zorunludur'),
+
+    -- KYC Tekrar Analiz
+    ('error.kyc-reanalysis.not-eligible', 'Belge tekrar analize uygun değil'),
+    ('error.kyc-reanalysis.case-required', 'Tekrar analiz için vaka bağlantısı zorunludur'),
+
     -- KYC Kısıtlama
     ('error.kyc-restriction.player-required', 'Oyuncu ID zorunludur'),
     ('error.kyc-restriction.player-not-found', 'Oyuncu bulunamadı'),

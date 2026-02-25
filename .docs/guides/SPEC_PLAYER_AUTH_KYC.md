@@ -24,6 +24,8 @@ Oyuncu yaşam döngüsünün fonksiyonel spesifikasyonu: kayıt, doğrulama, log
 | Sağlayıcı Log | 2 | KYC provider API logları |
 | **Toplam** | **75** | |
 
+> **IDManager entegrasyonu:** KYC belge analizi ve operatör karar fonksiyonları (7 fn, 2 tablo) ayrı spesifikasyonda: [SPEC_IDMANAGER_INTEGRATION.md](SPEC_IDMANAGER_INTEGRATION.md)
+
 ### 1.2 Veritabanı Dağılımı
 
 | DB | Schema | Fonksiyon | Tablo | Açıklama |

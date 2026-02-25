@@ -64,16 +64,24 @@ BEGIN
     ) VALUES (
         p_player_id, p_kyc_case_id, p_document_type, p_file_name, p_mime_type,
         p_storage_type, p_file_data, p_storage_path, p_encryption_key_id,
-        p_file_hash, COALESCE(p_file_size, 0), 'pending'
+        p_file_hash, COALESCE(p_file_size, 0), 'uploaded'
     )
     RETURNING id INTO v_doc_id;
+
+    -- Selfie ise case'e bağla
+    IF p_document_type = 'selfie' AND p_kyc_case_id IS NOT NULL THEN
+        UPDATE kyc.player_kyc_cases
+        SET selfie_document_id = v_doc_id,
+            updated_at = NOW()
+        WHERE id = p_kyc_case_id;
+    END IF;
 
     -- KYC case bağlıysa workflow kaydı
     IF p_kyc_case_id IS NOT NULL THEN
         INSERT INTO kyc.player_kyc_workflows (
             kyc_case_id, current_status, action, reason
         )
-        SELECT current_status, current_status, 'DOCUMENT_UPLOAD',
+        SELECT current_status, current_status, 'DOCUMENT_UPLOADED',
                'Document uploaded: ' || p_document_type
         FROM kyc.player_kyc_cases
         WHERE id = p_kyc_case_id;
