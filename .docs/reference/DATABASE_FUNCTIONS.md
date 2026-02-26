@@ -11,13 +11,13 @@ Fonksiyonlar veritabanı katmanına göre 3 ayrı dosyaya bölünmüştür.
 |---------|---------------|----------|
 | [FUNCTIONS_CORE.md](FUNCTIONS_CORE.md) | `core`, `core_audit`, `core_log`, `core_report` | Merkezi platform fonksiyonları (catalog, security, presentation, messaging, outbox, maintenance) |
 | [FUNCTIONS_TENANT.md](FUNCTIONS_TENANT.md) | `tenant`, `tenant_log`, `tenant_report`, `tenant_audit`, `tenant_affiliate` | Kiracıya özel iş fonksiyonları (finance, messaging, wallet, KYC, audit, maintenance) |
-| [FUNCTIONS_GATEWAY.md](FUNCTIONS_GATEWAY.md) | `game`, `game_log`, `finance`, `finance_log`, `bonus` | Gateway ve plugin fonksiyonları (provider entegrasyonları, log maintenance) |
+| [FUNCTIONS_GATEWAY.md](FUNCTIONS_GATEWAY.md) | `game`, `game_log`, `finance`, `finance_log`, `bonus`, `analytics` | Gateway, plugin ve analytics fonksiyonları (provider entegrasyonları, risk analiz, log maintenance) |
 
 ---
 
 ## Fonksiyon İstatistikleri
 
-> **Toplam: 743 fonksiyon, 3 trigger**
+> **Toplam: 750 fonksiyon, 3 trigger**
 
 | Katman | DB | Fonksiyon | Trigger |
 |--------|----|-----------|---------|
@@ -37,7 +37,8 @@ Fonksiyonlar veritabanı katmanına göre 3 ayrı dosyaya bölünmüştür.
 | | `finance` | 8 | - |
 | | `finance_log` | 4 | - |
 | | `bonus` | 18 | - |
-| **Gateway Toplam** | | **42** | - |
+| | `analytics` | 7 | - |
+| **Gateway Toplam** | | **49** | - |
 
 ---
 

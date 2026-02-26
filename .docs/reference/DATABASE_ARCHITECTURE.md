@@ -23,7 +23,7 @@ flowchart TD
         CD["core · core_log · core_audit · core_report"]
     end
     subgraph gw["Gateway & Plugin"]
-        GD["game · game_log · finance · finance_log · bonus"]
+        GD["game · game_log · finance · finance_log · bonus · analytics"]
     end
     subgraph tenants["Tenant Veritabanları (per-tenant)"]
         T1["tenant_001 + log/aud/rep/aff"]
@@ -53,11 +53,12 @@ flowchart TD
 | 7   | `finance`          | Finans gateway entegrasyon durumu                         | ✅              | Daily     | 14–30 gün   |
 | 8   | `finance_log`      | Finans gateway teknik logları                             | ✅              | Daily     | 14–30 gün   |
 | 9   | `bonus`            | Bonus ve promosyon yapılandırması                         | ✅              | ❌        | Sınırsız    |
-| 10  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
-| 11  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
-| 12  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`, `player_audit`)  | ❌              | Hybrid*   | 1–5 yıl     |
-| 13  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Monthly   | Sınırsız    |
-| 14  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
+| 10  | `analytics`        | Risk analiz, oyuncu skorlama ve fraud tespiti             | ✅              | ❌        | Sınırsız    |
+| 11  | `tenant`           | Kiracıya özel iş verileri                                 | ❌              | Monthly   | Sınırsız    |
+| 12  | `tenant_log`       | Kiracıya özel operasyonel loglar (dahil: `affiliate_log`) | ❌              | Daily     | 30–90 gün   |
+| 13  | `tenant_audit`     | Kiracıya özel audit kayıtları (dahil: `affiliate_audit`, `player_audit`)  | ❌              | Hybrid*   | 1–5 yıl     |
+| 14  | `tenant_report`    | Kiracıya özel raporlar ve istatistikler                   | ❌              | Monthly   | Sınırsız    |
+| 15  | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi                   | ❌              | Monthly   | Sınırsız    |
 
 > \* `core`: `messaging.user_messages` Monthly partition (180 gün) + `security.user_sessions` Monthly partition (90 gün).
 > \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily partition (365 gün), `player_audit.login_sessions` Monthly partition (5 yıl). Diğer tablolar (affiliate_audit, kyc_audit) partitioned değildir.
@@ -317,6 +318,23 @@ Oyun sağlayıcılarının entegrasyon detaylarını barındırır. Her provider
 | `crypto`     | Blockchain işlem takibi                    |
 
 ---
+
+### 5.4 Analytics Veritabanı (`analytics`)
+
+Risk analiz, oyuncu skorlama ve fraud tespiti için merkezi veritabanı. Tüm tenant'ların verileri `tenant_id` ile ayrışır. Tablolar UPSERT ile çalışır, partition gerekmez.
+
+**Erişim:** RiskManager (skor yazma, baseline okuma), Report Cluster (baseline yazma), BO Cluster (skor okuma). Tüm erişim `risk` şemasındaki fonksiyonlar üzerinden (`SECURITY DEFINER`).
+
+| Şema   | Amaç                                    |
+| ------ | ---------------------------------------- |
+| `risk` | Risk analiz tabloları ve fonksiyonları   |
+| `infra`| PostgreSQL extension'ları                |
+
+| Tablo                    | Açıklama                                                 |
+| ------------------------ | -------------------------------------------------------- |
+| `risk_player_baselines`  | Oyuncu bazlı istatistiksel özet (Report Cluster yazar)   |
+| `risk_tenant_baselines`  | Tenant bazlı özet istatistikler (Report Cluster yazar)   |
+| `risk_player_scores`     | Güncel risk skorları (RiskManager yazar, BO Cluster okur) |
 
 ---
 

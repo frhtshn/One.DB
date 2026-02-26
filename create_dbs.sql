@@ -93,6 +93,15 @@ WHERE NOT EXISTS (
 \gexec
 COMMENT ON DATABASE bonus IS 'Bonus, promotion and campaign management (Plugin)';
 
+-- Analytics veritabanı: Risk analiz, oyuncu skorlama ve fraud tespiti
+SELECT
+  'CREATE DATABASE analytics'
+WHERE NOT EXISTS (
+  SELECT 1 FROM pg_database WHERE datname = 'analytics'
+)
+\gexec
+COMMENT ON DATABASE analytics IS 'Risk analytics, player scoring and fraud detection data';
+
 
 -- ============================================================
 -- INFRASTRUCTURE VERİTABANLARI

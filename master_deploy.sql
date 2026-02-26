@@ -4,6 +4,7 @@
 
 \i create_dbs.sql
 
+\i deploy_analytics.sql
 \i deploy_bonus.sql
 \i deploy_core.sql
 \i deploy_core_audit.sql

@@ -1,9 +1,9 @@
-# Gateway & Plugin Functions
+# Gateway, Plugin & Analytics Functions
 
-Gateway ve plugin veritabanlarındaki tüm stored procedure, function ve trigger'ları içerir.
+Gateway, plugin ve analytics veritabanlarındaki tüm stored procedure, function ve trigger'ları içerir.
 
-**Veritabanları:** `game`, `game_log`, `finance`, `finance_log`, `bonus`
-**Toplam:** 42 fonksiyon
+**Veritabanları:** `game`, `game_log`, `finance`, `finance_log`, `bonus`, `analytics`
+**Toplam:** 49 fonksiyon
 
 ---
 
@@ -111,3 +111,31 @@ Bonus tanım, kural, kampanya ve promosyon yönetimi. JSON-driven rule engine.
 | `promo_code_update` | Promosyon kodu güncelle |
 | `promo_code_get` | ID ile promosyon kodu detayı getir |
 | `promo_code_list` | Promosyon kodu listesi |
+
+---
+
+## Analytics Database (7 fonksiyon)
+
+Risk analiz baseline ve skor yönetimi. RiskManager skor yazar, Report Cluster baseline yazar, Backoffice Cluster okur.
+
+### Risk Schema — RiskManager (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_baseline_list` | Tüm oyuncu baseline verilerini listele (cache yenileme için full scan) |
+| `tenant_baseline_list` | Tüm tenant baseline verilerini listele (cache yenileme için full scan) |
+| `player_score_upsert` | Oyuncu risk skorunu yaz/güncelle. high_risk_count ve evaluation_count atomik artırılır |
+
+### Risk Schema — Report Cluster (2)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_baseline_upsert` | Oyuncu baseline verilerini yaz/güncelle (istatistiksel profil) |
+| `tenant_baseline_upsert` | Tenant baseline verilerini yaz/güncelle (tenant geneli ortalamalar) |
+
+### Risk Schema — BO Cluster (2)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `player_score_get` | Tekil oyuncu risk skoru getir (Redis miss fallback) |
+| `player_score_list` | Oyuncu risk skoru listesi (dashboard, risk_level filtreli, anomaly_score sıralı) |
