@@ -197,7 +197,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `platform_setting_list` | List with category/environment/active filters |
 | `platform_setting_update` | Update configuration |
 
-#### Tenant Management (18)
+#### Tenant Management (19)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
@@ -219,6 +219,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `tenant_setting_get` | Get tenant setting. IDOR |
 | `tenant_setting_list` | List tenant settings with optional category filter. IDOR |
 | `tenant_setting_upsert` | Upsert tenant setting. IDOR |
+| `tenant_get_verification_timing` | Returns KYC verification timing for tenant primary jurisdiction |
 
 #### User-Department (3)
 
