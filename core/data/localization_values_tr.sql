@@ -41,6 +41,12 @@ JOIN (VALUES
     ('validation.kyc.level-invalid', 'Geçersiz KYC seviyesi'),
     ('validation.kyc.deadline-action-invalid', 'Geçersiz deadline action değeri'),
 
+    -- Security (XSS + SQL Injection)
+    ('validation.nohtmltags', '{0} HTML etiket içeremez'),
+    ('validation.nojseventhandlers', '{0} JavaScript event handler içeremez'),
+    ('validation.dangerousuri', '{0} tehlikeli URI şeması içeriyor'),
+    ('validation.security.sql-injection', '{0} şüpheli SQL kalıpları içeriyor'),
+
     -- Error Messages - Logs
     ('error.logs.errornotfound', 'Error log bulunamadı'),
     ('error.deadletter.notfound', 'Dead letter bulunamadı'),

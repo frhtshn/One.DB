@@ -7,7 +7,7 @@
 -- Workflow kaydı oluşturulur.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS kyc.document_analysis_save(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, SMALLINT, TEXT[], JSONB, INTEGER, UUID, BOOLEAN, BOOLEAN, BOOLEAN, NUMERIC, NUMERIC, JSONB, TIMESTAMP);
+DROP FUNCTION IF EXISTS kyc.document_analysis_save(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, VARCHAR, VARCHAR, SMALLINT, TEXT[], TEXT, INTEGER, UUID, BOOLEAN, BOOLEAN, BOOLEAN, NUMERIC, NUMERIC, TEXT, TIMESTAMP);
 
 CREATE OR REPLACE FUNCTION kyc.document_analysis_save(
     p_player_id            BIGINT,
@@ -19,7 +19,7 @@ CREATE OR REPLACE FUNCTION kyc.document_analysis_save(
     p_ai_decision          VARCHAR(10),
     p_risk_score           SMALLINT DEFAULT NULL,
     p_rejection_reasons    TEXT[] DEFAULT NULL,
-    p_quality_details      JSONB DEFAULT NULL,
+    p_quality_details      TEXT DEFAULT NULL,
     p_processing_time_ms   INTEGER DEFAULT NULL,
     p_job_id               UUID DEFAULT NULL,
     -- Kimlik pipeline parametreleri (adres belgesi için NULL gönderilir)
@@ -29,7 +29,7 @@ CREATE OR REPLACE FUNCTION kyc.document_analysis_save(
     p_similarity_score     NUMERIC(5,4) DEFAULT NULL,
     p_liveness_score       NUMERIC(5,4) DEFAULT NULL,
     -- Adres pipeline parametreleri (kimlik belgesi için NULL gönderilir)
-    p_address_doc_details  JSONB DEFAULT NULL,
+    p_address_doc_details  TEXT DEFAULT NULL,
     p_analyzed_at          TIMESTAMP DEFAULT NOW()
 )
 RETURNS BIGINT
@@ -91,9 +91,9 @@ BEGIN
         p_request_id, p_job_id, p_analysis_type, p_idm_document_type,
         p_face_detected_doc, p_face_detected_selfie, p_document_check,
         p_similarity_score, p_liveness_score,
-        p_address_doc_details,
+        p_address_doc_details::JSONB,
         p_risk_score, p_ai_decision, p_rejection_reasons,
-        p_quality_details, p_processing_time_ms,
+        p_quality_details::JSONB, p_processing_time_ms,
         p_analyzed_at
     )
     RETURNING id INTO v_analysis_id;

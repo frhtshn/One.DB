@@ -41,6 +41,12 @@ JOIN (VALUES
     ('validation.kyc.level-invalid', 'Invalid KYC level'),
     ('validation.kyc.deadline-action-invalid', 'Invalid deadline action value'),
 
+    -- Security (XSS + SQL Injection)
+    ('validation.nohtmltags', '{0} must not contain HTML tags'),
+    ('validation.nojseventhandlers', '{0} must not contain JavaScript event handlers'),
+    ('validation.dangerousuri', '{0} contains a dangerous URI scheme'),
+    ('validation.security.sql-injection', '{0} contains suspicious SQL patterns'),
+
     -- Error Messages - Logs
     ('error.logs.errornotfound', 'Error log not found'),
     ('error.deadletter.notfound', 'Dead letter not found'),

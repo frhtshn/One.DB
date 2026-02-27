@@ -48,6 +48,12 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('validation.kyc.level-invalid', 'validation', 'kyc', 'Geçersiz KYC seviyesi'),
 ('validation.kyc.deadline-action-invalid', 'validation', 'kyc', 'Geçersiz deadline action değeri'),
 
+-- Security (XSS + SQL Injection koruma mesajları)
+('validation.nohtmltags', 'validation', 'security', '{0} HTML etiket içeremez'),
+('validation.nojseventhandlers', 'validation', 'security', '{0} JavaScript event handler içeremez'),
+('validation.dangerousuri', 'validation', 'security', '{0} tehlikeli URI şeması içeriyor'),
+('validation.security.sql-injection', 'validation', 'security', '{0} şüpheli SQL kalıpları içeriyor'),
+
 -- ============================================================================
 -- ERROR MESSAGES (Exception sınıflarında kullanılan)
 -- Pattern: error.{domain}.{sub-domain?}.{reason}

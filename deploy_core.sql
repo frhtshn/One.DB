@@ -221,6 +221,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/tenants/tenant_update.sql
 
 \i core/functions/core/tenants/tenant_lookup.sql
+\i core/functions/core/tenants/tenant_get_verification_timing.sql
 
 -- Platform Settings
 \i core/functions/core/platform_settings/platform_setting_create.sql

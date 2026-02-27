@@ -37,29 +37,34 @@ BEGIN
       AND (p_reviewer_id IS NULL OR kc.assigned_reviewer_id = p_reviewer_id)
       AND (p_player_id IS NULL OR kc.player_id = p_player_id);
 
-    -- Sayfalı liste
+    -- Sayfalı liste (subquery ile pagination, dışarıda jsonb_agg)
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
-            'id', kc.id,
-            'playerId', kc.player_id,
-            'currentStatus', kc.current_status,
-            'kycLevel', kc.kyc_level,
-            'riskLevel', kc.risk_level,
-            'assignedReviewerId', kc.assigned_reviewer_id,
-            'lastDecisionReason', kc.last_decision_reason,
-            'createdAt', kc.created_at,
-            'updatedAt', kc.updated_at
-        ) ORDER BY kc.created_at DESC
+            'id', sub.id,
+            'playerId', sub.player_id,
+            'currentStatus', sub.current_status,
+            'kycLevel', sub.kyc_level,
+            'riskLevel', sub.risk_level,
+            'assignedReviewerId', sub.assigned_reviewer_id,
+            'lastDecisionReason', sub.last_decision_reason,
+            'createdAt', sub.created_at,
+            'updatedAt', sub.updated_at
+        )
     ), '[]'::jsonb)
     INTO v_items
-    FROM kyc.player_kyc_cases kc
-    WHERE (p_status IS NULL OR kc.current_status = p_status)
-      AND (p_kyc_level IS NULL OR kc.kyc_level = p_kyc_level)
-      AND (p_risk_level IS NULL OR kc.risk_level = p_risk_level)
-      AND (p_reviewer_id IS NULL OR kc.assigned_reviewer_id = p_reviewer_id)
-      AND (p_player_id IS NULL OR kc.player_id = p_player_id)
-    ORDER BY kc.created_at DESC
-    LIMIT p_page_size OFFSET v_offset;
+    FROM (
+        SELECT kc.id, kc.player_id, kc.current_status, kc.kyc_level,
+               kc.risk_level, kc.assigned_reviewer_id, kc.last_decision_reason,
+               kc.created_at, kc.updated_at
+        FROM kyc.player_kyc_cases kc
+        WHERE (p_status IS NULL OR kc.current_status = p_status)
+          AND (p_kyc_level IS NULL OR kc.kyc_level = p_kyc_level)
+          AND (p_risk_level IS NULL OR kc.risk_level = p_risk_level)
+          AND (p_reviewer_id IS NULL OR kc.assigned_reviewer_id = p_reviewer_id)
+          AND (p_player_id IS NULL OR kc.player_id = p_player_id)
+        ORDER BY kc.created_at DESC
+        LIMIT p_page_size OFFSET v_offset
+    ) sub;
 
     RETURN jsonb_build_object(
         'items', v_items,
