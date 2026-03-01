@@ -2720,7 +2720,7 @@ stateDiagram-v2
 
 ### 7.3 Performans Notları
 
-- **Wallet fonksiyonları:** `FOR UPDATE` row-level lock ile concurrency. Orleans grain seri erişim garantisi ile çift katmanlı koruma.
+- **Wallet fonksiyonları:** `FOR UPDATE` row-level lock ile concurrency koruması.
 - **Idempotency cache:** Redis TTL 5dk → DB'ye gitmeden döner.
 - **Balance cache:** Redis TTL 60sn, sadece okuma hızlandırma. Yazma her zaman DB'den.
 - **Cursor pagination:** OFFSET yerine (display_order, id) composite cursor → büyük veri setlerinde performans.

@@ -20,8 +20,8 @@
 | **API** | CashierController | ASP.NET Core | Ödeme yöntemi listeleme, deposit/withdrawal başlatma |
 | | CallbackController | ASP.NET Core | PSP callback/webhook karşılama |
 | | WorkflowController | ASP.NET Core | BO onay/red/atama işlemleri |
-| **Orchestration** | PaymentSessionGrain | Orleans | Session yaşam döngüsü, durum geçişleri |
-| | PlayerWalletGrain | Orleans | Oyuncu başına wallet işlemleri (seri erişim) |
+| **Service** | PaymentSessionService | .NET | Session yaşam döngüsü, durum geçişleri |
+| | PlayerWalletService | .NET | Oyuncu başına wallet işlemleri |
 | **Cache** | Session Cache | Redis | `payment-session:{token}` → session bilgisi |
 | | Limit Cache | Redis | `limit:{clientId}:{methodId}:{currency}` → limit bilgisi |
 | | Rate Cache | Redis | `fee:{clientId}:{methodId}:{currency}` → fee bilgisi |

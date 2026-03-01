@@ -19,8 +19,8 @@ Oyun entegrasyonu iki temel bileşenden oluşur: **Oyun Kataloğu** (Game DB + C
 |--------|---------|-----------|------------|
 | **API** | CallbackController | ASP.NET Core | Provider HTTP callback'lerini karşılar |
 | | GameLaunchController | ASP.NET Core | Oyun açma isteklerini karşılar |
-| **Orchestration** | PlayerWalletGrain | Orleans | Oyuncu başına wallet işlemleri (seri erişim) |
-| | GameSessionGrain | Orleans | Oturum yaşam döngüsü, token doğrulama |
+| **Service** | PlayerWalletService | .NET | Oyuncu başına wallet işlemleri |
+| | GameSessionService | .NET | Oturum yaşam döngüsü, token doğrulama |
 | **Cache** | Session Cache | Redis | `session:{token}` → player/client/game bilgisi |
 | | Routing Cache | Redis | `route:{routeKey}` → client_id, provider_id |
 | | Balance Cache | Redis | `balance:{clientId}:{playerId}:{currency}` → cash, bonus |
@@ -42,9 +42,9 @@ flowchart TD
         GLC["GameLaunchController"]
     end
 
-    subgraph ORLEANS["Orleans Silo"]
-        PWG["PlayerWalletGrain<br/>(clientId:playerId:currency)"]
-        GSG["GameSessionGrain<br/>(sessionToken)"]
+    subgraph SVC["Service Katmanı (.NET)"]
+        PWS["PlayerWalletService<br/>(clientId:playerId:currency)"]
+        GSS["GameSessionService<br/>(sessionToken)"]
     end
 
     subgraph CACHE["Redis"]
@@ -88,14 +88,12 @@ flowchart TD
 
 > Cross-DB bağlantılarda FK yok. `idempotency_key` ve `external_round_id` ile correlation sağlanır.
 
-### 1.4 Orleans Grain Tasarımı
+### 1.4 Service Tasarımı
 
-| Grain | Key Format | Yaşam Döngüsü | Sorumluluk |
-|-------|-----------|---------------|------------|
-| **PlayerWalletGrain** | `{clientId}:{playerId}:{currency}` | İlk bet'te aktif → idle timeout (5dk) sonra deaktif | Wallet işlemleri (bet/win/rollback/balance). **Seri erişim garantisi** — aynı oyuncuya paralel callback'ler grain seviyesinde sıralanır. |
-| **GameSessionGrain** | `{sessionToken}` | Game launch'ta aktif → session expire'da deaktif | Token doğrulama, session metadata cache, expire reminder. |
-
-> **Neden Orleans?** Wallet işlemlerinde aynı oyuncuya eşzamanlı gelen callback'ler (hızlı spin'lerde bet+win arka arkaya) grain'in single-threaded yapısıyla sıralanır. DB `FOR UPDATE` kilidine ek koruma katmanı sağlar, deadlock riskini ortadan kaldırır.
+| Service | Key Format | Sorumluluk |
+|---------|-----------|------------|
+| **PlayerWalletService** | `{clientId}:{playerId}:{currency}` | Wallet işlemleri (bet/win/rollback/balance). DB `FOR UPDATE` row-level lock ile concurrency koruması. |
+| **GameSessionService** | `{sessionToken}` | Token doğrulama, session metadata cache, expire yönetimi. |
 
 ### 1.5 Redis Cache Stratejisi
 
@@ -247,7 +245,7 @@ sequenceDiagram
 |---|------|-----------------|-------|--------|
 | 1 | Routing & config al | Senkron (cache-first) | Redis → Core DB | 404 route bulunamadı |
 | 2 | Player + game kontrol | Senkron | Client DB | 403 frozen / oyun kapalı |
-| 3 | Session oluştur | Senkron | Orleans → Client DB → Redis | 500 session hatası |
+| 3 | Session oluştur | Senkron | Client DB → Redis | 500 session hatası |
 | 4 | Provider launch API | Senkron | Provider HTTP | 502 provider yanıt yok |
 | 5 | Launch log | **Asenkron** | RabbitMQ → Game Log DB | Fire-and-forget |
 
@@ -294,9 +292,9 @@ sequenceDiagram
 | 1a | Route çöz | Senkron (cache-first) | Redis → Core DB | `route:{routeKey}` TTL 5dk | 404 |
 | 1b | IP whitelist | Senkron | Core DB | — | 403 |
 | 1c | Signature doğrula | Senkron | Core DB → Backend | — | 401 |
-| 2 | Player çöz (token) | Senkron (cache-first) | Redis → Orleans → Client DB | `session:{token}` TTL 30dk | session-not-found / expired |
-| 3a | İdempotency kontrol | Senkron (cache-first) | Redis → Grain → Client DB | `idemp:{key}` TTL 5dk | — |
-| 3b | Wallet işlemi | **Senkron (grain-serialized)** | Orleans → Client DB | Balance sonra güncellenir | insufficient-balance, frozen |
+| 2 | Player çöz (token) | Senkron (cache-first) | Redis → Client DB | `session:{token}` TTL 30dk | session-not-found / expired |
+| 3a | İdempotency kontrol | Senkron (cache-first) | Redis → Client DB | `idemp:{key}` TTL 5dk | — |
+| 3b | Wallet işlemi | **Senkron** | Client DB | Balance sonra güncellenir | insufficient-balance, frozen |
 | 4a | Callback log | **Asenkron** | RabbitMQ → Game Log DB | — | Fire-and-forget |
 | 4b | Round kaydı | **Asenkron** | RabbitMQ → Client Log DB | — | Fire-and-forget |
 
@@ -644,7 +642,7 @@ sequenceDiagram
 | 1b | Core DB → signature secret | ~3-5 ms | Tek SELECT |
 | 2 | Redis → `session:{token}` | ~1 ms | Cache hit |
 | 3a | Redis → `idemp:{key}` | ~1 ms | Cache miss (yeni işlem) |
-| **3b** | **Orleans → Client DB → `bet_process()`** | **~10-25 ms** | **Kritik yol** |
+| **3b** | **Client DB → `bet_process()`** | **~10-25 ms** | **Kritik yol** |
 | 4 | RabbitMQ publish | ~1 ms | Asenkron |
 | | **Toplam** | **~18-35 ms** | Provider SLA: 1-3 sn |
 
@@ -653,7 +651,7 @@ sequenceDiagram
 | Kademe | Koşul | Süre |
 |--------|-------|------|
 | 1 | Redis idempotency cache HIT | ~2 ms |
-| 2 | Orleans grain'de cached balance | ~5-8 ms |
+| 2 | Redis cached balance HIT | ~5-8 ms |
 | 3 | Tümü MISS (worst case) | ~12 ms |
 
 ### Ölçeklenebilirlik — 20K Eşzamanlı Oyuncu
@@ -668,7 +666,7 @@ sequenceDiagram
 
 | Katman | Darboğaz? | Neden |
 |--------|-----------|-------|
-| Orleans Silos | Hayır | Milyonlarca grain destekler, auto-scale |
+| .NET Services | Hayır | Horizontal scale, stateless |
 | Redis | Hayır | 100K+ ops/sn tek instance |
 | RabbitMQ | Hayır | Asenkron, consumer horizontal scale |
 | PostgreSQL | **Dikkat** | PgBouncer + oyuncu bazlı grain seri erişim ile yönetilebilir |

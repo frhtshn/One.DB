@@ -56,7 +56,7 @@ Bu doküman, **OneDB** projesinin büyük resmini ve sistemin nasıl çalıştı
 ```mermaid
 flowchart TD
     BO["Backoffice Application"]
-    BE["Backend (.NET + Orleans + gRPC)"]
+    BE["Backend (.NET + gRPC)"]
     BO --> BE
     subgraph core["Core Database (16 schema)"]
         CD["core (iş + log + audit + report)"]

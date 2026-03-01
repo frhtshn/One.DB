@@ -113,7 +113,6 @@ JOIN (VALUES
 
     -- Error Messages - System Silo
     ('error.system.silo.unavailable', 'Silo is unavailable'),
-    ('error.system.silo.cluster-unavailable', 'Orleans cluster is unavailable'),
     ('error.system.silo.auth-init-failed', 'Auth infrastructure initialization failed'),
 
     -- Error Messages - Client

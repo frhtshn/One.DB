@@ -128,7 +128,6 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 
 -- System - Silo Exceptions
 ('error.system.silo.unavailable', 'error', 'system', 'Silo erişilemez'),
-('error.system.silo.cluster-unavailable', 'error', 'system', 'Orleans cluster erişilemez'),
 ('error.system.silo.auth-init-failed', 'error', 'system', 'Auth altyapısı başlatılamadı'),
 
 -- Client Exceptions
