@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Commission Schema Indexes
+-- Client Affiliate - Commission Schema Indexes
 -- =============================================
 
 -- commission_plans

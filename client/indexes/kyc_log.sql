@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log KYC Schema Indexes
+-- Client Log KYC Schema Indexes
 -- player_kyc_provider_logs
 -- =============================================
 

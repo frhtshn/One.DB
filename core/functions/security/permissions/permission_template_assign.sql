@@ -16,7 +16,7 @@ CREATE OR REPLACE FUNCTION security.permission_template_assign(
     p_template_id BIGINT,
     p_user_id BIGINT,
     p_caller_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_expires_at TIMESTAMPTZ DEFAULT NULL,
     p_reason TEXT DEFAULT NULL
 )
@@ -38,7 +38,7 @@ DECLARE
     v_item RECORD;
     v_in_role BOOLEAN;
     v_in_override BOOLEAN;
-    v_tenant_company_id BIGINT;
+    v_client_company_id BIGINT;
 BEGIN
     -- ========================================
     -- 1. TEMPLATE KONTROLU
@@ -85,7 +85,7 @@ BEGIN
     SELECT EXISTS(
         SELECT 1 FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+        WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
     ) INTO v_has_platform_role;
 
     IF NOT v_has_platform_role THEN
@@ -99,18 +99,18 @@ BEGIN
             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
         END IF;
 
-        -- Tenant validation: tenant kendi sirketine ait mi?
-        IF p_tenant_id IS NOT NULL THEN
-            SELECT t.company_id FROM core.tenants t
-            WHERE t.id = p_tenant_id AND t.status = 1
-            INTO v_tenant_company_id;
+        -- Client validation: client kendi sirketine ait mi?
+        IF p_client_id IS NOT NULL THEN
+            SELECT t.company_id FROM core.clients t
+            WHERE t.id = p_client_id AND t.status = 1
+            INTO v_client_company_id;
 
-            IF v_tenant_company_id IS NULL THEN
-                RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+            IF v_client_company_id IS NULL THEN
+                RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
             END IF;
 
-            IF v_tenant_company_id != v_caller_company_id THEN
-                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.tenant-scope-denied';
+            IF v_client_company_id != v_caller_company_id THEN
+                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.client-scope-denied';
             END IF;
         END IF;
     END IF;
@@ -137,7 +137,7 @@ BEGIN
             FROM security.permission_template_items pti
             JOIN security.permissions p ON pti.permission_id = p.id
             WHERE pti.template_id = p_template_id
-              AND NOT security.permission_check(p_caller_id, p.code, p_tenant_id)
+              AND NOT security.permission_check(p_caller_id, p.code, p_client_id)
         ) THEN
             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.auth.permission-escalation';
         END IF;
@@ -157,11 +157,11 @@ BEGIN
     -- 7. ASSIGNMENT KAYDI OLUSTUR (once ID lazim)
     -- ========================================
     INSERT INTO security.permission_template_assignments (
-        user_id, template_id, tenant_id, template_snapshot,
+        user_id, template_id, client_id, template_snapshot,
         assigned_permissions, skipped_permissions,
         assigned_by, expires_at, reason
     ) VALUES (
-        p_user_id, p_template_id, p_tenant_id, v_template_snapshot,
+        p_user_id, p_template_id, p_client_id, v_template_snapshot,
         '[]'::jsonb, '[]'::jsonb,
         p_caller_id, p_expires_at, p_reason
     )
@@ -185,7 +185,7 @@ BEGIN
             JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
             WHERE ur.user_id = p_user_id
               AND rp.permission_id = v_item.permission_id
-              AND (ur.tenant_id IS NULL OR ur.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
+              AND (ur.client_id IS NULL OR ur.client_id = p_client_id OR p_client_id IS NULL)
         );
 
         -- Hedef user'in mevcut override'inda bu permission var mi? (context_id IS NULL, global)
@@ -219,10 +219,10 @@ BEGIN
         ELSE
             -- INSERT override
             INSERT INTO security.user_permission_overrides (
-                user_id, permission_id, tenant_id, context_id, is_granted,
+                user_id, permission_id, client_id, context_id, is_granted,
                 reason, assigned_by, expires_at, template_assignment_id
             ) VALUES (
-                p_user_id, v_item.permission_id, p_tenant_id, NULL, TRUE,
+                p_user_id, v_item.permission_id, p_client_id, NULL, TRUE,
                 'Template: ' || v_template.code, p_caller_id, p_expires_at, v_assignment_id
             );
 

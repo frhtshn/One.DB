@@ -25,7 +25,7 @@ CREATE OR REPLACE FUNCTION core.infrastructure_server_create(
     p_server_type VARCHAR(30) DEFAULT 'shared',
     p_server_purpose VARCHAR(30) DEFAULT 'all',
     p_specs JSONB DEFAULT '{}',
-    p_max_tenants INTEGER DEFAULT 10
+    p_max_clients INTEGER DEFAULT 10
 )
 RETURNS BIGINT
 LANGUAGE plpgsql
@@ -71,7 +71,7 @@ BEGIN
     INSERT INTO core.infrastructure_servers (
         server_code, server_name, host, docker_host, docker_tls_verify,
         region, cloud_provider, availability_zone,
-        server_type, server_purpose, specs, max_tenants,
+        server_type, server_purpose, specs, max_clients,
         status, health_status,
         created_at, updated_at, created_by
     ) VALUES (
@@ -86,7 +86,7 @@ BEGIN
         p_server_type,
         p_server_purpose,
         COALESCE(p_specs, '{}'),
-        COALESCE(p_max_tenants, 10),
+        COALESCE(p_max_clients, 10),
         'active',
         'unknown',
         NOW(),

@@ -18,8 +18,8 @@ Bu rehber, veritabanı değişikliklerinde hangi dosyaların güncellenmesi gere
 | Dosya | Amaç | Ne Zaman Güncellenir |
 |-------|------|---------------------|
 | `.docs/DATABASE_FUNCTIONS.md` | Fonksiyon referansı (index) | Fonksiyon/trigger ekleme, silme (yönlendirme dosyası) |
-| `.docs/FUNCTIONS_CORE.md` | Core katmanı fonksiyonları | Core, core_log, core_audit, core_report fonksiyon değişiklikleri |
-| `.docs/FUNCTIONS_TENANT.md` | Tenant katmanı fonksiyonları | Tenant, tenant_log, tenant_audit, tenant_report, tenant_affiliate fonksiyon değişiklikleri |
+| `.docs/FUNCTIONS_CORE.md` | Core katmanı fonksiyonları | Core DB fonksiyon değişiklikleri (iş + log + audit + report schema'ları) |
+| `.docs/FUNCTIONS_CLIENT.md` | Client katmanı fonksiyonları | Client birleşik DB fonksiyon değişiklikleri (iş + log + audit + report + affiliate schema'ları) |
 | `.docs/FUNCTIONS_GATEWAY.md` | Gateway & plugin fonksiyonları | Game, finance, bonus fonksiyon değişiklikleri |
 
 ---
@@ -29,34 +29,25 @@ Bu rehber, veritabanı değişikliklerinde hangi dosyaların güncellenmesi gere
 ### Core Katmanı
 | Dosya | Veritabanı | İçerik |
 |-------|------------|--------|
-| `deploy_core.sql` | core | Şemalar, extensionlar, catalog/core/presentation/security/billing/routing tabloları, fonksiyonlar, triggerlar |
-| `deploy_core_log.sql` | core_log | Core operasyonel log tabloları |
-| `deploy_core_audit.sql` | core_audit | Core denetim kayıt tabloları |
-| `deploy_core_report.sql` | core_report | Core raporlama/BI tabloları |
+| `deploy_core.sql` | core | Birleşik Core DB: şemalar, extensionlar, iş tabloları (catalog/core/presentation/security/billing/routing) + log schema'ları (backoffice_log, logs) + audit schema'ları (backoffice_audit) + report schema'ları (finance_report, billing_report, performance), fonksiyonlar, triggerlar |
 | `deploy_core_staging.sql` | core (staging) | Staging ortamı için core deploy |
 | `deploy_core_production.sql` | core (production) | Production ortamı için core deploy |
 
 ### Gateway Katmanı
 | Dosya | Veritabanı | İçerik |
 |-------|------------|--------|
-| `deploy_game.sql` | game | Game gateway entegrasyon tabloları |
-| `deploy_game_log.sql` | game_log | Game gateway log tabloları |
-| `deploy_finance.sql` | finance | Finance gateway entegrasyon tabloları |
-| `deploy_finance_log.sql` | finance_log | Finance gateway log tabloları |
+| `deploy_game.sql` | game | Birleşik Game DB: game gateway entegrasyon tabloları + game_log schema'sı |
+| `deploy_finance.sql` | finance | Birleşik Finance DB: finance gateway entegrasyon tabloları + finance_log schema'sı |
 
 ### Plugin Katmanı
 | Dosya | Veritabanı | İçerik |
 |-------|------------|--------|
 | `deploy_bonus.sql` | bonus | Bonus plugin tabloları |
 
-### Tenant Katmanı
+### Client Katmanı
 | Dosya | Veritabanı | İçerik |
 |-------|------------|--------|
-| `deploy_tenant.sql` | tenant | Tenant şablon tabloları ve fonksiyonları |
-| `deploy_tenant_log.sql` | tenant_log | Tenant operasyonel log tabloları |
-| `deploy_tenant_audit.sql` | tenant_audit | Tenant denetim kayıt tabloları |
-| `deploy_tenant_report.sql` | tenant_report | Tenant raporlama tabloları |
-| `deploy_tenant_affiliate.sql` | tenant_affiliate | Affiliate tracking ve komisyon tabloları |
+| `deploy_client.sql` | client | Client birleşik DB (30 schema): iş verileri, log, audit, report ve affiliate tabloları ve fonksiyonları |
 
 ---
 
@@ -127,9 +118,9 @@ COMMENT ON SCHEMA yeni_sema IS 'Şema açıklaması';
 ```
 
 **Hangi Döküman?**
-- Core/core_log/core_audit/core_report → `.docs/FUNCTIONS_CORE.md`
-- Tenant/tenant_log/tenant_audit/tenant_report/tenant_affiliate → `.docs/FUNCTIONS_TENANT.md`
-- Game/game_log/finance/finance_log/bonus → `.docs/FUNCTIONS_GATEWAY.md`
+- Core DB (iş + log + audit + report schema'ları) → `.docs/FUNCTIONS_CORE.md`
+- Client (birleşik DB: iş + log + audit + report + affiliate schema'ları) → `.docs/FUNCTIONS_CLIENT.md`
+- Game/finance/bonus → `.docs/FUNCTIONS_GATEWAY.md`
 
 **Fonksiyon Dosya Şablonu:**
 ```sql
@@ -307,9 +298,9 @@ Fonksiyon referansları 3 ayrı dosyaya bölünmüştür. `DATABASE_FUNCTIONS.md
 
 | Dosya | Kapsam |
 |-------|--------|
-| `FUNCTIONS_CORE.md` | core, core_log, core_audit, core_report |
-| `FUNCTIONS_TENANT.md` | tenant, tenant_log, tenant_audit, tenant_report, tenant_affiliate |
-| `FUNCTIONS_GATEWAY.md` | game, game_log, finance, finance_log, bonus |
+| `FUNCTIONS_CORE.md` | core DB (iş + backoffice_log + logs + backoffice_audit + finance_report + billing_report + performance schema'ları) |
+| `FUNCTIONS_CLIENT.md` | client (birleşik DB: iş + log + audit + report + affiliate schema'ları) |
+| `FUNCTIONS_GATEWAY.md` | game (iş + game_log), finance (iş + finance_log), bonus |
 
 ```markdown
 ## <Veritabanı> Database

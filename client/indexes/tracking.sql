@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Tracking Schema Indexes
+-- Client Affiliate - Tracking Schema Indexes
 -- =============================================
 
 -- player_affiliate_current

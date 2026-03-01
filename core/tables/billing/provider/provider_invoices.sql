@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: billing.provider_invoices
 -- Açıklama: Provider'lardan gelen faturalar
--- Oyun, ödeme vb. provider'ların Nucleo'ya kestiği faturalar
+-- Oyun, ödeme vb. provider'ların Sortis One'a kestiği faturalar
 -- Settlement/reconciliation sonucu oluşan borçlar
 -- =============================================
 

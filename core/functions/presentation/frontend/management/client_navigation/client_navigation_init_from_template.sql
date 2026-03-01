@@ -1,20 +1,20 @@
 -- ================================================================
--- TENANT_NAVIGATION_INIT_FROM_TEMPLATE: Template'den navigasyon oluştur
+-- CLIENT_NAVIGATION_INIT_FROM_TEMPLATE: Template'den navigasyon oluştur
 -- ================================================================
 -- Açıklama:
---   Seçilen navigation_template'deki tüm öğeleri tenant_navigation'a kopyalar.
+--   Seçilen navigation_template'deki tüm öğeleri client_navigation'a kopyalar.
 --   Mevcut navigasyon varsa hata verir (force parametresi ile override edilebilir).
 -- Erişim:
---   - Platform Admin: Tüm tenant'lar
---   - CompanyAdmin: Kendi company'sindeki tenant'lar
---   - TenantAdmin: user_allowed_tenants'taki tenant'lar
+--   - Platform Admin: Tüm client'lar
+--   - CompanyAdmin: Kendi company'sindeki client'lar
+--   - ClientAdmin: user_allowed_clients'taki client'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_navigation_init_from_template(BIGINT, BIGINT, INT, BOOLEAN);
+DROP FUNCTION IF EXISTS presentation.client_navigation_init_from_template(BIGINT, BIGINT, INT, BOOLEAN);
 
-CREATE OR REPLACE FUNCTION presentation.tenant_navigation_init_from_template(
+CREATE OR REPLACE FUNCTION presentation.client_navigation_init_from_template(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_template_id INT,
     p_force BOOLEAN DEFAULT FALSE
 )
@@ -27,13 +27,13 @@ DECLARE
     v_existing_count INT;
     v_inserted_count INT := 0;
 BEGIN
-    -- 1. Tenant varlık kontrolü
-    IF NOT EXISTS(SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    -- 1. Client varlık kontrolü
+    IF NOT EXISTS(SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
-    -- 2. Tenant erişim kontrolü
-    PERFORM security.user_assert_access_tenant(p_caller_id, p_tenant_id);
+    -- 2. Client erişim kontrolü
+    PERFORM security.user_assert_access_client(p_caller_id, p_client_id);
 
     -- ========================================
     -- 3. TEMPLATE VARLIK KONTROLÜ
@@ -46,23 +46,23 @@ BEGIN
     -- 5. MEVCUT NAVİGASYON KONTROLÜ
     -- ========================================
     SELECT COUNT(*) INTO v_existing_count
-    FROM presentation.tenant_navigation
-    WHERE tenant_id = p_tenant_id;
+    FROM presentation.client_navigation
+    WHERE client_id = p_client_id;
 
     IF v_existing_count > 0 AND NOT p_force THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.tenant-navigation.already-initialized';
+        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.client-navigation.already-initialized';
     END IF;
 
     -- Force modunda mevcut navigasyonu sil
     IF p_force AND v_existing_count > 0 THEN
-        DELETE FROM presentation.tenant_navigation WHERE tenant_id = p_tenant_id;
+        DELETE FROM presentation.client_navigation WHERE client_id = p_client_id;
     END IF;
 
     -- ========================================
     -- 6. TEMPLATE ÖĞELERİNİ KOPYALA
     -- ========================================
-    INSERT INTO presentation.tenant_navigation (
-        tenant_id,
+    INSERT INTO presentation.client_navigation (
+        client_id,
         template_item_id,
         menu_location,
         translation_key,
@@ -80,7 +80,7 @@ BEGIN
         updated_at
     )
     SELECT
-        p_tenant_id,
+        p_client_id,
         nti.id,                          -- template_item_id referansı
         nti.menu_location,
         nti.translation_key,
@@ -105,19 +105,19 @@ BEGIN
     -- ========================================
     -- 7. PARENT-CHILD İLİŞKİLERİNİ GÜNCELLE
     -- ========================================
-    -- Template'deki parent_id'leri tenant_navigation'daki yeni ID'lerle eşleştir
-    UPDATE presentation.tenant_navigation tn
+    -- Template'deki parent_id'leri client_navigation'daki yeni ID'lerle eşleştir
+    UPDATE presentation.client_navigation tn
     SET parent_id = (
         SELECT tn2.id
-        FROM presentation.tenant_navigation tn2
-        WHERE tn2.tenant_id = p_tenant_id
+        FROM presentation.client_navigation tn2
+        WHERE tn2.client_id = p_client_id
           AND tn2.template_item_id = (
               SELECT nti.parent_id
               FROM catalog.navigation_template_items nti
               WHERE nti.id = tn.template_item_id
           )
     )
-    WHERE tn.tenant_id = p_tenant_id
+    WHERE tn.client_id = p_client_id
       AND tn.template_item_id IS NOT NULL
       AND EXISTS (
           SELECT 1 FROM catalog.navigation_template_items nti
@@ -128,10 +128,10 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_navigation_init_from_template(BIGINT, BIGINT, INT, BOOLEAN) IS
-'Initializes tenant navigation from a catalog template.
-Copies all template items to tenant_navigation with proper parent-child relationships.
-Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).
+COMMENT ON FUNCTION presentation.client_navigation_init_from_template(BIGINT, BIGINT, INT, BOOLEAN) IS
+'Initializes client navigation from a catalog template.
+Copies all template items to client_navigation with proper parent-child relationships.
+Access: Platform Admin (all), CompanyAdmin (own company), ClientAdmin (allowed clients).
 Parameters:
   - p_force: If TRUE, deletes existing navigation and re-initializes. Default FALSE.
 Returns: Number of navigation items created.';

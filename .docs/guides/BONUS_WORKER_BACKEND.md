@@ -27,9 +27,9 @@ flowchart TD
 
     subgraph databases["Veritabanları"]
         BDB["Bonus DB<br/>(kurallar, kampanyalar)"]
-        TDB["Tenant DB<br/>(awards, wallet)"]
+        TDB["Client DB<br/>(awards, wallet)"]
         CDB["Core DB<br/>(auth, segmentation)"]
-        TLDB["Tenant Log DB<br/>(evaluation logs)"]
+        TLDB["Client Log DB<br/>(evaluation logs)"]
     end
 
     MQ --> EH
@@ -53,11 +53,11 @@ flowchart TD
 | Bağlantı | Veritabanı | Kullanım |
 |-----------|-----------|----------|
 | `BonusDbConnection` | Bonus DB | Kural, kampanya, promo okuma (çoğunlukla read-only) |
-| `TenantDbConnection` | Tenant DB | Award CRUD, wallet işlemleri, request workflow |
+| `ClientDbConnection` | Client DB | Award CRUD, wallet işlemleri, request workflow |
 | `CoreDbConnection` | Core DB | `auth.player_get_segmentation()` — sadece read |
-| `TenantLogDbConnection` | Tenant Log DB | `bonus_evaluation_logs` yazma |
+| `ClientLogDbConnection` | Client Log DB | `bonus_evaluation_logs` yazma |
 
-**Multi-tenant:** Her tenant için ayrı Tenant DB bağlantısı. Bonus DB ve Core DB shared.
+**Multi-client:** Her client için ayrı Client DB bağlantısı. Bonus DB ve Core DB shared.
 
 ---
 
@@ -70,7 +70,7 @@ BonusWorker/
 │
 ├── Configuration/
 │   ├── BonusWorkerOptions.cs           # Worker ayarları (batch size, intervals)
-│   └── TenantConnectionFactory.cs      # Tenant bazlı connection resolver
+│   └── ClientConnectionFactory.cs      # Client bazlı connection resolver
 │
 ├── EventHandlers/                      # Message queue consumer'ları
 │   ├── DepositCompletedHandler.cs      # Deposit → bonus evaluation
@@ -130,14 +130,14 @@ sequenceDiagram
     participant BW as Bonus Worker
     participant BDB as Bonus DB
     participant CDB as Core DB
-    participant TDB as Tenant DB
-    participant TLDB as Tenant Log DB
+    participant TDB as Client DB
+    participant TLDB as Client Log DB
 
-    FG->>MQ: DepositCompleted {playerId, tenantId, amount, currency, isFirst}
+    FG->>MQ: DepositCompleted {playerId, clientId, amount, currency, isFirst}
     MQ->>BW: Consume event
 
     Note over BW: 1. Kural eşleştirme
-    BW->>BDB: bonus.bonus_rule_list(tenantId, evaluation_type='immediate', is_active=true)
+    BW->>BDB: bonus.bonus_rule_list(clientId, evaluation_type='immediate', is_active=true)
     BDB-->>BW: Aktif kurallar listesi
 
     Note over BW: 2. Trigger filtreleme
@@ -187,7 +187,7 @@ sequenceDiagram
 ```json
 {
   "eventType": "DepositCompleted",
-  "tenantId": 1001,
+  "clientId": 1001,
   "playerId": 50234,
   "timestamp": "2026-02-26T14:30:00Z",
   "data": {
@@ -217,12 +217,12 @@ Her event için pipeline sırayla şu adımları çalıştırır. Herhangi bir a
 |---|------|----|----------|---------------|
 | 1 | **RuleMatch** | Bonus DB | `trigger_config.event` event tipine eşleşiyor mu? Koşullar sağlanıyor mu? | `trigger_not_matched` |
 | 2 | **EligibilityCheck** | Core DB | Oyuncu segmentasyon verisi ile `eligibility_criteria` karşılaştırma | `eligibility_not_met` |
-| 3 | **ConflictCheck** | Tenant DB | `disables_other_bonuses` ve `stacking_group` kontrolü | `conflict_stacking`, `conflict_disabled` |
-| 4 | **UsageLimitCheck** | Bonus + Tenant DB | `max_uses_total` ve `max_uses_per_player` aşılmadı mı? | `max_uses_exceeded` |
+| 3 | **ConflictCheck** | Client DB | `disables_other_bonuses` ve `stacking_group` kontrolü | `conflict_stacking`, `conflict_disabled` |
+| 4 | **UsageLimitCheck** | Bonus + Client DB | `max_uses_total` ve `max_uses_per_player` aşılmadı mı? | `max_uses_exceeded` |
 | 5 | **CampaignBudgetCheck** | Bonus DB | Kampanya bağlıysa: `spent_budget < total_budget`? | `budget_exhausted` |
 | 6 | **RewardCalculation** | — (in-memory) | `reward_config`'e göre tutar hesapla | `reward_zero` (hesaplanan tutar 0) |
-| 7 | **AwardCreation** | Tenant DB | `bonus.bonus_award_create()` çağır | `award_creation_failed` |
-| 8 | **LogWrite** | Tenant Log DB | `bonus_evaluation_logs`'a sonuç yaz | — (best-effort) |
+| 7 | **AwardCreation** | Client DB | `bonus.bonus_award_create()` çağır | `award_creation_failed` |
+| 8 | **LogWrite** | Client Log DB | `bonus_evaluation_logs`'a sonuç yaz | — (best-effort) |
 
 ### 4.2 ExpressionEvaluator (Generic JSON Koşul Motoru)
 
@@ -313,9 +313,9 @@ sequenceDiagram
     participant GG as Game Gateway
     participant MQ as Message Queue
     participant BW as Bonus Worker
-    participant TDB as Tenant DB
+    participant TDB as Client DB
 
-    GG->>MQ: BetSettled {playerId, tenantId, betAmount, gameType, roundId}
+    GG->>MQ: BetSettled {playerId, clientId, betAmount, gameType, roundId}
     MQ->>BW: Consume event
 
     BW->>TDB: bonus.bonus_award_list(playerId, status='active')
@@ -400,7 +400,7 @@ Bu mantık **Game Gateway tarafında** (veya shared wallet service'te) uygulanı
 sequenceDiagram
     participant CJ as PeriodicEvaluationWorker
     participant BDB as Bonus DB
-    participant TDB as Tenant DB
+    participant TDB as Client DB
     participant CDB as Core DB
 
     CJ->>BDB: bonus.bonus_rule_list(evaluation_type='periodic', is_active=true)
@@ -456,7 +456,7 @@ Game provider'ların kendi bonus mekanizmaları (Pragmatic Free Spins, Hub88 Fre
 sequenceDiagram
     participant BO as BO Admin
     participant BW as Bonus Worker
-    participant TDB as Tenant DB
+    participant TDB as Client DB
     participant PP as Pragmatic Play API
 
     BO->>BW: Free spin bonusu ata (rule: 50 free spin, Slot X)

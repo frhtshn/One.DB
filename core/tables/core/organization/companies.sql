@@ -2,7 +2,7 @@
 -- Tablo: core.companies
 -- Açıklama: Şirket ana tablosu
 -- Platformda kayıtlı tüm holding/şirket bilgilerini tutar
--- Her şirket altında birden fazla tenant olabilir
+-- Her şirket altında birden fazla client olabilir
 -- =============================================
 
 DROP TABLE IF EXISTS core.companies CASCADE;
@@ -18,6 +18,6 @@ CREATE TABLE core.companies (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
-COMMENT ON TABLE core.companies IS 'Master company table for registered holdings and organizations. Each company can have multiple tenants';
+COMMENT ON TABLE core.companies IS 'Master company table for registered holdings and organizations. Each company can have multiple clients';
 
 ALTER SEQUENCE core.companies_id_seq MINVALUE 0 RESTART WITH 0;

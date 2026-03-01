@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS bonus_log.bonus_evaluation_logs CASCADE;
 
 CREATE TABLE bonus_log.bonus_evaluation_logs (
     id BIGSERIAL,                                      -- Benzersiz kayıt kimliği
-    tenant_id BIGINT NOT NULL,                         -- Tenant ID
+    client_id BIGINT NOT NULL,                         -- Client ID
     player_id BIGINT NOT NULL,                         -- Oyuncu ID
 
     -- Değerlendirilen kural bilgisi

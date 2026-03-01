@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Messaging Schema Foreign Key Constraints
+-- Client Messaging Schema Foreign Key Constraints
 -- =============================================
 
 -- message_templates

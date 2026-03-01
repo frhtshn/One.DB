@@ -1,14 +1,14 @@
 -- =============================================
--- Tenant Data Retention Policies (Veri Saklama Politikaları)
+-- Client Data Retention Policies (Veri Saklama Politikaları)
 -- KYC, Lisans ve Log stratejilerine göre verinin ömrünü belirler.
 -- Partition Manager Job'ları bu tabloyu referans alır.
 -- =============================================
 
-DROP TABLE IF EXISTS core.tenant_data_policies CASCADE;
+DROP TABLE IF EXISTS core.client_data_policies CASCADE;
 
-CREATE TABLE core.tenant_data_policies (
+CREATE TABLE core.client_data_policies (
     id bigserial PRIMARY KEY,
-    tenant_id bigint NOT NULL,
+    client_id bigint NOT NULL,
 
     -- Veri Kategorisi
     data_category varchar(50) NOT NULL,
@@ -37,4 +37,4 @@ CREATE TABLE core.tenant_data_policies (
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE core.tenant_data_policies IS 'Defines data retention and cleanup rules per tenant and data type (KYC, Logs, Audit)';
+COMMENT ON TABLE core.client_data_policies IS 'Defines data retention and cleanup rules per client and data type (KYC, Logs, Audit)';

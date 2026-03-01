@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Auth Schema Foreign Key Constraints
+-- Client Auth Schema Foreign Key Constraints
 -- =============================================
 
 -- player_classification -> players

@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Presentation Schema Indexes
+-- Client Presentation Schema Indexes
 -- =============================================
 
 -- navigation

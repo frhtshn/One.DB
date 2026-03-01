@@ -11,7 +11,7 @@ CREATE TABLE security.permission_template_assignments (
     id BIGSERIAL PRIMARY KEY,                              -- Atama ID
     user_id BIGINT NOT NULL,                               -- Atanan kullanıcı ID
     template_id BIGINT NOT NULL,                                -- Template ID (FK: security.permission_templates)
-    tenant_id BIGINT NULL,                                 -- Atama scope'u (audit metadata, scope limiter DEĞİL)
+    client_id BIGINT NULL,                                 -- Atama scope'u (audit metadata, scope limiter DEĞİL)
     template_snapshot JSONB NOT NULL,                       -- Template'in atama anındaki hali (code, name, description)
     assigned_permissions JSONB NOT NULL,                    -- Gerçekte verilen permission'lar
     skipped_permissions JSONB,                              -- Rol'de veya override'da zaten olan

@@ -132,7 +132,7 @@ def generate_markdown(db_functions):
     return "\n".join(lines)
 
 if __name__ == "__main__":
-    root_dir = r"c:\Projects\Git\nucleoDb"
+    root_dir = r"c:\Projects\Git\Sortis One\OneDB"
     data = scan_directory(root_dir)
     markdown = generate_markdown(data)
 

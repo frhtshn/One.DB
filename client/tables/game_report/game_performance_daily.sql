@@ -1,12 +1,12 @@
 -- =============================================
--- Tablo: game.game_performance_daily
+-- Tablo: game_report.game_performance_daily
 -- Açıklama: Oyun ve Sağlayıcı bazlı GÜNLÜK performans raporu.
 -- RTP analizi, popülerlik ölçümü ve provider mutabakatı için kullanılır.
 -- =============================================
 
-DROP TABLE IF EXISTS game.game_performance_daily CASCADE;
+DROP TABLE IF EXISTS game_report.game_performance_daily CASCADE;
 
-CREATE TABLE game.game_performance_daily (
+CREATE TABLE game_report.game_performance_daily (
     id bigserial,                              -- Benzersiz kayıt ID
     report_date date NOT NULL,                             -- Rapor tarihi
 
@@ -31,8 +31,8 @@ CREATE TABLE game.game_performance_daily (
     PRIMARY KEY (id, report_date)                              -- Partition key PK'ya dahil
 ) PARTITION BY RANGE (report_date);
 
--- Indexes moved to indexes/game.sql
+-- Indexes moved to indexes/game_report.sql
 
-CREATE TABLE game.game_performance_daily_default PARTITION OF game.game_performance_daily DEFAULT;
+CREATE TABLE game_report.game_performance_daily_default PARTITION OF game_report.game_performance_daily DEFAULT;
 
-COMMENT ON TABLE game.game_performance_daily IS 'Daily performance stats per game and provider for invoice reconciliation and RTP analysis. Partitioned monthly by report_date.';
+COMMENT ON TABLE game_report.game_performance_daily IS 'Daily performance stats per game and provider for invoice reconciliation and RTP analysis. Partitioned monthly by report_date.';

@@ -4,9 +4,9 @@
 -- Partitioned tablo: tarih filtresi ile partition pruning aktif
 -- ================================================================
 
-DROP FUNCTION IF EXISTS backoffice.auth_audit_list_by_type(VARCHAR(50),TIMESTAMPTZ,TIMESTAMPTZ,INT);
+DROP FUNCTION IF EXISTS backoffice_audit.auth_audit_list_by_type(VARCHAR(50),TIMESTAMPTZ,TIMESTAMPTZ,INT);
 
-CREATE OR REPLACE FUNCTION backoffice.auth_audit_list_by_type(
+CREATE OR REPLACE FUNCTION backoffice_audit.auth_audit_list_by_type(
     p_event_type VARCHAR(50),
     p_from_date TIMESTAMPTZ DEFAULT NULL,
     p_to_date TIMESTAMPTZ DEFAULT NULL,
@@ -24,7 +24,7 @@ BEGIN
                 'id', a.id,
                 'userId', a.user_id,
                 'companyId', a.company_id,
-                'tenantId', a.tenant_id,
+                'clientId', a.client_id,
                 'eventType', a.event_type,
                 'eventData', a.event_data,
                 'ipAddress', a.ip_address,
@@ -59,7 +59,7 @@ BEGIN
         ),
         '[]'::JSONB
     ) INTO v_result
-    FROM backoffice.auth_audit_log a
+    FROM backoffice_audit.auth_audit_log a
     WHERE a.event_type = p_event_type
       AND (p_from_date IS NULL OR a.created_at >= p_from_date)
       AND (p_to_date IS NULL OR a.created_at <= p_to_date)
@@ -69,4 +69,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_list_by_type IS 'Retrieves auth audit logs by event type as JSONB array with full GeoIP data';
+COMMENT ON FUNCTION backoffice_audit.auth_audit_list_by_type IS 'Retrieves auth audit logs by event type as JSONB array with full GeoIP data';

@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-    Nucleo.DB - Mevcut tenant DB'lerine tek bir SQL dosyasi deploy eder.
+    OneDB - Mevcut client DB'lerine tek bir SQL dosyasi deploy eder.
 .DESCRIPTION
-    Belirtilen SQL dosyasini, verilen tenant kodlarinin her birine calistirir.
+    Belirtilen SQL dosyasini, verilen client kodlarinin her birine calistirir.
     CREATE OR REPLACE function'lar icin guvenli (idempotent).
 .EXAMPLE
-    .\deploy_patch_tenants.ps1 -SqlFile "tenant/functions/frontend/auth/player_find_by_email_hash.sql" -TenantCodes 1,2,3,4
-    .\deploy_patch_tenants.ps1 -SqlFile "tenant/functions/frontend/auth/player_find_by_email_hash.sql" -TenantCodes 1,2,3,4 -Dry
+    .\deploy_patch_clients.ps1 -SqlFile "client/functions/frontend/auth/player_find_by_email_hash.sql" -ClientCodes 1,2,3,4
+    .\deploy_patch_clients.ps1 -SqlFile "client/functions/frontend/auth/player_find_by_email_hash.sql" -ClientCodes 1,2,3,4 -Dry
 #>
 
 param(
@@ -14,7 +14,7 @@ param(
     [string]$SqlFile,
 
     [Parameter(Mandatory = $true, Position = 1)]
-    [string[]]$TenantCodes,
+    [string[]]$ClientCodes,
 
     [switch]$Dry
 )
@@ -43,10 +43,10 @@ if (-not (Get-Command psql -ErrorAction SilentlyContinue)) {
 }
 
 Write-Host ""
-Write-Host "  NUCLEO.DB - TENANT PATCH" -ForegroundColor Blue
+Write-Host "  ONEDB - CLIENT PATCH" -ForegroundColor Blue
 Write-Host "  Server: ${HOST_IP}:${PORT}" -ForegroundColor Cyan
 Write-Host "  File:   $SqlFile" -ForegroundColor Cyan
-Write-Host "  Tenants: $($TenantCodes -join ', ')" -ForegroundColor Cyan
+Write-Host "  Clients: $($ClientCodes -join ', ')" -ForegroundColor Cyan
 Write-Host ""
 
 if ($Dry) {
@@ -58,8 +58,8 @@ if ($Dry) {
 $success = 0
 $failed  = 0
 
-foreach ($code in $TenantCodes) {
-    $dbName = "tenant_$code"
+foreach ($code in $ClientCodes) {
+    $dbName = "client_$code"
     Write-Host "  [..] $dbName" -ForegroundColor Cyan -NoNewline
 
     $env:PGOPTIONS = "--client-min-messages=warning"
@@ -85,7 +85,7 @@ foreach ($code in $TenantCodes) {
 
 Write-Host ""
 if ($failed -eq 0) {
-    Write-Host "  [OK] $success/$($TenantCodes.Count) tenant basarili" -ForegroundColor Green
+    Write-Host "  [OK] $success/$($ClientCodes.Count) client basarili" -ForegroundColor Green
 }
 else {
     Write-Host "  [!!] $success basarili, $failed basarisiz" -ForegroundColor Red

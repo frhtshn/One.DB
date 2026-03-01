@@ -31,7 +31,7 @@ BEGIN
             SELECT 1 FROM security.user_roles ur
             JOIN security.roles r ON ur.role_id = r.id
             WHERE ur.user_id = u.id
-              AND ur.tenant_id IS NULL
+              AND ur.client_id IS NULL
               AND r.is_platform_role = TRUE
               AND r.status = 1
         )

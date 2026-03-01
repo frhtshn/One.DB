@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Bonus Schema Foreign Key Constraints
+-- Client Bonus Schema Foreign Key Constraints
 -- =============================================
 
 -- bonus_awards -> players

@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS bonus.bonus_rules CASCADE;
 
 CREATE TABLE bonus.bonus_rules (
     id BIGSERIAL PRIMARY KEY,
-    tenant_id BIGINT,                              -- NULL = platform seviyesi, değer = tenant'a ait
+    client_id BIGINT,                              -- NULL = platform seviyesi, değer = client'a ait
     rule_code VARCHAR(100) NOT NULL,
     rule_name VARCHAR(255) NOT NULL,
     bonus_type_id BIGINT NOT NULL,                 -- FK → bonus_types

@@ -3,7 +3,7 @@
 -- ================================================================
 -- Açıklama:
 --   Frontend uygulamasının aktif tema yapılandırmasını çekmesi için.
---   Merged config (default + tenant override) döner.
+--   Merged config (default + client override) döner.
 --   Custom CSS dahil edilir.
 -- Kullanım:
 --   Website/App frontend tarafından çağrılır.
@@ -13,7 +13,7 @@
 DROP FUNCTION IF EXISTS presentation.get_active_theme(BIGINT);
 
 CREATE OR REPLACE FUNCTION presentation.get_active_theme(
-    p_tenant_id BIGINT
+    p_client_id BIGINT
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -25,9 +25,9 @@ DECLARE
     v_result JSONB;
 BEGIN
     -- ========================================
-    -- 1. TENANT VARLIK KONTROLÜ
+    -- 1. CLIENT VARLIK KONTROLÜ
     -- ========================================
-    IF NOT EXISTS (SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
+    IF NOT EXISTS (SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
         RETURN NULL;
     END IF;
 
@@ -43,9 +43,9 @@ BEGIN
         'customCss', tt.custom_css
     )
     INTO v_result
-    FROM presentation.tenant_themes tt
+    FROM presentation.client_themes tt
     JOIN catalog.themes t ON t.id = tt.theme_id AND t.is_active = TRUE
-    WHERE tt.tenant_id = p_tenant_id
+    WHERE tt.client_id = p_client_id
       AND tt.is_active = TRUE;
 
     -- Aktif tema yoksa varsayılan tema dön
@@ -71,6 +71,6 @@ $$;
 
 COMMENT ON FUNCTION presentation.get_active_theme(BIGINT) IS
 'Returns active theme configuration for frontend rendering.
-Returns merged config (default_config + tenant override).
+Returns merged config (default_config + client override).
 If no active theme configured, returns first available theme with defaults.
 Usage: Called by website/app frontend for theming.';

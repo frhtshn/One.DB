@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Payout Schema Constraints
+-- Client Affiliate - Payout Schema Constraints
 -- =============================================
 
 -- payout_requests -> affiliates

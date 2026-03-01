@@ -1,5 +1,5 @@
 -- ================================================================
--- THEME_LIST: Tenant tema kayıtları listele
+-- THEME_LIST: Client tema kayıtları listele
 -- Tüm kayıtlı temaları döner (aktif + pasif)
 -- ================================================================
 
@@ -28,4 +28,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.theme_list() IS 'List all tenant theme records. Active theme listed first.';
+COMMENT ON FUNCTION presentation.theme_list() IS 'List all client theme records. Active theme listed first.';

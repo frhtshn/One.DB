@@ -1,6 +1,6 @@
 # SPEC_MESSAGE_TEMPLATE: Mesaj Şablon Yönetimi Fonksiyonel Spesifikasyonu
 
-Platform (Core DB) ve tenant (Tenant DB) seviyesinde e-posta ve SMS şablon yönetimi: CRUD, çok dilli çeviri, kanal bazlı validasyon, merge tag sistemi, backend rendering desteği.
+Platform (Core DB) ve client (Client DB) seviyesinde e-posta ve SMS şablon yönetimi: CRUD, çok dilli çeviri, kanal bazlı validasyon, merge tag sistemi, backend rendering desteği.
 
 > İlgili spesifikasyonlar: [SPEC_CALL_CENTER.md](SPEC_CALL_CENTER.md) · [SPEC_SITE_MANAGEMENT.md](SPEC_SITE_MANAGEMENT.md) · [SPEC_PLAYER_AUTH_KYC.md](SPEC_PLAYER_AUTH_KYC.md)
 
@@ -8,12 +8,12 @@ Platform (Core DB) ve tenant (Tenant DB) seviyesinde e-posta ve SMS şablon yön
 
 ## 1. Kapsam ve Veritabanı Dağılımı
 
-Message Template domaininde **12 fonksiyon**, **4 tablo**, **2 veritabanı** yer alır. Platform şablonları Core DB'de, tenant şablonları Tenant DB'de birbirinden bağımsız yönetilir.
+Message Template domaininde **12 fonksiyon**, **4 tablo**, **2 veritabanı** yer alır. Platform şablonları Core DB'de, client şablonları Client DB'de birbirinden bağımsız yönetilir.
 
 | Veritabanı | Şema | Fonksiyon | Tablo | Açıklama |
 |------------|------|-----------|-------|----------|
 | **Core DB** | messaging | 6 | 2 | Platform bildirim şablonları (BO kullanıcılarına yönelik) |
-| **Tenant DB** | messaging | 6 | 2 | Tenant bildirim şablonları (oyunculara yönelik) |
+| **Client DB** | messaging | 6 | 2 | Client bildirim şablonları (oyunculara yönelik) |
 | **Toplam** | | **12** | **4** | |
 
 ```mermaid
@@ -21,15 +21,15 @@ flowchart TD
     subgraph core_db["Core DB"]
         CT["messaging.message_templates<br/>messaging.message_template_translations"]
     end
-    subgraph tenant_db["Tenant DB (Per-tenant)"]
+    subgraph client_db["Client DB (Per-client)"]
         TT["messaging.message_templates<br/>messaging.message_template_translations"]
     end
 
     PA["Platform Admin"] -- "Şablon CRUD" --> CT
-    TA["Company/Tenant Admin"] -- "Şablon CRUD" --> TT
+    TA["Company/Client Admin"] -- "Şablon CRUD" --> TT
 
     BE_CORE["Backend (Platform Events)"] -- "get_by_code → render → send" --> CT
-    BE_TENANT["Backend (Player Events)"] -- "get_by_code → render → send" --> TT
+    BE_CLIENT["Backend (Player Events)"] -- "get_by_code → render → send" --> TT
 ```
 
 ### İki Katmanlı Mimari
@@ -37,15 +37,15 @@ flowchart TD
 | Katman | Veritabanı | Hedef Kitle | Şablon Örnekleri |
 |--------|-----------|-------------|------------------|
 | **Platform** | Core DB | BO kullanıcıları | Hoş geldiniz, şifre sıfırlama, 2FA, rol değişikliği |
-| **Tenant** | Tenant DB | Oyuncular | Kayıt, KYC, yatırım/çekim, bonus, hesap durumu |
+| **Client** | Client DB | Oyuncular | Kayıt, KYC, yatırım/çekim, bonus, hesap durumu |
 
-- Platform ve tenant şablonları tamamen bağımsız — inheritance/override yok
-- Tenant varsayılan şablonları backend tarafından tenant provisioning sırasında seed'lenir
+- Platform ve client şablonları tamamen bağımsız — inheritance/override yok
+- Client varsayılan şablonları backend tarafından client provisioning sırasında seed'lenir
 - Her iki katmanda aynı fonksiyon seti (6'şar fonksiyon)
 
 ### Mevcut Kampanya Şablonları ile İlişki
 
-Tenant DB'de `messaging.message_templates` tablosu hem kampanya hem bildirim şablonlarını barındırır. `category` kolonu ile ayrıştırılır:
+Client DB'de `messaging.message_templates` tablosu hem kampanya hem bildirim şablonlarını barındırır. `category` kolonu ile ayrıştırılır:
 
 | Kategori | Kullanım | Tetiklenme |
 |----------|----------|------------|
@@ -78,7 +78,7 @@ stateDiagram-v2
 | draft | `draft` | Yeni oluşturuldu, backend rendering'de kullanılmaz |
 | active | `active` | Aktif — `message_template_get_by_code()` yalnızca bu durumu döndürür |
 | archived | `archived` | Arşivlendi, rendering'de kullanılmaz |
-| deleted | soft delete | Core: `is_active=FALSE`, Tenant: `is_deleted=TRUE` |
+| deleted | soft delete | Core: `is_active=FALSE`, Client: `is_deleted=TRUE` |
 
 **Kısıtlama:** `is_system=TRUE` olan şablonlar silinemez (seed data koruması).
 
@@ -88,7 +88,7 @@ stateDiagram-v2
 
 ### 3.1 Kanal Tipleri
 
-| Kanal | Core DB | Tenant DB | Açıklama |
+| Kanal | Core DB | Client DB | Açıklama |
 |-------|---------|-----------|----------|
 | `email` | Evet | Evet | HTML + plain text e-posta |
 | `sms` | Evet | Evet | Düz metin SMS |
@@ -172,7 +172,7 @@ Her şablonun `variables` JSONB alanı merge tag tanımlarını içerir:
 **Unique:** `(template_id, language_code)`
 **FK:** `template_id → message_templates(id) ON DELETE CASCADE`
 
-### 4.3 Tenant DB — messaging.message_templates
+### 4.3 Client DB — messaging.message_templates
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -196,7 +196,7 @@ Her şablonun `variables` JSONB alanı merge tag tanımlarını içerir:
 **Unique Index:** `(code) WHERE is_deleted = FALSE`
 **Check:** `channel_type IN ('email', 'sms', 'local')`, `category IN ('campaign', 'transactional', 'notification', 'marketing')`, `status IN ('draft', 'active', 'archived')`
 
-### 4.4 Tenant DB — messaging.message_template_translations
+### 4.4 Client DB — messaging.message_template_translations
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -215,16 +215,16 @@ Her şablonun `variables` JSONB alanı merge tag tanımlarını içerir:
 **Unique:** `(template_id, language_code)`
 **FK:** `template_id → message_templates(id) ON DELETE CASCADE`
 
-### 4.5 Core vs Tenant Farklar
+### 4.5 Core vs Client Farklar
 
-| Özellik | Core DB | Tenant DB |
+| Özellik | Core DB | Client DB |
 |---------|---------|-----------|
 | Soft delete flag | `is_active BOOLEAN` | `is_deleted BOOLEAN` + `deleted_at`, `deleted_by` |
 | Caller ID tipi | `BIGINT` (p_caller_id) | `INTEGER` (p_user_id) |
 | Timestamp tipi | `TIMESTAMPTZ` | `TIMESTAMP WITHOUT TIME ZONE` |
 | Kanal tipleri | email, sms | email, sms, local |
 | Kategoriler | transactional, notification, system | campaign, transactional, notification, marketing |
-| Seed data | SQL dosyası ile (platform deploy) | Backend ile (tenant provisioning) |
+| Seed data | SQL dosyası ile (platform deploy) | Backend ile (client provisioning) |
 
 ---
 
@@ -479,11 +479,11 @@ Her şablonun `variables` JSONB alanı merge tag tanımlarını içerir:
 
 ---
 
-### 5.2 Tenant Şablon Yönetimi — Tenant DB (6 fonksiyon)
+### 5.2 Client Şablon Yönetimi — Client DB (6 fonksiyon)
 
-Tenant fonksiyonları Core ile aynı imza ve iş kurallarını kullanır, aşağıdaki farklar hariç:
+Client fonksiyonları Core ile aynı imza ve iş kurallarını kullanır, aşağıdaki farklar hariç:
 
-| Fark | Core DB | Tenant DB |
+| Fark | Core DB | Client DB |
 |------|---------|-----------|
 | Parametre adı | `p_caller_id BIGINT` | `p_user_id INTEGER` |
 | Aktiflik filtresi | `WHERE is_active = TRUE` | `WHERE is_deleted = FALSE` |
@@ -491,27 +491,27 @@ Tenant fonksiyonları Core ile aynı imza ve iş kurallarını kullanır, aşağ
 | Kanal tipleri | 'email', 'sms' | 'email', 'sms' |
 | Kategoriler | transactional, notification, system | transactional, notification, marketing |
 
-#### `messaging.admin_message_template_create` (Tenant)
+#### `messaging.admin_message_template_create` (Client)
 
 Aynı parametre seti, `p_user_id INTEGER` ile. Kategori validasyonu: `transactional`, `notification`, `marketing`.
 
-#### `messaging.admin_message_template_update` (Tenant)
+#### `messaging.admin_message_template_update` (Client)
 
 Aynı parametre seti. `p_user_id INTEGER`, `is_deleted = FALSE` filtresi.
 
-#### `messaging.admin_message_template_get` (Tenant)
+#### `messaging.admin_message_template_get` (Client)
 
 Aynı dönüş yapısı. `is_deleted = FALSE` filtresi.
 
-#### `messaging.admin_message_template_list` (Tenant)
+#### `messaging.admin_message_template_list` (Client)
 
 Aynı dönüş yapısı. `is_deleted = FALSE` filtresi.
 
-#### `messaging.admin_message_template_delete` (Tenant)
+#### `messaging.admin_message_template_delete` (Client)
 
 Soft delete: `is_deleted = TRUE`, `deleted_at = now()`, `deleted_by = p_user_id`.
 
-#### `messaging.message_template_get_by_code` (Tenant)
+#### `messaging.message_template_get_by_code` (Client)
 
 Aynı dönüş yapısı. `status = 'active' AND is_deleted = FALSE` filtresi.
 
@@ -525,17 +525,17 @@ Aynı dönüş yapısı. `status = 'active' AND is_deleted = FALSE` filtresi.
 |-----------|-------|----------|
 | `platform.notification-template.manage` | platform | Platform şablon CRUD (create, update, delete) |
 | `platform.notification-template.view` | platform | Platform şablon görüntüleme (get, list) |
-| `tenant.notification-template.manage` | tenant | Tenant şablon CRUD |
-| `tenant.notification-template.view` | tenant | Tenant şablon görüntüleme |
+| `client.notification-template.manage` | client | Client şablon CRUD |
+| `client.notification-template.view` | client | Client şablon görüntüleme |
 
 ### 6.2 Rol Eşlemeleri
 
-| Rol | Platform View | Platform Manage | Tenant View | Tenant Manage |
+| Rol | Platform View | Platform Manage | Client View | Client Manage |
 |-----|:---:|:---:|:---:|:---:|
 | platform_admin | ✅ | ✅ | — | — |
 | company_admin | — | — | ✅ | ✅ |
-| tenant_admin | — | — | ✅ | ✅ |
-| tenant_operator | — | — | ✅ | ✅ |
+| client_admin | — | — | ✅ | ✅ |
+| client_operator | — | — | ✅ | ✅ |
 
 > **Not:** `message_template_get_by_code` auth kontrolü yapmaz — backend internal kullanım, permission gerektirmez.
 
@@ -568,9 +568,9 @@ Dosya: `core/data/notification_templates_seed.sql`
 - Tüm şablonlar `is_system = TRUE`, `status = 'active'`
 - EN ve TR çevirileri dahil (toplam 16 çeviri)
 
-### 7.2 Tenant Şablonları (Backend Seed — Tenant Provisioning)
+### 7.2 Client Şablonları (Backend Seed — Client Provisioning)
 
-Tenant varsayılan şablonları SQL dosyası ile değil, backend tarafından tenant oluşturulurken seed'lenir.
+Client varsayılan şablonları SQL dosyası ile değil, backend tarafından client oluşturulurken seed'lenir.
 
 **Önerilen email şablonları (14 adet):**
 
@@ -631,7 +631,7 @@ Tüm fonksiyonlarda kullanılan hata key'leri:
 sequenceDiagram
     participant Event as Olay (kayıt, şifre vb.)
     participant Backend as Backend Service
-    participant DB as Core/Tenant DB
+    participant DB as Core/Client DB
     participant Engine as Template Engine
     participant Provider as Email/SMS Provider
 
@@ -648,7 +648,7 @@ sequenceDiagram
 | Senaryo | Kaynak DB | Hedef | Açıklama |
 |---------|-----------|-------|----------|
 | BO kullanıcı bildirimi | Core DB | BO kullanıcısı | `message_template_get_by_code('user.welcome.email', 'en')` |
-| Oyuncu bildirimi | Tenant DB | Oyuncu | `message_template_get_by_code('player.deposit_confirmed.email', 'tr')` |
+| Oyuncu bildirimi | Client DB | Oyuncu | `message_template_get_by_code('player.deposit_confirmed.email', 'tr')` |
 
 Her iki DB bağımsız — backend ayrı connection kullanır, cross-DB sorgu yok.
 
@@ -660,7 +660,7 @@ Her iki DB bağımsız — backend ayrı connection kullanır, cross-DB sorgu yo
 
 | Segment | Değerler | Örnek |
 |---------|----------|-------|
-| hedef | `user` (platform), `player` (tenant) | `user`, `player` |
+| hedef | `user` (platform), `player` (client) | `user`, `player` |
 | olay | İş olayı adı | `welcome`, `password_reset`, `kyc_approved` |
 | kanal | `email`, `sms` | `email`, `sms` |
 
@@ -701,29 +701,29 @@ core/indexes/messaging_notification_template.sql
 core/data/notification_templates_seed.sql
 ```
 
-### 10.5 Tenant DB — Tablolar
+### 10.5 Client DB — Tablolar
 
 ```
-tenant/tables/messaging/message_templates.sql
-tenant/tables/messaging/message_template_translations.sql
+client/tables/messaging/message_templates.sql
+client/tables/messaging/message_template_translations.sql
 ```
 
-### 10.6 Tenant DB — Fonksiyonlar
+### 10.6 Client DB — Fonksiyonlar
 
 ```
-tenant/functions/backoffice/messaging/message_template/admin_message_template_create.sql
-tenant/functions/backoffice/messaging/message_template/admin_message_template_update.sql
-tenant/functions/backoffice/messaging/message_template/admin_message_template_get.sql
-tenant/functions/backoffice/messaging/message_template/admin_message_template_list.sql
-tenant/functions/backoffice/messaging/message_template/admin_message_template_delete.sql
-tenant/functions/backoffice/messaging/message_template/message_template_get_by_code.sql
+client/functions/backoffice/messaging/message_template/admin_message_template_create.sql
+client/functions/backoffice/messaging/message_template/admin_message_template_update.sql
+client/functions/backoffice/messaging/message_template/admin_message_template_get.sql
+client/functions/backoffice/messaging/message_template/admin_message_template_list.sql
+client/functions/backoffice/messaging/message_template/admin_message_template_delete.sql
+client/functions/backoffice/messaging/message_template/message_template_get_by_code.sql
 ```
 
-### 10.7 Tenant DB — Constraint ve Index
+### 10.7 Client DB — Constraint ve Index
 
 ```
-tenant/constraints/messaging.sql          (message_template bölümü)
-tenant/indexes/messaging.sql              (message_template bölümü)
+client/constraints/messaging.sql          (message_template bölümü)
+client/indexes/messaging.sql              (message_template bölümü)
 ```
 
 ---

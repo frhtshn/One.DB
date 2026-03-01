@@ -5,116 +5,116 @@
 -- companies.company_code (unique lookup)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_companies_code ON core.companies USING btree(company_code);
 
--- tenants.tenant_code (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenants_code ON core.tenants USING btree(tenant_code);
+-- clients.client_code (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_clients_code ON core.clients USING btree(client_code);
 
--- tenants.company_id -> companies.id
-CREATE INDEX IF NOT EXISTS idx_tenants_company_id ON core.tenants USING btree(company_id);
+-- clients.company_id -> companies.id
+CREATE INDEX IF NOT EXISTS idx_clients_company_id ON core.clients USING btree(company_id);
 
--- tenant_currencies.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_currencies_tenant_id ON core.tenant_currencies USING btree(tenant_id);
+-- client_currencies.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_currencies_client_id ON core.client_currencies USING btree(client_id);
 
--- tenant_currencies (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_currencies_tenant_currency ON core.tenant_currencies USING btree(tenant_id, currency_code);
+-- client_currencies (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_currencies_client_currency ON core.client_currencies USING btree(client_id, currency_code);
 
--- tenant_cryptocurrencies.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_cryptocurrencies_tenant_id ON core.tenant_cryptocurrencies USING btree(tenant_id);
+-- client_cryptocurrencies.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_cryptocurrencies_client_id ON core.client_cryptocurrencies USING btree(client_id);
 
--- tenant_cryptocurrencies (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_cryptocurrencies_tenant_symbol ON core.tenant_cryptocurrencies USING btree(tenant_id, symbol);
+-- client_cryptocurrencies (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_cryptocurrencies_client_symbol ON core.client_cryptocurrencies USING btree(client_id, symbol);
 
--- tenant_games.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_games_tenant_id ON core.tenant_games USING btree(tenant_id);
+-- client_games.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_games_client_id ON core.client_games USING btree(client_id);
 
--- tenant_games.game_id -> games.id
-CREATE INDEX IF NOT EXISTS idx_tenant_games_game_id ON core.tenant_games USING btree(game_id);
+-- client_games.game_id -> games.id
+CREATE INDEX IF NOT EXISTS idx_client_games_game_id ON core.client_games USING btree(game_id);
 
--- tenant_games (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_games_tenant_game ON core.tenant_games USING btree(tenant_id, game_id);
+-- client_games (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_games_client_game ON core.client_games USING btree(client_id, game_id);
 
--- tenant_games (enabled games for lobby)
-CREATE INDEX IF NOT EXISTS idx_tenant_games_enabled ON core.tenant_games USING btree(tenant_id, is_enabled) WHERE is_enabled = true;
+-- client_games (enabled games for lobby)
+CREATE INDEX IF NOT EXISTS idx_client_games_enabled ON core.client_games USING btree(client_id, is_enabled) WHERE is_enabled = true;
 
--- tenant_games (featured games)
-CREATE INDEX IF NOT EXISTS idx_tenant_games_featured ON core.tenant_games USING btree(tenant_id, is_featured) WHERE is_featured = true;
+-- client_games (featured games)
+CREATE INDEX IF NOT EXISTS idx_client_games_featured ON core.client_games USING btree(client_id, is_featured) WHERE is_featured = true;
 
--- tenant_games (sync status for background jobs)
-CREATE INDEX IF NOT EXISTS idx_tenant_games_sync_status ON core.tenant_games USING btree(sync_status) WHERE sync_status != 'SYNCED';
+-- client_games (sync status for background jobs)
+CREATE INDEX IF NOT EXISTS idx_client_games_sync_status ON core.client_games USING btree(sync_status) WHERE sync_status != 'SYNCED';
 
--- tenant_languages.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_languages_tenant_id ON core.tenant_languages USING btree(tenant_id);
+-- client_languages.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_languages_client_id ON core.client_languages USING btree(client_id);
 
--- tenant_languages (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_languages_tenant_lang ON core.tenant_languages USING btree(tenant_id, language_code);
+-- client_languages (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_languages_client_lang ON core.client_languages USING btree(client_id, language_code);
 
--- tenant_providers.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_providers_tenant_id ON core.tenant_providers USING btree(tenant_id);
+-- client_providers.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_providers_client_id ON core.client_providers USING btree(client_id);
 
--- tenant_providers.provider_id -> providers.id
-CREATE INDEX IF NOT EXISTS idx_tenant_providers_provider_id ON core.tenant_providers USING btree(provider_id);
+-- client_providers.provider_id -> providers.id
+CREATE INDEX IF NOT EXISTS idx_client_providers_provider_id ON core.client_providers USING btree(provider_id);
 
--- tenant_providers (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_providers_tenant_provider ON core.tenant_providers USING btree(tenant_id, provider_id);
+-- client_providers (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_providers_client_provider ON core.client_providers USING btree(client_id, provider_id);
 
--- tenant_settings.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_settings_tenant_id ON core.tenant_settings USING btree(tenant_id);
+-- client_settings.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_settings_client_id ON core.client_settings USING btree(client_id);
 
--- tenant_settings (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_settings_tenant_key ON core.tenant_settings USING btree(tenant_id, setting_key);
+-- client_settings (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_settings_client_key ON core.client_settings USING btree(client_id, setting_key);
 
--- tenant_settings.setting_value (JSONB search performance)
-CREATE INDEX IF NOT EXISTS idx_tenant_settings_value_gin ON core.tenant_settings USING gin(setting_value);
+-- client_settings.setting_value (JSONB search performance)
+CREATE INDEX IF NOT EXISTS idx_client_settings_value_gin ON core.client_settings USING gin(setting_value);
 
--- tenant_payment_methods.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_tenant_id ON core.tenant_payment_methods USING btree(tenant_id);
+-- client_payment_methods.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_payment_methods_client_id ON core.client_payment_methods USING btree(client_id);
 
--- tenant_payment_methods.payment_method_id -> payment_methods.id
-CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_payment_method_id ON core.tenant_payment_methods USING btree(payment_method_id);
+-- client_payment_methods.payment_method_id -> payment_methods.id
+CREATE INDEX IF NOT EXISTS idx_client_payment_methods_payment_method_id ON core.client_payment_methods USING btree(payment_method_id);
 
--- tenant_payment_methods (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_payment_methods_tenant_method ON core.tenant_payment_methods USING btree(tenant_id, payment_method_id);
+-- client_payment_methods (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_payment_methods_client_method ON core.client_payment_methods USING btree(client_id, payment_method_id);
 
--- tenant_payment_methods (enabled methods)
-CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_enabled ON core.tenant_payment_methods USING btree(tenant_id, is_enabled) WHERE is_enabled = true;
+-- client_payment_methods (enabled methods)
+CREATE INDEX IF NOT EXISTS idx_client_payment_methods_enabled ON core.client_payment_methods USING btree(client_id, is_enabled) WHERE is_enabled = true;
 
--- tenant_payment_methods (featured methods)
-CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_featured ON core.tenant_payment_methods USING btree(tenant_id, is_featured) WHERE is_featured = true;
+-- client_payment_methods (featured methods)
+CREATE INDEX IF NOT EXISTS idx_client_payment_methods_featured ON core.client_payment_methods USING btree(client_id, is_featured) WHERE is_featured = true;
 
--- tenant_payment_methods (sync status)
-CREATE INDEX IF NOT EXISTS idx_tenant_payment_methods_sync_status ON core.tenant_payment_methods USING btree(sync_status) WHERE sync_status != 'SYNCED';
+-- client_payment_methods (sync status)
+CREATE INDEX IF NOT EXISTS idx_client_payment_methods_sync_status ON core.client_payment_methods USING btree(sync_status) WHERE sync_status != 'SYNCED';
 
--- tenant_provider_limits.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_tenant_id ON core.tenant_provider_limits USING btree(tenant_id);
+-- client_provider_limits.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_provider_limits_client_id ON core.client_provider_limits USING btree(client_id);
 
--- tenant_provider_limits.provider_id -> providers.id
-CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_provider_id ON core.tenant_provider_limits USING btree(provider_id);
+-- client_provider_limits.provider_id -> providers.id
+CREATE INDEX IF NOT EXISTS idx_client_provider_limits_provider_id ON core.client_provider_limits USING btree(provider_id);
 
--- tenant_provider_limits.payment_method_id -> payment_methods.id
-CREATE INDEX IF NOT EXISTS idx_tenant_provider_limits_payment_method_id ON core.tenant_provider_limits USING btree(payment_method_id);
+-- client_provider_limits.payment_method_id -> payment_methods.id
+CREATE INDEX IF NOT EXISTS idx_client_provider_limits_payment_method_id ON core.client_provider_limits USING btree(payment_method_id);
 
--- tenant_provider_limits (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_provider_limits_lookup ON core.tenant_provider_limits USING btree(tenant_id, provider_id, payment_method_id);
+-- client_provider_limits (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_provider_limits_lookup ON core.client_provider_limits USING btree(client_id, provider_id, payment_method_id);
 
--- tenant_jurisdictions.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_tenant_id ON core.tenant_jurisdictions USING btree(tenant_id);
+-- client_jurisdictions.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_jurisdictions_client_id ON core.client_jurisdictions USING btree(client_id);
 
--- tenant_jurisdictions.jurisdiction_id -> jurisdictions.id
-CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_jurisdiction_id ON core.tenant_jurisdictions USING btree(jurisdiction_id);
+-- client_jurisdictions.jurisdiction_id -> jurisdictions.id
+CREATE INDEX IF NOT EXISTS idx_client_jurisdictions_jurisdiction_id ON core.client_jurisdictions USING btree(jurisdiction_id);
 
--- tenant_jurisdictions (primary jurisdiction lookup)
-CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_primary ON core.tenant_jurisdictions USING btree(tenant_id) WHERE is_primary = true;
+-- client_jurisdictions (primary jurisdiction lookup)
+CREATE INDEX IF NOT EXISTS idx_client_jurisdictions_primary ON core.client_jurisdictions USING btree(client_id) WHERE is_primary = true;
 
--- tenant_jurisdictions (active licenses)
-CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_active ON core.tenant_jurisdictions USING btree(status) WHERE status = 'ACTIVE';
+-- client_jurisdictions (active licenses)
+CREATE INDEX IF NOT EXISTS idx_client_jurisdictions_active ON core.client_jurisdictions USING btree(status) WHERE status = 'ACTIVE';
 
--- tenant_jurisdictions (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_jurisdictions_tenant_jurisdiction ON core.tenant_jurisdictions USING btree(tenant_id, jurisdiction_id);
+-- client_jurisdictions (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_jurisdictions_client_jurisdiction ON core.client_jurisdictions USING btree(client_id, jurisdiction_id);
 
--- tenant_data_policies.tenant_id -> tenants.id
-CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_tenant_id ON core.tenant_data_policies USING btree(tenant_id);
+-- client_data_policies.client_id -> clients.id
+CREATE INDEX IF NOT EXISTS idx_client_data_policies_client_id ON core.client_data_policies USING btree(client_id);
 
--- tenant_data_policies.data_category (Job performance)
-CREATE INDEX IF NOT EXISTS idx_tenant_data_policies_category ON core.tenant_data_policies USING btree(data_category);
+-- client_data_policies.data_category (Job performance)
+CREATE INDEX IF NOT EXISTS idx_client_data_policies_category ON core.client_data_policies USING btree(data_category);
 
 -- =============================================================================
 -- Infrastructure / Provisioning Indexes
@@ -132,26 +132,26 @@ CREATE INDEX IF NOT EXISTS idx_infrastructure_servers_region ON core.infrastruct
 -- infrastructure_servers (unique server_code)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_infrastructure_servers_code ON core.infrastructure_servers USING btree(server_code);
 
--- tenant_servers (tenant bazlı sorgu)
-CREATE INDEX IF NOT EXISTS idx_tenant_servers_tenant ON core.tenant_servers USING btree(tenant_id);
+-- client_servers (client bazlı sorgu)
+CREATE INDEX IF NOT EXISTS idx_client_servers_client ON core.client_servers USING btree(client_id);
 
--- tenant_servers (sunucu bazlı sorgu)
-CREATE INDEX IF NOT EXISTS idx_tenant_servers_server ON core.tenant_servers USING btree(server_id);
+-- client_servers (sunucu bazlı sorgu)
+CREATE INDEX IF NOT EXISTS idx_client_servers_server ON core.client_servers USING btree(server_id);
 
--- tenant_servers (çalışan container'lar)
-CREATE INDEX IF NOT EXISTS idx_tenant_servers_status ON core.tenant_servers USING btree(status) WHERE status = 'running';
+-- client_servers (çalışan container'lar)
+CREATE INDEX IF NOT EXISTS idx_client_servers_status ON core.client_servers USING btree(status) WHERE status = 'running';
 
--- tenant_servers (unique: tenant + server + role)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_servers_role ON core.tenant_servers USING btree(tenant_id, server_id, server_role);
+-- client_servers (unique: client + server + role)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_servers_role ON core.client_servers USING btree(client_id, server_id, server_role);
 
--- tenant_provisioning_log (tenant bazlı geçmiş)
-CREATE INDEX IF NOT EXISTS idx_provisioning_log_tenant ON core.tenant_provisioning_log USING btree(tenant_id);
+-- client_provisioning_log (client bazlı geçmiş)
+CREATE INDEX IF NOT EXISTS idx_provisioning_log_client ON core.client_provisioning_log USING btree(client_id);
 
--- tenant_provisioning_log (run bazlı sorgu)
-CREATE INDEX IF NOT EXISTS idx_provisioning_log_run ON core.tenant_provisioning_log USING btree(provision_run_id);
+-- client_provisioning_log (run bazlı sorgu)
+CREATE INDEX IF NOT EXISTS idx_provisioning_log_run ON core.client_provisioning_log USING btree(provision_run_id);
 
--- tenant_provisioning_log (aktif/hatalı adımlar)
-CREATE INDEX IF NOT EXISTS idx_provisioning_log_status ON core.tenant_provisioning_log USING btree(status) WHERE status IN ('running', 'failed');
+-- client_provisioning_log (aktif/hatalı adımlar)
+CREATE INDEX IF NOT EXISTS idx_provisioning_log_status ON core.client_provisioning_log USING btree(status) WHERE status IN ('running', 'failed');
 
 -- template_dumps (aktif dump'lar)
 CREATE INDEX IF NOT EXISTS idx_template_dumps_active ON core.template_dumps USING btree(status) WHERE status = 'active';
@@ -163,11 +163,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_template_dumps_type_version ON core.templa
 -- GIN Indexes for JSONB Columns
 -- =============================================================================
 
--- core.tenant_jurisdictions (custom_settings)
-CREATE INDEX IF NOT EXISTS idx_tenant_jurisdictions_settings_gin ON core.tenant_jurisdictions USING gin(custom_settings);
+-- core.client_jurisdictions (custom_settings)
+CREATE INDEX IF NOT EXISTS idx_client_jurisdictions_settings_gin ON core.client_jurisdictions USING gin(custom_settings);
 
--- core.tenant_settings (setting_value) - note: already defined above but grouped here for clarity
--- CREATE INDEX IF NOT EXISTS idx_tenant_settings_value_gin ON core.tenant_settings USING gin(setting_value);
+-- core.client_settings (setting_value) - note: already defined above but grouped here for clarity
+-- CREATE INDEX IF NOT EXISTS idx_client_settings_value_gin ON core.client_settings USING gin(setting_value);
 
 -- =============================================================================
 -- Department Indexes

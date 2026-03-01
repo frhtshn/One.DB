@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: presentation.themes
--- Açıklama: Tenant tema seçimi ve özelleştirmeleri.
---           Core'dan taşındı (tenant_id kaldırıldı).
+-- Açıklama: Client tema seçimi ve özelleştirmeleri.
+--           Core'dan taşındı (client_id kaldırıldı).
 --           theme_id, core catalog.themes referansıdır.
 -- =============================================
 
@@ -28,4 +28,4 @@ CREATE TABLE presentation.themes (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE presentation.themes IS 'Tenant-specific theme configuration and customizations. theme_id references core catalog.themes (validated by backend).';
+COMMENT ON TABLE presentation.themes IS 'Client-specific theme configuration and customizations. theme_id references core catalog.themes (validated by backend).';

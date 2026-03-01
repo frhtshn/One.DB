@@ -21,7 +21,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `currency_get` | Currency get |
 | `currency_list` | Currency list |
 | `currency_update` | Currency update |
-| `cryptocurrency_delete` | Soft delete. Checks tenant usage first |
+| `cryptocurrency_delete` | Soft delete. Checks client usage first |
 | `cryptocurrency_get` | Get by symbol. P0404 if not found |
 | `cryptocurrency_list` | List all including inactive (admin) |
 | `cryptocurrency_update` | Update name, icon, active status, sort order |
@@ -197,29 +197,29 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `platform_setting_list` | List with category/environment/active filters |
 | `platform_setting_update` | Update configuration |
 
-#### Tenant Management (19)
+#### Client Management (19)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `tenant_create` | Tenant create with currency/language arrays |
-| `tenant_delete` | Tenant delete |
-| `tenant_get` | Tenant get |
-| `tenant_list` | Paginated list with company/search/status filters |
-| `tenant_lookup` | Tenant lookup |
-| `tenant_update` | Tenant update with currency/language sync |
-| `tenant_currency_list` | List tenant currencies. IDOR |
-| `tenant_currency_mapping_list` | All active tenant-currency mappings (CurrencyRateSyncGrain, no auth) |
-| `tenant_currency_upsert` | Assign/update tenant currency. IDOR |
-| `tenant_cryptocurrency_list` | List tenant cryptocurrencies. Returns JSONB. IDOR |
-| `tenant_cryptocurrency_mapping_list` | All active tenant-crypto mappings (CryptoRateSyncGrain, no auth) |
-| `tenant_cryptocurrency_upsert` | Assign/update tenant cryptocurrency. IDOR |
-| `tenant_language_list` | List tenant languages. IDOR |
-| `tenant_language_upsert` | Assign/update tenant language. IDOR |
-| `tenant_setting_delete` | Delete tenant setting. IDOR |
-| `tenant_setting_get` | Get tenant setting. IDOR |
-| `tenant_setting_list` | List tenant settings with optional category filter. IDOR |
-| `tenant_setting_upsert` | Upsert tenant setting. IDOR |
-| `tenant_get_verification_timing` | Returns KYC verification timing for tenant primary jurisdiction |
+| `client_create` | Client create with currency/language arrays |
+| `client_delete` | Client delete |
+| `client_get` | Client get |
+| `client_list` | Paginated list with company/search/status filters |
+| `client_lookup` | Client lookup |
+| `client_update` | Client update with currency/language sync |
+| `client_currency_list` | List client currencies. IDOR |
+| `client_currency_mapping_list` | All active client-currency mappings (CurrencyRateSyncGrain, no auth) |
+| `client_currency_upsert` | Assign/update client currency. IDOR |
+| `client_cryptocurrency_list` | List client cryptocurrencies. Returns JSONB. IDOR |
+| `client_cryptocurrency_mapping_list` | All active client-crypto mappings (CryptoRateSyncGrain, no auth) |
+| `client_cryptocurrency_upsert` | Assign/update client cryptocurrency. IDOR |
+| `client_language_list` | List client languages. IDOR |
+| `client_language_upsert` | Assign/update client language. IDOR |
+| `client_setting_delete` | Delete client setting. IDOR |
+| `client_setting_get` | Get client setting. IDOR |
+| `client_setting_list` | List client settings with optional category filter. IDOR |
+| `client_setting_upsert` | Upsert client setting. IDOR |
+| `client_get_verification_timing` | Returns KYC verification timing for client primary jurisdiction |
 
 #### User-Department (3)
 
@@ -242,59 +242,59 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `tenant_config_auto_populate` | Tenant oluşturulunca varsayılan ayarları otomatik doldur |
-| `tenant_secrets_generate` | Tenant için API key ve secret oluştur |
-| `tenant_provision_start` | Provisioning başlat: 7 adımlı log, outbox event. IDOR |
-| `tenant_provision_step_update` | Provisioning adımını güncelle (başarılı/başarısız) |
-| `tenant_provision_complete` | Tüm adımlar tamam → provisioning='active'. Outbox event |
-| `tenant_provision_fail` | Provisioning hata durumu. Hata detayı kaydedilir |
-| `tenant_provision_status` | Mevcut provisioning durumu ve adım detayları |
-| `tenant_provision_history_list` | Provisioning/decommission geçmişi listesi. IDOR |
-| `tenant_decommission_start` | Decommission başlat: 4 adımlı süreç, outbox event. IDOR |
-| `tenant_decommission_complete` | Decommission tamamla: sunucu kaydı temizle, outbox event |
+| `client_config_auto_populate` | Client oluşturulunca varsayılan ayarları otomatik doldur |
+| `client_secrets_generate` | Client için API key ve secret oluştur |
+| `client_provision_start` | Provisioning başlat: 7 adımlı log, outbox event. IDOR |
+| `client_provision_step_update` | Provisioning adımını güncelle (başarılı/başarısız) |
+| `client_provision_complete` | Tüm adımlar tamam → provisioning='active'. Outbox event |
+| `client_provision_fail` | Provisioning hata durumu. Hata detayı kaydedilir |
+| `client_provision_status` | Mevcut provisioning durumu ve adım detayları |
+| `client_provision_history_list` | Provisioning/decommission geçmişi listesi. IDOR |
+| `client_decommission_start` | Decommission başlat: 4 adımlı süreç, outbox event. IDOR |
+| `client_decommission_complete` | Decommission tamamla: sunucu kaydı temizle, outbox event |
 
-#### Tenant Servers (3)
-
-| Fonksiyon | Açıklama |
-|-----------|----------|
-| `tenant_server_list` | Tenant'a atanmış sunucu listesi |
-| `tenant_server_assign` | Tenant'a sunucu ata |
-| `tenant_server_update` | Tenant sunucu atamasını güncelle |
-
-#### Tenant Providers (4)
+#### Client Servers (3)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `tenant_provider_list` | Tenant'a bağlı provider listesi |
-| `tenant_provider_enable` | Tenant için provider'ı etkinleştir |
-| `tenant_provider_disable` | Tenant için provider'ı devre dışı bırak |
-| `tenant_provider_set_rollout` | Provider rollout yüzdesi ayarla (0-100) |
+| `client_server_list` | Client'a atanmış sunucu listesi |
+| `client_server_assign` | Client'a sunucu ata |
+| `client_server_update` | Client sunucu atamasını güncelle |
 
-#### Tenant Games (4)
-
-| Fonksiyon | Açıklama |
-|-----------|----------|
-| `tenant_game_list` | Tenant'ın aktif oyun listesi |
-| `tenant_game_upsert` | Tenant oyun ataması oluştur/güncelle |
-| `tenant_game_remove` | Tenant oyun atamasını kaldır |
-| `tenant_game_refresh` | Game DB'den tenant oyun listesini yeniden senkronize et |
-
-#### Tenant Payment Methods (4)
+#### Client Providers (4)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `tenant_payment_method_list` | Tenant ödeme yöntemleri listesi |
-| `tenant_payment_method_upsert` | Tenant ödeme yöntemi ataması oluştur/güncelle |
-| `tenant_payment_method_remove` | Tenant ödeme yöntemi atamasını kaldır |
-| `tenant_payment_method_refresh` | Finance DB'den tenant ödeme yöntemlerini yeniden senkronize et |
+| `client_provider_list` | Client'a bağlı provider listesi |
+| `client_provider_enable` | Client için provider'ı etkinleştir |
+| `client_provider_disable` | Client için provider'ı devre dışı bırak |
+| `client_provider_set_rollout` | Provider rollout yüzdesi ayarla (0-100) |
 
-#### Tenant Payment Providers (3)
+#### Client Games (4)
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `tenant_payment_provider_list` | Tenant ödeme sağlayıcıları listesi |
-| `tenant_payment_provider_enable` | Tenant için ödeme sağlayıcıyı etkinleştir |
-| `tenant_payment_provider_disable` | Tenant için ödeme sağlayıcıyı devre dışı bırak |
+| `client_game_list` | Client'ın aktif oyun listesi |
+| `client_game_upsert` | Client oyun ataması oluştur/güncelle |
+| `client_game_remove` | Client oyun atamasını kaldır |
+| `client_game_refresh` | Game DB'den client oyun listesini yeniden senkronize et |
+
+#### Client Payment Methods (4)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `client_payment_method_list` | Client ödeme yöntemleri listesi |
+| `client_payment_method_upsert` | Client ödeme yöntemi ataması oluştur/güncelle |
+| `client_payment_method_remove` | Client ödeme yöntemi atamasını kaldır |
+| `client_payment_method_refresh` | Finance DB'den client ödeme yöntemlerini yeniden senkronize et |
+
+#### Client Payment Providers (3)
+
+| Fonksiyon | Açıklama |
+|-----------|----------|
+| `client_payment_provider_list` | Client ödeme sağlayıcıları listesi |
+| `client_payment_provider_enable` | Client için ödeme sağlayıcıyı etkinleştir |
+| `client_payment_provider_disable` | Client için ödeme sağlayıcıyı devre dışı bırak |
 
 ---
 
@@ -354,21 +354,21 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `tenant_layout_delete` | Delete tenant layout. IDOR |
-| `tenant_layout_get` | Get by ID, page_id, or layout_name. IDOR |
-| `tenant_layout_list` | List all tenant layouts. IDOR |
-| `tenant_layout_upsert` | Create or update layout. Unique layout_name per tenant. IDOR |
-| `tenant_navigation_create` | Create custom navigation item (is_locked=FALSE). IDOR |
-| `tenant_navigation_delete` | Delete navigation item. Locked items protected. IDOR |
-| `tenant_navigation_get` | Get single navigation item. IDOR |
-| `tenant_navigation_init_from_template` | Initialize from catalog template. Copies parent-child tree. IDOR |
-| `tenant_navigation_list` | List items by menu_location. IDOR |
-| `tenant_navigation_reorder` | Reorder items within menu_location. IDOR |
-| `tenant_navigation_update` | Update item. Readonly items: visibility fields only. IDOR |
-| `tenant_theme_activate` | Activate theme, deactivate others. IDOR |
-| `tenant_theme_get` | Get merged config (default + override). NULL = active theme. IDOR |
-| `tenant_theme_list` | List themes with tenant config status. IDOR |
-| `tenant_theme_upsert` | Create or update theme configuration. IDOR |
+| `client_layout_delete` | Delete client layout. IDOR |
+| `client_layout_get` | Get by ID, page_id, or layout_name. IDOR |
+| `client_layout_list` | List all client layouts. IDOR |
+| `client_layout_upsert` | Create or update layout. Unique layout_name per client. IDOR |
+| `client_navigation_create` | Create custom navigation item (is_locked=FALSE). IDOR |
+| `client_navigation_delete` | Delete navigation item. Locked items protected. IDOR |
+| `client_navigation_get` | Get single navigation item. IDOR |
+| `client_navigation_init_from_template` | Initialize from catalog template. Copies parent-child tree. IDOR |
+| `client_navigation_list` | List items by menu_location. IDOR |
+| `client_navigation_reorder` | Reorder items within menu_location. IDOR |
+| `client_navigation_update` | Update item. Readonly items: visibility fields only. IDOR |
+| `client_theme_activate` | Activate theme, deactivate others. IDOR |
+| `client_theme_get` | Get merged config (default + override). NULL = active theme. IDOR |
+| `client_theme_list` | List themes with client config status. IDOR |
+| `client_theme_upsert` | Create or update theme configuration. IDOR |
 
 #### Consumer / Frontend (3)
 
@@ -387,10 +387,10 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `user_get_access_level` | Returns caller's access level (is_platform_admin, company_id, allowed IDs). Foundation |
-| `user_can_access_tenant` | Returns BOOL. Can caller access tenant? |
+| `user_can_access_client` | Returns BOOL. Can caller access client? |
 | `user_can_access_company` | Returns BOOL. Can caller access company? |
 | `user_can_manage_user` | Returns BOOL. Can caller manage target user? |
-| `user_assert_access_tenant` | Guard clause. Raises P0403 on failure |
+| `user_assert_access_client` | Guard clause. Raises P0403 on failure |
 | `user_assert_access_company` | Guard clause. Raises P0403 on failure |
 | `user_assert_manage_user` | Guard clause. Raises P0403 on failure |
 
@@ -399,7 +399,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `permission_category_list` | Permission category list |
-| `permission_check` | Check if user has permission (optional tenant scope) |
+| `permission_check` | Check if user has permission (optional client scope) |
 | `permission_cleanup_expired` | Cleanup expired permissions |
 | `permission_create` | Permission create |
 | `permission_delete` | Permission delete |
@@ -408,9 +408,9 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `permission_list` | Paginated list with category/search/status filters |
 | `permission_update` | Permission update |
 | `user_context_overrides_load` | Load context-scoped overrides for ProtectedFieldReadFilter |
-| `user_permission_list` | List user's effective permissions (optional tenant scope) |
+| `user_permission_list` | List user's effective permissions (optional client scope) |
 | `user_permission_override_list` | List user permission overrides. IDOR |
-| `user_permission_override_load` | Load user permission overrides (optional tenant scope) |
+| `user_permission_override_load` | Load user permission overrides (optional client scope) |
 | `user_permission_remove` | Remove user permission override. IDOR |
 | `user_permission_set` | Set user permission override (grant/deny, optional expiry) |
 | `user_permission_set_with_outbox` | Set permission + outbox message in single transaction |
@@ -446,8 +446,8 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 | `role_permission_bulk_assign` | Bulk assign permissions (optional replace existing) |
 | `role_permission_list` | List role permissions |
 | `role_permission_remove` | Remove permission from role |
-| `user_role_assign` | Assign role to user (optional tenant scope). IDOR |
-| `user_role_list` | List user roles (optional tenant scope). IDOR |
+| `user_role_assign` | Assign role to user (optional client scope). IDOR |
+| `user_role_list` | List user roles (optional client scope). IDOR |
 | `user_role_remove` | Remove role from user. IDOR |
 
 #### Session Management (8)
@@ -597,7 +597,7 @@ Core katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `audit_create` | Create entity audit log (forwarded from tenants) |
+| `audit_create` | Create entity audit log (forwarded from clients) |
 | `audit_get` | Get entity audit log by ID |
 | `audit_list` | Paginated entity audit logs with filters |
 

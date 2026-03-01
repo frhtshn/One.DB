@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log Messaging Schema Constraints
+-- Client Log Messaging Schema Constraints
 -- =============================================
 -- NOT: Cross-DB foreign key tanımlanamaz.
 -- campaign_id, recipient_id, player_id referansları

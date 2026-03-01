@@ -1,7 +1,7 @@
 -- =============================================
 -- 12. USER_ROLE_REMOVE: Kullanicidan rol kaldir (unified)
--- p_tenant_id = NULL: Global rol
--- p_tenant_id = değer: Tenant-specific rol
+-- p_client_id = NULL: Global rol
+-- p_client_id = değer: Client-specific rol
 -- Returns: TABLE(removed) - silme bilgisi
 -- =============================================
 
@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION security.user_role_remove(
     p_caller_id BIGINT,
     p_user_id BIGINT,
     p_role_code VARCHAR,
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS TABLE(removed BOOLEAN)
 LANGUAGE plpgsql
@@ -27,19 +27,19 @@ DECLARE
     v_target_company_id BIGINT;
     v_has_platform_role BOOLEAN;
 BEGIN
-    -- 1. Caller bilgilerini al (global + hedef tenant rolleri dikkate alınır)
+    -- 1. Caller bilgilerini al (global + hedef client rolleri dikkate alınır)
     SELECT
         u.company_id,
         COALESCE(MAX(r.level), 0),
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.is_platform_role = TRUE
         )
     INTO v_caller_company_id, v_caller_level, v_has_platform_role
     FROM security.users u
     LEFT JOIN security.user_roles ur ON ur.user_id = u.id
-        AND (ur.tenant_id IS NULL OR ur.tenant_id = p_tenant_id)
+        AND (ur.client_id IS NULL OR ur.client_id = p_client_id)
     LEFT JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
     WHERE u.id = p_caller_id AND u.status = 1
     GROUP BY u.id, u.company_id;
@@ -54,7 +54,7 @@ BEGIN
         COALESCE(MAX(r.level), 0)
     INTO v_target_company_id, v_target_level
     FROM security.users u
-    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.tenant_id IS NULL
+    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.client_id IS NULL
     LEFT JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
     WHERE u.id = p_user_id AND u.status = 1
     GROUP BY u.id, u.company_id;
@@ -92,7 +92,7 @@ BEGIN
     DELETE FROM security.user_roles
     WHERE user_id = p_user_id
       AND role_id = v_role_id
-      AND ((p_tenant_id IS NULL AND tenant_id IS NULL) OR (tenant_id = p_tenant_id));
+      AND ((p_client_id IS NULL AND client_id IS NULL) OR (client_id = p_client_id));
 
     GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
 
@@ -100,4 +100,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION security.user_role_remove IS 'Removes a role from a user. tenant_id=NULL for global, tenant_id=value for tenant-specific. Enforces hierarchy rules.';
+COMMENT ON FUNCTION security.user_role_remove IS 'Removes a role from a user. client_id=NULL for global, client_id=value for client-specific. Enforces hierarchy rules.';

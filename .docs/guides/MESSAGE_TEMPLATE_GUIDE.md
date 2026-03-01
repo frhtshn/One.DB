@@ -3,7 +3,7 @@
 
 # Message Template — Geliştirici Rehberi
 
-Platform ve tenant seviyesinde e-posta/SMS şablon yönetimi. Transaksiyonel bildirimler (kayıt, şifre sıfırlama, KYC) için şablon oluşturma, çok dilli çeviri ve backend rendering altyapısı.
+Platform ve client seviyesinde e-posta/SMS şablon yönetimi. Transaksiyonel bildirimler (kayıt, şifre sıfırlama, KYC) için şablon oluşturma, çok dilli çeviri ve backend rendering altyapısı.
 
 ---
 
@@ -14,18 +14,18 @@ flowchart TD
     subgraph core_db["Core DB"]
         CT["messaging.message_templates<br/>messaging.message_template_translations"]
     end
-    subgraph tenant_db["Tenant DB (Per-tenant)"]
+    subgraph client_db["Client DB (Per-client)"]
         TT["messaging.message_templates<br/>messaging.message_template_translations"]
     end
 
     PA["Platform Admin (BO)"] -- "Şablon CRUD" --> CT
-    CA["Company/Tenant Admin (BO)"] -- "Şablon CRUD" --> TT
+    CA["Company/Client Admin (BO)"] -- "Şablon CRUD" --> TT
 
     EVT_C["Platform Event<br/>(şifre sıfırlama, 2FA vb.)"] --> BE_C["Backend"]
     BE_C -- "get_by_code()" --> CT
     BE_C -- "Render + Send" --> SMTP["Email/SMS Provider"]
 
-    EVT_T["Tenant Event<br/>(kayıt, KYC, yatırım vb.)"] --> BE_T["Backend"]
+    EVT_T["Client Event<br/>(kayıt, KYC, yatırım vb.)"] --> BE_T["Backend"]
     BE_T -- "get_by_code()" --> TT
     BE_T -- "Render + Send" --> SMTP
 ```
@@ -33,13 +33,13 @@ flowchart TD
 | Veritabanı | Tablolar | Fonksiyonlar | Hedef Kitle | Açıklama |
 |------------|----------|--------------|-------------|----------|
 | **Core DB** | `message_templates`, `message_template_translations` | 6 | BO kullanıcıları | Platform bildirim şablonları |
-| **Tenant DB** | `message_templates`, `message_template_translations` | 6 | Oyuncular | Tenant bildirim şablonları |
+| **Client DB** | `message_templates`, `message_template_translations` | 6 | Oyuncular | Client bildirim şablonları |
 
 ---
 
 ## Kampanya vs Bildirim Şablonları
 
-Tenant DB'de `messaging.message_templates` tablosu hem kampanya hem bildirim şablonlarını barındırır. `category` kolonu ile ayrıştırılır:
+Client DB'de `messaging.message_templates` tablosu hem kampanya hem bildirim şablonlarını barındırır. `category` kolonu ile ayrıştırılır:
 
 | Kategori | Kullanım | Tetiklenme | Fonksiyonlar |
 |----------|----------|------------|-------------|
@@ -115,11 +115,11 @@ draft → active → archived
 **Timestamp:** `TIMESTAMPTZ`
 **Caller ID:** `BIGINT`
 
-### Tenant DB — Oyuncu Şablonları
+### Client DB — Oyuncu Şablonları
 
 | Tablo | Şema | Açıklama |
 |-------|------|----------|
-| `message_templates` | messaging | Tenant bildirim + kampanya şablonları (category ile ayrım) |
+| `message_templates` | messaging | Client bildirim + kampanya şablonları (category ile ayrım) |
 | `message_template_translations` | messaging | Dil bazlı çeviri |
 
 **Soft delete:** `is_deleted = TRUE` + `deleted_at` + `deleted_by`
@@ -130,11 +130,11 @@ draft → active → archived
 
 ## Temel Akışlar
 
-### 1. Şablon Oluşturma (BO Admin → Core/Tenant DB)
+### 1. Şablon Oluşturma (BO Admin → Core/Client DB)
 
 ```
 BO Admin → Backend → messaging.admin_message_template_create(
-    p_caller_id,                     -- veya p_user_id (Tenant)
+    p_caller_id,                     -- veya p_user_id (Client)
     p_code: 'user.welcome.email',    -- benzersiz kod
     p_name: 'User Welcome Email',
     p_channel_type: 'email',
@@ -177,7 +177,7 @@ Event (kullanıcı kaydı, şifre sıfırlama vb.) →
 messaging.admin_message_template_delete(p_caller_id, p_id)
   → is_system=TRUE ise HATA: "system-template-cannot-be-deleted"
   → Core: is_active = FALSE
-  → Tenant: is_deleted = TRUE, deleted_at, deleted_by
+  → Client: is_deleted = TRUE, deleted_at, deleted_by
 ```
 
 ---
@@ -191,7 +191,7 @@ public interface IMessageTemplateService
 {
     /// <summary>
     /// Şablon koduna göre render edilmiş içerik döndürür.
-    /// Core veya Tenant DB'den okur (context'e göre).
+    /// Core veya Client DB'den okur (context'e göre).
     /// </summary>
     Task<RenderedTemplate> RenderTemplateAsync(
         string code,
@@ -223,7 +223,7 @@ public class MessageTemplateService : IMessageTemplateService
         Dictionary<string, object> mergeData,
         CancellationToken ct)
     {
-        // 1. DB'den şablonu al (Core veya Tenant context'e göre)
+        // 1. DB'den şablonu al (Core veya Client context'e göre)
         await using var conn = _dbFactory.CreateConnection();
         var template = await conn.QuerySingleAsync<JsonElement>(
             "SELECT messaging.message_template_get_by_code(@code, @lang)",
@@ -314,14 +314,14 @@ public class PlayerPasswordResetHandler : INotificationHandler<PlayerPasswordRes
 }
 ```
 
-### Tenant Provisioning — Varsayılan Şablon Seed
+### Client Provisioning — Varsayılan Şablon Seed
 
 ```csharp
-public class TenantProvisioningService
+public class ClientProvisioningService
 {
-    public async Task SeedDefaultTemplatesAsync(int tenantId, CancellationToken ct)
+    public async Task SeedDefaultTemplatesAsync(int clientId, CancellationToken ct)
     {
-        await using var conn = _dbFactory.CreateTenantConnection(tenantId);
+        await using var conn = _dbFactory.CreateClientConnection(clientId);
 
         // Varsayılan şablonları oluştur
         var templates = GetDefaultPlayerTemplates();
@@ -376,7 +376,7 @@ public class TenantProvisioningService
 {hedef}.{olay}.{kanal}
 ```
 
-| Segment | Platform (Core) | Tenant | Açıklama |
+| Segment | Platform (Core) | Client | Açıklama |
 |---------|-----------------|--------|----------|
 | hedef | `user` | `player` | Kimin için |
 | olay | `welcome`, `password_reset`, `role_changed` | `welcome`, `kyc_approved`, `deposit_confirmed` | İş olayı |
@@ -407,7 +407,7 @@ public class TenantProvisioningService
 Tümü `is_system=TRUE`, `status='active'`, EN+TR çevirileri dahil.
 Dosya: `core/data/notification_templates_seed.sql`
 
-### Tenant (Backend Seed — 18 şablon)
+### Client (Backend Seed — 18 şablon)
 
 14 email + 4 SMS şablonu. Tümü `is_system=TRUE`.
 Detaylar: [SPEC_MESSAGE_TEMPLATE.md §7.2](SPEC_MESSAGE_TEMPLATE.md)
@@ -427,7 +427,7 @@ Detaylar: [SPEC_MESSAGE_TEMPLATE.md §7.2](SPEC_MESSAGE_TEMPLATE.md)
 | `admin_message_template_delete` | VOID | Soft delete (is_system koruma) |
 | `message_template_get_by_code` | JSONB | Backend rendering için (auth yok) |
 
-### Tenant DB (6 fonksiyon)
+### Client DB (6 fonksiyon)
 
 Aynı fonksiyon seti, farklar: `p_user_id INTEGER`, `is_deleted = FALSE` filtresi, `category IN ('transactional', 'notification', 'marketing')`.
 
@@ -439,8 +439,8 @@ Aynı fonksiyon seti, farklar: `p_user_id INTEGER`, `is_deleted = FALSE` filtres
 |-----------|-------|----------|
 | `platform.notification-template.manage` | platform | Platform şablon CRUD |
 | `platform.notification-template.view` | platform | Platform şablon görüntüleme |
-| `tenant.notification-template.manage` | tenant | Tenant şablon CRUD |
-| `tenant.notification-template.view` | tenant | Tenant şablon görüntüleme |
+| `client.notification-template.manage` | client | Client şablon CRUD |
+| `client.notification-template.view` | client | Client şablon görüntüleme |
 
 > `message_template_get_by_code` auth kontrolü yapmaz — backend internal kullanım.
 
@@ -448,13 +448,13 @@ Aynı fonksiyon seti, farklar: `p_user_id INTEGER`, `is_deleted = FALSE` filtres
 
 ## Backend İçin Notlar
 
-- **İki ayrı DB, iki ayrı connection:** Core DB platform şablonlarını, Tenant DB oyuncu şablonlarını yönetir. Cross-DB sorgu yok.
+- **İki ayrı DB, iki ayrı connection:** Core DB platform şablonlarını, Client DB oyuncu şablonlarını yönetir. Cross-DB sorgu yok.
 - **Render backend'de:** SQL yalnızca depolama ve çeviri yönetimi yapar. `{{placeholder}}` dönüşümü C# template engine'de yapılır.
 - **channel_type immutable:** Şablon oluşturulduktan sonra kanal tipi değiştirilemez.
 - **Replace-all çeviriler:** Update'te `p_translations` verilirse tüm mevcut çeviriler silinir, yenileri eklenir. `NULL` gönderilirse çeviriler değişmez.
-- **Tenant provisioning:** Tenant oluşturulurken backend varsayılan şablonları seed'ler. SQL dosyası ile değil, C# kodu ile yapılır.
+- **Client provisioning:** Client oluşturulurken backend varsayılan şablonları seed'ler. SQL dosyası ile değil, C# kodu ile yapılır.
 - **Kampanya şablonları:** Mevcut `admin_template_create/update/get/list` fonksiyonları kampanya şablonları (`category='campaign'`) için kullanılmaya devam eder.
 
 ---
 
-_İlgili dokümanlar: [SPEC_MESSAGE_TEMPLATE.md](SPEC_MESSAGE_TEMPLATE.md) · [SPEC_CALL_CENTER.md](SPEC_CALL_CENTER.md) · [FUNCTIONS_CORE.md](../reference/FUNCTIONS_CORE.md) · [FUNCTIONS_TENANT.md](../reference/FUNCTIONS_TENANT.md)_
+_İlgili dokümanlar: [SPEC_MESSAGE_TEMPLATE.md](SPEC_MESSAGE_TEMPLATE.md) · [SPEC_CALL_CENTER.md](SPEC_CALL_CENTER.md) · [FUNCTIONS_CORE.md](../reference/FUNCTIONS_CORE.md) · [FUNCTIONS_CLIENT.md](../reference/FUNCTIONS_CLIENT.md)_

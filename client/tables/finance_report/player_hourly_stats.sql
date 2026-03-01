@@ -1,13 +1,13 @@
 -- =============================================
--- Tablo: finance.player_hourly_stats
+-- Tablo: finance_report.player_hourly_stats
 -- Açıklama: Oyuncu bazlı saatlik finansal özet tablosu
 -- Eski sistemdeki [TransactionHourlyTotals] tablosunun optimize edilmiş halidir.
 -- JSONB kullanılarak dikey (vertical) bazlı kırılımlar esnek hale getirilmiştir.
 -- =============================================
 
-DROP TABLE IF EXISTS finance.player_hourly_stats CASCADE;
+DROP TABLE IF EXISTS finance_report.player_hourly_stats CASCADE;
 
-CREATE TABLE finance.player_hourly_stats (
+CREATE TABLE finance_report.player_hourly_stats (
     id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat (Örn: 2026-01-30 14:00:00+00)
 
@@ -51,6 +51,6 @@ CREATE TABLE finance.player_hourly_stats (
     PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
 ) PARTITION BY RANGE (period_hour);
 
-CREATE TABLE finance.player_hourly_stats_default PARTITION OF finance.player_hourly_stats DEFAULT;
+CREATE TABLE finance_report.player_hourly_stats_default PARTITION OF finance_report.player_hourly_stats DEFAULT;
 
-COMMENT ON TABLE finance.player_hourly_stats IS 'Hourly financial summary per player/wallet using JSONB for flexible vertical reporting. Partitioned monthly by period_hour.';
+COMMENT ON TABLE finance_report.player_hourly_stats IS 'Hourly financial summary per player/wallet using JSONB for flexible vertical reporting. Partitioned monthly by period_hour.';

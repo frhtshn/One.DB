@@ -2,12 +2,12 @@
 -- ADMIN_MESSAGE_PUBLISH: Draft'ı yayınlar
 -- Draft'tan content ve filtreleri okur
 -- Filtre bazlı alıcı çözümlemesi (AND kombinasyonu)
--- tenant_ids array ile çoklu tenant destekler
+-- client_ids array ile çoklu client destekler
 -- Her alıcı için ayrı mesaj satırı oluşturur (draft_id ile)
 -- Draft status → published, total_recipients güncellenir
 -- 0 alıcı çözümlenirse exception fırlatır (yayınlamaz)
 -- >10K alıcı hard limit — atomik rollback
--- Caller scope kontrolü: draft'ın company_id ve tenant_ids erişim doğrulaması
+-- Caller scope kontrolü: draft'ın company_id ve client_ids erişim doğrulaması
 -- Ownership kontrolü: sender_id != p_caller_id AND NOT p_is_admin → RAISE
 -- ================================================================
 
@@ -25,7 +25,7 @@ AS $$
 DECLARE
     v_draft RECORD;
     v_recipient_count INTEGER;
-    v_has_tenant_filter BOOLEAN;
+    v_has_client_filter BOOLEAN;
 BEGIN
     IF p_caller_id IS NULL THEN
         RAISE EXCEPTION 'error.messaging.sender-id-required' USING ERRCODE = 'P0400';
@@ -60,14 +60,14 @@ BEGIN
         PERFORM security.user_assert_access_company(p_caller_id, v_draft.company_id);
     END IF;
 
-    -- Scope kontrolü: caller draft'ın hedef tenant'larına erişebilir mi?
-    IF v_draft.tenant_ids IS NOT NULL AND array_length(v_draft.tenant_ids, 1) > 0 THEN
-        PERFORM security.user_assert_access_tenant(p_caller_id, tid)
-        FROM unnest(v_draft.tenant_ids) AS tid;
+    -- Scope kontrolü: caller draft'ın hedef client'larına erişebilir mi?
+    IF v_draft.client_ids IS NOT NULL AND array_length(v_draft.client_ids, 1) > 0 THEN
+        PERFORM security.user_assert_access_client(p_caller_id, tid)
+        FROM unnest(v_draft.client_ids) AS tid;
     END IF;
 
-    -- Tenant filtresi aktif mi kontrol et
-    v_has_tenant_filter := v_draft.tenant_ids IS NOT NULL AND array_length(v_draft.tenant_ids, 1) > 0;
+    -- Client filtresi aktif mi kontrol et
+    v_has_client_filter := v_draft.client_ids IS NOT NULL AND array_length(v_draft.client_ids, 1) > 0;
 
     -- Filtre bazlı alıcı çözümlemesi (AND kombinasyonu)
     WITH resolved_recipients AS (
@@ -79,19 +79,19 @@ BEGIN
           -- Şirket filtresi
           AND (v_draft.company_id IS NULL OR u.company_id = v_draft.company_id)
 
-          -- Tenant filtresi (çoklu): açık erişim VEYA company superadmin
-          AND (NOT v_has_tenant_filter OR (
+          -- Client filtresi (çoklu): açık erişim VEYA company superadmin
+          AND (NOT v_has_client_filter OR (
               EXISTS (
-                  SELECT 1 FROM security.user_allowed_tenants uat
-                  WHERE uat.user_id = u.id AND uat.tenant_id = ANY(v_draft.tenant_ids)
+                  SELECT 1 FROM security.user_allowed_clients uat
+                  WHERE uat.user_id = u.id AND uat.client_id = ANY(v_draft.client_ids)
               )
               OR (
                   EXISTS (
-                      SELECT 1 FROM core.tenants t
-                      WHERE t.id = ANY(v_draft.tenant_ids) AND t.company_id = u.company_id
+                      SELECT 1 FROM core.clients t
+                      WHERE t.id = ANY(v_draft.client_ids) AND t.company_id = u.company_id
                   )
                   AND NOT EXISTS (
-                      SELECT 1 FROM security.user_allowed_tenants sat
+                      SELECT 1 FROM security.user_allowed_clients sat
                       WHERE sat.user_id = u.id
                   )
               )
@@ -103,12 +103,12 @@ BEGIN
               WHERE ud.user_id = u.id AND ud.department_id = v_draft.department_id
           ))
 
-          -- Rol filtresi (tenant varsa o tenant'lardaki veya global rol aranır)
+          -- Rol filtresi (client varsa o client'lardaki veya global rol aranır)
           AND (v_draft.role_id IS NULL OR EXISTS (
               SELECT 1 FROM security.user_roles ur
               WHERE ur.user_id = u.id
                 AND ur.role_id = v_draft.role_id
-                AND (NOT v_has_tenant_filter OR ur.tenant_id IS NULL OR ur.tenant_id = ANY(v_draft.tenant_ids))
+                AND (NOT v_has_client_filter OR ur.client_id IS NULL OR ur.client_id = ANY(v_draft.client_ids))
           ))
     )
     INSERT INTO messaging.user_messages (

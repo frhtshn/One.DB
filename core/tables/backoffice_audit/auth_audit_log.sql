@@ -1,18 +1,18 @@
 -- =============================================
--- Tablo: backoffice.auth_audit_log
+-- Tablo: backoffice_audit.auth_audit_log
 -- Açıklama: Güvenlik olay kayıtları
 -- Giriş, çıkış, şifre değişikliği gibi işlemleri tutar
 -- GeoIP bilgileri ip-api.com'dan çözümlenir
 -- Günlük partition (created_at) - retention: 90 gün
 -- =============================================
 
-DROP TABLE IF EXISTS backoffice.auth_audit_log CASCADE;
+DROP TABLE IF EXISTS backoffice_audit.auth_audit_log CASCADE;
 
-CREATE TABLE backoffice.auth_audit_log (
+CREATE TABLE backoffice_audit.auth_audit_log (
     id BIGSERIAL,                                             -- Kaydın benzersiz kimliği
     user_id BIGINT,                                           -- Kullanıcı kimliği
     company_id BIGINT,                                        -- Şirket kimliği
-    tenant_id BIGINT,                                         -- Kiracı kimliği
+    client_id BIGINT,                                         -- Client kimliği
     event_type VARCHAR(50) NOT NULL,                          -- Gerçekleşen güvenlik olayının türü
     event_data JSONB,                                         -- Olay ile ilgili ek veriler
     ip_address VARCHAR(50),                                   -- İşlemin yapıldığı IP adresi
@@ -46,6 +46,6 @@ CREATE TABLE backoffice.auth_audit_log (
 ) PARTITION BY RANGE (created_at);
 
 -- Güvenlik ağı: Eşleşmeyen kayıtlar buraya düşer
-CREATE TABLE backoffice.auth_audit_log_default PARTITION OF backoffice.auth_audit_log DEFAULT;
+CREATE TABLE backoffice_audit.auth_audit_log_default PARTITION OF backoffice_audit.auth_audit_log DEFAULT;
 
-COMMENT ON TABLE backoffice.auth_audit_log IS 'Stores security-related events such as login, logout, and password changes with GeoIP data. Partitioned daily by created_at. Retention: 90 days.';
+COMMENT ON TABLE backoffice_audit.auth_audit_log IS 'Stores security-related events such as login, logout, and password changes with GeoIP data. Partitioned daily by created_at. Retention: 90 days.';

@@ -55,4 +55,40 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 \i game/indexes/catalog.sql
 
+-- =============================================================================
+-- LOG SCHEMAS (eski game_log DB)
+-- =============================================================================
+CREATE SCHEMA IF NOT EXISTS game_log;
+COMMENT ON SCHEMA game_log IS 'Game provider API call and callback logs (gateway-level, shared)';
+
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
+-- =============================================================================
+-- GAME LOG TABLES (daily partitioned)
+-- =============================================================================
+\i game/tables/game_log/provider_api_requests.sql
+\i game/tables/game_log/provider_api_callbacks.sql
+
+-- =============================================================================
+-- GAME LOG CONSTRAINTS
+-- =============================================================================
+\i game/constraints/game_log.sql
+
+-- =============================================================================
+-- GAME LOG INDEXES
+-- =============================================================================
+\i game/indexes/game_log.sql
+
+-- =============================================================================
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+-- =============================================================================
+\i game/functions/maintenance/create_partitions.sql
+\i game/functions/maintenance/drop_expired_partitions.sql
+\i game/functions/maintenance/partition_info.sql
+\i game/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
+
 COMMIT;

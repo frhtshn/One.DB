@@ -1,22 +1,22 @@
 -- =============================================
--- Tablo: core.tenant_servers
--- Açıklama: Tenant-sunucu atamaları
--- Her tenant component'inin hangi sunucuda çalıştığını tanımlar.
+-- Tablo: core.client_servers
+-- Açıklama: Client-sunucu atamaları
+-- Her client component'inin hangi sunucuda çalıştığını tanımlar.
 -- Provisioning sırasında container bilgileri yazılır.
 -- =============================================
 
-DROP TABLE IF EXISTS core.tenant_servers CASCADE;
+DROP TABLE IF EXISTS core.client_servers CASCADE;
 
-CREATE TABLE core.tenant_servers (
+CREATE TABLE core.client_servers (
     id BIGSERIAL PRIMARY KEY,                                     -- Benzersiz kayıt kimliği
-    tenant_id BIGINT NOT NULL,                                    -- Tenant ID (FK: core.tenants)
+    client_id BIGINT NOT NULL,                                    -- Client ID (FK: core.clients)
     server_id BIGINT NOT NULL,                                    -- Sunucu ID (FK: core.infrastructure_servers)
     server_role VARCHAR(30) NOT NULL,                              -- db_primary, db_replica, db_failover, backend, callback, frontend
 
     -- Container Bilgileri (provisioning sonrası yazılır)
     container_id VARCHAR(100),                                    -- Docker container ID
-    container_name VARCHAR(150),                                  -- nucleo_tenant_1_db_primary
-    container_image VARCHAR(255),                                 -- postgres:16, nucleo/tenant-backend:latest
+    container_name VARCHAR(150),                                  -- so_client_1_db_primary
+    container_image VARCHAR(255),                                 -- postgres:16, so/client-backend:latest
     container_port INTEGER,                                       -- Expose edilen port
 
     -- Durum
@@ -34,4 +34,4 @@ CREATE TABLE core.tenant_servers (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE core.tenant_servers IS 'Tenant-to-server mapping with container details per role (db_primary, backend, frontend, etc). Updated during provisioning with container info and health status.';
+COMMENT ON TABLE core.client_servers IS 'Client-to-server mapping with container details per role (db_primary, backend, frontend, etc). Updated during provisioning with container info and health status.';

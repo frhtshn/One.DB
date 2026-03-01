@@ -38,8 +38,8 @@ flowchart TD
 | 2 | Backend | `AES-256(email)` → email_encrypted |
 | 3 | Backend | `SHA-256(email)` → email_hash |
 | 4 | Backend | `UUID` → verification_token |
-| 5 | Backend → Tenant DB | `auth.player_register(username, email_enc, email_hash, pwd_hash, token, country_code, language)` |
-| 6 | Tenant DB | `players` tablosuna yazar → **status=0** (Pending), **email_verified=false** |
+| 5 | Backend → Client DB | `auth.player_register(username, email_enc, email_hash, pwd_hash, token, country_code, language)` |
+| 6 | Client DB | `players` tablosuna yazar → **status=0** (Pending), **email_verified=false** |
 | 7 | Backend → Email Service | Doğrulama linki gönderir |
 
 **Sonuç:** Oyuncu oluştu ama hiçbir şey yapamaz. `status=0`.
@@ -52,8 +52,8 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Backend → Tenant DB | `auth.player_verify_email(token)` |
-| 2 | Tenant DB | `email_verified=true`, `email_verified_at=now()` |
+| 1 | Backend → Client DB | `auth.player_verify_email(token)` |
+| 2 | Client DB | `email_verified=true`, `email_verified_at=now()` |
 
 **Sonuç:** E-posta doğrulandı, hâlâ `status=0`.
 
@@ -71,8 +71,8 @@ flowchart TD
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
 | 1 | Backend | Her PII alanı için: `AES-256(alan)` → encrypted, `SHA-256(alan)` → hash |
-| 2 | Backend → Tenant DB | `profile.player_profile_create(player_id, first_name_enc, first_name_hash, ...)` |
-| 3 | Tenant DB | `player_profile` tablosuna tek kayıt oluşturur (zaten varsa hata) |
+| 2 | Backend → Client DB | `profile.player_profile_create(player_id, first_name_enc, first_name_hash, ...)` |
+| 3 | Client DB | `player_profile` tablosuna tek kayıt oluşturur (zaten varsa hata) |
 
 **Sonuç:** Profil tamamlandı, hâlâ `status=0`. Yol burada ikiye ayrılıyor.
 
@@ -84,8 +84,8 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Backend → Tenant DB | `kyc.jurisdiction_create(player_id, 'TR', 'TR')` |
-| 2 | Tenant DB | `player_jurisdiction` tablosuna kayıt oluşturur (player başına UNIQUE) |
+| 1 | Backend → Client DB | `kyc.jurisdiction_create(player_id, 'TR', 'TR')` |
+| 2 | Client DB | `player_jurisdiction` tablosuna kayıt oluşturur (player başına UNIQUE) |
 
 **Fonksiyon parametreleri:**
 
@@ -106,20 +106,20 @@ flowchart TD
 | `geo_status` | `'active'` | GeoIP takibi aktif |
 
 > **Neden var?** Bu kayıt iki amaca hizmet eder:
-> 1. **Aktivasyon modelini belirler:** Backend, `registration_country_code`'a bakarak tenant konfigürasyonuna göre strict/loose kararı verir
+> 1. **Aktivasyon modelini belirler:** Backend, `registration_country_code`'a bakarak client konfigürasyonuna göre strict/loose kararı verir
 > 2. **GeoIP takibi için temel oluşturur:** Her login'de bu kayıt güncellenerek VPN tespiti ve ülke değişikliği izlenir
 
 ---
 
 ## Adım 5a — Loose Yetki Alanı Aktivasyonu (Curacao vb.)
 
-**Koşul:** Tenant konfigürasyonunda oyuncunun ülkesi "loose" olarak tanımlı.
+**Koşul:** Client konfigürasyonunda oyuncunun ülkesi "loose" olarak tanımlı.
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
 | 1 | Backend | Jurisdiction kaydındaki ülke kodunu kontrol eder → loose |
-| 2 | Backend → Tenant DB | `auth.player_update_status(player_id, 1)` → **Aktif!** |
-| 3 | Backend → Tenant DB | `wallet.wallet_create(player_id, 'TRY', 1)` → REAL + BONUS cüzdan |
+| 2 | Backend → Client DB | `auth.player_update_status(player_id, 1)` → **Aktif!** |
+| 3 | Backend → Client DB | `wallet.wallet_create(player_id, 'TRY', 1)` → REAL + BONUS cüzdan |
 
 **Sonuç:** Oyuncu hemen oynayabilir! KYC ancak **çekim talep edince** istenir.
 
@@ -127,7 +127,7 @@ flowchart TD
 
 ## Adım 5b — Strict Yetki Alanı (UK, DE vb.)
 
-**Koşul:** Tenant konfigürasyonunda oyuncunun ülkesi "strict" olarak tanımlı.
+**Koşul:** Client konfigürasyonunda oyuncunun ülkesi "strict" olarak tanımlı.
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
@@ -144,9 +144,9 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Backend → Tenant DB | `kyc.kyc_case_create(player_id)` |
-| 2 | Tenant DB | `player_kyc_cases` tablosuna kayıt → `status='not_started'` |
-| 3 | Tenant DB | `player_kyc_workflows` tablosuna ilk tarihçe kaydı |
+| 1 | Backend → Client DB | `kyc.kyc_case_create(player_id)` |
+| 2 | Client DB | `player_kyc_cases` tablosuna kayıt → `status='not_started'` |
+| 3 | Client DB | `player_kyc_workflows` tablosuna ilk tarihçe kaydı |
 
 **Sonuç:** KYC vakası açıldı, `case_id` döner.
 
@@ -158,9 +158,9 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Oyuncu → Backend → Tenant DB | `kyc.document_upload(player_id, case_id, 'id_card', file_name, ...)` |
-| 2 | Oyuncu → Backend → Tenant DB | `kyc.document_upload(player_id, case_id, 'proof_of_address', ...)` |
-| 3 | BO Operatör → Backend → Tenant DB | `kyc.document_review(doc_id, 'approved', reviewer_id)` |
+| 1 | Oyuncu → Backend → Client DB | `kyc.document_upload(player_id, case_id, 'id_card', file_name, ...)` |
+| 2 | Oyuncu → Backend → Client DB | `kyc.document_upload(player_id, case_id, 'proof_of_address', ...)` |
+| 3 | BO Operatör → Backend → Client DB | `kyc.document_review(doc_id, 'approved', reviewer_id)` |
 
 **Belge türleri:** `id_card`, `passport`, `driving_license`, `proof_of_address`, `utility_bill`, `bank_statement`
 
@@ -172,11 +172,11 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Backend → Tenant Audit DB | `kyc_audit.screening_result_create(player_id, 'pep', 'provider_x', ...)` |
-| 2 | Backend → Tenant Audit DB | `kyc_audit.screening_result_create(player_id, 'sanctions', 'provider_x', ...)` |
-| 3 | BO Operatör → Backend → Tenant Audit DB | `kyc_audit.screening_result_review(screening_id, 'clear', reviewer_id)` |
+| 1 | Backend → Client Audit DB | `kyc_audit.screening_result_create(player_id, 'pep', 'provider_x', ...)` |
+| 2 | Backend → Client Audit DB | `kyc_audit.screening_result_create(player_id, 'sanctions', 'provider_x', ...)` |
+| 3 | BO Operatör → Backend → Client Audit DB | `kyc_audit.screening_result_review(screening_id, 'clear', reviewer_id)` |
 
-> **Farklı DB:** Tarama sonuçları `tenant_audit` DB'sinde saklanır, `tenant` DB'sinde değil. Cross-DB iletişim backend üzerinden yapılır.
+> **Farklı DB:** Tarama sonuçları `client_audit` DB'sinde saklanır, `client` DB'sinde değil. Cross-DB iletişim backend üzerinden yapılır.
 
 ---
 
@@ -186,7 +186,7 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Backend → Tenant Audit DB | `kyc_audit.risk_assessment_create(player_id, 'initial', score, level, ...)` |
+| 1 | Backend → Client Audit DB | `kyc_audit.risk_assessment_create(player_id, 'initial', score, level, ...)` |
 
 **6 bileşen skor:**
 
@@ -207,7 +207,7 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | BO Operatör → Backend → Tenant DB | `kyc.jurisdiction_update(player_id, 'GB', 'uk_gc', 'operator')` |
+| 1 | BO Operatör → Backend → Client DB | `kyc.jurisdiction_update(player_id, 'GB', 'uk_gc', 'operator')` |
 
 **Güncellenen alanlar:**
 
@@ -227,9 +227,9 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | BO Operatör → Backend → Tenant DB | `kyc.kyc_case_update_status(case_id, 'approved')` |
-| 2 | Backend → Tenant DB | `auth.player_update_status(player_id, 1)` → **Aktif!** |
-| 3 | Backend → Tenant DB | `wallet.wallet_create(player_id, 'GBP', 1)` → REAL + BONUS cüzdan |
+| 1 | BO Operatör → Backend → Client DB | `kyc.kyc_case_update_status(case_id, 'approved')` |
+| 2 | Backend → Client DB | `auth.player_update_status(player_id, 1)` → **Aktif!** |
+| 3 | Backend → Client DB | `wallet.wallet_create(player_id, 'GBP', 1)` → REAL + BONUS cüzdan |
 
 **Sonuç:** Oyuncu artık tam erişime sahip — oyun oynayabilir, para yatırabilir, çekim yapabilir.
 
@@ -241,7 +241,7 @@ flowchart TD
 
 | Sıra | Yapan | İşlem |
 |------|-------|-------|
-| 1 | Backend → Tenant DB | `kyc.jurisdiction_update_geo(player_id, '1.2.3.4', 'GB', false)` |
+| 1 | Backend → Client DB | `kyc.jurisdiction_update_geo(player_id, '1.2.3.4', 'GB', false)` |
 
 **Güncellenen alanlar:**
 

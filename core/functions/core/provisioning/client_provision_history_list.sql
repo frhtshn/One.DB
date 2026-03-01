@@ -1,16 +1,16 @@
 -- ================================================================
--- TENANT_PROVISION_HISTORY_LIST: Provisioning geçmişi listele
+-- CLIENT_PROVISION_HISTORY_LIST: Provisioning geçmişi listele
 -- ================================================================
--- IDOR korumalı. Tenant'ın tüm provisioning/decommission
+-- IDOR korumalı. Client'ın tüm provisioning/decommission
 -- denemelerini run bazlı gruplandırarak döner.
 -- Her run için: başlangıç/bitiş, adım sayısı, durum özeti.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_provision_history_list(BIGINT, BIGINT);
+DROP FUNCTION IF EXISTS core.client_provision_history_list(BIGINT, BIGINT);
 
-CREATE OR REPLACE FUNCTION core.tenant_provision_history_list(
+CREATE OR REPLACE FUNCTION core.client_provision_history_list(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT
+    p_client_id BIGINT
 )
 RETURNS TABLE (
     run_id UUID,
@@ -32,17 +32,17 @@ DECLARE
     v_company_id BIGINT;
 BEGIN
     -- Parametre kontrolü
-    IF p_tenant_id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.tenant.id-required';
+    IF p_client_id IS NULL THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.client.id-required';
     END IF;
 
-    -- Tenant varlık ve IDOR kontrolü
+    -- Client varlık ve IDOR kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants
-    WHERE id = p_tenant_id;
+    FROM core.clients
+    WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     PERFORM security.user_assert_access_company(p_caller_id, v_company_id);
@@ -66,11 +66,11 @@ BEGIN
         -- En son güncellenen adım
         (ARRAY_AGG(pl.step_name ORDER BY pl.step_order DESC) FILTER (WHERE pl.status != 'pending'))[1] AS last_step,
         (ARRAY_AGG(pl.status ORDER BY pl.step_order DESC) FILTER (WHERE pl.status != 'pending'))[1] AS last_status
-    FROM core.tenant_provisioning_log pl
-    WHERE pl.tenant_id = p_tenant_id
+    FROM core.client_provisioning_log pl
+    WHERE pl.client_id = p_client_id
     GROUP BY pl.provision_run_id
     ORDER BY MIN(pl.created_at) DESC;
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_provision_history_list(BIGINT, BIGINT) IS 'Lists all provisioning/decommission runs for a tenant grouped by run_id. Returns summary per run: type, timing, step counts, duration. IDOR protected.';
+COMMENT ON FUNCTION core.client_provision_history_list(BIGINT, BIGINT) IS 'Lists all provisioning/decommission runs for a client grouped by run_id. Returns summary per run: type, timing, step counts, duration. IDOR protected.';

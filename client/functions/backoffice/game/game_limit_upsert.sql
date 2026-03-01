@@ -2,7 +2,7 @@
 -- GAME_LIMIT_UPSERT: Oyun limiti ekle/güncelle
 -- ================================================================
 -- (game_id, currency_code) bazlı UPSERT.
--- Tenant override olarak kaydedilir.
+-- Client override olarak kaydedilir.
 -- Auth-agnostic.
 -- ================================================================
 
@@ -67,4 +67,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION game.game_limit_upsert IS 'Upserts per-game currency limit (tenant override). Supports fiat (type=1) and crypto (type=2). Auth-agnostic.';
+COMMENT ON FUNCTION game.game_limit_upsert IS 'Upserts per-game currency limit (client override). Supports fiat (type=1) and crypto (type=2). Auth-agnostic.';

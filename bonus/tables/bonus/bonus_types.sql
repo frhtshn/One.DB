@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS bonus.bonus_types CASCADE;
 
 CREATE TABLE bonus.bonus_types (
     id bigserial PRIMARY KEY,
-    tenant_id bigint,  -- NULL = platform seviyesi, değer = tenant'a ait
+    client_id bigint,  -- NULL = platform seviyesi, değer = client'a ait
     type_code varchar(50) NOT NULL,
     type_name varchar(255) NOT NULL,
     description text,

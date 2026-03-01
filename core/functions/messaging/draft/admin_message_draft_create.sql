@@ -1,8 +1,8 @@
 -- ================================================================
 -- ADMIN_MESSAGE_DRAFT_CREATE: Mesaj taslağı oluşturur
 -- scheduled_at verilirse status otomatik 'scheduled' olur
--- tenant_ids array olarak çoklu tenant destekler
--- Caller scope kontrolü: company_id ve tenant_ids erişim doğrulaması
+-- client_ids array olarak çoklu client destekler
+-- Caller scope kontrolü: company_id ve client_ids erişim doğrulaması
 -- ================================================================
 
 DROP FUNCTION IF EXISTS messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMP, TIMESTAMP, BIGINT);
@@ -16,7 +16,7 @@ CREATE OR REPLACE FUNCTION messaging.admin_message_draft_create(
     p_message_type  VARCHAR(30) DEFAULT 'announcement',       -- Mesaj tipi
     p_priority      VARCHAR(10) DEFAULT 'normal',             -- Öncelik seviyesi
     p_company_id    BIGINT DEFAULT NULL,                      -- Şirket filtresi
-    p_tenant_ids    BIGINT[] DEFAULT NULL,                    -- Tenant filtresi (çoklu)
+    p_client_ids    BIGINT[] DEFAULT NULL,                    -- Client filtresi (çoklu)
     p_department_id BIGINT DEFAULT NULL,                      -- Departman filtresi
     p_role_id       BIGINT DEFAULT NULL,                      -- Rol filtresi
     p_scheduled_at  TIMESTAMPTZ DEFAULT NULL,                 -- Zamanlama (NULL = draft)
@@ -48,10 +48,10 @@ BEGIN
         PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
     END IF;
 
-    -- Scope kontrolü: caller hedef tenant'lara erişebilir mi?
-    IF p_tenant_ids IS NOT NULL AND array_length(p_tenant_ids, 1) > 0 THEN
-        PERFORM security.user_assert_access_tenant(p_caller_id, tid)
-        FROM unnest(p_tenant_ids) AS tid;
+    -- Scope kontrolü: caller hedef client'lara erişebilir mi?
+    IF p_client_ids IS NOT NULL AND array_length(p_client_ids, 1) > 0 THEN
+        PERFORM security.user_assert_access_client(p_caller_id, tid)
+        FROM unnest(p_client_ids) AS tid;
     END IF;
 
     -- Status belirleme: scheduled_at varsa → scheduled, yoksa → draft
@@ -60,12 +60,12 @@ BEGIN
     -- Draft oluştur
     INSERT INTO messaging.user_message_drafts (
         sender_id, subject, body, message_type, priority,
-        company_id, tenant_ids, department_id, role_id,
+        company_id, client_ids, department_id, role_id,
         status, scheduled_at, expires_at,
         created_by
     ) VALUES (
         COALESCE(p_sender_id, p_caller_id), p_subject, p_body, p_message_type, p_priority,
-        p_company_id, p_tenant_ids, p_department_id, p_role_id,
+        p_company_id, p_client_ids, p_department_id, p_role_id,
         v_status, p_scheduled_at, p_expires_at,
         COALESCE(p_created_by, p_caller_id)
     )
@@ -75,4 +75,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMPTZ, TIMESTAMPTZ, BIGINT) IS 'Create a message draft with caller scope validation. Validates caller access to company_id and tenant_ids. Returns draft ID.';
+COMMENT ON FUNCTION messaging.admin_message_draft_create(BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, BIGINT, BIGINT[], BIGINT, BIGINT, TIMESTAMPTZ, TIMESTAMPTZ, BIGINT) IS 'Create a message draft with caller scope validation. Validates caller access to company_id and client_ids. Returns draft ID.';

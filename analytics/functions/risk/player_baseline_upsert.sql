@@ -9,7 +9,7 @@
 DROP FUNCTION IF EXISTS risk.player_baseline_upsert(INT, BIGINT, NUMERIC, NUMERIC, NUMERIC, NUMERIC, NUMERIC, NUMERIC, INT, INT, SMALLINT, SMALLINT, TIMESTAMPTZ, TIMESTAMPTZ, INT, NUMERIC, SMALLINT, NUMERIC, NUMERIC, INT, NUMERIC, SMALLINT, SMALLINT, SMALLINT, SMALLINT, NUMERIC, VARCHAR, VARCHAR, SMALLINT);
 
 CREATE OR REPLACE FUNCTION risk.player_baseline_upsert(
-    p_tenant_id                INT,
+    p_client_id                INT,
     p_player_id                BIGINT,
     p_avg_deposit              NUMERIC(18,2),
     p_deposit_stddev           NUMERIC(18,2),
@@ -45,7 +45,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
     INSERT INTO risk.risk_player_baselines (
-        tenant_id, player_id,
+        client_id, player_id,
         avg_deposit, deposit_stddev, avg_withdrawal, withdrawal_stddev,
         avg_deposits_per_day, avg_withdrawals_per_day,
         avg_deposit_interval_sec, deposit_interval_stddev,
@@ -58,7 +58,7 @@ BEGIN
         base_currency, primary_currency, currency_count,
         updated_at
     ) VALUES (
-        p_tenant_id, p_player_id,
+        p_client_id, p_player_id,
         p_avg_deposit, p_deposit_stddev, p_avg_withdrawal, p_withdrawal_stddev,
         p_avg_deposits_per_day, p_avg_withdrawals_per_day,
         p_avg_deposit_interval_sec, p_deposit_interval_stddev,
@@ -71,7 +71,7 @@ BEGIN
         p_base_currency, p_primary_currency, p_currency_count,
         NOW()
     )
-    ON CONFLICT (tenant_id, player_id) DO UPDATE SET
+    ON CONFLICT (client_id, player_id) DO UPDATE SET
         avg_deposit              = EXCLUDED.avg_deposit,
         deposit_stddev           = EXCLUDED.deposit_stddev,
         avg_withdrawal           = EXCLUDED.avg_withdrawal,

@@ -1,8 +1,8 @@
 # SPEC_CALL_CENTER: Çağrı Merkezi ve Müşteri Destek Sistemi
 
-Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli plugin), **Temsilci Atama** ve **Hoşgeldin Araması** (standart hizmetler). Tüm veriler Tenant DB `support` şemasında, bildirim logları Tenant Log DB `support_log` şemasında, istatistikler Tenant Report DB `support_report` şemasında tutulur.
+Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli plugin), **Temsilci Atama** ve **Hoşgeldin Araması** (standart hizmetler). Tüm veriler Client DB `support` şemasında, bildirim logları Client Log DB `support_log` şemasında, istatistikler Client Report DB `support_report` şemasında tutulur.
 
-> İlgili spesifikasyonlar: [SPEC_PLAYER_AUTH_KYC.md](SPEC_PLAYER_AUTH_KYC.md) (oyuncu kimlik), [SPEC_SITE_MANAGEMENT.md](SPEC_SITE_MANAGEMENT.md) (tenant ayarları, menü yapısı)
+> İlgili spesifikasyonlar: [SPEC_PLAYER_AUTH_KYC.md](SPEC_PLAYER_AUTH_KYC.md) (oyuncu kimlik), [SPEC_SITE_MANAGEMENT.md](SPEC_SITE_MANAGEMENT.md) (client ayarları, menü yapısı)
 
 ---
 
@@ -13,9 +13,9 @@ Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli p
 | Metrik | Değer |
 |--------|-------|
 | Toplam fonksiyon | 43 |
-| Veritabanı | 3 (Tenant DB, Tenant Log DB, Tenant Report DB) |
+| Veritabanı | 3 (Client DB, Client Log DB, Client Report DB) |
 | Şema | 3 (`support`, `support_log`, `support_report`) |
-| Tablo | 13 (11 Tenant + 1 Log + 1 Report) |
+| Tablo | 13 (11 Client + 1 Log + 1 Report) |
 | Alt sistem | 3 (Ticket, Temsilci Atama, Hoşgeldin Araması) |
 | Hizmet modeli | Ticket = ücretli plugin; Temsilci + Hoşgeldin = standart |
 
@@ -23,7 +23,7 @@ Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli p
 
 | # | Alt Sistem | Tür | Fonksiyon | Kontrol |
 |---|------------|-----|-----------|---------|
-| 1 | **Ticket Sistemi** | Ücretli plugin | 26 | `ticket_plugin_enabled` tenant ayarı |
+| 1 | **Ticket Sistemi** | Ücretli plugin | 26 | `ticket_plugin_enabled` client ayarı |
 | 2 | **Temsilci Atama** | Standart | 3 | Her zaman aktif |
 | 3 | **Hoşgeldin Araması** | Standart | 5 | Her zaman aktif |
 | 4 | **Oyuncu Notları** | Standart | 4 | Her zaman aktif |
@@ -34,37 +34,37 @@ Oyuncu destek sistemi üç alt sistemden oluşur: **Ticket Sistemi** (ücretli p
 
 | DB | Şema | Fonksiyon | Tablo | Açıklama |
 |----|------|-----------|-------|----------|
-| Tenant DB | `support` | 43 | 11 | Tüm iş mantığı, CRUD, durum geçişleri |
-| Tenant Log DB | `support_log` | 0 | 1 | Bildirim gönderim logları (daily partition) |
-| Tenant Report DB | `support_report` | 0 | 1 | Günlük istatistikler (monthly partition) |
+| Client DB | `support` | 43 | 11 | Tüm iş mantığı, CRUD, durum geçişleri |
+| Client Log DB | `support_log` | 0 | 1 | Bildirim gönderim logları (daily partition) |
+| Client Report DB | `support_report` | 0 | 1 | Günlük istatistikler (monthly partition) |
 
-> **Cross-DB ilişki:** Core DB'den `ticket_plugin_enabled` ve anti-abuse ayarları backend tarafından okunup Tenant DB fonksiyonlarına parametre olarak iletilir. Tenant DB fonksiyonları Core DB'ye doğrudan erişmez.
+> **Cross-DB ilişki:** Core DB'den `ticket_plugin_enabled` ve anti-abuse ayarları backend tarafından okunup Client DB fonksiyonlarına parametre olarak iletilir. Client DB fonksiyonları Core DB'ye doğrudan erişmez.
 
 ### 1.4 DB Topolojisi
 
 ```mermaid
 flowchart TD
-    subgraph TENANT["Tenant DB — support şeması"]
+    subgraph CLIENT["Client DB — support şeması"]
         direction TB
         TICKET["Ticket Tabloları<br/>(6 tablo, ücretli plugin)"]
         STANDARD["Standart Tablolar<br/>(5 tablo, her zaman aktif)"]
     end
 
-    subgraph TENANT_LOG["Tenant Log DB — support_log şeması"]
+    subgraph CLIENT_LOG["Client Log DB — support_log şeması"]
         TAL["ticket_activity_logs<br/>(daily partition, 90 gün)"]
     end
 
-    subgraph TENANT_REPORT["Tenant Report DB — support_report şeması"]
+    subgraph CLIENT_REPORT["Client Report DB — support_report şeması"]
         TDS["ticket_daily_stats<br/>(monthly partition, süresiz)"]
     end
 
     subgraph CORE["Core DB (backend üzerinden)"]
-        TS["tenant_settings<br/>(plugin + anti-abuse ayarları)"]
+        TS["client_settings<br/>(plugin + anti-abuse ayarları)"]
     end
 
-    CORE -->|"Backend parametre olarak iletir"| TENANT
-    TENANT -->|"Backend log yazar"| TENANT_LOG
-    TENANT -->|"Backend istatistik yazar"| TENANT_REPORT
+    CORE -->|"Backend parametre olarak iletir"| CLIENT
+    CLIENT -->|"Backend log yazar"| CLIENT_LOG
+    CLIENT -->|"Backend istatistik yazar"| CLIENT_REPORT
 ```
 
 ### 1.5 Plugin Kontrol Modeli
@@ -80,9 +80,9 @@ flowchart TD
 | `canned_response_*` | **Engellenir** | Çalışır |
 | Dashboard & kuyruk | **Engellenir** | Çalışır |
 
-> **Plugin kontrolü backend'de yapılır.** Tenant DB fonksiyonları plugin durumunu bilmez — backend `ticket_plugin_enabled = false` ise Tenant DB'ye çağrı yapmaz.
+> **Plugin kontrolü backend'de yapılır.** Client DB fonksiyonları plugin durumunu bilmez — backend `ticket_plugin_enabled = false` ise Client DB'ye çağrı yapmaz.
 
-### 1.6 Tenant Settings Key'leri
+### 1.6 Client Settings Key'leri
 
 #### Plugin Aktivasyonu (`'Plugin'` kategorisi — sadece superadmin/admin)
 
@@ -90,7 +90,7 @@ flowchart TD
 |-----|-----|------------|----------|
 | `ticket_plugin_enabled` | `boolean` | `false` | Ticket plugin aktif mi? |
 
-#### Anti-Abuse Ayarları (`'Support'` kategorisi — tenantadmin+)
+#### Anti-Abuse Ayarları (`'Support'` kategorisi — clientadmin+)
 
 | Key | Tip | Varsayılan | Açıklama |
 |-----|-----|------------|----------|
@@ -242,7 +242,7 @@ stateDiagram-v2
 
 ## 3. Veri Modeli
 
-### 3.1 Tenant DB — `support` Şeması
+### 3.1 Client DB — `support` Şeması
 
 #### 3.1.1 `support.ticket_categories`
 
@@ -374,7 +374,7 @@ Ticket'tan bağımsız CRM tarzı oyuncu notları.
 
 #### 3.1.8 `support.agent_settings`
 
-Per-tenant agent profili: müsaitlik, kapasite, yetenekler.
+Per-client agent profili: müsaitlik, kapasite, yetenekler.
 
 | Kolon | Tip | Constraint | Varsayılan | Açıklama |
 |-------|-----|-----------|------------|----------|
@@ -442,7 +442,7 @@ Hoşgeldin araması görevleri. Oyuncu kayıt sonrası otomatik oluşturulur.
 
 **Unique:** `uq_welcome_call_tasks_active_player` — `(player_id) WHERE status NOT IN ('completed', 'failed', 'cancelled')` — aktif oyuncu başına tek görev
 
-### 3.2 Tenant Log DB — `support_log` Şeması
+### 3.2 Client Log DB — `support_log` Şeması
 
 #### 3.2.1 `support_log.ticket_activity_logs` (Partitioned)
 
@@ -464,7 +464,7 @@ Bildirim gönderim logları. Daily partition, 90 gün retention.
 **PK:** `(id, created_at)` — composite, partition key dahil
 **Partition:** `RANGE (created_at)` — daily, 90 gün retention
 
-### 3.3 Tenant Report DB — `support_report` Şeması
+### 3.3 Client Report DB — `support_report` Şeması
 
 #### 3.3.1 `support_report.ticket_daily_stats` (Partitioned)
 
@@ -912,7 +912,7 @@ Günlük ticket istatistikleri. Monthly partition, süresiz retention.
 3. İç fonksiyon çağrısı: `support.ticket_create(...)` çağrılır — `p_priority = 1` (normal, hardcoded), `p_created_by_type = 'PLAYER'`, `p_created_by_id = p_player_id`.
 4. `ticket_create`'in tüm validasyon hataları üst fonksiyona propagate olur.
 
-> **Cross-DB notu:** Anti-abuse parametreleri (`p_max_open_tickets`, `p_cooldown_minutes`) backend tarafından `core.tenant_settings`'ten okunup iletilir. Bu fonksiyon Core DB'ye erişmez.
+> **Cross-DB notu:** Anti-abuse parametreleri (`p_max_open_tickets`, `p_cooldown_minutes`) backend tarafından `core.client_settings`'ten okunup iletilir. Bu fonksiyon Core DB'ye erişmez.
 
 **Hata Kodları:**
 
@@ -1945,7 +1945,7 @@ Parametresiz fonksiyon.
 
 ### 5.1 Genel Kurallar
 
-1. **Plugin kontrolü backend'de yapılır:** Tenant DB fonksiyonları `ticket_plugin_enabled` ayarını bilmez. Backend `false` ise ticket fonksiyonlarına çağrı yapmaz.
+1. **Plugin kontrolü backend'de yapılır:** Client DB fonksiyonları `ticket_plugin_enabled` ayarını bilmez. Backend `false` ise ticket fonksiyonlarına çağrı yapmaz.
 2. **Anti-abuse sadece oyuncu self-service:** `player_ticket_create` anti-abuse kontrolü yapar; `ticket_create` (BO) yapmaz.
 3. **Soft delete pattern:** `player_notes`, `canned_responses`, `ticket_categories`, `ticket_tags` tabloları `is_active = false` ile silinir. `agent_settings` de aynı pattern.
 4. **Partial unique index:** Benzersizlik kontrolleri `WHERE is_active = true` ile sadece aktif kayıtlar arasında yapılır.
@@ -1993,7 +1993,7 @@ Etiket renkleri `^#[0-9A-Fa-f]{6}$` regex ile doğrulanır. Varsayılan: `#6B728
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| `error.support.ticket-plugin-disabled` | — | Backend seviyesinde (Tenant DB'ye gitmez) |
+| `error.support.ticket-plugin-disabled` | — | Backend seviyesinde (Client DB'ye gitmez) |
 
 ### 6.2 Anti-Abuse (P0429)
 
@@ -2095,7 +2095,7 @@ Etiket renkleri `^#[0-9A-Fa-f]{6}$` regex ile doğrulanır. Varsayılan: `#6B728
 
 ## 7. Index ve Performans Notları
 
-### 7.1 Tenant DB — `support` Şeması İndeksleri
+### 7.1 Client DB — `support` Şeması İndeksleri
 
 #### `support.tickets`
 
@@ -2184,7 +2184,7 @@ Etiket renkleri `^#[0-9A-Fa-f]{6}$` regex ile doğrulanır. Varsayılan: `#6B728
 ### 7.3 Performans Notları
 
 1. **Kuyruk sorgusu optimize:** `idx_support_tickets_open_queue` partial indeksi ile `ticket_queue_list` fonksiyonu hızlıdır.
-2. **Dashboard istatistikleri:** `ticket_dashboard_stats` 5 ayrı sorgu çalıştırır — yüksek hacimli tenant'larda performans izlenmelidir. `ticket_daily_stats` report tablosu alternatif olarak kullanılabilir.
+2. **Dashboard istatistikleri:** `ticket_dashboard_stats` 5 ayrı sorgu çalıştırır — yüksek hacimli client'larda performans izlenmelidir. `ticket_daily_stats` report tablosu alternatif olarak kullanılabilir.
 3. **Agent workload:** `agent_setting_list` her agent için `tickets` tablosundan alt sorgu yapar — agent sayısı fazlaysa dikkat edilmeli.
 4. **Cleanup fonksiyonu:** `welcome_call_task_cleanup` FOR UPDATE SKIP LOCKED ile batch-safe. Concurrent worker güvenli.
 5. **Partitioned tablolar:** `ticket_activity_logs` ve `ticket_daily_stats` için ek indeks tanımlanmamış — composite PK yeterli.
@@ -2197,102 +2197,102 @@ Etiket renkleri `^#[0-9A-Fa-f]{6}$` regex ile doğrulanır. Varsayılan: `#6B728
 
 | Dosya | DB |
 |-------|----|
-| `tenant/tables/support/ticket_categories.sql` | Tenant |
-| `tenant/tables/support/tickets.sql` | Tenant |
-| `tenant/tables/support/ticket_actions.sql` | Tenant |
-| `tenant/tables/support/ticket_tags.sql` | Tenant |
-| `tenant/tables/support/ticket_tag_assignments.sql` | Tenant |
-| `tenant/tables/support/player_notes.sql` | Tenant |
-| `tenant/tables/support/agent_settings.sql` | Tenant |
-| `tenant/tables/support/canned_responses.sql` | Tenant |
-| `tenant/tables/support/player_representatives.sql` | Tenant |
-| `tenant/tables/support/player_representative_history.sql` | Tenant |
-| `tenant/tables/support/welcome_call_tasks.sql` | Tenant |
-| `tenant_log/tables/support/ticket_activity_logs.sql` | Tenant Log |
-| `tenant_report/tables/support/ticket_daily_stats.sql` | Tenant Report |
+| `client/tables/support/ticket_categories.sql` | Client |
+| `client/tables/support/tickets.sql` | Client |
+| `client/tables/support/ticket_actions.sql` | Client |
+| `client/tables/support/ticket_tags.sql` | Client |
+| `client/tables/support/ticket_tag_assignments.sql` | Client |
+| `client/tables/support/player_notes.sql` | Client |
+| `client/tables/support/agent_settings.sql` | Client |
+| `client/tables/support/canned_responses.sql` | Client |
+| `client/tables/support/player_representatives.sql` | Client |
+| `client/tables/support/player_representative_history.sql` | Client |
+| `client/tables/support/welcome_call_tasks.sql` | Client |
+| `client_log/tables/support/ticket_activity_logs.sql` | Client Log |
+| `client_report/tables/support/ticket_daily_stats.sql` | Client Report |
 
 ### 8.2 Ticket Fonksiyonları — BO (11)
 
 | Dosya |
 |-------|
-| `tenant/functions/backoffice/support/ticket_create.sql` |
-| `tenant/functions/backoffice/support/ticket_get.sql` |
-| `tenant/functions/backoffice/support/ticket_list.sql` |
-| `tenant/functions/backoffice/support/ticket_update.sql` |
-| `tenant/functions/backoffice/support/ticket_assign.sql` |
-| `tenant/functions/backoffice/support/ticket_add_note.sql` |
-| `tenant/functions/backoffice/support/ticket_reply_player.sql` |
-| `tenant/functions/backoffice/support/ticket_resolve.sql` |
-| `tenant/functions/backoffice/support/ticket_close.sql` |
-| `tenant/functions/backoffice/support/ticket_reopen.sql` |
-| `tenant/functions/backoffice/support/ticket_cancel.sql` |
+| `client/functions/backoffice/support/ticket_create.sql` |
+| `client/functions/backoffice/support/ticket_get.sql` |
+| `client/functions/backoffice/support/ticket_list.sql` |
+| `client/functions/backoffice/support/ticket_update.sql` |
+| `client/functions/backoffice/support/ticket_assign.sql` |
+| `client/functions/backoffice/support/ticket_add_note.sql` |
+| `client/functions/backoffice/support/ticket_reply_player.sql` |
+| `client/functions/backoffice/support/ticket_resolve.sql` |
+| `client/functions/backoffice/support/ticket_close.sql` |
+| `client/functions/backoffice/support/ticket_reopen.sql` |
+| `client/functions/backoffice/support/ticket_cancel.sql` |
 
 ### 8.3 Ticket Fonksiyonları — Oyuncu (4)
 
 | Dosya |
 |-------|
-| `tenant/functions/frontend/support/player_ticket_create.sql` |
-| `tenant/functions/frontend/support/player_ticket_list.sql` |
-| `tenant/functions/frontend/support/player_ticket_get.sql` |
-| `tenant/functions/frontend/support/player_ticket_reply.sql` |
+| `client/functions/frontend/support/player_ticket_create.sql` |
+| `client/functions/frontend/support/player_ticket_list.sql` |
+| `client/functions/frontend/support/player_ticket_get.sql` |
+| `client/functions/frontend/support/player_ticket_reply.sql` |
 
 ### 8.4 Oyuncu Notları (4)
 
 | Dosya |
 |-------|
-| `tenant/functions/backoffice/support/player_note_create.sql` |
-| `tenant/functions/backoffice/support/player_note_list.sql` |
-| `tenant/functions/backoffice/support/player_note_update.sql` |
-| `tenant/functions/backoffice/support/player_note_delete.sql` |
+| `client/functions/backoffice/support/player_note_create.sql` |
+| `client/functions/backoffice/support/player_note_list.sql` |
+| `client/functions/backoffice/support/player_note_update.sql` |
+| `client/functions/backoffice/support/player_note_delete.sql` |
 
 ### 8.5 Agent & Canned Response (7)
 
 | Dosya |
 |-------|
-| `tenant/functions/backoffice/support/agent_setting_upsert.sql` |
-| `tenant/functions/backoffice/support/agent_setting_get.sql` |
-| `tenant/functions/backoffice/support/agent_setting_list.sql` |
-| `tenant/functions/backoffice/support/canned_response_create.sql` |
-| `tenant/functions/backoffice/support/canned_response_list.sql` |
-| `tenant/functions/backoffice/support/canned_response_update.sql` |
-| `tenant/functions/backoffice/support/canned_response_delete.sql` |
+| `client/functions/backoffice/support/agent_setting_upsert.sql` |
+| `client/functions/backoffice/support/agent_setting_get.sql` |
+| `client/functions/backoffice/support/agent_setting_list.sql` |
+| `client/functions/backoffice/support/canned_response_create.sql` |
+| `client/functions/backoffice/support/canned_response_list.sql` |
+| `client/functions/backoffice/support/canned_response_update.sql` |
+| `client/functions/backoffice/support/canned_response_delete.sql` |
 
 ### 8.6 Temsilci Atama (3)
 
 | Dosya |
 |-------|
-| `tenant/functions/backoffice/support/player_representative_assign.sql` |
-| `tenant/functions/backoffice/support/player_representative_get.sql` |
-| `tenant/functions/backoffice/support/player_representative_history_list.sql` |
+| `client/functions/backoffice/support/player_representative_assign.sql` |
+| `client/functions/backoffice/support/player_representative_get.sql` |
+| `client/functions/backoffice/support/player_representative_history_list.sql` |
 
 ### 8.7 Hoşgeldin Araması (4 + 1 maintenance)
 
 | Dosya |
 |-------|
-| `tenant/functions/backoffice/support/welcome_call_task_list.sql` |
-| `tenant/functions/backoffice/support/welcome_call_task_assign.sql` |
-| `tenant/functions/backoffice/support/welcome_call_task_complete.sql` |
-| `tenant/functions/backoffice/support/welcome_call_task_reschedule.sql` |
-| `tenant/functions/maintenance/support/welcome_call_task_cleanup.sql` |
+| `client/functions/backoffice/support/welcome_call_task_list.sql` |
+| `client/functions/backoffice/support/welcome_call_task_assign.sql` |
+| `client/functions/backoffice/support/welcome_call_task_complete.sql` |
+| `client/functions/backoffice/support/welcome_call_task_reschedule.sql` |
+| `client/functions/maintenance/support/welcome_call_task_cleanup.sql` |
 
 ### 8.8 Kategori, Tag, Dashboard (9)
 
 | Dosya |
 |-------|
-| `tenant/functions/backoffice/support/ticket_category_create.sql` |
-| `tenant/functions/backoffice/support/ticket_category_list.sql` |
-| `tenant/functions/backoffice/support/ticket_category_update.sql` |
-| `tenant/functions/backoffice/support/ticket_category_delete.sql` |
-| `tenant/functions/backoffice/support/ticket_tag_create.sql` |
-| `tenant/functions/backoffice/support/ticket_tag_list.sql` |
-| `tenant/functions/backoffice/support/ticket_tag_update.sql` |
-| `tenant/functions/backoffice/support/ticket_queue_list.sql` |
-| `tenant/functions/backoffice/support/ticket_dashboard_stats.sql` |
+| `client/functions/backoffice/support/ticket_category_create.sql` |
+| `client/functions/backoffice/support/ticket_category_list.sql` |
+| `client/functions/backoffice/support/ticket_category_update.sql` |
+| `client/functions/backoffice/support/ticket_category_delete.sql` |
+| `client/functions/backoffice/support/ticket_tag_create.sql` |
+| `client/functions/backoffice/support/ticket_tag_list.sql` |
+| `client/functions/backoffice/support/ticket_tag_update.sql` |
+| `client/functions/backoffice/support/ticket_queue_list.sql` |
+| `client/functions/backoffice/support/ticket_dashboard_stats.sql` |
 
 ### 8.9 İndeks ve Constraint Dosyaları
 
 | Dosya |
 |-------|
-| `tenant/indexes/support.sql` |
-| `tenant/constraints/support.sql` |
+| `client/indexes/support.sql` |
+| `client/constraints/support.sql` |
 

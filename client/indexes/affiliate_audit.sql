@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Audit - Affiliate Schema Indexes
+-- Client Audit - Affiliate Schema Indexes
 -- =============================================
 
 -- login_sessions

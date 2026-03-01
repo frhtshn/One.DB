@@ -4,7 +4,7 @@
 
 # Site Yönetimi — Geliştirici Rehberi
 
-Tenant bazlı site içeriği ve arayüz yönetimi. Dört ana alan: **Content Management** (CMS, FAQ, Popup, Promosyon, Slide/Banner, Güven Elementleri, SEO), **Presentation** (Navigasyon, Tema, Layout, Sosyal Medya, Site Ayarları, Duyuru Çubukları), **Game Lobby** (Lobi Bölümleri, Oyun Etiketleri) ve **Mesaj Tercihleri**. Tüm veriler Tenant DB'de tutulur; yetki kontrolleri Core DB üzerinden yapılır.
+Client bazlı site içeriği ve arayüz yönetimi. Dört ana alan: **Content Management** (CMS, FAQ, Popup, Promosyon, Slide/Banner, Güven Elementleri, SEO), **Presentation** (Navigasyon, Tema, Layout, Sosyal Medya, Site Ayarları, Duyuru Çubukları), **Game Lobby** (Lobi Bölümleri, Oyun Etiketleri) ve **Mesaj Tercihleri**. Tüm veriler Client DB'de tutulur; yetki kontrolleri Core DB üzerinden yapılır.
 
 > **⚠️ Kırıcı Değişiklik:** `security.company_password_policy_upsert` fonksiyonunun imzası değişti. Detaylar için bkz. [§15 Kırıcı Değişiklikler](#15-kırıcı-değişiklikler).
 
@@ -40,7 +40,7 @@ Tenant bazlı site içeriği ve arayüz yönetimi. Dört ana alan: **Content Man
 
 ```mermaid
 flowchart TD
-    subgraph TENANT_DB["Tenant DB (İzole — Per-Tenant)"]
+    subgraph CLIENT_DB["Client DB (İzole — Per-Client)"]
         subgraph CONTENT["content Şeması (40 tablo)"]
             CMS["CMS: categories, types, contents,<br/>translations, versions, attachments"]
             FAQ["FAQ: categories, items + translations"]
@@ -87,22 +87,22 @@ sequenceDiagram
     participant BO as BO Admin
     participant BE as Backend (API)
     participant CORE as Core DB
-    participant TENANT as Tenant DB
+    participant CLIENT as Client DB
 
     BO->>BE: İçerik oluştur
     BE->>CORE: Auth + yetki kontrolü
     CORE-->>BE: OK
-    BE->>TENANT: content.content_create(type_id, slug, translations, ...)
-    TENANT-->>BE: content_id
+    BE->>CLIENT: content.content_create(type_id, slug, translations, ...)
+    CLIENT-->>BE: content_id
 
-    Note over BO,TENANT: Düzenleme döngüsü (draft)
+    Note over BO,CLIENT: Düzenleme döngüsü (draft)
 
     BO->>BE: Yayınla
-    BE->>TENANT: content.content_publish(id, user_id)
-    Note over TENANT: version++, snapshot → content_versions
-    TENANT-->>BE: OK
+    BE->>CLIENT: content.content_publish(id, user_id)
+    Note over CLIENT: version++, snapshot → content_versions
+    CLIENT-->>BE: OK
 
-    Note over TENANT: FE artık bu içeriği görebilir
+    Note over CLIENT: FE artık bu içeriği görebilir
 ```
 
 ---
@@ -161,7 +161,7 @@ content_versions (v3, en) ←── Son yayın
 
 ### 2.4 Slug Benzersizliği
 
-Her `contents.slug` tenant içinde benzersizdir (UNIQUE INDEX). FE tarafında `public_content_get(p_slug)` ile SEO-friendly URL'ler desteklenir.
+Her `contents.slug` client içinde benzersizdir (UNIQUE INDEX). FE tarafında `public_content_get(p_slug)` ile SEO-friendly URL'ler desteklenir.
 
 ### 2.5 Backend Çağrı Örnekleri
 
@@ -391,8 +391,8 @@ Boş array (`{}`) = tüm ülkelere göster. GeoIP yoksa (`p_player_country IS NU
 
 ### 7.3 `operator_licenses` — Özel Notlar
 
-- `jurisdiction_id` → Core DB `catalog.jurisdictions` referansı. Backend doğrular, tenant DB'de FK yok.
-- Lisans görüntüleme yetkisi `tenant.operator-license.view` ile ayrı kontrol edilir (bkz. [§14 Yetkiler](#14-yetkiler)).
+- `jurisdiction_id` → Core DB `catalog.jurisdictions` referansı. Backend doğrular, client DB'de FK yok.
+- Lisans görüntüleme yetkisi `client.operator-license.view` ile ayrı kontrol edilir (bkz. [§14 Yetkiler](#14-yetkiler)).
 - `uq_operator_license` unique constraint: `(jurisdiction_id, license_number)`
 
 ---
@@ -474,7 +474,7 @@ target_type = CASE WHEN is_readonly
 END
 ```
 
-> **Tenant oluşturduğu öğeler:** `is_locked=FALSE, is_readonly=FALSE, template_item_id=NULL` — tam serbestlik.
+> **Client oluşturduğu öğeler:** `is_locked=FALSE, is_readonly=FALSE, template_item_id=NULL` — tam serbestlik.
 
 ### 9.2 Navigasyon — Hiyerarşik Ağaç
 
@@ -512,7 +512,7 @@ END AS "label"
 
 ### 9.4 Tema — Tek Aktif Tema
 
-Tenant'ın aynı anda sadece bir aktif teması olabilir (`UNIQUE partial index on is_active WHERE TRUE`).
+Client'ın aynı anda sadece bir aktif teması olabilir (`UNIQUE partial index on is_active WHERE TRUE`).
 
 ```sql
 -- theme_activate: Önce hepsini pasifle, sonra seçileni aktifle
@@ -794,16 +794,16 @@ Popup ve Slide modüllerinde FE sorgusu şu filtreleri sırayla uygular:
 
 ## 13. Cross-DB Güvenlik
 
-Tüm tenant fonksiyonları IDOR kontrolü **yapmaz**. Güvenlik Core DB üzerinden sağlanır:
+Tüm client fonksiyonları IDOR kontrolü **yapmaz**. Güvenlik Core DB üzerinden sağlanır:
 
 ```
 1. API isteği → Backend
-2. Backend → Core DB: user_assert_access_tenant(caller_id, tenant_id)
+2. Backend → Core DB: user_assert_access_client(caller_id, client_id)
 3. Core DB → OK/DENY
-4. Backend → Tenant DB: content.content_create(...)
+4. Backend → Client DB: content.content_create(...)
 ```
 
-> **Presentation tabloları** tenant_id içermez çünkü her tenant izole DB'ye sahiptir. Core catalog referansları (theme_id, template_item_id) backend tarafında doğrulanır.
+> **Presentation tabloları** client_id içermez çünkü her client izole DB'ye sahiptir. Core catalog referansları (theme_id, template_item_id) backend tarafında doğrulanır.
 
 ---
 
@@ -813,31 +813,31 @@ Bu modülde tanımlanan 4 yeni permission:
 
 | Permission Key | Açıklama | Kullanım Alanı |
 |----------------|----------|----------------|
-| `tenant.content.manage` | Güven logoları, lobi bölümleri, oyun etiketleri, SEO yönlendirme | `upsert_trust_logo`, `add_game_to_lobby_section`, `upsert_seo_redirect` vb. |
-| `tenant.site-settings.manage` | Site ayarları yönetimi | `upsert_site_settings`, `update_site_settings_partial` |
-| `tenant.operator-license.view` | Lisans görüntüleme (sadece okuma) | `list_operator_licenses`, `get_operator_license` |
-| `tenant.operator-license.manage` | Lisans tam CRUD | `upsert_operator_license`, `delete_operator_license` |
+| `client.content.manage` | Güven logoları, lobi bölümleri, oyun etiketleri, SEO yönlendirme | `upsert_trust_logo`, `add_game_to_lobby_section`, `upsert_seo_redirect` vb. |
+| `client.site-settings.manage` | Site ayarları yönetimi | `upsert_site_settings`, `update_site_settings_partial` |
+| `client.operator-license.view` | Lisans görüntüleme (sadece okuma) | `list_operator_licenses`, `get_operator_license` |
+| `client.operator-license.manage` | Lisans tam CRUD | `upsert_operator_license`, `delete_operator_license` |
 
 ### Rol Atamaları
 
 | Rol | `content.manage` | `site-settings.manage` | `operator-license.view` | `operator-license.manage` |
 |-----|:-:|:-:|:-:|:-:|
-| `tenantadmin` | ✅ | ✅ | ✅ | ✅ |
+| `clientadmin` | ✅ | ✅ | ✅ | ✅ |
 | `moderator` | — | — | ✅ | — |
 | `editor` | ✅ | ✅ | ✅ | — |
 | `operator` | ✅ | — | — | — |
 
-> **Operatör Lisansı Ayrımı:** `operator-license.view` ve `operator-license.manage` kasıtlı olarak ayrıldı. Lisans bilgileri yasal hassasiyet taşır — sadece tenantadmin ve editor görebilir, sadece tenantadmin düzenleyebilir.
+> **Operatör Lisansı Ayrımı:** `operator-license.view` ve `operator-license.manage` kasıtlı olarak ayrıldı. Lisans bilgileri yasal hassasiyet taşır — sadece clientadmin ve editor görebilir, sadece clientadmin düzenleyebilir.
 
 ### Backend Yetki Kontrol Akışı
 
 ```
-Backend API → Core DB: user_assert_tenant_permission(caller_id, tenant_id, 'tenant.content.manage')
+Backend API → Core DB: user_assert_client_permission(caller_id, client_id, 'client.content.manage')
            → OK / error.access.forbidden
-           → Tenant DB: content.upsert_trust_logo(...)
+           → Client DB: content.upsert_trust_logo(...)
 ```
 
-Tenant DB fonksiyonları yetki kontrolü **yapmaz** — bu kontrol her zaman Core DB'de yapılır.
+Client DB fonksiyonları yetki kontrolü **yapmaz** — bu kontrol her zaman Core DB'de yapılır.
 
 ---
 
@@ -906,7 +906,7 @@ Eğer backend bu sonucu bir DTO'ya deserialize ediyorsa ve DTO katı validasyon 
 
 ## 16. Fonksiyon Referansı
 
-Detaylı fonksiyon listesi ve dönüş tipleri: [FUNCTIONS_TENANT.md](../reference/FUNCTIONS_TENANT.md)
+Detaylı fonksiyon listesi ve dönüş tipleri: [FUNCTIONS_CLIENT.md](../reference/FUNCTIONS_CLIENT.md)
 
 | Şema | Bölüm | Fonksiyon Sayısı |
 |------|-------|------------------|

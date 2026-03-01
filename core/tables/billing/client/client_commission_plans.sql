@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: billing.tenant_commission_plans
--- Açıklama: Tenant özel komisyon planları
--- Her tenant için provider bazında özel komisyon yapısı
+-- Tablo: billing.client_commission_plans
+-- Açıklama: Client özel komisyon planları
+-- Her client için provider bazında özel komisyon yapısı
 -- Provider varsayılan oranlarını geçersiz kılar (override)
 -- Sabit oran veya kademeli yapı destekler
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_commission_plans CASCADE;
+DROP TABLE IF EXISTS billing.client_commission_plans CASCADE;
 
-CREATE TABLE billing.tenant_commission_plans (
+CREATE TABLE billing.client_commission_plans (
     id bigserial PRIMARY KEY,                              -- Benzersiz plan kimliği
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
     provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS, PAYMENT
     commission_type varchar(20) NOT NULL,                  -- Komisyon tipi: GGR, NGR, TURNOVER
@@ -37,4 +37,4 @@ CREATE TABLE billing.tenant_commission_plans (
 
 );
 
-COMMENT ON TABLE billing.tenant_commission_plans IS 'Custom tenant commission plans overriding default provider rates with flat or tiered structures';
+COMMENT ON TABLE billing.client_commission_plans IS 'Custom client commission plans overriding default provider rates with flat or tiered structures';

@@ -17,7 +17,7 @@ BEGIN
         'exceptionType', e.exception_type,
         'httpStatusCode', e.http_status_code,
         'isRetryable', e.is_retryable,
-        'tenantId', e.tenant_id,
+        'clientId', e.client_id,
         'userId', e.user_id,
         'correlationId', e.correlation_id,
         'requestPath', e.request_path,

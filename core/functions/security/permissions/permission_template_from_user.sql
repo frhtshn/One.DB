@@ -15,7 +15,7 @@ CREATE OR REPLACE FUNCTION security.permission_template_from_user(
     p_name VARCHAR(150),
     p_company_id BIGINT,
     p_caller_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -68,7 +68,7 @@ BEGIN
     SELECT EXISTS(
         SELECT 1 FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+        WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
     ) INTO v_has_platform_role;
 
     IF NOT v_has_platform_role THEN
@@ -112,13 +112,13 @@ BEGIN
     INSERT INTO security.permission_template_items (template_id, permission_id, added_by, added_at)
     SELECT v_new_id, perm_id, p_caller_id, NOW()
     FROM (
-        -- Role permissions (global + tenant)
+        -- Role permissions (global + client)
         SELECT DISTINCT rp.permission_id AS perm_id
         FROM security.role_permissions rp
         JOIN security.user_roles ur ON rp.role_id = ur.role_id
         JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
         WHERE ur.user_id = p_user_id
-          AND (ur.tenant_id IS NULL OR ur.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
+          AND (ur.client_id IS NULL OR ur.client_id = p_client_id OR p_client_id IS NULL)
 
         UNION
 
@@ -128,7 +128,7 @@ BEGIN
         WHERE upo.user_id = p_user_id
           AND upo.is_granted = TRUE
           AND upo.context_id IS NULL
-          AND (upo.tenant_id IS NULL OR upo.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
+          AND (upo.client_id IS NULL OR upo.client_id = p_client_id OR p_client_id IS NULL)
           AND (upo.expires_at IS NULL OR upo.expires_at > NOW())
     ) all_perms
     WHERE perm_id NOT IN (
@@ -138,7 +138,7 @@ BEGIN
         WHERE upo.user_id = p_user_id
           AND upo.is_granted = FALSE
           AND upo.context_id IS NULL
-          AND (upo.tenant_id IS NULL OR upo.tenant_id = p_tenant_id OR p_tenant_id IS NULL)
+          AND (upo.client_id IS NULL OR upo.client_id = p_client_id OR p_client_id IS NULL)
           AND (upo.expires_at IS NULL OR upo.expires_at > NOW())
     )
     -- Sadece aktif permission'lar

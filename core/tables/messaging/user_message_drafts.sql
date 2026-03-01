@@ -18,7 +18,7 @@ CREATE TABLE messaging.user_message_drafts (
 
     -- Filtre alanları (AND kombinasyonu, NULL = filtre yok)
     company_id BIGINT,                                         -- Şirket filtresi
-    tenant_ids BIGINT[],                                       -- Tenant filtresi (çoklu, NULL = filtre yok)
+    client_ids BIGINT[],                                       -- Client filtresi (çoklu, NULL = filtre yok)
     department_id BIGINT,                                      -- Departman filtresi
     role_id BIGINT,                                            -- Rol filtresi
 

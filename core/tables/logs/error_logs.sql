@@ -13,7 +13,7 @@ CREATE TABLE logs.error_logs (
     exception_type VARCHAR(500),                           -- İstisna (Exception) türü
     http_status_code INT,                                  -- HTTP durum kodu
     is_retryable BOOLEAN DEFAULT FALSE,                    -- Tekrar denenebilir hata mı?
-    tenant_id BIGINT,                                      -- Tenant ID
+    client_id BIGINT,                                      -- Client ID
     user_id VARCHAR(100),                                  -- Kullanıcı ID
     correlation_id VARCHAR(100),                           -- Korelasyon ID
     request_path VARCHAR(2000),                            -- İstek yapılan yol (Path)

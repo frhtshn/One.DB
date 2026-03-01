@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Transaction Schema Indexes
+-- Client Transaction Schema Indexes
 -- =============================================
 
 -- operation_types

@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Auth Schema Indexes
+-- Client Auth Schema Indexes
 -- =============================================
 
 -- players

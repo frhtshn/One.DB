@@ -1,16 +1,16 @@
 -- ================================================================
--- TENANT_GAME_REFRESH: Yeni oyunları toplu seed et
+-- CLIENT_GAME_REFRESH: Yeni oyunları toplu seed et
 -- ================================================================
 -- Backend Game DB'den yeni oyun listesini alıp bu fonksiyona geçirir.
 -- Mevcut kayıtlara dokunmaz (ON CONFLICT DO NOTHING).
 -- Provider tip kontrolü yapılır.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_game_refresh(BIGINT, BIGINT, BIGINT, TEXT);
+DROP FUNCTION IF EXISTS core.client_game_refresh(BIGINT, BIGINT, BIGINT, TEXT);
 
-CREATE OR REPLACE FUNCTION core.tenant_game_refresh(
+CREATE OR REPLACE FUNCTION core.client_game_refresh(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_provider_id BIGINT,
     p_game_data TEXT
 )
@@ -24,12 +24,12 @@ DECLARE
     v_elem JSONB;
     v_count INTEGER := 0;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -54,12 +54,12 @@ BEGIN
     -- Yeni oyunları seed et
     FOR v_elem IN SELECT * FROM jsonb_array_elements(v_games)
     LOOP
-        INSERT INTO core.tenant_games (
-            tenant_id, game_id, game_name, game_code,
+        INSERT INTO core.client_games (
+            client_id, game_id, game_name, game_code,
             provider_code, game_type, thumbnail_url,
             sync_status, created_by, created_at, updated_at
         ) VALUES (
-            p_tenant_id,
+            p_client_id,
             (v_elem->>'game_id')::BIGINT,
             v_elem->>'game_name',
             v_elem->>'game_code',
@@ -71,7 +71,7 @@ BEGIN
             NOW(),
             NOW()
         )
-        ON CONFLICT (tenant_id, game_id) DO NOTHING;
+        ON CONFLICT (client_id, game_id) DO NOTHING;
 
         IF FOUND THEN
             v_count := v_count + 1;
@@ -82,4 +82,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_game_refresh IS 'Seeds new games for a tenant from backend-provided data (cross-DB orchestration). Existing games untouched (ON CONFLICT DO NOTHING). Returns inserted count. IDOR protected.';
+COMMENT ON FUNCTION core.client_game_refresh IS 'Seeds new games for a client from backend-provided data (cross-DB orchestration). Existing games untouched (ON CONFLICT DO NOTHING). Returns inserted count. IDOR protected.';

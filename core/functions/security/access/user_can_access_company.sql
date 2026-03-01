@@ -10,7 +10,7 @@
 -- Access Rules:
 --   - SuperAdmin/Admin (level >= 90): Access to all companies
 --   - CompanyAdmin and below: Access only to their own company
---   - Tenant-based access: Access to companies of their allowed tenants
+--   - Client-based access: Access to companies of their allowed clients
 -- ============================================================================
 -- Usage:
 --   -- PL/pgSQL (boolean check)

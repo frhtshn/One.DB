@@ -8,7 +8,7 @@
 DROP TABLE IF EXISTS tracking.player_affiliate_current CASCADE;
 
 CREATE TABLE tracking.player_affiliate_current (
-    player_id bigint PRIMARY KEY,                          -- Oyuncu ID (FK: tenant.players)
+    player_id bigint PRIMARY KEY,                          -- Oyuncu ID (FK: client.players)
     affiliate_id bigint NOT NULL,                          -- Güncel affiliate ID (FK: affiliate.affiliates)
     campaign_id bigint,                                    -- Güncel kampanya ID (FK: campaign.campaigns)
     assigned_at timestamp without time zone NOT NULL DEFAULT now() -- Atama zamanı

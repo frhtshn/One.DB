@@ -1,17 +1,17 @@
 -- =============================================
--- Tablo: performance.tenant_traffic_hourly
--- Açıklama: Tenant bazlı saatlik trafik ve sağlık monitörü.
+-- Tablo: performance.client_traffic_hourly
+-- Açıklama: Client bazlı saatlik trafik ve sağlık monitörü.
 -- Sistem kaynak kullanımı ve Tier belirleme için kullanılır.
 -- =============================================
 
-DROP TABLE IF EXISTS performance.tenant_traffic_hourly CASCADE;
+DROP TABLE IF EXISTS performance.client_traffic_hourly CASCADE;
 
-CREATE TABLE performance.tenant_traffic_hourly (
+CREATE TABLE performance.client_traffic_hourly (
     id bigserial,
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
 
     company_id bigint NOT NULL,
-    tenant_id bigint NOT NULL,
+    client_id bigint NOT NULL,
 
     -- Trafik Metrikleri
     total_requests bigint DEFAULT 0,                       -- Toplam API isteği
@@ -28,6 +28,6 @@ CREATE TABLE performance.tenant_traffic_hourly (
     PRIMARY KEY (id, period_hour)
 ) PARTITION BY RANGE (period_hour);
 
-CREATE TABLE performance.tenant_traffic_hourly_default PARTITION OF performance.tenant_traffic_hourly DEFAULT;
+CREATE TABLE performance.client_traffic_hourly_default PARTITION OF performance.client_traffic_hourly DEFAULT;
 
-COMMENT ON TABLE performance.tenant_traffic_hourly IS 'Hourly traffic and system health indicators per tenant, partitioned monthly by period_hour';
+COMMENT ON TABLE performance.client_traffic_hourly IS 'Hourly traffic and system health indicators per client, partitioned monthly by period_hour';

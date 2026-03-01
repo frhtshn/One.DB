@@ -1,15 +1,15 @@
 -- ============================================================================
--- NUCLEO PLATFORM - CORE STAGING DEPLOYMENT
+-- SORTIS ONE - CORE STAGING DEPLOYMENT
 -- ============================================================================
 -- Staging/Development ortamı için tam deployment.
 -- Tek dosyada: Core + Seed verileri
 -- ============================================================================
--- Çalıştırma: psql -U postgres -d nucleo -f deploy_core_staging.sql
+-- Çalıştırma: psql -U postgres -d core -f deploy_core_staging.sql
 -- ============================================================================
 -- İÇERİK:
 -- 1. Core Deployment (schemas, tables, functions, triggers, constraints)
 -- 2. Menu Localization (key + values)
--- 3. Test Seed Data (companies, tenants, users, settings, compliance)
+-- 3. Test Seed Data (companies, clients, users, settings, compliance)
 -- 4. Permissions (UPSERT)
 -- 5. Role-Permission Mappings (role bazlı permission atamaları)
 -- 6. Presentation Seed (menu groups, menus, submenus, pages, tabs, contexts)
@@ -39,7 +39,7 @@
 -- ============================================================================
 -- 3. TEST SEED DATA
 -- ============================================================================
--- Test şirketleri, tenant'lar, kullanıcılar, ayarlar, compliance
+-- Test şirketleri, client'lar, kullanıcılar, ayarlar, compliance
 
 \i core/data/staging_seed.sql
 
@@ -77,16 +77,16 @@
 -- Test kullanıcıları:
 -- | Email                  | Role                    | Password |
 -- |------------------------|-------------------------|----------|
--- | superadmin@nucleo.io   | superadmin              | deneme   |
--- | admin@nucleo.io        | admin                   | deneme   |
--- | eurobet@nucleo.io      | companyadmin            | deneme   |
--- | cyprus@nucleo.io       | companyadmin            | deneme   |
--- | turkbet@nucleo.io      | companyadmin            | deneme   |
--- | eurobet.eu@nucleo.io   | tenantadmin@eurobet_eu  | deneme   |
--- | cyprus.admin@nucleo.io | tenantadmin@cyprus_main | deneme   |
--- | turkbet.admin@nucleo.io| tenantadmin@turkbet_tr  | deneme   |
--- | turkbet.mod@nucleo.io  | moderator@turkbet_tr    | deneme   |
--- | turkbet.edit@nucleo.io | editor@turkbet_tr       | deneme   |
--- | turkbet.op@nucleo.io   | operator@turkbet_tr     | deneme   |
--- | eurobet.user@nucleo.io | user@eurobet_eu         | deneme   |
+-- | superadmin@sortisgaming.com   | superadmin              | deneme   |
+-- | admin@sortisgaming.com        | admin                   | deneme   |
+-- | eurobet@sortisgaming.com      | companyadmin            | deneme   |
+-- | cyprus@sortisgaming.com       | companyadmin            | deneme   |
+-- | turkbet@sortisgaming.com      | companyadmin            | deneme   |
+-- | eurobet.eu@sortisgaming.com   | clientadmin@eurobet_eu  | deneme   |
+-- | cyprus.admin@sortisgaming.com | clientadmin@cyprus_main | deneme   |
+-- | turkbet.admin@sortisgaming.com| clientadmin@turkbet_tr  | deneme   |
+-- | turkbet.mod@sortisgaming.com  | moderator@turkbet_tr    | deneme   |
+-- | turkbet.edit@sortisgaming.com | editor@turkbet_tr       | deneme   |
+-- | turkbet.op@sortisgaming.com   | operator@turkbet_tr     | deneme   |
+-- | eurobet.user@sortisgaming.com | user@eurobet_eu         | deneme   |
 -- ============================================================================

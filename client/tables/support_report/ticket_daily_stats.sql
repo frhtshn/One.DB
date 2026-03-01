@@ -4,7 +4,7 @@
 --           Dashboard ve raporlama için.
 --           Kategori, kanal ve temsilci bazlı
 --           kırılımlar.
--- TENANT_REPORT DB - Süresiz retention
+-- CLIENT_REPORT DB - Süresiz retention
 -- Aylık partition (report_date)
 -- =============================================
 

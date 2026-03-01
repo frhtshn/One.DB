@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Nucleo.DB Deploy Script (psql)
+    OneDB Deploy Script (psql)
 .EXAMPLE
     .\deploy.ps1 create_dbs.sql
     .\deploy.ps1 deploy_core.sql
@@ -31,7 +31,7 @@ $DB = $SqlFile -replace '^deploy_', '' -replace '\.sql$', '' -replace '_(staging
 if ($SqlFile -eq "create_dbs.sql") { $DB = "postgres" }
 
 Write-Host ""
-Write-Host "  NUCLEO.DB DEPLOY" -ForegroundColor Blue
+Write-Host "  ONEDB DEPLOY" -ForegroundColor Blue
 Write-Host "  Server: ${HOST_IP}:${PORT}" -ForegroundColor Cyan
 Write-Host "  Database: $DB" -ForegroundColor Yellow
 Write-Host "  File: $SqlFile" -ForegroundColor Cyan

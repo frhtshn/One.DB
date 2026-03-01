@@ -34,29 +34,29 @@ CREATE INDEX idx_role_permissions_lookup ON security.role_permissions USING btre
 -- secrets_provider.provider_id -> providers.id
 CREATE INDEX idx_secrets_provider_provider_id ON security.secrets_provider USING btree(provider_id);
 
--- secrets_tenant.tenant_id -> tenants.id
-CREATE INDEX idx_secrets_tenant_tenant_id ON security.secrets_tenant USING btree(tenant_id);
+-- secrets_client.client_id -> clients.id
+CREATE INDEX idx_secrets_client_client_id ON security.secrets_client USING btree(client_id);
 -- user_roles.user_id (FK index + frequent JOIN)
 CREATE INDEX idx_user_roles_user_id ON security.user_roles USING btree(user_id);
 
 -- user_roles.role_id -> roles.id
 CREATE INDEX idx_user_roles_role_id ON security.user_roles USING btree(role_id);
 
--- user_roles.tenant_id (FK index for tenant-specific roles)
-CREATE INDEX idx_user_roles_tenant_id ON security.user_roles USING btree(tenant_id) WHERE tenant_id IS NOT NULL;
+-- user_roles.client_id (FK index for client-specific roles)
+CREATE INDEX idx_user_roles_client_id ON security.user_roles USING btree(client_id) WHERE client_id IS NOT NULL;
 
--- Partial Unique Index: Global roller için (tenant_id NULL)
+-- Partial Unique Index: Global roller için (client_id NULL)
 CREATE UNIQUE INDEX idx_user_roles_unique_global
     ON security.user_roles(user_id, role_id)
-    WHERE tenant_id IS NULL;
+    WHERE client_id IS NULL;
 
--- Partial Unique Index: Tenant rolleri için (tenant_id NOT NULL)
-CREATE UNIQUE INDEX idx_user_roles_unique_tenant
-    ON security.user_roles(user_id, role_id, tenant_id)
-    WHERE tenant_id IS NOT NULL;
+-- Partial Unique Index: Client rolleri için (client_id NOT NULL)
+CREATE UNIQUE INDEX idx_user_roles_unique_client
+    ON security.user_roles(user_id, role_id, client_id)
+    WHERE client_id IS NOT NULL;
 
 -- Lookup index (performans - user_authenticate, user_permission_list)
-CREATE INDEX idx_user_roles_user_lookup ON security.user_roles USING btree(user_id, tenant_id);
+CREATE INDEX idx_user_roles_user_lookup ON security.user_roles USING btree(user_id, client_id);
 
 -- user_sessions.id (tek session lookup - revoke, belongs_to, update_activity)
 CREATE INDEX idx_user_sessions_id ON security.user_sessions USING btree(id);
@@ -86,19 +86,19 @@ CREATE INDEX idx_user_permission_overrides_user_id ON security.user_permission_o
 CREATE INDEX idx_user_permission_overrides_permission_id ON security.user_permission_overrides USING btree(permission_id);
 
 -- user_permission_overrides (hybrid permission lookup - user_permission_list, user_authenticate)
-CREATE INDEX idx_user_permission_overrides_lookup ON security.user_permission_overrides USING btree(user_id, tenant_id, is_granted);
+CREATE INDEX idx_user_permission_overrides_lookup ON security.user_permission_overrides USING btree(user_id, client_id, is_granted);
 
 -- user_permission_overrides (active check with expiry)
 CREATE INDEX idx_user_permission_overrides_active ON security.user_permission_overrides USING btree(user_id, is_granted, expires_at);
 
--- user_allowed_tenants (user lookup - user_authenticate)
-CREATE INDEX idx_user_allowed_tenants_user_id ON security.user_allowed_tenants USING btree(user_id);
+-- user_allowed_clients (user lookup - user_authenticate)
+CREATE INDEX idx_user_allowed_clients_user_id ON security.user_allowed_clients USING btree(user_id);
 
--- user_allowed_tenants (tenant lookup - access helpers)
-CREATE INDEX idx_user_allowed_tenants_tenant_id ON security.user_allowed_tenants USING btree(tenant_id);
+-- user_allowed_clients (client lookup - access helpers)
+CREATE INDEX idx_user_allowed_clients_client_id ON security.user_allowed_clients USING btree(client_id);
 
--- user_allowed_tenants (composite lookup - user_can_access_tenant helper)
-CREATE INDEX idx_user_allowed_tenants_lookup ON security.user_allowed_tenants USING btree(user_id, tenant_id);
+-- user_allowed_clients (composite lookup - user_can_access_client helper)
+CREATE INDEX idx_user_allowed_clients_lookup ON security.user_allowed_clients USING btree(user_id, client_id);
 
 -- user_password_history (son şifreleri hızlı çekmek için)
 CREATE INDEX idx_user_password_history_lookup ON security.user_password_history USING btree(user_id, changed_at DESC);
@@ -139,8 +139,8 @@ CREATE INDEX IF NOT EXISTS idx_auth_tokens_user_id ON security.auth_tokens USING
 -- auth_tokens (session lookup)
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_session_id ON security.auth_tokens USING btree(session_id);
 
--- auth_tokens (user+tenant lookup - auth_user_tokens_list with tenant filter)
-CREATE INDEX IF NOT EXISTS idx_auth_tokens_user_tenant ON security.auth_tokens USING btree(user_id, tenant_id) WHERE tenant_id IS NOT NULL;
+-- auth_tokens (user+client lookup - auth_user_tokens_list with client filter)
+CREATE INDEX IF NOT EXISTS idx_auth_tokens_user_client ON security.auth_tokens USING btree(user_id, client_id) WHERE client_id IS NOT NULL;
 
 -- auth_tokens (cleanup - auth_token_cleanup, expires_at < NOW())
 CREATE INDEX IF NOT EXISTS idx_auth_tokens_expires_at ON security.auth_tokens USING btree(expires_at);

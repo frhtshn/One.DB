@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Wallet Schema Foreign Key Constraints
+-- Client Wallet Schema Foreign Key Constraints
 -- =============================================
 
 -- wallets -> players

@@ -13,12 +13,12 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 |-----|--------|-------|-----------|-------|-----|
 | **0** | Player Segmentation | ✅ | 17 | 0 (modify 2) | Category/Group CRUD + Classification + Shadow Tester |
 | **1** | Bonus Eligibility | ✅ | 1 | 0 | Player requestable bonus types |
-| **2** | Game Gateway Core | ✅ | 16 | 1 | 3 session + 10 wallet + 3 round (tenant_log) |
+| **2** | Game Gateway Core | ✅ | 16 | 1 | 3 session + 10 wallet + 3 round (client_log) |
 | **3** | Game Gateway Extended | ✅ | 6 | 3 | 3 bonus mapping + 3 reconciliation |
 | **4** | Finance Gateway Core | ✅ | 12 | 1 | 3 payment session + 4 deposit + 5 withdrawal |
 | **5** | Finance Gateway Extended | ✅ | 19 | 3 | 9 workflow + 5 adjustment + 1 fee + 4 finance_log maintenance |
 | **6** | Manuel Bonus Request | ✅ | 19 | 3 | 4 ayar + 10 BO + 2 maintenance + 3 oyuncu |
-| **7** | Call Center: Foundation | ✅ | 15 | 13 | 11 tenant + 1 log + 1 report tablo, 11 BO + 4 oyuncu ticket |
+| **7** | Call Center: Foundation | ✅ | 15 | 13 | 11 client + 1 log + 1 report tablo, 11 BO + 4 oyuncu ticket |
 | **8** | Call Center: Standard | ✅ | 18 | 0 | 4 note + 3 agent + 4 canned + 3 representative + 4 welcome call |
 | **9** | Call Center: Integration | ✅ | 10 | 0 | 4 category + 3 tag + 2 dashboard + 1 maintenance |
 | | **TOPLAM** | ✅ | **133** | **24 yeni + 3 modify** | |
@@ -29,7 +29,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 
 | Metrik | Değer |
 |--------|-------|
-| Yeni tablo | 24 (19 tenant + 2 tenant_log + 1 tenant_report + 2 finance_log) |
+| Yeni tablo | 24 (19 client + 2 client_log + 1 client_report + 2 finance_log) |
 | Modify edilen tablo | 3 (bonus_awards, transaction_workflows + player_categories/groups yeni) |
 | Yeni fonksiyon | 133 |
 | Yeni permission | 24 (107 → 131) |
@@ -37,7 +37,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 | Yeni error key | ~145 (3 dosya: keys + en + tr) |
 | Yeni constraint dosyası | 3 (bonus_requests, support, finance_log) |
 | Yeni index dosyası | 3 (bonus_requests, support, finance_log) |
-| Etkilenen deploy script | 4 (tenant, tenant_log, tenant_report, finance_log) |
+| Etkilenen deploy script | 4 (client, client_log, client_report, finance_log) |
 
 **Kırılma (breaking change): 0** — Tüm yeni kolonlar nullable/DEFAULT'lu, mevcut fonksiyonlar etkilenmez.
 
@@ -45,7 +45,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 
 ## 1. Yeni Tablolar
 
-### 1.1 Tenant DB — Game Schema
+### 1.1 Client DB — Game Schema
 
 | Tablo | Faz | Açıklama | Önemli Kolonlar |
 |-------|-----|----------|-----------------|
@@ -53,7 +53,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 
 **Backend etkisi:** `GameSessionService` — Session token tabanlı provider callback çözümleme. Token üretimi ve süre yönetimi DB'de.
 
-### 1.2 Tenant DB — Bonus Schema
+### 1.2 Client DB — Bonus Schema
 
 | Tablo | Faz | Açıklama | Önemli Kolonlar |
 |-------|-----|----------|-----------------|
@@ -65,9 +65,9 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 **Backend etkisi:**
 - `ProviderBonusMappingService` — PP/Hub88 free spin callback'lerinde mapping oluşturma/güncelleme.
 - `BonusRequestService` — 10 durumlu state machine. `bonus_request_approve` atomik olarak `bonus_awards` kaydı oluşturur.
-- `BonusRequestSettingService` — Tenant admin panelinde bonus tipi yapılandırması. JSONB çoklu dil desteği.
+- `BonusRequestSettingService` — Client admin panelinde bonus tipi yapılandırması. JSONB çoklu dil desteği.
 
-### 1.3 Tenant DB — Transaction Schema
+### 1.3 Client DB — Transaction Schema
 
 | Tablo | Faz | Açıklama | Önemli Kolonlar |
 |-------|-----|----------|-----------------|
@@ -78,7 +78,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 - `PaymentSessionService` — PSP entegrasyonu. `session_token` ile callback çözümleme. `idempotency_key` ile tekrar koruma.
 - `AdjustmentService` — Workflow onayı gerektirir. `adjustment_create` → workflow → `adjustment_apply`. GAME_CORRECTION tipi GGR raporlamayı etkiler.
 
-### 1.4 Tenant DB — Support Schema (Faz 7)
+### 1.4 Client DB — Support Schema (Faz 7)
 
 | Tablo | Açıklama | Önemli Kolonlar |
 |-------|----------|-----------------|
@@ -87,7 +87,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 | `support.ticket_actions` | Ticket aksiyon geçmişi (immutable) | `ticket_id` FK, `action` (17 tip), `performed_by_type`, `old_status/new_status`, `content` TEXT, `is_internal` BOOLEAN |
 | `support.ticket_tags` | Ticket etiketleri | `name` UNIQUE (aktif), `color` VARCHAR(7) HEX |
 | `support.ticket_tag_assignments` | Ticket ↔ tag M:N | `ticket_id` FK, `tag_id` FK, UNIQUE(ticket_id, tag_id) |
-| `support.ticket_activity_log_outbox` | Outbox: aktivite log olayları | Transactional outbox → tenant_log'a aktarılır |
+| `support.ticket_activity_log_outbox` | Outbox: aktivite log olayları | Transactional outbox → client_log'a aktarılır |
 | `support.player_notes` | Operatör oyuncu notları (CRM) | `player_id`, `note_type` (general/warning/vip/compliance), `content`, `is_pinned`, `is_active` (soft delete) |
 | `support.agent_settings` | Operatör destek ayarları | `user_id` UNIQUE, `is_available`, `max_concurrent_tickets`, `skills` JSONB |
 | `support.canned_responses` | Hazır yanıt şablonları | `category_id` FK (opsiyonel), `title`, `content`, `is_active` |
@@ -96,14 +96,14 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 | `support.welcome_call_tasks` | Hoşgeldin araması görevleri | `player_id` (UNIQUE aktif), `status` (7 durumlu), `assigned_to_id`, `call_result`, `attempt_count/max_attempts`, `next_attempt_at` |
 
 **Backend etkisi:**
-- `TicketService` — 8 durumlu state machine. Ticket plugin `ticket_plugin_enabled` tenant ayarıyla gating yapılır. Oyuncu ticket'ları `player_ticket_*` fonksiyonlarıyla (anti-abuse dahil).
+- `TicketService` — 8 durumlu state machine. Ticket plugin `ticket_plugin_enabled` client ayarıyla gating yapılır. Oyuncu ticket'ları `player_ticket_*` fonksiyonlarıyla (anti-abuse dahil).
 - `PlayerNoteService` — Ticket'tan bağımsız CRM notları. Soft delete.
 - `AgentSettingService` — Agent availability ve kapasite yönetimi. Skills JSONB ile beceri bazlı routing.
 - `RepresentativeService` — 1:1 oyuncu-temsilci ataması. Her değişiklik history'ye yazılır.
 - `WelcomeCallService` — Oyuncu kayıtta otomatik task oluşturma (backend trigger). Kuyruk yönetimi.
 - `CannedResponseService` — Kategori bazlı hazır yanıt şablonları.
 
-### 1.5 Tenant Log DB
+### 1.5 Client Log DB
 
 | Tablo | Faz | Şema | Partition | Retention | Açıklama |
 |-------|-----|------|-----------|-----------|----------|
@@ -111,7 +111,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 | `game_log.reconciliation_mismatches` | 3 | game_log | — | 30 gün | Round bazlı mismatch kayıtları. `report_id` FK |
 | `support_log.ticket_activity_logs` | 7 | support_log | **Daily** | 90 gün | Ticket bildirim logları (email/sms/push/internal) |
 
-### 1.6 Tenant Report DB
+### 1.6 Client Report DB
 
 | Tablo | Faz | Şema | Partition | Retention | Açıklama |
 |-------|-----|------|-----------|-----------|----------|
@@ -130,12 +130,12 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 
 | Tablo | DB | Faz | Değişiklik |
 |-------|-----|-----|-----------|
-| `bonus.bonus_awards` | Tenant | 6 | ADD `bonus_request_id BIGINT` — Manuel bonus talebiyle oluşturulan award'ları izlemek için |
-| `transaction.transaction_workflows` | Tenant | 5 | `transaction_id` artık NULL olabilir (ADJUSTMENT workflow'ları için, tx apply sonrası dolar). `workflow_type`'a ADJUSTMENT eklendi |
-| `auth.player_categories` | Tenant | 0 | YENİ tablo (`player_auth/` klasöründe). `category_code` UNIQUE, `level` INT (hiyerarşi) |
-| `auth.player_groups` | Tenant | 0 | YENİ tablo (`player_auth/` klasöründe). `group_code` UNIQUE, `level` INT (hiyerarşi) |
+| `bonus.bonus_awards` | Client | 6 | ADD `bonus_request_id BIGINT` — Manuel bonus talebiyle oluşturulan award'ları izlemek için |
+| `transaction.transaction_workflows` | Client | 5 | `transaction_id` artık NULL olabilir (ADJUSTMENT workflow'ları için, tx apply sonrası dolar). `workflow_type`'a ADJUSTMENT eklendi |
+| `auth.player_categories` | Client | 0 | YENİ tablo (`player_auth/` klasöründe). `category_code` UNIQUE, `level` INT (hiyerarşi) |
+| `auth.player_groups` | Client | 0 | YENİ tablo (`player_auth/` klasöründe). `group_code` UNIQUE, `level` INT (hiyerarşi) |
 
-> **Not:** player_categories ve player_groups tabloları `tenant/tables/player_auth/` klasöründe oluşturuldu. Mevcut `auth.players` tablosuna `category_id` ve `player_groups` M:N ilişkisi eklenmedi — segmentation `player_classification_*` fonksiyonlarıyla yönetilir.
+> **Not:** player_categories ve player_groups tabloları `client/tables/player_auth/` klasöründe oluşturuldu. Mevcut `auth.players` tablosuna `category_id` ve `player_groups` M:N ilişkisi eklenmedi — segmentation `player_classification_*` fonksiyonlarıyla yönetilir.
 
 ---
 
@@ -235,7 +235,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 - Tüm wallet fonksiyonları `idempotency_key` ile idempotent
 - `FOR UPDATE` row lock ile concurrency güvenli
 
-**Schema: game_log (tenant_log)** | **Backend Service: `GameRoundService`**
+**Schema: game_log (client_log)** | **Backend Service: `GameRoundService`**
 
 | Fonksiyon | Return | Açıklama |
 |-----------|--------|----------|
@@ -255,7 +255,7 @@ IMPLEMENTATION_ORDER.md'deki 10 fazın (Player Segmentation, Game Gateway, Finan
 | `provider_bonus_mapping_get` | JSONB | Provider code + bonus ID ile mapping bul |
 | `provider_bonus_mapping_update_status` | VOID | Mapping durumu güncelle (active→completed/cancelled/expired) |
 
-**Schema: game_log (tenant_log)** | **Backend Service: `ReconciliationService`**
+**Schema: game_log (client_log)** | **Backend Service: `ReconciliationService`**
 
 | Fonksiyon | Return | Açıklama |
 |-----------|--------|----------|
@@ -440,7 +440,7 @@ Workflow approve sonrası backend sorumlulukları:
 
 | Fonksiyon | Return | Açıklama |
 |-----------|--------|----------|
-| `player_ticket_create` | BIGINT | Oyuncu ticket oluşturur (anti-abuse: max açık ticket + cooldown, backend tenant_settings'ten geçer) |
+| `player_ticket_create` | BIGINT | Oyuncu ticket oluşturur (anti-abuse: max açık ticket + cooldown, backend client_settings'ten geçer) |
 | `player_ticket_get` | JSONB | Oyuncu kendi ticket'ı (internal notlar filtrelenir) |
 | `player_ticket_list` | JSONB | Oyuncu kendi ticket listesi + okunmamış göstergesi |
 | `player_ticket_reply` | BIGINT | Oyuncu yanıtı |
@@ -519,44 +519,44 @@ Workflow approve sonrası backend sorumlulukları:
 
 ### 4.1 Yeni Permission'lar (24)
 
-#### TENANT.SEGMENTATION (3) — Faz 0
+#### CLIENT.SEGMENTATION (3) — Faz 0
 
 | Permission Code | Açıklama |
 |----------------|----------|
-| `tenant.player-category.manage` | Oyuncu VIP kategorileri CRUD |
-| `tenant.player-group.manage` | Oyuncu davranış grupları CRUD |
-| `tenant.player-classification.manage` | Oyuncu kategori/grup ataması |
+| `client.player-category.manage` | Oyuncu VIP kategorileri CRUD |
+| `client.player-group.manage` | Oyuncu davranış grupları CRUD |
+| `client.player-classification.manage` | Oyuncu kategori/grup ataması |
 
-#### TENANT.BONUS-REQUEST (6) — Faz 6
-
-| Permission Code | Açıklama |
-|----------------|----------|
-| `tenant.bonus-request.list` | Bonus taleplerini listele |
-| `tenant.bonus-request.view` | Bonus talep detayı ve aksiyon geçmişi |
-| `tenant.bonus-request.create` | Manuel bonus talebi oluştur |
-| `tenant.bonus-request.review` | Bonus talebini onayla/reddet |
-| `tenant.bonus-request.assign` | Bonus talebini operatöre ata |
-| `tenant.bonus-request-settings.manage` | Talep edilebilir bonus tipi yapılandırması |
-
-#### TENANT.SUPPORT (15) — Faz 9
+#### CLIENT.BONUS-REQUEST (6) — Faz 6
 
 | Permission Code | Açıklama |
 |----------------|----------|
-| `tenant.support-ticket.list` | Ticket listesi |
-| `tenant.support-ticket.view` | Ticket detayı |
-| `tenant.support-ticket.create` | Ticket oluştur |
-| `tenant.support-ticket.assign` | Ticket'ı agent'a ata |
-| `tenant.support-ticket.manage` | Ticket yönetimi (resolve/close/reopen/cancel) |
-| `tenant.support-player-note.list` | Oyuncu notları listesi |
-| `tenant.support-player-note.manage` | Oyuncu notu CRUD |
-| `tenant.support-representative.view` | Temsilci atamalarını görüntüle |
-| `tenant.support-representative.manage` | Temsilci ata/değiştir |
-| `tenant.support-agent.manage` | Agent ayarları yönetimi |
-| `tenant.support-category.manage` | Ticket kategorileri CRUD |
-| `tenant.support-tag.manage` | Ticket etiketleri CRUD |
-| `tenant.support-canned-response.manage` | Hazır yanıt CRUD |
-| `tenant.support-dashboard.view` | Dashboard istatistikleri |
-| `tenant.support-welcome-call.manage` | Hoşgeldin araması yönetimi |
+| `client.bonus-request.list` | Bonus taleplerini listele |
+| `client.bonus-request.view` | Bonus talep detayı ve aksiyon geçmişi |
+| `client.bonus-request.create` | Manuel bonus talebi oluştur |
+| `client.bonus-request.review` | Bonus talebini onayla/reddet |
+| `client.bonus-request.assign` | Bonus talebini operatöre ata |
+| `client.bonus-request-settings.manage` | Talep edilebilir bonus tipi yapılandırması |
+
+#### CLIENT.SUPPORT (15) — Faz 9
+
+| Permission Code | Açıklama |
+|----------------|----------|
+| `client.support-ticket.list` | Ticket listesi |
+| `client.support-ticket.view` | Ticket detayı |
+| `client.support-ticket.create` | Ticket oluştur |
+| `client.support-ticket.assign` | Ticket'ı agent'a ata |
+| `client.support-ticket.manage` | Ticket yönetimi (resolve/close/reopen/cancel) |
+| `client.support-player-note.list` | Oyuncu notları listesi |
+| `client.support-player-note.manage` | Oyuncu notu CRUD |
+| `client.support-representative.view` | Temsilci atamalarını görüntüle |
+| `client.support-representative.manage` | Temsilci ata/değiştir |
+| `client.support-agent.manage` | Agent ayarları yönetimi |
+| `client.support-category.manage` | Ticket kategorileri CRUD |
+| `client.support-tag.manage` | Ticket etiketleri CRUD |
+| `client.support-canned-response.manage` | Hazır yanıt CRUD |
+| `client.support-dashboard.view` | Dashboard istatistikleri |
+| `client.support-welcome-call.manage` | Hoşgeldin araması yönetimi |
 
 ### 4.2 Rol Dağılımı
 
@@ -564,12 +564,12 @@ Workflow approve sonrası backend sorumlulukları:
 |-----|------|------|---------|-------------|---------------|---------|
 | **admin** | 66 | 90 | +24 | 3 | 6 | 15 |
 | **companyadmin** | 31 | 52 | +21 | — | 6 | 15 |
-| **tenantadmin** | 25 | 49 | +24 | 3 | 6 | 15 |
+| **clientadmin** | 25 | 49 | +24 | 3 | 6 | 15 |
 | **moderator** | 15 | 30 | +15 | 1 (classification) | 4 (list/view/create/assign) | 10 (config hariç) |
 | **operator** | 13 | 23 | +10 | — | 3 (list/view/create) | 7 (assign/manage/config hariç) |
 | **editor** | 14 | 14 | — | — | — | — |
 
-**Backend etkisi:** `[Authorize(Permission = "tenant.support-ticket.list")]` gibi attribute'lar eklenmelidir. Mevcut `user_assert_access_tenant` IDOR kontrolü değişmedi.
+**Backend etkisi:** `[Authorize(Permission = "client.support-ticket.list")]` gibi attribute'lar eklenmelidir. Mevcut `user_assert_access_client` IDOR kontrolü değişmedi.
 
 ---
 
@@ -639,25 +639,25 @@ Workflow approve sonrası backend sorumlulukları:
 
 | Dosya | DB | İçerik |
 |-------|-----|--------|
-| `tenant/constraints/bonus_requests.sql` | Tenant | FK: request_actions→requests, awards→requests, requests→players |
-| `tenant/constraints/support.sql` | Tenant | FK: ticket_actions→tickets, tag_assignments→tickets/tags, canned→categories, categories→self |
+| `client/constraints/bonus_requests.sql` | Client | FK: request_actions→requests, awards→requests, requests→players |
+| `client/constraints/support.sql` | Client | FK: ticket_actions→tickets, tag_assignments→tickets/tags, canned→categories, categories→self |
 | `finance_log/constraints/finance_log.sql` | Finance Log | CHECK: status, api_method, response_time, http_status |
 
 ### 7.2 Güncellenen Constraint Dosyaları
 
 | Dosya | Değişiklik |
 |-------|-----------|
-| `tenant/constraints/bonus.sql` | +FK: provider_bonus_mappings→bonus_awards |
-| `tenant/constraints/game.sql` | +FK: game_sessions→players, CHECK: status, mode |
-| `tenant/constraints/transaction.sql` | +FK: payment_sessions→players, payment_sessions→payment_method_settings, tx_adjustments→players, tx_adjustments→workflows. +CHECK: session_type, status, wallet_type, direction, adjustment_type |
+| `client/constraints/bonus.sql` | +FK: provider_bonus_mappings→bonus_awards |
+| `client/constraints/game.sql` | +FK: game_sessions→players, CHECK: status, mode |
+| `client/constraints/transaction.sql` | +FK: payment_sessions→players, payment_sessions→payment_method_settings, tx_adjustments→players, tx_adjustments→workflows. +CHECK: session_type, status, wallet_type, direction, adjustment_type |
 
 ### 7.3 Yeni Index Dosyaları
 
 | Dosya | DB | İçerik |
 |-------|-----|--------|
-| `tenant/indexes/bonus_requests.sql` | Tenant | requests: player_id, status, assigned_to, expires_at. actions: request_id. settings: bonus_type_code |
-| `tenant/indexes/support.sql` | Tenant | tickets: player_id, assigned_to, category, status, channel, priority, queue composite. actions: ticket_id. notes: player_id. agents: user_id. representatives: representative_id. welcome_calls: status, assigned_to, player_id |
-| `finance_log/indexes/finance_log.sql` | Finance Log | requests: tenant, provider, player, session_token, error/slow filters. callbacks: tenant, provider, processing_status, session_token |
+| `client/indexes/bonus_requests.sql` | Client | requests: player_id, status, assigned_to, expires_at. actions: request_id. settings: bonus_type_code |
+| `client/indexes/support.sql` | Client | tickets: player_id, assigned_to, category, status, channel, priority, queue composite. actions: ticket_id. notes: player_id. agents: user_id. representatives: representative_id. welcome_calls: status, assigned_to, player_id |
+| `finance_log/indexes/finance_log.sql` | Finance Log | requests: client, provider, player, session_token, error/slow filters. callbacks: client, provider, processing_status, session_token |
 
 ---
 
@@ -667,9 +667,9 @@ Workflow approve sonrası backend sorumlulukları:
 
 | Script | Eklenen |
 |--------|---------|
-| `deploy_tenant.sql` | +19 tablo, +133 fonksiyon (7 maintenance), +3 constraint, +3 index dosyası |
-| `deploy_tenant_log.sql` | +3 tablo, +6 fonksiyon (game_log), +1 constraint, +1 index |
-| `deploy_tenant_report.sql` | +1 tablo (ticket_daily_stats) |
+| `deploy_client.sql` | +19 tablo, +133 fonksiyon (7 maintenance), +3 constraint, +3 index dosyası |
+| `deploy_client_log.sql` | +3 tablo, +6 fonksiyon (game_log), +1 constraint, +1 index |
+| `deploy_client_report.sql` | +1 tablo (ticket_daily_stats) |
 | `deploy_finance_log.sql` | +2 tablo, +4 maintenance fonksiyon, +1 constraint, +1 index |
 
 ### 8.2 Sıralama
@@ -686,10 +686,10 @@ TABLES → VIEWS → FUNCTIONS → CONSTRAINTS → INDEXES → MAINTENANCE
 ### 9.1 Auth Pattern (Tüm Fazlar)
 
 ```
-Tüm tenant fonksiyonları auth-agnostic:
+Tüm client fonksiyonları auth-agnostic:
   1. Frontend → Backend API (JWT token)
-  2. Backend → Core DB: user_assert_access_tenant(caller_id, tenant_id)
-  3. Backend → Tenant DB: iş fonksiyonu (player_id, parametreler)
+  2. Backend → Core DB: user_assert_access_client(caller_id, client_id)
+  3. Backend → Client DB: iş fonksiyonu (player_id, parametreler)
 ```
 
 ### 9.2 Game Gateway (Faz 2-3)
@@ -697,9 +697,9 @@ Tüm tenant fonksiyonları auth-agnostic:
 ```
 Provider callback akışı:
   1. PP/Hub88 → Backend (session_token veya player_id)
-  2. Backend → Tenant DB: game_session_validate(token) → player_id
-  3. Backend → Tenant DB: bet_process / win_process / rollback_process
-  4. Backend → Tenant Log DB: round_upsert / round_close
+  2. Backend → Client DB: game_session_validate(token) → player_id
+  3. Backend → Client DB: bet_process / win_process / rollback_process
+  4. Backend → Client Log DB: round_upsert / round_close
   5. Backend → Game Log DB: provider_api_request_log (game_log DB)
 ```
 
@@ -708,8 +708,8 @@ Provider callback akışı:
 ```
 PSP callback akışı:
   1. PSP → Backend (session_token)
-  2. Backend → Tenant DB: payment_session_get(token) → player_id
-  3. Backend → Tenant DB: deposit_confirm / withdrawal_confirm
+  2. Backend → Client DB: payment_session_get(token) → player_id
+  3. Backend → Client DB: deposit_confirm / withdrawal_confirm
   4. Backend → Finance Log DB: provider_api_callback_log
 ```
 
@@ -718,17 +718,17 @@ PSP callback akışı:
 ```
 Approve akışı:
   1. BO → Backend: bonus_request_approve(request_id, ...)
-  2. Backend → Tenant DB: bonus_request_approve → bonus_award oluşturur
+  2. Backend → Client DB: bonus_request_approve → bonus_award oluşturur
   3. Backend → Bonus DB: bonus_award bilgisini Bonus Worker'a ilet
-  4. Bonus Worker → Tenant DB: bonus_award durumunu güncelle (ayrı süreç)
+  4. Bonus Worker → Client DB: bonus_award durumunu güncelle (ayrı süreç)
 ```
 
 ### 9.5 Call Center (Faz 7-9)
 
 ```
 Ticket plugin gating:
-  1. Backend → Core DB: tenant_setting_get('ticket_plugin_enabled')
-  2. Eğer enabled → Tenant DB: ticket_* fonksiyonları
+  1. Backend → Core DB: client_setting_get('ticket_plugin_enabled')
+  2. Eğer enabled → Client DB: ticket_* fonksiyonları
   3. Eğer disabled → 403 Forbidden
 
 Standard servisler (plugin gerektirmez):
@@ -781,7 +781,7 @@ Backend entegrasyonu için yapılması gerekenler:
 ### Localization
 - [ ] Error key → mesaj çevirisi middleware/interceptor
 
-### Tenant Settings
+### Client Settings
 - [ ] `ticket_plugin_enabled` — Call center plugin gating
 - [ ] `max_open_tickets_per_player` — Anti-abuse
 - [ ] `ticket_creation_cooldown_minutes` — Anti-abuse
@@ -798,5 +798,5 @@ Backend entegrasyonu için yapılması gerekenler:
 | [FINANCE_GATEWAY_GUIDE.md](FINANCE_GATEWAY_GUIDE.md) | Finance gateway entegrasyon rehberi |
 | [BONUS_ENGINE_GUIDE.md](BONUS_ENGINE_GUIDE.md) | Bonus engine entegrasyon rehberi |
 | [SHADOW_MODE_GUIDE.md](SHADOW_MODE_GUIDE.md) | Shadow mode rollout rehberi |
-| [FUNCTIONS_TENANT.md](../reference/FUNCTIONS_TENANT.md) | Tüm tenant fonksiyon referansı (205 fonksiyon) |
+| [FUNCTIONS_CLIENT.md](../reference/FUNCTIONS_CLIENT.md) | Tüm client fonksiyon referansı (205 fonksiyon) |
 | [DATABASE_ARCHITECTURE.md](../reference/DATABASE_ARCHITECTURE.md) | Veritabanı mimari dokümanı |

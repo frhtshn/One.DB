@@ -48,9 +48,9 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.jurisdiction.has-retention-policies';
     END IF;
 
-    -- Bağlı Tenant Jurisdictions kontrolü (core şemasında)
-    IF EXISTS(SELECT 1 FROM core.tenant_jurisdictions tj WHERE tj.jurisdiction_id = p_id) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.jurisdiction.in-use-by-tenants';
+    -- Bağlı Client Jurisdictions kontrolü (core şemasında)
+    IF EXISTS(SELECT 1 FROM core.client_jurisdictions tj WHERE tj.jurisdiction_id = p_id) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.jurisdiction.in-use-by-clients';
     END IF;
 
     -- Soft delete

@@ -16,16 +16,16 @@
 | Alan | Fonksiyon | Açıklama |
 |------|-----------|----------|
 | Ödeme Kataloğu (Finance DB) | 8 | Provider sync, metot CRUD, limit sync |
-| Provider Yönetimi (Core DB) | 3 | Tenant'a provider açma/kapama, listeleme |
-| Metot Yönetimi (Core DB) | 4 | Tenant'a metot atama, listeleme, kaldırma, refresh |
-| Metot Sync ve Yapılandırma (Tenant DB) | 6 | Settings sync/remove/get/update/list, rollout sync |
-| Limit Yönetimi (Tenant DB) | 9 | Metot limitleri, oyuncu limitleri, global finansal limitler |
-| Ödeme Oturumları (Tenant DB) | 3 | Session oluşturma, sorgulama, güncelleme |
-| Deposit İşlemleri (Tenant DB) | 4 | PSP deposit (initiate/confirm/fail) + manuel deposit |
-| Withdrawal İşlemleri (Tenant DB) | 5 | PSP withdrawal (initiate/confirm/cancel/fail) + manuel |
-| Workflow Yönetimi (Tenant DB) | 9 | Onay akışı: oluştur, ata, onayla, reddet, iptal, yükselt, not, listele, detay |
-| Hesap Düzeltme (Tenant DB) | 5 | Adjustment: oluştur, uygula, iptal, detay, listele |
-| Limit Doğrulama ve Cashier (Tenant DB) | 6 | Limit validasyon, fee hesaplama, cashier metot listeleme |
+| Provider Yönetimi (Core DB) | 3 | Client'a provider açma/kapama, listeleme |
+| Metot Yönetimi (Core DB) | 4 | Client'a metot atama, listeleme, kaldırma, refresh |
+| Metot Sync ve Yapılandırma (Client DB) | 6 | Settings sync/remove/get/update/list, rollout sync |
+| Limit Yönetimi (Client DB) | 9 | Metot limitleri, oyuncu limitleri, global finansal limitler |
+| Ödeme Oturumları (Client DB) | 3 | Session oluşturma, sorgulama, güncelleme |
+| Deposit İşlemleri (Client DB) | 4 | PSP deposit (initiate/confirm/fail) + manuel deposit |
+| Withdrawal İşlemleri (Client DB) | 5 | PSP withdrawal (initiate/confirm/cancel/fail) + manuel |
+| Workflow Yönetimi (Client DB) | 9 | Onay akışı: oluştur, ata, onayla, reddet, iptal, yükselt, not, listele, detay |
+| Hesap Düzeltme (Client DB) | 5 | Adjustment: oluştur, uygula, iptal, detay, listele |
+| Limit Doğrulama ve Cashier (Client DB) | 6 | Limit validasyon, fee hesaplama, cashier metot listeleme |
 | Bakım (Finance Log DB) | 4 | Partition oluşturma, silme, bilgi, toplu bakım |
 | **Toplam** | **66** | *61 implemente, 5 planlanmış* |
 
@@ -34,23 +34,23 @@
 | DB | Schema | Fonksiyon | Tablo | Açıklama |
 |----|--------|-----------|-------|----------|
 | **finance** | catalog | 8 | 3 | Master ödeme kataloğu, provider sync |
-| **core** | core | 7 | 3 | Tenant-provider ve tenant-metot yönetimi |
-| **tenant** | finance | 15 | 8 | Metot yapılandırma, limitler, döviz kurları |
-| **tenant** | transaction | 17 | 7 | Session, workflow, adjustment |
-| **tenant** | wallet | 9 | 2 | Deposit, withdrawal, bakiye |
+| **core** | core | 7 | 3 | Client-provider ve client-metot yönetimi |
+| **client** | finance | 15 | 8 | Metot yapılandırma, limitler, döviz kurları |
+| **client** | transaction | 17 | 7 | Session, workflow, adjustment |
+| **client** | wallet | 9 | 2 | Deposit, withdrawal, bakiye |
 | **finance_log** | finance_log | — | 2 | Provider API log (asenkron yazılır) |
 | **finance_log** | maintenance | 4 | — | Partition yönetimi |
 | **core_report** | — | — | (3) | Aylık rapor tabloları (paylaşımlı) |
-| **tenant_report** | — | — | (3) | Aylık rapor tabloları (paylaşımlı) |
+| **client_report** | — | — | (3) | Aylık rapor tabloları (paylaşımlı) |
 
 ### 1.3 Cross-DB İlişki
 
 ```mermaid
 flowchart LR
     subgraph core["Core DB"]
-        TP["core.tenant_providers"]
-        TPM["core.tenant_payment_methods"]
-        TPL["core.tenant_provider_limits"]
+        TP["core.client_providers"]
+        TPM["core.client_payment_methods"]
+        TPL["core.client_provider_limits"]
     end
 
     subgraph finance["Finance DB"]
@@ -59,7 +59,7 @@ flowchart LR
         PMCL["catalog.payment_method_currency_limits"]
     end
 
-    subgraph tenant["Tenant DB"]
+    subgraph client["Client DB"]
         PMS["finance.payment_method_settings"]
         PML["finance.payment_method_limits"]
         PPL["finance.payment_player_limits"]
@@ -90,11 +90,11 @@ flowchart LR
 
 ### 1.4 Cross-DB Veri Akışı
 
-- **Finance DB → Core DB:** `tenant_payment_method_refresh()` ile ödeme metotları tenant'a atanır (denormalize kopyalama)
-- **Core DB → Tenant DB:** `payment_method_settings_sync()` ve `payment_method_limits_sync()` ile ayarlar senkronize edilir
-- **Tenant DB → Finance Log DB:** Backend asenkron olarak provider API request/callback'leri yazar (RabbitMQ consumer)
+- **Finance DB → Core DB:** `client_payment_method_refresh()` ile ödeme metotları client'a atanır (denormalize kopyalama)
+- **Core DB → Client DB:** `payment_method_settings_sync()` ve `payment_method_limits_sync()` ile ayarlar senkronize edilir
+- **Client DB → Finance Log DB:** Backend asenkron olarak provider API request/callback'leri yazar (RabbitMQ consumer)
 - **L1+L2 Limitler:** Finance DB ve Core DB'deki limitler backend uygulama katmanında kontrol edilir (cross-DB join yapılamaz)
-- **L3+L4+L5 Limitler:** Tenant DB fonksiyonları ile kontrol edilir
+- **L3+L4+L5 Limitler:** Client DB fonksiyonları ile kontrol edilir
 
 ---
 
@@ -220,17 +220,17 @@ stateDiagram-v2
 Withdrawal başlatıldığında `withdrawal_initiate()` fonksiyonu aktif bonus çevrim kontrolü yapar:
 
 1. `bonus.bonus_awards` tablosunda `status='active'` VE `is_wagering_complete=false` olan kayıt varsa → **hata** (`error.withdrawal.active-wagering-incomplete`)
-2. Çevrim tamamlanmış bonuslar tenant'ın `wagering_completion_policy` ayarına göre işlenir (backend kontrolü)
+2. Çevrim tamamlanmış bonuslar client'ın `wagering_completion_policy` ayarına göre işlenir (backend kontrolü)
 
 ### 2.9 4 Katmanlı Limit Hiyerarşisi
 
 ```mermaid
 flowchart TD
     L1["Katman 1: Provider (Finance DB)<br/>catalog.payment_method_currency_limits<br/>Backend kontrol eder"] --> L2
-    L2["Katman 2: Platform (Core DB)<br/>core.tenant_provider_limits<br/>Backend kontrol eder"] --> L3
-    L3["Katman 3: Tenant (Tenant DB)<br/>finance.payment_method_limits<br/>DB fonksiyonu kontrol eder"] --> L4
-    L4["Katman 4: Player/Metot (Tenant DB)<br/>finance.payment_player_limits<br/>DB fonksiyonu kontrol eder"] --> L5
-    L5["Katman 5: Player/Global (Tenant DB)<br/>finance.player_financial_limits<br/>DB fonksiyonu kontrol eder"]
+    L2["Katman 2: Platform (Core DB)<br/>core.client_provider_limits<br/>Backend kontrol eder"] --> L3
+    L3["Katman 3: Client (Client DB)<br/>finance.payment_method_limits<br/>DB fonksiyonu kontrol eder"] --> L4
+    L4["Katman 4: Player/Metot (Client DB)<br/>finance.payment_player_limits<br/>DB fonksiyonu kontrol eder"] --> L5
+    L5["Katman 5: Player/Global (Client DB)<br/>finance.player_financial_limits<br/>DB fonksiyonu kontrol eder"]
 
     style L1 fill:#e1f5fe,color:#222
     style L2 fill:#e8f5e9,color:#222
@@ -242,12 +242,12 @@ flowchart TD
 | Katman | DB | Kontrol Eden | Tablo | Kapsam |
 |--------|----|-------------|-------|--------|
 | L1 — Provider | Finance DB | Backend | `catalog.payment_method_currency_limits` | Global PSP limitleri |
-| L2 — Platform | Core DB | Backend | `core.tenant_provider_limits` | Tenant → metot atama limitleri |
-| L3 — Tenant | Tenant DB | DB fonksiyonu | `finance.payment_method_limits` | Tenant'a özel metot limitleri |
-| L4 — Player/Metot | Tenant DB | DB fonksiyonu | `finance.payment_player_limits` | Oyuncu başına metot limitleri |
-| L5 — Player/Global | Tenant DB | DB fonksiyonu | `finance.player_financial_limits` | Oyuncu başına global limitler |
+| L2 — Platform | Core DB | Backend | `core.client_provider_limits` | Client → metot atama limitleri |
+| L3 — Client | Client DB | DB fonksiyonu | `finance.payment_method_limits` | Client'a özel metot limitleri |
+| L4 — Player/Metot | Client DB | DB fonksiyonu | `finance.payment_player_limits` | Oyuncu başına metot limitleri |
+| L5 — Player/Global | Client DB | DB fonksiyonu | `finance.player_financial_limits` | Oyuncu başına global limitler |
 
-> L1+L2: Backend uygulama katmanında kontrol (farklı DB'ler arası join yapılamaz). L3-L5: Tenant DB fonksiyonu ile kontrol. **En kısıtlayıcı limit geçerli olur.**
+> L1+L2: Backend uygulama katmanında kontrol (farklı DB'ler arası join yapılamaz). L3-L5: Client DB fonksiyonu ile kontrol. **En kısıtlayıcı limit geçerli olur.**
 
 ### 2.10 Player Limit Tipleri
 
@@ -351,7 +351,7 @@ net_amount = amount + fee
 
 > **L1 (Provider) katmanı.** Global PSP limitleri. Backend uygulama katmanında kontrol edilir.
 
-### 3.2 Tenant DB — Finans Yapılandırma Tabloları
+### 3.2 Client DB — Finans Yapılandırma Tabloları
 
 #### `finance.payment_method_settings`
 
@@ -370,9 +370,9 @@ net_amount = amount + fee
 | is_visible | BOOLEAN | NOT NULL | true | Görünür mü |
 | is_enabled | BOOLEAN | NOT NULL | true | Aktif mi |
 | is_featured | BOOLEAN | NOT NULL | false | Öne çıkan mı |
-| custom_name | VARCHAR(255) | — | — | Tenant özel adı |
-| custom_icon_url | VARCHAR(500) | — | — | Tenant özel ikon |
-| custom_description | TEXT | — | — | Tenant özel açıklama |
+| custom_name | VARCHAR(255) | — | — | Client özel adı |
+| custom_icon_url | VARCHAR(500) | — | — | Client özel ikon |
+| custom_description | TEXT | — | — | Client özel açıklama |
 | allowed_platforms | VARCHAR(20)[] | — | '{WEB,MOBILE,APP}' | Platform filtresi |
 | blocked_countries | CHAR(2)[] | — | '{}' | Engelli ülkeler |
 | allowed_countries | CHAR(2)[] | — | '{}' | İzinli ülkeler |
@@ -398,7 +398,7 @@ net_amount = amount + fee
 | withdrawal_fee_fixed / withdrawal_fee_min / withdrawal_fee_max | DECIMAL(18,8) | — | — | Withdrawal fee detay |
 | is_active | BOOLEAN | NOT NULL | true | Soft delete |
 
-> **L3 (Tenant) katmanı.** Metot bazında tenant limitleri ve fee'ler. DB fonksiyonu ile kontrol edilir.
+> **L3 (Client) katmanı.** Metot bazında client limitleri ve fee'ler. DB fonksiyonu ile kontrol edilir.
 
 #### `finance.payment_player_limits`
 
@@ -442,7 +442,7 @@ Kripto para kur tabloları. `crypto_rates`: Tarihsel kayıtlar (BIGSERIAL PK). `
 
 Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hassasiyetinde rate değerleri.
 
-### 3.3 Tenant DB — Transaction Tabloları
+### 3.3 Client DB — Transaction Tabloları
 
 #### `transaction.payment_sessions`
 
@@ -535,7 +535,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 | performed_by_type | VARCHAR(30) | NOT NULL | — | 'BO_USER', 'PLAYER', 'SYSTEM' |
 | note | VARCHAR(255) | — | — | Not |
 
-### 3.4 Tenant DB — Wallet Tabloları
+### 3.4 Client DB — Wallet Tabloları
 
 #### `wallet.wallets`
 
@@ -569,7 +569,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 | Kolon | Tip | Constraint | Varsayılan | Açıklama |
 |-------|-----|-----------|------------|----------|
 | id | BIGSERIAL | PK (composite) | — | — |
-| tenant_id | BIGINT | NOT NULL | — | Tenant ID |
+| client_id | BIGINT | NOT NULL | — | Client ID |
 | provider_code | VARCHAR(50) | NOT NULL | — | Provider kodu |
 | action_type | VARCHAR(50) | NOT NULL | — | İşlem tipi |
 | api_endpoint | VARCHAR(500) | NOT NULL | — | API endpoint |
@@ -586,7 +586,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 | Kolon | Tip | Constraint | Varsayılan | Açıklama |
 |-------|-----|-----------|------------|----------|
 | id | BIGSERIAL | PK (composite) | — | — |
-| tenant_id | BIGINT | — | — | Tenant ID |
+| client_id | BIGINT | — | — | Client ID |
 | provider_code | VARCHAR(50) | NOT NULL | — | Provider kodu |
 | callback_type | VARCHAR(50) | NOT NULL | — | Callback tipi |
 | raw_payload | JSONB | NOT NULL | — | Ham payload |
@@ -600,12 +600,12 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ### 3.6 Core DB — Entegrasyon Tabloları
 
-#### `core.tenant_providers`
+#### `core.client_providers`
 
 | Kolon | Tip | Constraint | Varsayılan | Açıklama |
 |-------|-----|-----------|------------|----------|
 | id | BIGSERIAL | PK | — | — |
-| tenant_id | BIGINT | NOT NULL | — | Tenant ID |
+| client_id | BIGINT | NOT NULL | — | Client ID |
 | provider_id | BIGINT | NOT NULL | — | Provider ID |
 | mode | VARCHAR(20) | NOT NULL | 'real' | 'real' veya 'test' |
 | is_enabled | BOOLEAN | NOT NULL | true | Aktif mi |
@@ -613,12 +613,12 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 > Game Gateway ile paylaşılan tablo. Game provider'lar da burada saklanır.
 
-#### `core.tenant_payment_methods`
+#### `core.client_payment_methods`
 
 | Kolon | Tip | Constraint | Varsayılan | Açıklama |
 |-------|-----|-----------|------------|----------|
 | id | BIGSERIAL | PK | — | — |
-| tenant_id | BIGINT | NOT NULL | — | Tenant ID |
+| client_id | BIGINT | NOT NULL | — | Client ID |
 | payment_method_id | BIGINT | NOT NULL | — | Finance DB metot ID (cross-DB, FK yok) |
 | payment_method_name | VARCHAR(255) | — | — | Denormalize ad |
 | payment_method_code | VARCHAR(100) | — | — | Denormalize kod |
@@ -626,19 +626,19 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 | payment_type | VARCHAR(50) | — | — | Denormalize tip |
 | is_enabled | BOOLEAN | NOT NULL | true | Aktif mi |
 | display_order | INTEGER | — | 0 | Sıralama |
-| custom_name / custom_icon_url / custom_description | — | — | — | Tenant özelleştirmeleri |
+| custom_name / custom_icon_url / custom_description | — | — | — | Client özelleştirmeleri |
 | override_min/max_deposit / override_min/max_withdrawal | DECIMAL(18,8) | — | — | Limit override'ları |
 | override_deposit/withdrawal_fee_percent / _fixed | DECIMAL | — | — | Fee override'ları |
 | sync_status | VARCHAR(20) | — | 'pending' | Sync durumu |
 
 > **Denormalizasyon sebebi:** Cross-DB FK kullanılamaz. Backend Finance DB'den veriyi alır, Core'a denormalize yazar. BO listesi bu tablodan sorgulanır (Finance DB'ye JOIN gerekmez).
 
-#### `core.tenant_provider_limits`
+#### `core.client_provider_limits`
 
 | Kolon | Tip | Constraint | Varsayılan | Açıklama |
 |-------|-----|-----------|------------|----------|
 | id | BIGSERIAL | PK | — | — |
-| tenant_id | BIGINT | NOT NULL | — | Tenant ID |
+| client_id | BIGINT | NOT NULL | — | Client ID |
 | provider_id | BIGINT | NOT NULL | — | Provider ID |
 | payment_method_id | BIGINT | NOT NULL | — | Metot ID |
 | min/max_deposit / min/max_withdrawal | DECIMAL(18,8) | — | — | Limitler |
@@ -850,7 +850,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 3. Her element için ON CONFLICT UPSERT (payment_method_id, currency_code).
 4. currency_code: UPPER(TRIM). currency_type varsayılan 1 (fiat).
 5. Payload'da olmayan mevcut limitler soft-delete edilir (is_active=false).
-6. **Not:** Haftalık limit yok (tenant katmanından farklı).
+6. **Not:** Haftalık limit yok (client katmanından farklı).
 
 **Hata Kodları:**
 
@@ -867,12 +867,12 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 > **Auth:** Tüm Core DB fonksiyonları `security.user_assert_access_company()` IDOR kontrolü yapar.
 
-#### `core.tenant_payment_provider_enable`
+#### `core.client_payment_provider_enable`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_provider_id | BIGINT | Evet | — | Provider ID |
 | p_method_data | TEXT | Hayır | NULL | Seed edilecek metot listesi (JSONB array) |
 | p_mode | VARCHAR(20) | Hayır | 'real' | 'real' veya 'test' |
@@ -881,38 +881,38 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 **Dönüş:** `INTEGER` (seed edilen yeni metot sayısı)
 
 **İş Kuralları:**
-1. IDOR kontrolü: `user_assert_access_company(p_caller_id, tenant.company_id)`.
+1. IDOR kontrolü: `user_assert_access_company(p_caller_id, client.company_id)`.
 2. Provider mevcut ve PAYMENT tipinde olmalı.
 3. rollout_status 'shadow' veya 'production' olmalı.
-4. `core.tenant_providers` tablosuna UPSERT (tenant_id, provider_id).
+4. `core.client_providers` tablosuna UPSERT (client_id, provider_id).
 5. Zaten mevcutsa: is_enabled=true, mode ve rollout_status güncellenir.
-6. p_method_data verilmişse: yeni metotlar `core.tenant_payment_methods`'a seed edilir (ON CONFLICT DO NOTHING).
+6. p_method_data verilmişse: yeni metotlar `core.client_payment_methods`'a seed edilir (ON CONFLICT DO NOTHING).
 7. Mevcut metotlar dokunulmaz — sadece yeni eklenir.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.not-found | P0404 | Provider bulunamadı |
 | error.provider.not-payment-type | P0400 | Provider PAYMENT tipinde değil |
 | error.provider.invalid-rollout-status | P0400 | Geçersiz rollout_status |
 
 ---
 
-#### `core.tenant_payment_provider_disable`
+#### `core.client_payment_provider_disable`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_provider_id | BIGINT | Evet | — | Provider ID |
 
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
 1. IDOR kontrolü.
-2. Provider tenant'a atanmış olmalı (`core.tenant_providers`).
+2. Provider client'a atanmış olmalı (`core.client_providers`).
 3. `is_enabled = false` yapılır.
 4. Metotların durumu **değişmez** — backend seviyesinde filtrelenir.
 
@@ -920,17 +920,17 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
-| error.tenant-provider.not-found | P0404 | Provider tenant'a atanmamış |
+| error.client.not-found | P0404 | Client bulunamadı |
+| error.client-provider.not-found | P0404 | Provider client'a atanmamış |
 
 ---
 
-#### `core.tenant_payment_provider_list`
+#### `core.client_payment_provider_list`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 
 **Dönüş:** `JSONB` (provider dizisi)
 
@@ -949,25 +949,25 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 **İş Kuralları:**
 1. IDOR kontrolü.
 2. Sadece PAYMENT tipindeki provider'lar listelenir.
-3. Her provider için `core.tenant_payment_methods` tablosundan metot sayısı hesaplanır.
+3. Her provider için `core.client_payment_methods` tablosundan metot sayısı hesaplanır.
 4. Sıralama: provider_name ASC.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 ---
 
 ### 4.3 Core DB — Ödeme Metot Yönetimi (4 fonksiyon)
 
-#### `core.tenant_payment_method_upsert`
+#### `core.client_payment_method_upsert`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_payment_method_id | BIGINT | Evet | — | Metot ID |
 | p_is_enabled | BOOLEAN | Hayır | NULL | Aktiflik (COALESCE) |
 | p_is_visible | BOOLEAN | Hayır | NULL | Görünürlük |
@@ -985,26 +985,26 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 **İş Kuralları:**
 1. IDOR kontrolü.
-2. Metot `core.tenant_payment_methods`'da tenant için mevcut olmalı.
+2. Metot `core.client_payment_methods`'da client için mevcut olmalı.
 3. COALESCE pattern: NULL parametreler mevcut değeri korur.
-4. `sync_status = 'pending'` olarak işaretlenir (Tenant DB'ye sync tetikler).
+4. `sync_status = 'pending'` olarak işaretlenir (Client DB'ye sync tetikler).
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.payment-method.id-required | P0400 | Metot ID NULL |
-| error.tenant-payment-method.not-found | P0404 | Metot tenant'a atanmamış |
+| error.client-payment-method.not-found | P0404 | Metot client'a atanmamış |
 
 ---
 
-#### `core.tenant_payment_method_list`
+#### `core.client_payment_method_list`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_provider_code | VARCHAR(50) | Hayır | NULL | Provider kodu filtresi (case-insensitive) |
 | p_payment_type | VARCHAR(50) | Hayır | NULL | Tip filtresi (case-insensitive) |
 | p_is_enabled | BOOLEAN | Hayır | NULL | Aktiflik filtresi |
@@ -1034,16 +1034,16 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 ---
 
-#### `core.tenant_payment_method_remove`
+#### `core.client_payment_method_remove`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_payment_method_id | BIGINT | Evet | — | Metot ID |
 | p_disabled_reason | VARCHAR(255) | Hayır | NULL | Kapatma sebebi (varsayılan: 'disabled_by_admin') |
 
@@ -1052,25 +1052,25 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 **İş Kuralları:**
 1. IDOR kontrolü.
 2. Soft delete: `is_enabled = false`, `disabled_at = NOW()`.
-3. `sync_status = 'pending'` (Tenant DB'ye sync tetikler).
+3. `sync_status = 'pending'` (Client DB'ye sync tetikler).
 4. Reason verilmezse 'disabled_by_admin' kullanılır.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.payment-method.id-required | P0400 | Metot ID NULL |
-| error.tenant-payment-method.not-found | P0404 | Metot bulunamadı |
+| error.client-payment-method.not-found | P0404 | Metot bulunamadı |
 
 ---
 
-#### `core.tenant_payment_method_refresh`
+#### `core.client_payment_method_refresh`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | — | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_provider_id | BIGINT | Evet | — | Provider ID |
 | p_method_data | TEXT | Evet | — | Metot listesi (JSONB array, TEXT→JSONB) |
 
@@ -1080,7 +1080,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 1. IDOR kontrolü.
 2. Provider PAYMENT tipinde olmalı.
 3. TEXT→JSONB cast yapılır.
-4. Her metot için ON CONFLICT DO NOTHING (tenant_id, payment_method_id).
+4. Her metot için ON CONFLICT DO NOTHING (client_id, payment_method_id).
 5. Sadece yeni metotlar eklenir — mevcut metotlara dokunulmaz.
 6. Denormalize alanlar (payment_method_name, provider_code, payment_type, icon_url) JSONB'den alınır.
 7. `sync_status = 'pending'` ile eklenir.
@@ -1089,15 +1089,15 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.not-payment-type | P0400 | Provider PAYMENT tipinde değil |
 | error.payment-method.data-required | P0400 | Metot verisi NULL veya boş |
 
 ---
 
-### 4.4 Tenant DB — Metot Sync ve Yapılandırma (6 fonksiyon)
+### 4.4 Client DB — Metot Sync ve Yapılandırma (6 fonksiyon)
 
-> **Auth:** Tenant DB fonksiyonları auth-agnostic. Core DB'de yetki kontrolü yapılır.
+> **Auth:** Client DB fonksiyonları auth-agnostic. Core DB'de yetki kontrolü yapılır.
 
 #### `finance.payment_method_settings_sync`
 
@@ -1105,7 +1105,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 |-----------|-----|---------|------------|----------|
 | p_payment_method_id | BIGINT | Evet | — | Metot ID |
 | p_catalog_data | TEXT | Evet | — | Katalog verileri (TEXT→JSONB) |
-| p_tenant_overrides | TEXT | Hayır | NULL | Tenant özelleştirmeleri (TEXT→JSONB, varsayılan '{}') |
+| p_client_overrides | TEXT | Hayır | NULL | Client özelleştirmeleri (TEXT→JSONB, varsayılan '{}') |
 | p_rollout_status | VARCHAR(20) | Hayır | 'production' | Shadow/production |
 
 **Dönüş:** `VOID`
@@ -1113,9 +1113,9 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 **İş Kuralları:**
 1. payment_method_id zorunlu.
 2. catalog_data TEXT→JSONB cast yapılır. Zorunlu.
-3. tenant_overrides NULL ise boş JSONB ('{}') olarak işlenir.
-4. Kayıt varsa UPDATE: Sadece katalog alanları (provider_id, payment_method_code vb.) güncellenir, tenant override'ları korunur (COALESCE).
-5. Kayıt yoksa INSERT: Katalog alanları + tenant override varsayılanları (allow_deposit=true, allow_withdrawal=true vb.).
+3. client_overrides NULL ise boş JSONB ('{}') olarak işlenir.
+4. Kayıt varsa UPDATE: Sadece katalog alanları (provider_id, payment_method_code vb.) güncellenir, client override'ları korunur (COALESCE).
+5. Kayıt yoksa INSERT: Katalog alanları + client override varsayılanları (allow_deposit=true, allow_withdrawal=true vb.).
 6. `core_synced_at = NOW()` güncellenir.
 
 **Hata Kodları:**
@@ -1169,7 +1169,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 | allowDeposit / allowWithdrawal | BOOLEAN | İzinler |
 | isVisible / isEnabled / isFeatured | BOOLEAN | Görünürlük |
 | displayOrder | INTEGER | Sıralama |
-| customName / customIconUrl / customDescription | VARCHAR | Tenant özelleştirmeleri |
+| customName / customIconUrl / customDescription | VARCHAR | Client özelleştirmeleri |
 | rolloutStatus | VARCHAR | Shadow/production |
 | requiresKycLevel | SMALLINT | Minimum KYC |
 | coreSyncedAt | TIMESTAMP | Son sync |
@@ -1204,7 +1204,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Sadece tenant-düzenlenebilir alanlar güncellenir.
+1. Sadece client-düzenlenebilir alanlar güncellenir.
 2. COALESCE pattern: NULL parametreler mevcut değeri korur.
 3. Katalog alanları (provider_id, payment_method_code vb.) bu fonksiyonla güncellenemez — sync ile gelir.
 
@@ -1278,7 +1278,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.5 Tenant DB — Limit Yönetimi (9 fonksiyon)
+### 4.5 Client DB — Limit Yönetimi (9 fonksiyon)
 
 #### `finance.payment_method_limits_sync`
 
@@ -1295,7 +1295,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 3. Her element için UPSERT (payment_method_id, currency_code).
 4. currency_code: UPPER(TRIM). currency_type varsayılan 1.
 5. Payload'da olmayan mevcut limitler soft-delete (is_active=false).
-6. **Tenant katmanı:** Haftalık limit desteği var (katalog katmanından farklı).
+6. **Client katmanı:** Haftalık limit desteği var (katalog katmanından farklı).
 
 **Hata Kodları:**
 
@@ -1530,7 +1530,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.6 Tenant DB — Ödeme Oturumları (3 fonksiyon)
+### 4.6 Client DB — Ödeme Oturumları (3 fonksiyon)
 
 #### `transaction.payment_session_create`
 
@@ -1635,7 +1635,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.7 Tenant DB — Deposit İşlemleri (4 fonksiyon)
+### 4.7 Client DB — Deposit İşlemleri (4 fonksiyon)
 
 #### `wallet.deposit_initiate`
 
@@ -1764,7 +1764,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.8 Tenant DB — Withdrawal İşlemleri (5 fonksiyon)
+### 4.8 Client DB — Withdrawal İşlemleri (5 fonksiyon)
 
 #### `wallet.withdrawal_initiate`
 
@@ -1902,7 +1902,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.9 Tenant DB — Workflow Yönetimi (9 fonksiyon)
+### 4.9 Client DB — Workflow Yönetimi (9 fonksiyon)
 
 #### `transaction.workflow_create`
 
@@ -2146,7 +2146,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.10 Tenant DB — Hesap Düzeltme (5 fonksiyon)
+### 4.10 Client DB — Hesap Düzeltme (5 fonksiyon)
 
 #### `transaction.adjustment_create`
 
@@ -2307,7 +2307,7 @@ Fiat döviz kur tabloları. Aynı pattern: tarihsel + anlık. NUMERIC(18,8) hass
 
 ---
 
-### 4.11 Tenant DB — Limit Doğrulama ve Cashier (6 fonksiyon)
+### 4.11 Client DB — Limit Doğrulama ve Cashier (6 fonksiyon)
 
 > **5 fonksiyon henüz implemente edilmedi** (SQL dosyası yok). Guide'daki iş kuralları baz alınarak spesifiye edilmiştir.
 
@@ -2555,9 +2555,9 @@ Parametresiz. Tüm finance_log partition'larının durumunu raporlar: parent_tab
 
 | Kural | Açıklama |
 |-------|----------|
-| 5 katmanlı hiyerarşi | L1 (provider) → L2 (platform) → L3 (tenant) → L4 (player/metot) → L5 (player/global) |
+| 5 katmanlı hiyerarşi | L1 (provider) → L2 (platform) → L3 (client) → L4 (player/metot) → L5 (player/global) |
 | L1+L2: backend kontrolü | Farklı DB'ler, cross-DB join yapılamaz |
-| L3+L4+L5: DB kontrolü | Tenant DB fonksiyonu ile |
+| L3+L4+L5: DB kontrolü | Client DB fonksiyonu ile |
 | En kısıtlayıcı geçerli | Tüm katmanlar kontrol edilir, en düşük limit uygulanır |
 | Player limit tipleri | self_imposed (oyuncu), admin_imposed (BO admin) |
 
@@ -2648,9 +2648,9 @@ Parametresiz. Tüm finance_log partition'larının durumunu raporlar: parent_tab
 | error.provider.not-payment-type | P0400 | Provider PAYMENT değil |
 | error.provider.id-required | P0400 | Provider ID NULL |
 | error.provider.invalid-rollout-status | P0400 | Geçersiz rollout_status |
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
-| error.tenant-provider.not-found | P0404 | Provider tenant'a atanmamış |
-| error.tenant-payment-method.not-found | P0404 | Metot tenant'a atanmamış |
+| error.client.not-found | P0404 | Client bulunamadı |
+| error.client-provider.not-found | P0404 | Provider client'a atanmamış |
+| error.client-payment-method.not-found | P0404 | Metot client'a atanmamış |
 
 ### 6.8 Player Limit Hataları
 
@@ -2706,7 +2706,7 @@ Parametresiz. Tüm finance_log partition'larının durumunu raporlar: parent_tab
 
 ### 7.4 Genel Performans Kuralları
 
-- **Denormalizasyon:** Core DB'deki `tenant_payment_methods` tablosu Finance DB'den denormalize veri taşır → BO listesi için cross-DB JOIN gerekmez.
+- **Denormalizasyon:** Core DB'deki `client_payment_methods` tablosu Finance DB'den denormalize veri taşır → BO listesi için cross-DB JOIN gerekmez.
 - **Cursor pagination:** `payment_method_settings_list` fonksiyonunda `(display_order, id)` composite cursor.
 - **OFFSET pagination:** Workflow ve adjustment listelerde klasik OFFSET (veri hacmi düşük).
 
@@ -2738,24 +2738,24 @@ finance/
 ```
 core/
 ├── tables/core/integration/
-│   ├── tenant_providers.sql
-│   ├── tenant_payment_methods.sql
-│   └── tenant_provider_limits.sql
-├── functions/core/tenant_payment_providers/
-│   ├── tenant_payment_provider_enable.sql
-│   ├── tenant_payment_provider_disable.sql
-│   └── tenant_payment_provider_list.sql
-├── functions/core/tenant_payment_methods/
-│   ├── tenant_payment_method_upsert.sql
-│   ├── tenant_payment_method_list.sql
-│   ├── tenant_payment_method_remove.sql
-│   └── tenant_payment_method_refresh.sql
+│   ├── client_providers.sql
+│   ├── client_payment_methods.sql
+│   └── client_provider_limits.sql
+├── functions/core/client_payment_providers/
+│   ├── client_payment_provider_enable.sql
+│   ├── client_payment_provider_disable.sql
+│   └── client_payment_provider_list.sql
+├── functions/core/client_payment_methods/
+│   ├── client_payment_method_upsert.sql
+│   ├── client_payment_method_list.sql
+│   ├── client_payment_method_remove.sql
+│   └── client_payment_method_refresh.sql
 ```
 
-### 8.3 Tenant DB — Finance Schema
+### 8.3 Client DB — Finance Schema
 
 ```
-tenant/
+client/
 ├── tables/finance/
 │   ├── payment_method_settings.sql
 │   ├── payment_method_limits.sql
@@ -2785,10 +2785,10 @@ tenant/
 │   └── calculate_fee.sql
 ```
 
-### 8.4 Tenant DB — Transaction Schema
+### 8.4 Client DB — Transaction Schema
 
 ```
-tenant/
+client/
 ├── tables/transaction/
 │   ├── payment_sessions.sql
 │   ├── transactions.sql          (partitioned — monthly)
@@ -2818,10 +2818,10 @@ tenant/
 │   └── adjustment_list.sql
 ```
 
-### 8.5 Tenant DB — Wallet Schema
+### 8.5 Client DB — Wallet Schema
 
 ```
-tenant/
+client/
 ├── tables/wallet/
 │   ├── wallets.sql
 │   └── wallet_snapshots.sql

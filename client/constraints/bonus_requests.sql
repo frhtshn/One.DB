@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Bonus Request Schema Foreign Key Constraints
+-- Client Bonus Request Schema Foreign Key Constraints
 -- =============================================
 
 -- bonus_request_actions → bonus_requests

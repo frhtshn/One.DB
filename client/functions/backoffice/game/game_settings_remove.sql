@@ -29,4 +29,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION game.game_settings_remove(BIGINT) IS 'Soft-disables a game in tenant DB (is_enabled=false). No physical DELETE, game_limits preserved. Auth-agnostic.';
+COMMENT ON FUNCTION game.game_settings_remove(BIGINT) IS 'Soft-disables a game in client DB (is_enabled=false). No physical DELETE, game_limits preserved. Auth-agnostic.';

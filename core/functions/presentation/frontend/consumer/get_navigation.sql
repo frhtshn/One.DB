@@ -2,7 +2,7 @@
 -- GET_NAVIGATION: Frontend için navigasyon verisi (Tree yapısı)
 -- ================================================================
 -- Açıklama:
---   Frontend uygulamasının tenant navigasyonunu çekmesi için.
+--   Frontend uygulamasının client navigasyonunu çekmesi için.
 --   Sadece görünür (is_visible=true) öğeleri döner.
 --   Nested tree yapısında döner (children array ile).
 -- Kullanım:
@@ -13,7 +13,7 @@
 DROP FUNCTION IF EXISTS presentation.get_navigation(BIGINT, VARCHAR);
 
 CREATE OR REPLACE FUNCTION presentation.get_navigation(
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_menu_location VARCHAR(50) DEFAULT NULL
 )
 RETURNS JSONB
@@ -26,9 +26,9 @@ DECLARE
     v_result JSONB;
 BEGIN
     -- ========================================
-    -- 1. TENANT VARLIK KONTROLÜ
+    -- 1. CLIENT VARLIK KONTROLÜ
     -- ========================================
-    IF NOT EXISTS (SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
+    IF NOT EXISTS (SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
         RETURN '[]'::jsonb;
     END IF;
 
@@ -56,8 +56,8 @@ BEGIN
             tn.required_roles,
             tn.device_visibility,
             tn.custom_css_class
-        FROM presentation.tenant_navigation tn
-        WHERE tn.tenant_id = p_tenant_id
+        FROM presentation.client_navigation tn
+        WHERE tn.client_id = p_client_id
           AND tn.is_visible = TRUE
           AND (p_menu_location IS NULL OR tn.menu_location = p_menu_location)
     ),

@@ -28,7 +28,7 @@ CREATE TABLE performance.payment_global_daily (
     withdraw_callees int DEFAULT 0,
     withdraw_success int DEFAULT 0,
 
-    active_tenants_count int DEFAULT 0,                    -- Bu metodu bugün kullanan tenant sayısı
+    active_clients_count int DEFAULT 0,                    -- Bu metodu bugün kullanan client sayısı
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone,
@@ -38,4 +38,4 @@ CREATE TABLE performance.payment_global_daily (
 
 CREATE TABLE performance.payment_global_daily_default PARTITION OF performance.payment_global_daily DEFAULT;
 
-COMMENT ON TABLE performance.payment_global_daily IS 'Global aggregations per payment method across all tenants, partitioned monthly by report_date';
+COMMENT ON TABLE performance.payment_global_daily IS 'Global aggregations per payment method across all clients, partitioned monthly by report_date';

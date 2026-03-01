@@ -16,11 +16,11 @@ flowchart TD
         B1["bonus.bonus_types<br/>bonus.bonus_rules"]
         B2["campaign.campaigns<br/>promotion.promo_codes"]
     end
-    subgraph tenant["Tenant DB (Per-tenant)"]
+    subgraph client["Client DB (Per-client)"]
         T1["bonus.bonus_awards<br/>bonus.promo_redemptions"]
         T2["bonus.bonus_request_settings<br/>bonus.bonus_requests<br/>bonus.bonus_request_actions"]
     end
-    subgraph tenant_log["Tenant Log DB"]
+    subgraph client_log["Client DB — Log Schema'ları"]
         L1["bonus_log.bonus_evaluation_logs<br/>(daily partition, 90 gün)"]
     end
     BO["BO Admin"] --> B1
@@ -35,10 +35,10 @@ flowchart TD
 
 | Veritabanı | Tablolar | Erişim | Açıklama |
 |------------|----------|--------|----------|
-| **Bonus DB** (Shared) | `bonus.bonus_types`, `bonus.bonus_rules`, `campaign.campaigns`, `promotion.promo_codes` | BO Admin | Kural tanımları (shared, tüm tenant'lar için ortak yapılandırma) |
-| **Tenant DB** (Per-tenant) | `bonus.bonus_awards`, `bonus.promo_redemptions` | Backend/Worker | Oyuncu bazlı bonus kazanımları ve promosyon kullanımları (izole) |
-| **Tenant DB** (Per-tenant) | `bonus.bonus_request_settings`, `bonus.bonus_requests`, `bonus.bonus_request_actions` | BO + Oyuncu | Manuel bonus talepleri, ayarlar ve aksiyon logu |
-| **Tenant Log DB** | `bonus_log.bonus_evaluation_logs` | Worker | Değerlendirme audit trail (daily partition, 90 gün retention) |
+| **Bonus DB** (Shared) | `bonus.bonus_types`, `bonus.bonus_rules`, `campaign.campaigns`, `promotion.promo_codes` | BO Admin | Kural tanımları (shared, tüm client'lar için ortak yapılandırma) |
+| **Client DB** (Per-client) | `bonus.bonus_awards`, `bonus.promo_redemptions` | Backend/Worker | Oyuncu bazlı bonus kazanımları ve promosyon kullanımları (izole) |
+| **Client DB** (Per-client) | `bonus.bonus_request_settings`, `bonus.bonus_requests`, `bonus.bonus_request_actions` | BO + Oyuncu | Manuel bonus talepleri, ayarlar ve aksiyon logu |
+| **Client DB** (bonus_log schema) | `bonus_log.bonus_evaluation_logs` | Worker | Değerlendirme audit trail (daily partition, 90 gün retention) |
 
 ---
 
@@ -161,7 +161,7 @@ Oyuncu oynar:
 | `campaigns` | campaign | Kampanya yönetimi (bonus kuralına bağlı, bütçe takibi) |
 | `promo_codes` | promotion | Promosyon kodları (kullanım limiti, geçerlilik) |
 
-### Tenant DB (Per-tenant)
+### Client DB (Per-client)
 
 | Tablo | Şema | Açıklama |
 |-------|------|----------|
@@ -171,7 +171,7 @@ Oyuncu oynar:
 | `bonus_requests` | bonus | Manuel bonus talepleri (oyuncu + operatör kaynaklı) |
 | `bonus_request_actions` | bonus | Talep aksiyon logu (immutable audit trail) |
 
-### Tenant Log DB
+### Client DB — bonus_log Şeması
 
 | Tablo | Şema | Açıklama |
 |-------|------|----------|
@@ -198,7 +198,7 @@ Bonus işlemleri `transaction.transactions` tablosunda şu type ID'leri kullanı
 
 ```
 BO Admin → Backend → bonus.bonus_rule_create(
-    tenant_id, rule_code, rule_name, bonus_type_id,
+    client_id, rule_code, rule_name, bonus_type_id,
     trigger_config,    -- JSONB (TEXT param → JSONB cast)
     reward_config,     -- JSONB
     eligibility_criteria, usage_criteria, ...
@@ -206,10 +206,10 @@ BO Admin → Backend → bonus.bonus_rule_create(
 ```
 
 - `trigger_config` ve `reward_config` zorunlu
-- `(tenant_id, rule_code)` unique — aynı tenant'ta aynı kod olamaz
-- `tenant_id = NULL` → platform seviyesi kural (tüm tenant'lara uygulanabilir)
+- `(client_id, rule_code)` unique — aynı client'ta aynı kod olamaz
+- `client_id = NULL` → platform seviyesi kural (tüm client'lara uygulanabilir)
 
-### 2. Bonus Verme (Backend/Worker → Tenant DB)
+### 2. Bonus Verme (Backend/Worker → Client DB)
 
 ```
 Event (deposit, registration, cron) →
@@ -222,7 +222,7 @@ Event (deposit, registration, cron) →
        → rule_snapshot JSONB (kural anındaki hali)
 ```
 
-### 3. Bonus İptal (BO Admin → Tenant DB)
+### 3. Bonus İptal (BO Admin → Client DB)
 
 ```
 bonus.bonus_award_cancel(award_id, cancelled_by, reason)
@@ -230,7 +230,7 @@ bonus.bonus_award_cancel(award_id, cancelled_by, reason)
   → status: active → cancelled
 ```
 
-### 4. Çevrim Tamamlama (Worker → Tenant DB)
+### 4. Çevrim Tamamlama (Worker → Client DB)
 
 ```
 bonus.bonus_award_complete(award_id)
@@ -238,7 +238,7 @@ bonus.bonus_award_complete(award_id)
   → status: active → completed
 ```
 
-### 5. Toplu Expire (Cron Worker → Tenant DB)
+### 5. Toplu Expire (Cron Worker → Client DB)
 
 ```
 bonus.bonus_award_expire(batch_size)
@@ -355,7 +355,7 @@ Oyuncu bonus talebi verirken sırayla kontrol edilir:
 
 ### Ayar Yapısı (bonus_request_settings)
 
-Tenant admin her bonus tipi için şunları yapılandırır:
+Client admin her bonus tipi için şunları yapılandırır:
 
 | Alan | Açıklama |
 |------|----------|
@@ -407,12 +407,12 @@ Rollback action logu `action_data` JSONB'de önceki durumu ve iptal edilen award
 
 | Permission | Açıklama |
 |-----------|----------|
-| `tenant.bonus-request.list` | Talep listesi |
-| `tenant.bonus-request.view` | Talep detayı |
-| `tenant.bonus-request.create` | Manuel talep oluşturma |
-| `tenant.bonus-request.review` | Onay/red yetkisi (üst düzey roller) |
-| `tenant.bonus-request.assign` | Operatöre atama |
-| `tenant.bonus-request-settings.manage` | Ayar yapılandırma |
+| `client.bonus-request.list` | Talep listesi |
+| `client.bonus-request.view` | Talep detayı |
+| `client.bonus-request.create` | Manuel talep oluşturma |
+| `client.bonus-request.review` | Onay/red yetkisi (üst düzey roller) |
+| `client.bonus-request.assign` | Operatöre atama |
+| `client.bonus-request-settings.manage` | Ayar yapılandırma |
 
 > **Detaylı tasarım:** [MANUAL_BONUS_REQUEST_DESIGN.md](../../.planning/MANUAL_BONUS_REQUEST_DESIGN.md) — durum makinesi, tablo tasarımları, fonksiyon imzaları, mermaid diyagramlar
 
@@ -429,7 +429,7 @@ Rollback action logu `action_data` JSONB'de önceki durumu ve iptal edilen award
 | Campaigns | `campaign_create/update/get/list/delete` | Kampanya CRUD |
 | Promotions | `promo_code_create/update/get/list` | Promosyon kodu CRUD |
 
-### Tenant DB — Award & Promo (8 fonksiyon)
+### Client DB — Award & Promo (8 fonksiyon)
 
 | Fonksiyon | Açıklama |
 |----------|----------|
@@ -442,7 +442,7 @@ Rollback action logu `action_data` JSONB'de önceki durumu ve iptal edilen award
 | `promo_redeem` | Promosyon kodu kullan |
 | `promo_redemption_list` | Kullanım geçmişi |
 
-### Tenant DB — Manuel Bonus Talep (19 fonksiyon)
+### Client DB — Manuel Bonus Talep (19 fonksiyon)
 
 | Grup | Fonksiyon | Açıklama |
 |------|----------|----------|
@@ -471,7 +471,7 @@ Rollback action logu `action_data` JSONB'de önceki durumu ve iptal edilen award
 ## Backend İçin Notlar
 
 - **JSONB parametreler TEXT olarak geçirilir** — fonksiyon içinde `::JSONB` cast yapılır
-- **Cross-DB**: Bonus kuralları Bonus DB'de, award'lar Tenant DB'de → backend ayrı connection kullanır
+- **Cross-DB**: Bonus kuralları Bonus DB'de, award'lar Client DB'de → backend ayrı connection kullanır
 - **Auth**: Bonus DB fonksiyonları auth-agnostic. Backend Core DB'den yetki kontrolü yapar
 - **Worker**: Periodic evaluation ve expire işlemleri için .NET Worker servisi (Quartz scheduler)
 - **rule_snapshot**: Award oluşturulurken kuralın o anki hali JSONB olarak saklanır (kural sonradan değişse bile award etkilenmez)

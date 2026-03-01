@@ -99,4 +99,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_template_update(INTEGER, INTEGER, VARCHAR, VARCHAR, TEXT, JSONB, VARCHAR, JSONB) IS 'Update a tenant message template. Translations are replaced entirely. Channel type is immutable.';
+COMMENT ON FUNCTION messaging.admin_message_template_update(INTEGER, INTEGER, VARCHAR, VARCHAR, TEXT, JSONB, VARCHAR, JSONB) IS 'Update a client message template. Translations are replaced entirely. Channel type is immutable.';

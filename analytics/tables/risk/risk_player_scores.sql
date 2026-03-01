@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS risk.risk_player_scores CASCADE;
 
 CREATE TABLE risk.risk_player_scores (
-    tenant_id               INT             NOT NULL,
+    client_id               INT             NOT NULL,
     player_id               BIGINT          NOT NULL,
 
     -- Güncel risk sonucu
@@ -25,7 +25,7 @@ CREATE TABLE risk.risk_player_scores (
     evaluated_at            TIMESTAMPTZ     NOT NULL,
     first_evaluated_at      TIMESTAMPTZ     NOT NULL,
 
-    PRIMARY KEY (tenant_id, player_id)
+    PRIMARY KEY (client_id, player_id)
 );
 
 COMMENT ON TABLE risk.risk_player_scores IS 'Current risk evaluation scores produced by RiskManager. Written by RiskManager via UPSERT, read by Backoffice Cluster.';

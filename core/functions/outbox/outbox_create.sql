@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION outbox.outbox_create(
     p_aggregate_type VARCHAR(100),
     p_aggregate_id VARCHAR(100),
     p_payload TEXT,
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_correlation_id UUID DEFAULT NULL,
     p_max_retries INT DEFAULT 5
 )
@@ -20,11 +20,11 @@ DECLARE
 BEGIN
     INSERT INTO outbox.messages (
         action_type, aggregate_type, aggregate_id, payload,
-        tenant_id, correlation_id, max_retries
+        client_id, correlation_id, max_retries
     )
     VALUES (
         p_action_type, p_aggregate_type, p_aggregate_id, p_payload::JSONB,
-        p_tenant_id, COALESCE(p_correlation_id, gen_random_uuid()), p_max_retries
+        p_client_id, COALESCE(p_correlation_id, gen_random_uuid()), p_max_retries
     )
     RETURNING id INTO v_id;
 

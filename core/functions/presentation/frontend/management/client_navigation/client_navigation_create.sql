@@ -1,24 +1,24 @@
 -- ================================================================
--- TENANT_NAVIGATION_CREATE: Yeni navigasyon öğesi ekle
+-- CLIENT_NAVIGATION_CREATE: Yeni navigasyon öğesi ekle
 -- ================================================================
 -- Açıklama:
---   Tenant için yeni bir custom navigasyon öğesi oluşturur.
---   Template'den gelmeyen, tenant'ın kendi eklediği öğeler.
+--   Client için yeni bir custom navigasyon öğesi oluşturur.
+--   Template'den gelmeyen, client'ın kendi eklediği öğeler.
 -- Erişim:
---   - Platform Admin: Tüm tenant'lar
---   - CompanyAdmin: Kendi company'sindeki tenant'lar
---   - TenantAdmin: user_allowed_tenants'taki tenant'lar
+--   - Platform Admin: Tüm client'lar
+--   - CompanyAdmin: Kendi company'sindeki client'lar
+--   - ClientAdmin: user_allowed_clients'taki client'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_navigation_create(
+DROP FUNCTION IF EXISTS presentation.client_navigation_create(
     BIGINT, BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR,
     VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BIGINT, INT, BOOLEAN, BOOLEAN,
     BOOLEAN, VARCHAR[], VARCHAR, VARCHAR
 );
 
-CREATE OR REPLACE FUNCTION presentation.tenant_navigation_create(
+CREATE OR REPLACE FUNCTION presentation.client_navigation_create(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_menu_location VARCHAR(50),
     p_translation_key VARCHAR(100) DEFAULT NULL,
     p_custom_label TEXT DEFAULT NULL,
@@ -46,31 +46,31 @@ AS $$
 DECLARE
     v_new_id BIGINT;
 BEGIN
-    -- 1. Tenant varlık kontrolü
-    IF NOT EXISTS(SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    -- 1. Client varlık kontrolü
+    IF NOT EXISTS(SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
-    -- 2. Tenant erişim kontrolü
-    PERFORM security.user_assert_access_tenant(p_caller_id, p_tenant_id);
+    -- 2. Client erişim kontrolü
+    PERFORM security.user_assert_access_client(p_caller_id, p_client_id);
 
     -- ========================================
     -- 3. PARENT VARLIK KONTROLÜ
     -- ========================================
     IF p_parent_id IS NOT NULL THEN
         IF NOT EXISTS (
-            SELECT 1 FROM presentation.tenant_navigation
-            WHERE id = p_parent_id AND tenant_id = p_tenant_id
+            SELECT 1 FROM presentation.client_navigation
+            WHERE id = p_parent_id AND client_id = p_client_id
         ) THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.tenant-navigation.parent-not-found';
+            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.client-navigation.parent-not-found';
         END IF;
     END IF;
 
     -- ========================================
     -- 5. NAVİGASYON ÖĞESİ OLUŞTUR
     -- ========================================
-    INSERT INTO presentation.tenant_navigation (
-        tenant_id,
+    INSERT INTO presentation.client_navigation (
+        client_id,
         template_item_id,
         menu_location,
         translation_key,
@@ -96,7 +96,7 @@ BEGIN
         updated_at
     )
     VALUES (
-        p_tenant_id,
+        p_client_id,
         NULL,                    -- template_item_id = NULL (custom item)
         p_menu_location,
         p_translation_key,
@@ -127,7 +127,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_navigation_create IS
-'Creates a new custom navigation item for a tenant.
+COMMENT ON FUNCTION presentation.client_navigation_create IS
+'Creates a new custom navigation item for a client.
 Custom items have is_locked=FALSE and is_readonly=FALSE (fully editable and deletable).
-Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';
+Access: Platform Admin (all), CompanyAdmin (own company), ClientAdmin (allowed clients).';

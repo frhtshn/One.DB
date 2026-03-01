@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS tracking.player_registrations CASCADE;
 
 CREATE TABLE tracking.player_registrations (
     id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
-    player_id bigint NOT NULL,                             -- Oyuncu ID (tenant.players)
+    player_id bigint NOT NULL,                             -- Oyuncu ID (client.players)
 
     -- Attribution Kaynağı
     attribution_source varchar(30) NOT NULL,               -- AFFILIATE_LINK, REFERRAL, ORGANIC, PROMO_CODE, DIRECT

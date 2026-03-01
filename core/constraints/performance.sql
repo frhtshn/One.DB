@@ -12,7 +12,7 @@ ALTER TABLE performance.payment_global_daily
     ADD CONSTRAINT uq_payment_global_daily
     UNIQUE (method_id, report_date, currency);
 
--- tenant_traffic_hourly -> unique (tenant, hour)
-ALTER TABLE performance.tenant_traffic_hourly
-    ADD CONSTRAINT uq_tenant_traffic_hourly
-    UNIQUE (tenant_id, period_hour);
+-- client_traffic_hourly -> unique (client, hour)
+ALTER TABLE performance.client_traffic_hourly
+    ADD CONSTRAINT uq_client_traffic_hourly
+    UNIQUE (client_id, period_hour);

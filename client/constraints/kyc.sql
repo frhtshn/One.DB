@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant KYC Schema Foreign Key Constraints
+-- Client KYC Schema Foreign Key Constraints
 -- Using IF NOT EXISTS pattern for idempotent deploys
 -- =============================================
 
@@ -35,7 +35,7 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- NOTE: player_kyc_provider_logs -> tenant_log DB (cross-DB FK uygulanamaz, app-level kontrol)
+-- NOTE: player_kyc_provider_logs -> client_log DB (cross-DB FK uygulanamaz, app-level kontrol)
 
 -- player_limits -> players
 DO $$ BEGIN
@@ -63,8 +63,8 @@ END $$;
 
 -- =============================================
 -- New KYC Tables Constraints (Jurisdiction, AML)
--- NOTE: player_screening_results, player_risk_assessments -> tenant_audit DB (no cross-DB FK)
--- NOTE: player_kyc_provider_logs -> tenant_log DB (no cross-DB FK)
+-- NOTE: player_screening_results, player_risk_assessments -> client_audit DB (no cross-DB FK)
+-- NOTE: player_kyc_provider_logs -> client_log DB (no cross-DB FK)
 -- =============================================
 
 -- player_jurisdiction -> players

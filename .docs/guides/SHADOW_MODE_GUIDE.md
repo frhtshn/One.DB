@@ -43,22 +43,22 @@ Shadow mode 3 tabloda 1 kolon + 1 yeni tablo ile çalışır:
 
 | Tablo | DB | Kolon |
 |-------|-----|-------|
-| `core.tenant_providers` | Core | `rollout_status VARCHAR(20) DEFAULT 'production'` |
-| `game.game_settings` | Tenant | `rollout_status VARCHAR(20) DEFAULT 'production'` |
-| `finance.payment_method_settings` | Tenant | `rollout_status VARCHAR(20) DEFAULT 'production'` |
+| `core.client_providers` | Core | `rollout_status VARCHAR(20) DEFAULT 'production'` |
+| `game.game_settings` | Client | `rollout_status VARCHAR(20) DEFAULT 'production'` |
+| `finance.payment_method_settings` | Client | `rollout_status VARCHAR(20) DEFAULT 'production'` |
 
 CHECK constraint: `rollout_status IN ('shadow', 'production')`
 
 ### Shadow Testers Tablosu
 
 ```sql
--- Tenant DB: auth.shadow_testers
+-- Client DB: auth.shadow_testers
 player_id BIGINT NOT NULL UNIQUE   -- Oyuncu ID
 note VARCHAR(255)                   -- Neden shadow tester yapıldı
 added_by VARCHAR(100)               -- Ekleyen kullanıcı
 ```
 
-Tipik boyut: **5-10 kayıt** per tenant. `UNIQUE(player_id)` otomatik B-tree index oluşturur.
+Tipik boyut: **5-10 kayıt** per client. `UNIQUE(player_id)` otomatik B-tree index oluşturur.
 
 ---
 
@@ -86,7 +86,7 @@ WHERE ...
 | Senaryo | Oran | Maliyet |
 |---------|------|---------|
 | `rollout = 'production'` | %99+ | OR hemen TRUE → EXISTS çalışmaz → **ek maliyet = 0** |
-| `rollout = 'shadow'` | %1 (1-3 tenant) | EXISTS on UNIQUE index (5-10 kayıt) → **nanosaniye** |
+| `rollout = 'shadow'` | %1 (1-3 client) | EXISTS on UNIQUE index (5-10 kayıt) → **nanosaniye** |
 
 ---
 
@@ -96,7 +96,7 @@ WHERE ...
 
 ```
 BO Admin → Backend:
-  → Tenant DB: shadow_tester_add(player_id, note, added_by)
+  → Client DB: shadow_tester_add(player_id, note, added_by)
   → Idempotent: zaten varsa hata vermez
 ```
 
@@ -104,11 +104,11 @@ BO Admin → Backend:
 
 ```
 BO Admin → "Provider Aç" (rollout = shadow)
-  → Core: tenant_provider_enable(tenant_id, provider_id, 'shadow')
+  → Core: client_provider_enable(client_id, provider_id, 'shadow')
   → Game DB / Finance DB: oyun/metot listesi çek
-  → Core: tenant_game_upsert / tenant_payment_method_upsert
-  → Tenant DB: game_settings_sync(rollout_status = 'shadow')
-  → Tenant DB: payment_method_settings_sync(rollout_status = 'shadow')
+  → Core: client_game_upsert / client_payment_method_upsert
+  → Client DB: game_settings_sync(rollout_status = 'shadow')
+  → Client DB: payment_method_settings_sync(rollout_status = 'shadow')
 ```
 
 **Sonuç:** Sadece shadow tester'lar yeni provider'ın oyunlarını/metotlarını görür.
@@ -117,10 +117,10 @@ BO Admin → "Provider Aç" (rollout = shadow)
 
 ```
 BO Admin → "Shadow Mode'a Al"
-  → Core: tenant_provider_set_rollout(tenant_id, provider_id, 'shadow')
-  → Tenant DB: game_provider_rollout_sync(provider_id, 'shadow')
+  → Core: client_provider_set_rollout(client_id, provider_id, 'shadow')
+  → Client DB: game_provider_rollout_sync(provider_id, 'shadow')
     → Tüm oyunların rollout_status = 'shadow'
-  → Tenant DB: payment_provider_rollout_sync(provider_id, 'shadow')
+  → Client DB: payment_provider_rollout_sync(provider_id, 'shadow')
     → Tüm metotların rollout_status = 'shadow'
 ```
 
@@ -128,19 +128,19 @@ BO Admin → "Shadow Mode'a Al"
 
 ```
 BO Admin → "Production'a Al"
-  → Core: tenant_provider_set_rollout(tenant_id, provider_id, 'production')
-  → Tenant DB: game_provider_rollout_sync(provider_id, 'production')
-  → Tenant DB: payment_provider_rollout_sync(provider_id, 'production')
+  → Core: client_provider_set_rollout(client_id, provider_id, 'production')
+  → Client DB: game_provider_rollout_sync(provider_id, 'production')
+  → Client DB: payment_provider_rollout_sync(provider_id, 'production')
 ```
 
 **Sonuç:** Herkes görür.
 
-### 5. Başka Tenant'lara Açma
+### 5. Başka Client'lara Açma
 
-Test başarılı olduktan sonra diğer tenant'lara doğrudan production olarak enable:
+Test başarılı olduktan sonra diğer client'lara doğrudan production olarak enable:
 
 ```
-→ Core: tenant_provider_enable(other_tenant_id, provider_id, 'production')
+→ Core: client_provider_enable(other_client_id, provider_id, 'production')
 → Normal akış devam eder
 ```
 
@@ -152,11 +152,11 @@ Test başarılı olduktan sonra diğer tenant'lara doğrudan production olarak e
 
 | Fonksiyon | Açıklama |
 |----------|----------|
-| `tenant_provider_set_rollout` | Provider rollout durumunu değiştir (shadow ↔ production) |
-| `tenant_provider_enable` | +`p_rollout_status` parametresi (varsayılan: 'production') |
-| `tenant_provider_list` | +`rollout_status` çıktı kolonu |
+| `client_provider_set_rollout` | Provider rollout durumunu değiştir (shadow ↔ production) |
+| `client_provider_enable` | +`p_rollout_status` parametresi (varsayılan: 'production') |
+| `client_provider_list` | +`rollout_status` çıktı kolonu |
 
-### Tenant DB
+### Client DB
 
 | Fonksiyon | Açıklama |
 |----------|----------|
@@ -182,9 +182,9 @@ Test başarılı olduktan sonra diğer tenant'lara doğrudan production olarak e
 
 ## Backend İçin Notlar
 
-- **Rollout değişikliği cascade**: `tenant_provider_set_rollout` çağrıldıktan sonra backend Tenant DB'de `game_provider_rollout_sync` ve `payment_provider_rollout_sync` çağırmalı
+- **Rollout değişikliği cascade**: `client_provider_set_rollout` çağrıldıktan sonra backend Client DB'de `game_provider_rollout_sync` ve `payment_provider_rollout_sync` çağırmalı
 - **Superadmin yetkisi**: rollout_status değişikliği sadece superadmin yapabilir (backend yetki kontrolü)
-- **Denormalizasyon**: rollout_status Core'da `tenant_providers`'da, Tenant'ta `game_settings` ve `payment_method_settings`'de tutulur — sync ile tutarlılık sağlanır
+- **Denormalizasyon**: rollout_status Core'da `client_providers`'da, Client'ta `game_settings` ve `payment_method_settings`'de tutulur — sync ile tutarlılık sağlanır
 
 ---
 

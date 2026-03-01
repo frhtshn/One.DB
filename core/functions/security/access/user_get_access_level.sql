@@ -13,7 +13,7 @@
 --   role_code: Highest level role code
 --   role_level: Role level (100=superadmin, 10=user)
 --   is_platform_role: Is it a platform role? (superadmin, admin)
---   allowed_tenant_ids: Accessible tenant IDs (NULL = unlimited)
+--   allowed_client_ids: Accessible client IDs (NULL = unlimited)
 --   allowed_company_ids: Accessible company IDs (NULL = unlimited)
 -- ============================================================================
 -- Usage:
@@ -35,15 +35,15 @@ CREATE OR REPLACE FUNCTION security.user_get_access_level(
     role_code VARCHAR(50),
     role_level INT,
     is_platform_role BOOLEAN,
-    allowed_tenant_ids BIGINT[],
+    allowed_client_ids BIGINT[],
     allowed_company_ids BIGINT[]
 ) AS $$
 DECLARE
     v_user RECORD;
-    v_tenant_ids BIGINT[];
+    v_client_ids BIGINT[];
     v_company_ids BIGINT[];
 BEGIN
-    -- Kullanıcının en yüksek rolünü al (global + tenant-specific dahil)
+    -- Kullanıcının en yüksek rolünü al (global + client-specific dahil)
     SELECT
         u.id,
         u.company_id,
@@ -66,35 +66,35 @@ BEGIN
 
     -- Determine access scope
     IF v_user.level >= 90 THEN
-        -- SuperAdmin (100) / Admin (90): Access to all tenants and companies
-        v_tenant_ids := NULL;  -- NULL = unlimited
+        -- SuperAdmin (100) / Admin (90): Access to all clients and companies
+        v_client_ids := NULL;  -- NULL = unlimited
         v_company_ids := NULL;
     ELSIF v_user.code = 'companyadmin' THEN
-        -- CompanyAdmin: Access to all tenants in their company
-        SELECT ARRAY_AGG(t.id) INTO v_tenant_ids
-        FROM core.tenants t
+        -- CompanyAdmin: Access to all clients in their company
+        SELECT ARRAY_AGG(t.id) INTO v_client_ids
+        FROM core.clients t
         WHERE t.company_id = v_user.company_id;
 
         v_company_ids := ARRAY[v_user.company_id];
     ELSE
-        -- Diğerleri: user_roles tenant atamaları + user_allowed_tenants birleşimi
-        SELECT ARRAY_AGG(DISTINCT sub.tenant_id) INTO v_tenant_ids
+        -- Diğerleri: user_roles client atamaları + user_allowed_clients birleşimi
+        SELECT ARRAY_AGG(DISTINCT sub.client_id) INTO v_client_ids
         FROM (
-            -- Tenant-specific rol atamaları
-            SELECT ur.tenant_id
+            -- Client-specific rol atamaları
+            SELECT ur.client_id
             FROM security.user_roles ur
-            WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NOT NULL
+            WHERE ur.user_id = p_caller_id AND ur.client_id IS NOT NULL
             UNION
-            -- Açık tenant erişim izinleri
-            SELECT uat.tenant_id
-            FROM security.user_allowed_tenants uat
+            -- Açık client erişim izinleri
+            SELECT uat.client_id
+            FROM security.user_allowed_clients uat
             WHERE uat.user_id = p_caller_id
         ) sub;
 
-        -- İzin verilen tenantların company'leri
+        -- İzin verilen clientların company'leri
         SELECT ARRAY_AGG(DISTINCT t.company_id) INTO v_company_ids
-        FROM core.tenants t
-        WHERE t.id = ANY(v_tenant_ids);
+        FROM core.clients t
+        WHERE t.id = ANY(v_client_ids);
 
         -- Kendi company'sini de ekle
         IF v_company_ids IS NULL THEN
@@ -110,7 +110,7 @@ BEGIN
         v_user.code,
         v_user.level,
         v_user.is_platform_role,
-        v_tenant_ids,
+        v_client_ids,
         v_company_ids;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;

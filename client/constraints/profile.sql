@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Profile Schema Foreign Key Constraints
+-- Client Profile Schema Foreign Key Constraints
 -- =============================================
 
 -- player_profile -> players

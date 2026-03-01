@@ -85,16 +85,16 @@ JOIN (VALUES
     -- Error Messages - System Database
     ('error.system.database.connection-failed', 'Database connection failed'),
     ('error.system.database.query-failed', 'Database query failed: {0}'),
-    ('error.system.database.invalid-tenant-id', 'Invalid tenant ID: {0}'),
+    ('error.system.database.invalid-client-id', 'Invalid client ID: {0}'),
     ('error.system.database.command-failed', 'Database operation failed: {0}'),
 
     -- Error Messages - Forbidden
     ('error.forbidden.resource', 'You do not have permission to access {0}. Required permission: {1}'),
-    ('error.tenant.access-denied', 'Access denied for tenant {0}'),
-    ('error.tenant.mismatch', 'Cannot modify permissions for a different tenant'),
-    ('error.tenant.scope-missing', 'Tenant scope parameter not found'),
+    ('error.client.access-denied', 'Access denied for client {0}'),
+    ('error.client.mismatch', 'Cannot modify permissions for a different client'),
+    ('error.client.scope-missing', 'Client scope parameter not found'),
     ('error.access.company-scope-denied', 'Operation not allowed outside company scope'),
-    ('error.access.tenant-scope-denied', 'Operation not allowed outside tenant scope'),
+    ('error.access.client-scope-denied', 'Operation not allowed outside client scope'),
     ('error.access.hierarchy-violation', 'Hierarchy violation - unauthorized operation'),
     ('error.access.denied', 'Access denied'),
     ('error.access.unauthorized', 'Unauthorized access'),
@@ -116,11 +116,11 @@ JOIN (VALUES
     ('error.system.silo.cluster-unavailable', 'Orleans cluster is unavailable'),
     ('error.system.silo.auth-init-failed', 'Auth infrastructure initialization failed'),
 
-    -- Error Messages - Tenant
-    ('error.tenant.not-active', 'Tenant {0} is not active'),
-        ('error.tenant.configuration-invalid', 'Tenant {0} configuration is invalid: {1}'),
-    ('error.tenant.code-exists', 'Tenant code already exists'),
-    ('error.tenant.not-found', 'Tenant not found'),
+    -- Error Messages - Client
+    ('error.client.not-active', 'Client {0} is not active'),
+        ('error.client.configuration-invalid', 'Client {0} configuration is invalid: {1}'),
+    ('error.client.code-exists', 'Client code already exists'),
+    ('error.client.not-found', 'Client not found'),
 
     -- Error Messages - Resource
     ('error.resource.not-found', '{0} not found: {1}'),
@@ -221,13 +221,13 @@ JOIN (VALUES
     ('error.role.bulk-assign.failed', 'Bulk permission assignment failed'),
     ('error.role.assign-permission.failed', 'Failed to assign permission to role'),
     ('error.role.remove-permission.failed', 'Failed to remove permission from role'),
-    ('error.role.assign-tenant.failed', 'Failed to assign tenant role'),
-    ('error.role.remove-tenant.failed', 'Failed to remove tenant role'),
+    ('error.role.assign-client.failed', 'Failed to assign client role'),
+    ('error.role.remove-client.failed', 'Failed to remove client role'),
     ('error.role.user-not-found', 'User not found'),
     ('error.role.permission-not-found', 'Permission not found'),
     ('error.role.permission-deleted', 'Cannot assign deleted permission'),
     ('error.role.operation-failed', 'Role operation failed'),
-    ('error.role.tenant-mismatch', 'Tenant mismatch'),
+    ('error.role.client-mismatch', 'Client mismatch'),
 
     -- Error Messages - User
     ('error.user.not-found', 'User not found'),
@@ -280,8 +280,8 @@ JOIN (VALUES
     ('error.currency.create.code-exists', 'This currency code already exists'),
     ('error.currency.code-invalid', 'Invalid currency code. Must be 3 characters'),
     ('error.currency.name-invalid', 'Invalid currency name. Must be at least 2 characters'),
-    ('error.currency.delete.in-use', 'Cannot delete currency. It is in use by tenants'),
-    ('error.currency.delete.is-base-currency', 'Cannot delete currency. It is used as base currency by tenants'),
+    ('error.currency.delete.in-use', 'Cannot delete currency. It is in use by clients'),
+    ('error.currency.delete.is-base-currency', 'Cannot delete currency. It is used as base currency by clients'),
 
     -- Error Messages - SQL
     ('error.sql.function-name-invalid', 'Invalid function name: {0}'),
@@ -335,7 +335,7 @@ JOIN (VALUES
     ('error.payment-method.name-invalid', 'Invalid payment method name. Must be at least 2 characters'),
     ('error.payment-method.type-invalid', 'Invalid payment type. Must be one of: CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER'),
     ('error.payment-method.code-exists', 'Payment method code already exists for this provider'),
-    ('error.payment-method.in-use', 'Cannot delete payment method. It is in use by tenants'),
+    ('error.payment-method.in-use', 'Cannot delete payment method. It is in use by clients'),
 
     -- Error Messages - Jurisdiction
     ('error.jurisdiction.not-found', 'Jurisdiction not found'),
@@ -349,7 +349,7 @@ JOIN (VALUES
     ('error.jurisdiction.has-document-requirements', 'Cannot delete jurisdiction. It has linked document requirements'),
     ('error.jurisdiction.has-level-requirements', 'Cannot delete jurisdiction. It has linked level requirements'),
     ('error.jurisdiction.has-gaming-policy', 'Cannot delete jurisdiction. It has linked responsible gaming policy'),
-    ('error.jurisdiction.in-use-by-tenants', 'Cannot delete jurisdiction. It is in use by tenants'),
+    ('error.jurisdiction.in-use-by-clients', 'Cannot delete jurisdiction. It is in use by clients'),
 
     -- Error Messages - KYC Policy
     ('error.kyc-policy.not-found', 'KYC policy not found'),
@@ -424,23 +424,23 @@ JOIN (VALUES
     ('error.navigation-template-item.self-parent', 'An item cannot be its own parent'),
     ('error.navigation-template-item.has-children', 'Cannot delete item. It has child items'),
 
-    -- Tenant Navigation Errors
-    ('error.tenant-navigation.not-found', 'Navigation item not found'),
-    ('error.tenant-navigation.already-initialized', 'Tenant navigation already initialized'),
-    ('error.tenant-navigation.is-locked', 'Cannot delete locked item'),
-    ('error.tenant-navigation.has-children', 'Cannot delete item. It has child items'),
-    ('error.tenant-navigation.parent-not-found', 'Parent item not found'),
-    ('error.tenant-navigation.self-parent', 'An item cannot be its own parent'),
-    ('error.tenant-navigation.readonly-field-update', 'Cannot update readonly field'),
-    ('error.tenant-navigation.invalid-item-ids', 'Invalid item ID list'),
+    -- Client Navigation Errors
+    ('error.client-navigation.not-found', 'Navigation item not found'),
+    ('error.client-navigation.already-initialized', 'Client navigation already initialized'),
+    ('error.client-navigation.is-locked', 'Cannot delete locked item'),
+    ('error.client-navigation.has-children', 'Cannot delete item. It has child items'),
+    ('error.client-navigation.parent-not-found', 'Parent item not found'),
+    ('error.client-navigation.self-parent', 'An item cannot be its own parent'),
+    ('error.client-navigation.readonly-field-update', 'Cannot update readonly field'),
+    ('error.client-navigation.invalid-item-ids', 'Invalid item ID list'),
 
-    -- Tenant Theme Errors
-    ('error.tenant-theme.not-found', 'Tenant theme configuration not found'),
-    ('error.tenant-theme.no-active-theme', 'No active theme found'),
+    -- Client Theme Errors
+    ('error.client-theme.not-found', 'Client theme configuration not found'),
+    ('error.client-theme.no-active-theme', 'No active theme found'),
 
-    -- Tenant Layout Errors
-    ('error.tenant-layout.not-found', 'Layout not found'),
-    ('error.tenant-layout.no-filter', 'At least one filter parameter is required'),
+    -- Client Layout Errors
+    ('error.client-layout.not-found', 'Layout not found'),
+    ('error.client-layout.no-filter', 'At least one filter parameter is required'),
 
     -- Error Messages - Messaging
     ('error.messaging.sender-id-required', 'Sender ID is required'),
@@ -476,7 +476,7 @@ JOIN (VALUES
     ('error.role.hierarchy-violation', 'Role hierarchy violation'),
     ('error.role.insufficient-level', 'Insufficient role level'),
     ('error.role.target-level-violation', 'Target role level violation'),
-    ('error.role.tenant-required', 'Tenant ID is required'),
+    ('error.role.client-required', 'Client ID is required'),
 
     -- User (new)
     ('error.user.concurrent-modification', 'User was modified by another process'),
@@ -487,11 +487,11 @@ JOIN (VALUES
     -- Department
     ('error.department.not-found', 'Department not found'),
 
-    -- Tenant (new)
-    ('error.tenant.id-required', 'Tenant ID is required'),
-    ('error.tenant-provider.not-found', 'Tenant provider record not found'),
-    ('error.tenant-game.not-found', 'Tenant game record not found'),
-    ('error.tenant-payment-method.not-found', 'Tenant payment method record not found'),
+    -- Client (new)
+    ('error.client.id-required', 'Client ID is required'),
+    ('error.client-provider.not-found', 'Client provider record not found'),
+    ('error.client-game.not-found', 'Client game record not found'),
+    ('error.client-payment-method.not-found', 'Client payment method record not found'),
 
     -- Provider (new)
     ('error.provider.invalid-rollout-status', 'Invalid rollout status'),
@@ -523,7 +523,7 @@ JOIN (VALUES
     ('error.payment-method.limits-data-required', 'Limits data is required'),
     ('error.payment-method.limits-invalid-format', 'Invalid limits data format'),
 
-    -- Player (Tenant DB)
+    -- Player (Client DB)
     ('error.player.id-required', 'Player ID is required'),
     ('error.player-limit.invalid-type', 'Invalid limit type'),
 
@@ -590,7 +590,7 @@ JOIN (VALUES
     ('error.crypto-rates.rates-empty', 'Rate data cannot be empty'),
     ('error.crypto-rates.timestamp-required', 'Timestamp is required'),
 
-    -- Messaging — Tenant (campaign, template, inbox)
+    -- Messaging — Client (campaign, template, inbox)
     ('error.messaging.player-id-required', 'Player ID is required'),
     ('error.messaging.message-not-found', 'Message not found'),
     ('error.messaging.invalid-message-type', 'Invalid message type'),
@@ -971,7 +971,7 @@ JOIN (VALUES
     ('error.kyc-provider-log.case-required', 'Case ID is required'),
     ('error.kyc-provider-log.provider-required', 'Provider code is required'),
 
-    -- Tenant Backoffice — Content Management (CMS)
+    -- Client Backoffice — Content Management (CMS)
     ('error.content.id-required', 'Content ID is required'),
     ('error.content.not-found', 'Content not found'),
     ('error.content.slug-required', 'Slug is required'),
@@ -986,7 +986,7 @@ JOIN (VALUES
     ('error.content.type-not-found', 'Content type not found'),
     ('error.content.type-has-active-contents', 'Cannot delete type with active contents'),
 
-    -- Tenant Backoffice — FAQ
+    -- Client Backoffice — FAQ
     ('error.faq.user-id-required', 'User ID is required'),
     ('error.faq.category-code-required', 'FAQ category code is required'),
     ('error.faq.category-id-required', 'FAQ category ID is required'),
@@ -995,17 +995,17 @@ JOIN (VALUES
     ('error.faq.item-id-required', 'FAQ item ID is required'),
     ('error.faq.item-not-found', 'FAQ item not found'),
 
-    -- Tenant Backoffice — Layout
+    -- Client Backoffice — Layout
     ('error.layout.id-required', 'Layout ID is required'),
     ('error.layout.not-found', 'Layout not found'),
     ('error.layout.name-required', 'Layout name is required'),
     ('error.layout.structure-required', 'Layout structure is required'),
 
-    -- Tenant Backoffice — Message Preferences
+    -- Client Backoffice — Message Preferences
     ('error.messaging.preference.invalid-channel-type', 'Invalid preference channel type'),
     ('error.messaging.preference.opted-in-required', 'Opted-in status is required'),
 
-    -- Tenant Backoffice — Navigation
+    -- Client Backoffice — Navigation
     ('error.navigation.id-required', 'Navigation item ID is required'),
     ('error.navigation.item-not-found', 'Navigation item not found'),
     ('error.navigation.item-locked', 'Locked navigation item cannot be deleted'),
@@ -1015,7 +1015,7 @@ JOIN (VALUES
     ('error.navigation.label-required', 'Label or translation key is required'),
     ('error.navigation.item-ids-required', 'Item ID list is required'),
 
-    -- Tenant Backoffice — Popup
+    -- Client Backoffice — Popup
     ('error.popup.id-required', 'Popup ID is required'),
     ('error.popup.not-found', 'Popup not found'),
     ('error.popup.user-id-required', 'User ID is required'),
@@ -1023,7 +1023,7 @@ JOIN (VALUES
     ('error.popup.type-id-required', 'Popup type ID is required'),
     ('error.popup.type-not-found', 'Popup type not found'),
 
-    -- Tenant Backoffice — Promotion
+    -- Client Backoffice — Promotion
     ('error.promotion.id-required', 'Promotion ID is required'),
     ('error.promotion.not-found', 'Promotion not found'),
     ('error.promotion.code-required', 'Promotion code is required'),
@@ -1032,7 +1032,7 @@ JOIN (VALUES
     ('error.promotion.type-id-required', 'Promotion type ID is required'),
     ('error.promotion.type-not-found', 'Promotion type not found'),
 
-    -- Tenant Backoffice — Slide/Banner
+    -- Client Backoffice — Slide/Banner
     ('error.slide.id-required', 'Slide ID is required'),
     ('error.slide.not-found', 'Slide not found'),
     ('error.slide.user-id-required', 'User ID is required'),
@@ -1044,10 +1044,10 @@ JOIN (VALUES
     ('error.slide.category-code-required', 'Slide category code is required'),
     ('error.slide.category-not-found', 'Slide category not found'),
 
-    -- Tenant Backoffice — Theme (additional)
+    -- Client Backoffice — Theme (additional)
     ('error.theme.theme-id-required', 'Theme reference ID is required'),
 
-    -- Tenant Backoffice — Trust Logos
+    -- Client Backoffice — Trust Logos
     ('error.trust-logo.code-required', 'Logo code is required'),
     ('error.trust-logo.type-required', 'Logo type is required'),
     ('error.trust-logo.name-required', 'Logo name is required'),
@@ -1056,14 +1056,14 @@ JOIN (VALUES
     ('error.trust-logo.id-required', 'Logo ID is required'),
     ('error.trust-logo.not-found', 'Logo not found'),
 
-    -- Tenant Backoffice — Operator Licenses
+    -- Client Backoffice — Operator Licenses
     ('error.operator-license.jurisdiction-required', 'Jurisdiction is required'),
     ('error.operator-license.license-number-required', 'License number is required'),
     ('error.operator-license.expiry-before-issued', 'Expiry date cannot be before issued date'),
     ('error.operator-license.id-required', 'License ID is required'),
     ('error.operator-license.not-found', 'License not found'),
 
-    -- Tenant Backoffice — SEO Redirects
+    -- Client Backoffice — SEO Redirects
     ('error.seo-redirect.from-slug-required', 'Source URL is required'),
     ('error.seo-redirect.to-url-required', 'Target URL is required'),
     ('error.seo-redirect.invalid-redirect-type', 'Invalid redirect type (must be 301 or 302)'),
@@ -1072,26 +1072,26 @@ JOIN (VALUES
     ('error.seo-redirect.id-required', 'Redirect ID is required'),
     ('error.seo-redirect.not-found', 'Redirect not found'),
 
-    -- Tenant Backoffice — Content SEO Meta
+    -- Client Backoffice — Content SEO Meta
     ('error.content-seo-meta.content-id-required', 'Content ID is required'),
     ('error.content-seo-meta.language-required', 'Language code is required'),
     ('error.content-seo-meta.invalid-twitter-card', 'Invalid Twitter card type'),
     ('error.content-seo-meta.translation-not-found', 'Content translation not found'),
 
-    -- Tenant Backoffice — Social Links
+    -- Client Backoffice — Social Links
     ('error.social-link.platform-required', 'Platform name is required'),
     ('error.social-link.url-required', 'URL is required'),
     ('error.social-link.items-required', 'Link list is required'),
     ('error.social-link.id-required', 'Link ID is required'),
     ('error.social-link.not-found', 'Social link not found'),
 
-    -- Tenant Backoffice — Site Settings
+    -- Client Backoffice — Site Settings
     ('error.site-settings.field-name-required', 'Field name is required'),
     ('error.site-settings.value-required', 'Field value is required'),
     ('error.site-settings.invalid-field', 'Invalid field name'),
     ('error.site-settings.not-found', 'Site settings not found'),
 
-    -- Tenant Backoffice — Announcement Bars
+    -- Client Backoffice — Announcement Bars
     ('error.announcement-bar.code-required', 'Announcement bar code is required'),
     ('error.announcement-bar.invalid-audience', 'Invalid target audience'),
     ('error.announcement-bar.ends-before-starts', 'End date cannot be before start date'),
@@ -1101,7 +1101,7 @@ JOIN (VALUES
     ('error.announcement-bar-translation.language-required', 'Language code is required'),
     ('error.announcement-bar-translation.text-required', 'Announcement text is required'),
 
-    -- Tenant Backoffice — Lobby Sections
+    -- Client Backoffice — Lobby Sections
     ('error.lobby-section.code-required', 'Section code is required'),
     ('error.lobby-section.max-items-invalid', 'Maximum items count is invalid'),
     ('error.lobby-section.id-required', 'Section ID is required'),
@@ -1115,7 +1115,7 @@ JOIN (VALUES
     ('error.lobby-section-game.section-not-manual', 'Section is not of manual curation type'),
     ('error.lobby-section-game.not-found', 'Section-game assignment not found'),
 
-    -- Tenant Backoffice — Game Labels
+    -- Client Backoffice — Game Labels
     ('error.game-label.game-id-required', 'Game ID is required'),
     ('error.game-label.label-type-required', 'Label type is required'),
     ('error.game-label.expires-in-past', 'Expiry date cannot be in the past'),

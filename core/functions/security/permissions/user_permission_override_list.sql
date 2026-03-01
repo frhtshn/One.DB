@@ -4,7 +4,7 @@
 -- Erişim:
 --   Platform Admin: Herkes
 --   Company Admin: Kendi şirketindeki user'lar
---   Tenant Admin: Kendi tenant'ındaki user'lar (p_tenant_id zorunlu)
+--   Client Admin: Kendi client'ındaki user'lar (p_client_id zorunlu)
 --   Diğerleri: Erişim yok
 -- ================================================================
 
@@ -13,14 +13,14 @@ DROP FUNCTION IF EXISTS security.user_permission_override_list(BIGINT, BIGINT, B
 CREATE OR REPLACE FUNCTION security.user_permission_override_list(
     p_caller_id BIGINT,
     p_user_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS TABLE (
     permission_code VARCHAR(100),
     permission_name VARCHAR(150),
     category VARCHAR(50),
     is_granted BOOLEAN,
-    tenant_id BIGINT,
+    client_id BIGINT,
     context_id BIGINT,
     reason VARCHAR(500),
     assigned_by BIGINT,
@@ -33,10 +33,10 @@ AS $$
 DECLARE
     v_caller_company_id BIGINT;
     v_target_company_id BIGINT;
-    v_tenant_company_id BIGINT;
+    v_client_company_id BIGINT;
     v_has_platform_role BOOLEAN;
     v_is_company_admin BOOLEAN;
-    v_is_tenant_admin BOOLEAN;
+    v_is_client_admin BOOLEAN;
 BEGIN
     -- 1. Caller bilgisi
     SELECT u.company_id FROM security.users u
@@ -56,11 +56,11 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.user.not-found';
     END IF;
 
-    -- 3. Platform admin kontrolü (global roller, tenant_id IS NULL)
+    -- 3. Platform admin kontrolü (global roller, client_id IS NULL)
     SELECT EXISTS(
         SELECT 1 FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+        WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
     ) INTO v_has_platform_role;
 
     IF v_has_platform_role THEN
@@ -72,77 +72,77 @@ BEGIN
             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.user-scope-denied';
         END IF;
 
-        -- 5. Company admin kontrolü (global rol, tenant_id IS NULL)
+        -- 5. Company admin kontrolü (global rol, client_id IS NULL)
         SELECT EXISTS(
             SELECT 1 FROM security.user_roles ur
             JOIN security.roles r ON ur.role_id = r.id
-            WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.code = 'companyadmin'
+            WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.code = 'companyadmin'
         ) INTO v_is_company_admin;
 
         IF v_is_company_admin THEN
             -- Company admin kendi şirketindeki herkesi görebilir
-            -- p_tenant_id null veya dolu olabilir
-            IF p_tenant_id IS NOT NULL THEN
-                -- Tenant şirkete ait mi kontrol et
-                SELECT t.company_id FROM core.tenants t
-                WHERE t.id = p_tenant_id
-                INTO v_tenant_company_id;
+            -- p_client_id null veya dolu olabilir
+            IF p_client_id IS NOT NULL THEN
+                -- Client şirkete ait mi kontrol et
+                SELECT t.company_id FROM core.clients t
+                WHERE t.id = p_client_id
+                INTO v_client_company_id;
 
-                IF v_tenant_company_id IS NULL OR v_tenant_company_id != v_caller_company_id THEN
-                    RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.tenant-scope-denied';
+                IF v_client_company_id IS NULL OR v_client_company_id != v_caller_company_id THEN
+                    RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.client-scope-denied';
                 END IF;
             END IF;
         ELSE
-            -- 6. Tenant admin kontrolü
-            IF p_tenant_id IS NULL THEN
-                -- Tenant admin için p_tenant_id zorunlu
-                RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.tenant.id-required';
+            -- 6. Client admin kontrolü
+            IF p_client_id IS NULL THEN
+                -- Client admin için p_client_id zorunlu
+                RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.client.id-required';
             END IF;
 
-            -- Tenant var mı ve şirkete ait mi?
-            SELECT t.company_id FROM core.tenants t
-            WHERE t.id = p_tenant_id
-            INTO v_tenant_company_id;
+            -- Client var mı ve şirkete ait mi?
+            SELECT t.company_id FROM core.clients t
+            WHERE t.id = p_client_id
+            INTO v_client_company_id;
 
-            IF v_tenant_company_id IS NULL THEN
-                RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+            IF v_client_company_id IS NULL THEN
+                RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
             END IF;
 
-            IF v_tenant_company_id != v_caller_company_id THEN
-                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.tenant-scope-denied';
+            IF v_client_company_id != v_caller_company_id THEN
+                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.client-scope-denied';
             END IF;
 
-            -- Caller bu tenant'ta tenant admin mi? (birleşik user_roles, tenant_id = p_tenant_id)
+            -- Caller bu client'ta client admin mi? (birleşik user_roles, client_id = p_client_id)
             SELECT EXISTS(
                 SELECT 1 FROM security.user_roles ur
                 JOIN security.roles r ON ur.role_id = r.id
                 WHERE ur.user_id = p_caller_id
-                  AND ur.tenant_id = p_tenant_id
-                  AND r.code = 'tenantadmin'
-            ) INTO v_is_tenant_admin;
+                  AND ur.client_id = p_client_id
+                  AND r.code = 'clientadmin'
+            ) INTO v_is_client_admin;
 
-            IF NOT v_is_tenant_admin THEN
+            IF NOT v_is_client_admin THEN
                 RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.permission-denied';
             END IF;
 
-            -- Hedef user bu tenant'a erişebiliyor mu?
-            -- 1. user_allowed_tenants'ta var mı? VEYA
-            -- 2. companyadmin mı ve tenant aynı şirkette mi? VEYA
+            -- Hedef user bu client'a erişebiliyor mu?
+            -- 1. user_allowed_clients'ta var mı? VEYA
+            -- 2. companyadmin mı ve client aynı şirkette mi? VEYA
             -- 3. platform admin mı?
             IF NOT EXISTS(
-                SELECT 1 FROM security.user_allowed_tenants uat
-                WHERE uat.user_id = p_user_id AND uat.tenant_id = p_tenant_id
+                SELECT 1 FROM security.user_allowed_clients uat
+                WHERE uat.user_id = p_user_id AND uat.client_id = p_client_id
             ) AND NOT EXISTS(
                 SELECT 1 FROM security.user_roles ur
                 JOIN security.roles r ON ur.role_id = r.id
                 WHERE ur.user_id = p_user_id
-                  AND ur.tenant_id IS NULL
+                  AND ur.client_id IS NULL
                   AND r.code = 'companyadmin'
-                  AND v_target_company_id = v_tenant_company_id
+                  AND v_target_company_id = v_client_company_id
             ) AND NOT EXISTS(
                 SELECT 1 FROM security.user_roles ur
                 JOIN security.roles r ON ur.role_id = r.id
-                WHERE ur.user_id = p_user_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+                WHERE ur.user_id = p_user_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
             ) THEN
                 RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.user-scope-denied';
             END IF;
@@ -156,7 +156,7 @@ BEGIN
         p.name AS permission_name,
         p.category,
         up.is_granted,
-        up.tenant_id,
+        up.client_id,
         up.context_id,
         up.reason,
         up.assigned_by,
@@ -165,7 +165,7 @@ BEGIN
     FROM security.user_permission_overrides up
     JOIN security.permissions p ON up.permission_id = p.id
     WHERE up.user_id = p_user_id
-      AND (p_tenant_id IS NULL OR up.tenant_id IS NULL OR up.tenant_id = p_tenant_id)
+      AND (p_client_id IS NULL OR up.client_id IS NULL OR up.client_id = p_client_id)
       AND (up.expires_at IS NULL OR up.expires_at > NOW())
     ORDER BY p.category, p.code;
 END;
@@ -173,5 +173,5 @@ $$;
 
 COMMENT ON FUNCTION security.user_permission_override_list IS
 'Lists active permission overrides for a user (IDOR protected).
-Access: Platform Admin (all), Company Admin (same company), Tenant Admin (same tenant, p_tenant_id required).
+Access: Platform Admin (all), Company Admin (same company), Client Admin (same client, p_client_id required).
 Normal users cannot view overrides.';

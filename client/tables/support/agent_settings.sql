@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: support.agent_settings
--- Açıklama: Per-tenant müşteri temsilcisi profili.
---           Core DB'deki user'ın tenant'taki
+-- Açıklama: Per-client müşteri temsilcisi profili.
+--           Core DB'deki user'ın client'taki
 --           destek ayarları: müsaitlik, kapasite,
 --           yetenek kategorileri.
 -- =============================================
@@ -25,4 +25,4 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_agent_settings_user
     ON support.agent_settings (user_id)
     WHERE is_active = true;
 
-COMMENT ON TABLE support.agent_settings IS 'Per-tenant support agent profile. Stores availability, capacity, and skill categories for ticket assignment.';
+COMMENT ON TABLE support.agent_settings IS 'Per-client support agent profile. Stores availability, capacity, and skill categories for ticket assignment.';

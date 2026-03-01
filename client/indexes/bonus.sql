@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Bonus Schema Indexes
+-- Client Bonus Schema Indexes
 -- =============================================
 
 -- bonus_awards — temel indexler

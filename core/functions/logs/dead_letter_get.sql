@@ -13,7 +13,7 @@ BEGIN
         'id', m.id,
         'eventId', m.event_id,
         'eventType', m.event_type,
-        'tenantId', m.tenant_id,
+        'clientId', m.client_id,
         'payload', m.payload,
         'exceptionMessage', m.exception_message,
         'exceptionStackTrace', m.exception_stack_trace,

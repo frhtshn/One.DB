@@ -2,7 +2,7 @@
 -- Player KYC Provider Logs (KYC Provider Logları)
 -- Harici KYC sağlayıcılarla yapılan API çağrıları
 -- Sumsub, Onfido vb. entegrasyonları
--- TENANT_LOG DB - 90+ gün retention (KYC için uzatılmış)
+-- CLIENT_LOG DB - 90+ gün retention (KYC için uzatılmış)
 -- =============================================
 
 DROP TABLE IF EXISTS kyc_log.player_kyc_provider_logs CASCADE;
@@ -10,8 +10,8 @@ DROP TABLE IF EXISTS kyc_log.player_kyc_provider_logs CASCADE;
 CREATE TABLE kyc_log.player_kyc_provider_logs (
     id bigserial,
 
-    player_id bigint NOT NULL,                    -- Oyuncu ID (tenant DB referans)
-    kyc_case_id bigint NOT NULL,                  -- Bağlı KYC vakası ID (tenant DB referans)
+    player_id bigint NOT NULL,                    -- Oyuncu ID (client DB referans)
+    kyc_case_id bigint NOT NULL,                  -- Bağlı KYC vakası ID (client DB referans)
 
     -- Sağlayıcı bilgileri
     provider_code varchar(50) NOT NULL,           -- Sağlayıcı kodu

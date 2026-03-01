@@ -103,66 +103,66 @@ END $$;
 -- Theme & Navigation Constraints
 -- Using DO block for idempotent execution
 
--- tenant_themes -> tenants
+-- client_themes -> clients
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_themes_tenant') THEN
-        ALTER TABLE presentation.tenant_themes ADD CONSTRAINT fk_tenant_themes_tenant
-            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_client_themes_client') THEN
+        ALTER TABLE presentation.client_themes ADD CONSTRAINT fk_client_themes_client
+            FOREIGN KEY (client_id) REFERENCES core.clients(id);
     END IF;
 END $$;
 
--- tenant_themes -> themes
+-- client_themes -> themes
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_themes_theme') THEN
-        ALTER TABLE presentation.tenant_themes ADD CONSTRAINT fk_tenant_themes_theme
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_client_themes_theme') THEN
+        ALTER TABLE presentation.client_themes ADD CONSTRAINT fk_client_themes_theme
             FOREIGN KEY (theme_id) REFERENCES catalog.themes(id);
     END IF;
 END $$;
 
--- tenant_layouts -> tenants
+-- client_layouts -> clients
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_layouts_tenant') THEN
-        ALTER TABLE presentation.tenant_layouts ADD CONSTRAINT fk_tenant_layouts_tenant
-            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_client_layouts_client') THEN
+        ALTER TABLE presentation.client_layouts ADD CONSTRAINT fk_client_layouts_client
+            FOREIGN KEY (client_id) REFERENCES core.clients(id);
     END IF;
 END $$;
 
--- tenant_navigation -> tenants
+-- client_navigation -> clients
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_navigation_tenant') THEN
-        ALTER TABLE presentation.tenant_navigation ADD CONSTRAINT fk_tenant_navigation_tenant
-            FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_client_navigation_client') THEN
+        ALTER TABLE presentation.client_navigation ADD CONSTRAINT fk_client_navigation_client
+            FOREIGN KEY (client_id) REFERENCES core.clients(id);
     END IF;
 END $$;
 
--- tenant_navigation -> parent (Self Referencing)
+-- client_navigation -> parent (Self Referencing)
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_navigation_parent') THEN
-        ALTER TABLE presentation.tenant_navigation ADD CONSTRAINT fk_tenant_navigation_parent
-            FOREIGN KEY (parent_id) REFERENCES presentation.tenant_navigation(id) ON DELETE CASCADE;
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_client_navigation_parent') THEN
+        ALTER TABLE presentation.client_navigation ADD CONSTRAINT fk_client_navigation_parent
+            FOREIGN KEY (parent_id) REFERENCES presentation.client_navigation(id) ON DELETE CASCADE;
     END IF;
 END $$;
 
--- tenant_navigation -> template_item (Link to Master Data)
+-- client_navigation -> template_item (Link to Master Data)
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_tenant_navigation_template_item') THEN
-        ALTER TABLE presentation.tenant_navigation ADD CONSTRAINT fk_tenant_navigation_template_item
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_client_navigation_template_item') THEN
+        ALTER TABLE presentation.client_navigation ADD CONSTRAINT fk_client_navigation_template_item
             FOREIGN KEY (template_item_id) REFERENCES catalog.navigation_template_items(id) ON DELETE SET NULL;
     END IF;
 END $$;
 
--- tenant_themes unique constraint (one config per theme per tenant)
+-- client_themes unique constraint (one config per theme per client)
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_themes_tenant_theme') THEN
-        ALTER TABLE presentation.tenant_themes ADD CONSTRAINT uq_tenant_themes_tenant_theme
-            UNIQUE (tenant_id, theme_id);
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_client_themes_client_theme') THEN
+        ALTER TABLE presentation.client_themes ADD CONSTRAINT uq_client_themes_client_theme
+            UNIQUE (client_id, theme_id);
     END IF;
 END $$;
 
--- tenant_layouts unique constraint (one layout per name per tenant)
+-- client_layouts unique constraint (one layout per name per client)
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_tenant_layouts_tenant_name') THEN
-        ALTER TABLE presentation.tenant_layouts ADD CONSTRAINT uq_tenant_layouts_tenant_name
-            UNIQUE (tenant_id, layout_name);
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_client_layouts_client_name') THEN
+        ALTER TABLE presentation.client_layouts ADD CONSTRAINT uq_client_layouts_client_name
+            UNIQUE (client_id, layout_name);
     END IF;
 END $$;

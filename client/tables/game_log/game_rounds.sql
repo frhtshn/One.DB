@@ -2,8 +2,8 @@
 -- Tablo: game_log.game_rounds
 -- Açıklama: Oyun turu/round detay logları
 -- Her spin, el veya bahis bir round'dur
--- Yüksek hacim: per-tenant izolasyon
--- TENANT_LOG DB - 30 gün retention (daily partition)
+-- Yüksek hacim: per-client izolasyon
+-- CLIENT_LOG DB - 30 gün retention (daily partition)
 -- =============================================
 
 DROP TABLE IF EXISTS game_log.game_rounds CASCADE;
@@ -12,7 +12,7 @@ CREATE TABLE game_log.game_rounds (
     id bigserial,
 
     -- Oyuncu ve oyun bilgileri
-    player_id BIGINT NOT NULL,                           -- Oyuncu ID (tenant DB referans)
+    player_id BIGINT NOT NULL,                           -- Oyuncu ID (client DB referans)
     game_code VARCHAR(100) NOT NULL,                     -- Oyun kodu: vs20olympgate, sweet_bonanza
     game_name VARCHAR(255),                              -- Oyun adı (denormalize, debug kolaylığı)
     provider_code VARCHAR(50) NOT NULL,                  -- Provider kodu: PRAGMATIC, EVOLUTION
@@ -47,7 +47,7 @@ CREATE TABLE game_log.game_rounds (
     ended_at TIMESTAMPTZ,                                -- Round bitişi
     duration_ms INTEGER,                                 -- Round süresi (milisaniye)
 
-    -- Transaction referansları (tenant.transactions ile korelasyon)
+    -- Transaction referansları (client.transactions ile korelasyon)
     bet_transaction_id BIGINT,                           -- Bahis transaction ID
     win_transaction_id BIGINT,                           -- Kazanç transaction ID
 
@@ -61,4 +61,4 @@ CREATE TABLE game_log.game_rounds (
 
 CREATE TABLE game_log.game_rounds_default PARTITION OF game_log.game_rounds DEFAULT;
 
-COMMENT ON TABLE game_log.game_rounds IS 'Game round/spin detail logs per player. High-volume table isolated per-tenant. Stores financial summary, round metadata, and game-specific details in JSONB. Partitioned daily by created_at. Retention: 30 days.';
+COMMENT ON TABLE game_log.game_rounds IS 'Game round/spin detail logs per player. High-volume table isolated per-client. Stores financial summary, round metadata, and game-specific details in JSONB. Partitioned daily by created_at. Retention: 30 days.';

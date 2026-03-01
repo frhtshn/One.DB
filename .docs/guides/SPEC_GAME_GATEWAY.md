@@ -16,17 +16,17 @@ Oyun entegrasyonunun fonksiyonel spesifikasyonu: oyun kataloğu, provider yönet
 | Alan | Fonksiyon | Açıklama |
 |------|-----------|----------|
 | Oyun Kataloğu (Game DB) | 8 | Provider sync, oyun CRUD, bulk upsert, limit sync |
-| Provider Yönetimi (Core DB) | 4 | Tenant'a provider açma/kapama, rollout, listeleme |
-| Oyun Yönetimi (Core DB) | 4 | Tenant'a oyun atama, listeleme, kaldırma, refresh |
-| Oyun Yapılandırma (Tenant DB) | 9 | Game settings sync/CRUD, limit yönetimi, rollout sync |
-| Lobi Yönetimi (Tenant DB) | 8 | Section CRUD, çeviri, oyun atama, sıralama |
-| Oyun Etiketleri (Tenant DB) | 3 | Label CRUD (new, hot, exclusive vb.) |
-| Frontend Oyun (Tenant DB) | 2 | Oyuncu lobisi, oyun listesi |
-| Game Sessions (Tenant DB) | 3 | Session oluşturma, doğrulama, kapatma |
-| Wallet İşlemleri (Tenant DB) | 10 | Bet, win, rollback, adjustment, bakiye, player info |
-| Bonus Provider Mapping (Tenant DB) | 3 | Free spin/freebet provider eşleme |
-| Round Yaşam Döngüsü (Tenant Log DB) | 3 | Round upsert, close, cancel |
-| Reconciliation (Tenant Log DB) | 3 | Rapor oluşturma, mismatch, listeleme |
+| Provider Yönetimi (Core DB) | 4 | Client'a provider açma/kapama, rollout, listeleme |
+| Oyun Yönetimi (Core DB) | 4 | Client'a oyun atama, listeleme, kaldırma, refresh |
+| Oyun Yapılandırma (Client DB) | 9 | Game settings sync/CRUD, limit yönetimi, rollout sync |
+| Lobi Yönetimi (Client DB) | 8 | Section CRUD, çeviri, oyun atama, sıralama |
+| Oyun Etiketleri (Client DB) | 3 | Label CRUD (new, hot, exclusive vb.) |
+| Frontend Oyun (Client DB) | 2 | Oyuncu lobisi, oyun listesi |
+| Game Sessions (Client DB) | 3 | Session oluşturma, doğrulama, kapatma |
+| Wallet İşlemleri (Client DB) | 10 | Bet, win, rollback, adjustment, bakiye, player info |
+| Bonus Provider Mapping (Client DB) | 3 | Free spin/freebet provider eşleme |
+| Round Yaşam Döngüsü (Client Log DB) | 3 | Round upsert, close, cancel |
+| Reconciliation (Client Log DB) | 3 | Rapor oluşturma, mismatch, listeleme |
 | **Toplam** | **60** | |
 
 ### 1.2 Veritabanı Dağılımı
@@ -34,14 +34,14 @@ Oyun entegrasyonunun fonksiyonel spesifikasyonu: oyun kataloğu, provider yönet
 | DB | Schema | Fonksiyon | Tablo | Açıklama |
 |----|--------|-----------|-------|----------|
 | **game** | catalog | 8 | 3 | Master oyun kataloğu, provider sync |
-| **core** | core | 8 | 2 | Tenant-provider ve tenant-game yönetimi |
+| **core** | core | 8 | 2 | Client-provider ve client-game yönetimi |
 | **core** | catalog | — | 3 | Provider referans tabloları (paylaşımlı) |
-| **tenant** | game | 22 | 7 | Settings, lobi, etiket, session |
-| **tenant** | wallet | 10 | 2 | Seamless wallet işlemleri |
-| **tenant** | bonus | 3 | 1 | Provider bonus mapping |
-| **tenant_log** | game_log | 6 | 3 | Round takip, reconciliation |
+| **client** | game | 22 | 7 | Settings, lobi, etiket, session |
+| **client** | wallet | 10 | 2 | Seamless wallet işlemleri |
+| **client** | bonus | 3 | 1 | Provider bonus mapping |
+| **client_log** | game_log | 6 | 3 | Round takip, reconciliation |
 | **game_log** | game_log | — | 2 | Provider API log (asenkron yazılır) |
-| **tenant_report** | game | — | 2 | Saatlik/günlük istatistik (paylaşımlı) |
+| **client_report** | game | — | 2 | Saatlik/günlük istatistik (paylaşımlı) |
 
 ### 1.3 Cross-DB İlişki
 
@@ -49,20 +49,20 @@ Oyun entegrasyonunun fonksiyonel spesifikasyonu: oyun kataloğu, provider yönet
 flowchart LR
     subgraph core["Core DB"]
         CP[catalog.providers<br/>catalog.provider_types<br/>catalog.provider_settings]
-        TP[core.tenant_providers<br/>core.tenant_games]
+        TP[core.client_providers<br/>core.client_games]
     end
 
     subgraph gamedb["Game DB"]
         GC[catalog.game_providers<br/>catalog.games<br/>catalog.game_currency_limits]
     end
 
-    subgraph tenant["Tenant DB"]
+    subgraph client["Client DB"]
         GS[game schema<br/>22 fn, 7 tbl]
         WL[wallet schema<br/>10 fn, 2 tbl]
         BM[bonus schema<br/>3 fn, 1 tbl]
     end
 
-    subgraph tlog["Tenant Log DB"]
+    subgraph tlog["Client Log DB"]
         GL[game_log schema<br/>6 fn, 3 tbl]
     end
 
@@ -264,12 +264,12 @@ stateDiagram-v2
 
 ### 3.2 Core DB — Provider & Oyun Atamaları
 
-#### `core.tenant_providers`
+#### `core.client_providers`
 
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|-----------|----------|
 | id | BIGSERIAL | PK | |
-| tenant_id | BIGINT | NOT NULL | FK: tenants.id |
+| client_id | BIGINT | NOT NULL | FK: clients.id |
 | provider_id | BIGINT | NOT NULL | FK: providers.id |
 | mode | VARCHAR(20) | NOT NULL DEFAULT 'real' | real, demo, test |
 | is_enabled | BOOLEAN | NOT NULL DEFAULT true | Aktiflik |
@@ -279,12 +279,12 @@ stateDiagram-v2
 
 **CHECK:** `rollout_status IN ('shadow', 'production')`
 
-#### `core.tenant_games`
+#### `core.client_games`
 
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|-----------|----------|
 | id | BIGSERIAL | PK | |
-| tenant_id | BIGINT | NOT NULL | FK: tenants.id |
+| client_id | BIGINT | NOT NULL | FK: clients.id |
 | game_id | BIGINT | NOT NULL | Game DB referansı (cross-DB, FK yok) |
 | game_name | VARCHAR(255) | | Denormalize: oyun adı |
 | game_code | VARCHAR(100) | | Denormalize: oyun kodu |
@@ -298,10 +298,10 @@ stateDiagram-v2
 | is_visible | BOOLEAN | NOT NULL DEFAULT true | Görünürlük |
 | is_featured | BOOLEAN | NOT NULL DEFAULT false | Öne çıkan |
 | display_order | INTEGER | DEFAULT 0 | Sıralama |
-| custom_name | VARCHAR(255) | | Tenant özel ad |
-| custom_thumbnail_url | VARCHAR(500) | | Tenant özel görsel |
-| custom_categories | VARCHAR(50)[] | DEFAULT '{}' | Tenant özel kategoriler |
-| custom_tags | VARCHAR(50)[] | DEFAULT '{}' | Tenant özel etiketler |
+| custom_name | VARCHAR(255) | | Client özel ad |
+| custom_thumbnail_url | VARCHAR(500) | | Client özel görsel |
+| custom_categories | VARCHAR(50)[] | DEFAULT '{}' | Client özel kategoriler |
+| custom_tags | VARCHAR(50)[] | DEFAULT '{}' | Client özel etiketler |
 | rtp_variant | VARCHAR(20) | | RTP varyantı |
 | allowed_platforms | VARCHAR(20)[] | DEFAULT '{web,mobile,app}' | İzin verilen platformlar |
 | blocked_countries | CHAR(2)[] | DEFAULT '{}' | Engelli ülkeler |
@@ -315,14 +315,14 @@ stateDiagram-v2
 | created_by | BIGINT | | Oluşturan kullanıcı |
 | updated_by | BIGINT | | Güncelleyen kullanıcı |
 
-### 3.3 Tenant DB — Oyun Yapılandırma
+### 3.3 Client DB — Oyun Yapılandırma
 
 #### `game.game_settings`
 
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|-----------|----------|
 | id | BIGSERIAL | PK | |
-| game_id | BIGINT | NOT NULL | Core tenant_games referansı |
+| game_id | BIGINT | NOT NULL | Core client_games referansı |
 | provider_id | BIGINT | NOT NULL | Provider ID |
 | external_game_id | VARCHAR(100) | NOT NULL | Provider tarafı oyun ID |
 | game_code | VARCHAR(100) | NOT NULL | Oyun kodu |
@@ -347,14 +347,14 @@ stateDiagram-v2
 | has_bonus_buy | BOOLEAN | NOT NULL DEFAULT false | Bonus buy var mı |
 | is_mobile | BOOLEAN | NOT NULL DEFAULT true | Mobil destek |
 | is_desktop | BOOLEAN | NOT NULL DEFAULT true | Masaüstü destek |
-| display_order | INTEGER | DEFAULT 0 | Tenant sıralama |
+| display_order | INTEGER | DEFAULT 0 | Client sıralama |
 | is_visible | BOOLEAN | NOT NULL DEFAULT true | Görünürlük |
 | is_enabled | BOOLEAN | NOT NULL DEFAULT true | Aktiflik |
 | is_featured | BOOLEAN | NOT NULL DEFAULT false | Öne çıkan |
-| custom_name | VARCHAR(255) | | Tenant özel ad |
-| custom_thumbnail_url | VARCHAR(500) | | Tenant özel görsel |
-| custom_categories | VARCHAR(50)[] | DEFAULT '{}' | Tenant özel kategoriler |
-| custom_tags | VARCHAR(50)[] | DEFAULT '{}' | Tenant özel etiketler |
+| custom_name | VARCHAR(255) | | Client özel ad |
+| custom_thumbnail_url | VARCHAR(500) | | Client özel görsel |
+| custom_categories | VARCHAR(50)[] | DEFAULT '{}' | Client özel kategoriler |
+| custom_tags | VARCHAR(50)[] | DEFAULT '{}' | Client özel etiketler |
 | rtp_variant | VARCHAR(20) | | RTP varyantı |
 | allowed_platforms | VARCHAR(20)[] | DEFAULT '{WEB,MOBILE,APP}' | İzinli platformlar |
 | blocked_countries | CHAR(2)[] | DEFAULT '{}' | Engelli ülkeler |
@@ -471,7 +471,7 @@ stateDiagram-v2
 
 **UNIQUE:** `(game_id, label_type)`
 
-### 3.4 Tenant DB — Wallet
+### 3.4 Client DB — Wallet
 
 #### `wallet.wallets`
 
@@ -513,7 +513,7 @@ stateDiagram-v2
 | created_at | TIMESTAMP | NOT NULL DEFAULT NOW() | |
 | updated_at | TIMESTAMP | NOT NULL DEFAULT NOW() | |
 
-### 3.5 Tenant Log DB — Round ve Reconciliation
+### 3.5 Client Log DB — Round ve Reconciliation
 
 #### `game_log.game_rounds` ◆ (Günlük partition, 30 gün retention)
 
@@ -541,8 +541,8 @@ stateDiagram-v2
 | started_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Başlangıç |
 | ended_at | TIMESTAMPTZ | | Bitiş |
 | duration_ms | INTEGER | | Süre (ms) |
-| bet_transaction_id | BIGINT | | Tenant transactions referansı |
-| win_transaction_id | BIGINT | | Tenant transactions referansı |
+| bet_transaction_id | BIGINT | | Client transactions referansı |
+| win_transaction_id | BIGINT | | Client transactions referansı |
 | device_type | VARCHAR(20) | | Cihaz |
 | ip_address | INET | | IP adresi |
 | created_at | TIMESTAMP | NOT NULL DEFAULT now() | Partition key |
@@ -598,7 +598,7 @@ stateDiagram-v2
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|-----------|----------|
 | id | BIGSERIAL | | |
-| tenant_id | BIGINT | NOT NULL | Tenant ID |
+| client_id | BIGINT | NOT NULL | Client ID |
 | player_id | BIGINT | | Oyuncu ID |
 | provider_code | VARCHAR(50) | NOT NULL | Provider kodu |
 | game_code | VARCHAR(100) | | Oyun kodu |
@@ -627,7 +627,7 @@ stateDiagram-v2
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|-----------|----------|
 | id | BIGSERIAL | | |
-| tenant_id | BIGINT | | Tenant ID |
+| client_id | BIGINT | | Client ID |
 | player_id | BIGINT | | Oyuncu ID |
 | provider_code | VARCHAR(50) | NOT NULL | Provider kodu |
 | game_code | VARCHAR(100) | | Oyun kodu |
@@ -649,7 +649,7 @@ stateDiagram-v2
 
 **PK:** `(id, created_at)` — Composite
 
-### 3.7 Tenant Report DB — İstatistikler (Paylaşımlı)
+### 3.7 Client Report DB — İstatistikler (Paylaşımlı)
 
 #### `game.game_hourly_stats` ◆ (Aylık partition, sınırsız retention)
 
@@ -935,12 +935,12 @@ stateDiagram-v2
 
 ### 4.2 Provider Yönetimi — Core DB (4 fonksiyon)
 
-#### `core.tenant_provider_enable`
+#### `core.client_provider_enable`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_provider_id | BIGINT | Evet | - | Provider ID |
 | p_game_data | TEXT | Hayır | NULL | JSONB array: seed edilecek oyun listesi |
 | p_mode | VARCHAR(20) | Hayır | 'real' | real, demo, test |
@@ -951,31 +951,31 @@ stateDiagram-v2
 **IDOR:** `security.user_assert_access_company(p_caller_id, v_company_id)`
 
 **İş Kuralları:**
-1. Tenant varlığı kontrol edilir, company_id alınır.
+1. Client varlığı kontrol edilir, company_id alınır.
 2. IDOR kontrolü (company erişimi).
 3. Provider varlığı ve tipi kontrol edilir: GAME tipinde olmalı.
 4. rollout_status validasyonu: 'shadow' veya 'production'.
-5. UPSERT: tenant_providers (is_enabled=true, mode, rollout_status).
-6. p_game_data varsa JSONB array parse edilir, tenant_games'e ON CONFLICT DO NOTHING ile seed edilir.
+5. UPSERT: client_providers (is_enabled=true, mode, rollout_status).
+6. p_game_data varsa JSONB array parse edilir, client_games'e ON CONFLICT DO NOTHING ile seed edilir.
 7. Mevcut oyunlar dokunulmaz.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.not-found | P0404 | Provider bulunamadı |
 | error.provider.not-game-type | P0400 | Provider GAME tipinde değil |
 | error.provider.invalid-rollout-status | P0400 | Geçersiz rollout_status |
 
 ---
 
-#### `core.tenant_provider_disable`
+#### `core.client_provider_disable`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_provider_id | BIGINT | Evet | - | Provider ID |
 
 **Dönüş:** `VOID`
@@ -983,27 +983,27 @@ stateDiagram-v2
 **IDOR:** `security.user_assert_access_company(p_caller_id, v_company_id)`
 
 **İş Kuralları:**
-1. Tenant varlığı kontrol edilir.
+1. Client varlığı kontrol edilir.
 2. IDOR kontrolü (company erişimi).
-3. tenant_providers kaydı kontrol edilir.
-4. is_enabled=false yapılır. Oyunlar (tenant_games) dokunulmaz.
+3. client_providers kaydı kontrol edilir.
+4. is_enabled=false yapılır. Oyunlar (client_games) dokunulmaz.
 5. Provider disable durumu, sorgu seviyesinde filtrelenir.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
-| error.tenant-provider.not-found | P0404 | Tenant-provider eşleşmesi bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
+| error.client-provider.not-found | P0404 | Client-provider eşleşmesi bulunamadı |
 
 ---
 
-#### `core.tenant_provider_list`
+#### `core.client_provider_list`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 
 **Dönüş:** `JSONB` — Provider listesi
 
@@ -1011,7 +1011,7 @@ stateDiagram-v2
 
 | Alan | Tip | Açıklama |
 |------|-----|----------|
-| id | BIGINT | tenant_providers.id |
+| id | BIGINT | client_providers.id |
 | providerId | BIGINT | Provider ID |
 | providerCode | VARCHAR | Provider kodu |
 | providerName | VARCHAR | Provider adı |
@@ -1034,57 +1034,57 @@ stateDiagram-v2
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 ---
 
-#### `core.tenant_provider_set_rollout`
+#### `core.client_provider_set_rollout`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_provider_id | BIGINT | Evet | - | Provider ID |
 | p_rollout_status | VARCHAR(20) | Evet | - | shadow veya production |
 
 **Dönüş:** `VOID`
 
-**IDOR:** `security.user_assert_access_tenant(p_caller_id, p_tenant_id)`
+**IDOR:** `security.user_assert_access_client(p_caller_id, p_client_id)`
 
 **İş Kuralları:**
-1. Tenant varlığı kontrol edilir.
-2. IDOR kontrolü (tenant erişimi — diğer fonksiyonlardan farklı olarak company değil tenant).
+1. Client varlığı kontrol edilir.
+2. IDOR kontrolü (client erişimi — diğer fonksiyonlardan farklı olarak company değil client).
 3. rollout_status validasyonu: NOT NULL ve 'shadow' veya 'production'.
-4. tenant_providers güncellenir.
+4. client_providers güncellenir.
 5. UPDATE 0 satır etkilerse hata.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.invalid-rollout-status | P0400 | NULL veya geçersiz rollout_status |
-| error.tenant-provider.not-found | P0404 | Tenant-provider eşleşmesi bulunamadı |
+| error.client-provider.not-found | P0404 | Client-provider eşleşmesi bulunamadı |
 
 ---
 
 ### 4.3 Oyun Yönetimi — Core DB (4 fonksiyon)
 
-#### `core.tenant_game_upsert`
+#### `core.client_game_upsert`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_game_id | BIGINT | Evet | - | Oyun ID (Game DB) |
 | p_is_enabled | BOOLEAN | Hayır | NULL | Aktiflik |
 | p_is_visible | BOOLEAN | Hayır | NULL | Görünürlük |
 | p_is_featured | BOOLEAN | Hayır | NULL | Öne çıkan |
 | p_display_order | INTEGER | Hayır | NULL | Sıralama |
-| p_custom_name | VARCHAR(255) | Hayır | NULL | Tenant özel ad |
-| p_custom_thumbnail_url | VARCHAR(500) | Hayır | NULL | Tenant özel görsel |
-| p_custom_categories | VARCHAR(50)[] | Hayır | NULL | Tenant özel kategoriler |
-| p_custom_tags | VARCHAR(50)[] | Hayır | NULL | Tenant özel etiketler |
+| p_custom_name | VARCHAR(255) | Hayır | NULL | Client özel ad |
+| p_custom_thumbnail_url | VARCHAR(500) | Hayır | NULL | Client özel görsel |
+| p_custom_categories | VARCHAR(50)[] | Hayır | NULL | Client özel kategoriler |
+| p_custom_tags | VARCHAR(50)[] | Hayır | NULL | Client özel etiketler |
 | p_rtp_variant | VARCHAR(20) | Hayır | NULL | RTP varyantı |
 | p_allowed_platforms | VARCHAR(20)[] | Hayır | NULL | İzinli platformlar |
 | p_blocked_countries | CHAR(2)[] | Hayır | NULL | Engelli ülkeler |
@@ -1097,29 +1097,29 @@ stateDiagram-v2
 **IDOR:** `security.user_assert_access_company(p_caller_id, v_company_id)`
 
 **İş Kuralları:**
-1. Tenant varlığı ve IDOR kontrolü.
+1. Client varlığı ve IDOR kontrolü.
 2. p_game_id NOT NULL zorunlu.
-3. tenant_games kaydı (tenant_id, game_id) mevcut olmalı (backend daha önce seed etmiş olmalı).
+3. client_games kaydı (client_id, game_id) mevcut olmalı (backend daha önce seed etmiş olmalı).
 4. COALESCE pattern: NULL parametreler mevcut değeri korur.
-5. sync_status='pending' ayarlanır (Tenant DB'ye propagasyon tetiklenir).
+5. sync_status='pending' ayarlanır (Client DB'ye propagasyon tetiklenir).
 6. updated_by=p_caller_id, updated_at=NOW().
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.game.id-required | P0400 | p_game_id NULL |
-| error.tenant-game.not-found | P0404 | Tenant-game eşleşmesi bulunamadı |
+| error.client-game.not-found | P0404 | Client-game eşleşmesi bulunamadı |
 
 ---
 
-#### `core.tenant_game_list`
+#### `core.client_game_list`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_provider_code | VARCHAR(50) | Hayır | NULL | Provider filtresi |
 | p_game_type | VARCHAR(50) | Hayır | NULL | Oyun tipi filtresi |
 | p_is_enabled | BOOLEAN | Hayır | NULL | Aktiflik filtresi |
@@ -1151,16 +1151,16 @@ stateDiagram-v2
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 ---
 
-#### `core.tenant_game_remove`
+#### `core.client_game_remove`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_game_id | BIGINT | Evet | - | Oyun ID |
 | p_disabled_reason | VARCHAR(255) | Hayır | NULL | Devre dışı bırakma nedeni |
 
@@ -1171,25 +1171,25 @@ stateDiagram-v2
 **İş Kuralları:**
 1. Soft delete: is_enabled=false, disabled_at=NOW().
 2. disabled_reason: COALESCE(p_disabled_reason, 'disabled_by_admin').
-3. sync_status='pending' (Tenant DB'ye propagasyon).
+3. sync_status='pending' (Client DB'ye propagasyon).
 4. Fiziksel silme yapılmaz.
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.game.id-required | P0400 | p_game_id NULL |
-| error.tenant-game.not-found | P0404 | Tenant-game eşleşmesi bulunamadı |
+| error.client-game.not-found | P0404 | Client-game eşleşmesi bulunamadı |
 
 ---
 
-#### `core.tenant_game_refresh`
+#### `core.client_game_refresh`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | İşlemi yapan kullanıcı |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_provider_id | BIGINT | Evet | - | Provider ID |
 | p_game_data | TEXT | Evet | - | JSONB array: oyun listesi |
 
@@ -1201,7 +1201,7 @@ stateDiagram-v2
 1. Provider varlığı ve GAME tipi kontrolü.
 2. p_game_data NOT NULL ve NOT empty zorunlu.
 3. JSONB array parse edilir.
-4. Her eleman için tenant_games'e INSERT ... ON CONFLICT DO NOTHING.
+4. Her eleman için client_games'e INSERT ... ON CONFLICT DO NOTHING.
 5. Her elemandan extract: game_id, game_name, game_code, provider_code, game_type, thumbnail_url.
 6. Yeni eklenenler: sync_status='pending', created_by=p_caller_id.
 7. Mevcut oyunlar dokunulmaz.
@@ -1210,13 +1210,13 @@ stateDiagram-v2
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.not-game-type | P0400 | Provider GAME tipinde değil |
 | error.game.data-required | P0400 | p_game_data NULL/boş |
 
 ---
 
-### 4.4 Oyun Yapılandırma — Tenant DB (9 fonksiyon)
+### 4.4 Oyun Yapılandırma — Client DB (9 fonksiyon)
 
 #### `game.game_settings_sync`
 
@@ -1224,17 +1224,17 @@ stateDiagram-v2
 |-----------|-----|---------|------------|----------|
 | p_game_id | BIGINT | Evet | - | Oyun ID |
 | p_catalog_data | TEXT | Evet | - | JSONB: katalog verileri (Core'dan) |
-| p_tenant_overrides | TEXT | Hayır | NULL | JSONB: tenant özelleştirmeleri |
+| p_client_overrides | TEXT | Hayır | NULL | JSONB: client özelleştirmeleri |
 | p_rollout_status | VARCHAR(20) | Hayır | 'production' | shadow, production |
 
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Core → Tenant oyun veri senkronizasyonu.
+1. Core → Client oyun veri senkronizasyonu.
 2. p_catalog_data JSONB parse: tüm katalog alanları.
-3. p_tenant_overrides JSONB parse: display_order, is_visible, is_enabled, is_featured, blocked_countries, allowed_countries.
-4. **INSERT:** Katalog + tenant override varsayılanları uygulanır (is_visible=true, is_enabled=true, is_featured=false).
-5. **UPDATE:** SADECE katalog alanları güncellenir, **tenant override'ları korunur** (kritik: tenant özelleştirmesi kaybolmaz).
+3. p_client_overrides JSONB parse: display_order, is_visible, is_enabled, is_featured, blocked_countries, allowed_countries.
+4. **INSERT:** Katalog + client override varsayılanları uygulanır (is_visible=true, is_enabled=true, is_featured=false).
+5. **UPDATE:** SADECE katalog alanları güncellenir, **client override'ları korunur** (kritik: client özelleştirmesi kaybolmaz).
 6. Array alanları JSONB array'den extract edilir.
 
 **Hata Kodları:**
@@ -1273,7 +1273,7 @@ stateDiagram-v2
 | coreSyncedAt | TIMESTAMP | Son sync zamanı |
 
 **İş Kuralları:**
-1. Tüm katalog + tenant override alanlarını döner.
+1. Tüm katalog + client override alanlarını döner.
 2. Backend, provider_id + external_game_id ile Gateway'e gRPC isteği yapar.
 3. STABLE fonksiyon (read-only).
 
@@ -1327,10 +1327,10 @@ stateDiagram-v2
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_game_id | BIGINT | Evet | - | Oyun ID |
-| p_custom_name | VARCHAR(255) | Hayır | NULL | Tenant özel ad |
-| p_custom_thumbnail_url | VARCHAR(500) | Hayır | NULL | Tenant özel görsel |
-| p_custom_categories | VARCHAR(50)[] | Hayır | NULL | Tenant özel kategoriler |
-| p_custom_tags | VARCHAR(50)[] | Hayır | NULL | Tenant özel etiketler |
+| p_custom_name | VARCHAR(255) | Hayır | NULL | Client özel ad |
+| p_custom_thumbnail_url | VARCHAR(500) | Hayır | NULL | Client özel görsel |
+| p_custom_categories | VARCHAR(50)[] | Hayır | NULL | Client özel kategoriler |
+| p_custom_tags | VARCHAR(50)[] | Hayır | NULL | Client özel etiketler |
 | p_display_order | INTEGER | Hayır | NULL | Sıralama |
 | p_is_visible | BOOLEAN | Hayır | NULL | Görünürlük |
 | p_is_featured | BOOLEAN | Hayır | NULL | Öne çıkan |
@@ -1344,7 +1344,7 @@ stateDiagram-v2
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Tenant özelleştirmesi: sadece tenant-editable alanlar güncellenir.
+1. Client özelleştirmesi: sadece client-editable alanlar güncellenir.
 2. COALESCE pattern: NULL = mevcut değeri koru.
 3. Katalog alanları (game_name, game_type vb.) bu fonksiyonla değiştirilemez.
 
@@ -1388,7 +1388,7 @@ stateDiagram-v2
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Core → Tenant limit senkronizasyonu.
+1. Core → Client limit senkronizasyonu.
 2. Her eleman için UPSERT: (game_id, currency_code) unique key.
 3. Payload'da olmayan limitler: is_active=false (soft delete).
 4. Senkronize edilen currency_code'lar izlenir.
@@ -1492,7 +1492,7 @@ stateDiagram-v2
 
 ---
 
-### 4.5 Lobi Yönetimi — Tenant DB (8 fonksiyon)
+### 4.5 Lobi Yönetimi — Client DB (8 fonksiyon)
 
 #### `game.upsert_lobby_section`
 
@@ -1704,7 +1704,7 @@ stateDiagram-v2
 
 ---
 
-### 4.6 Oyun Etiketleri — Tenant DB (3 fonksiyon)
+### 4.6 Oyun Etiketleri — Client DB (3 fonksiyon)
 
 #### `game.upsert_game_label`
 
@@ -1778,7 +1778,7 @@ stateDiagram-v2
 
 ---
 
-### 4.7 Frontend Oyun — Tenant DB (2 fonksiyon)
+### 4.7 Frontend Oyun — Client DB (2 fonksiyon)
 
 #### `game.get_public_game_list`
 
@@ -1869,7 +1869,7 @@ stateDiagram-v2
 
 ---
 
-### 4.8 Game Sessions — Tenant DB (3 fonksiyon)
+### 4.8 Game Sessions — Client DB (3 fonksiyon)
 
 #### `game.game_session_create`
 
@@ -1970,7 +1970,7 @@ stateDiagram-v2
 
 ---
 
-### 4.9 Wallet İşlemleri — Tenant DB (10 fonksiyon)
+### 4.9 Wallet İşlemleri — Client DB (10 fonksiyon)
 
 > Tüm wallet fonksiyonları `wallet` schema'sında, auth-agnostic. Ortak dönüş formatı:
 > ```json
@@ -2279,7 +2279,7 @@ stateDiagram-v2
 
 ---
 
-### 4.10 Bonus Provider Mapping — Tenant DB (3 fonksiyon)
+### 4.10 Bonus Provider Mapping — Client DB (3 fonksiyon)
 
 #### `bonus.provider_bonus_mapping_create`
 
@@ -2351,7 +2351,7 @@ stateDiagram-v2
 
 ---
 
-### 4.11 Round Yaşam Döngüsü — Tenant Log DB (3 fonksiyon)
+### 4.11 Round Yaşam Döngüsü — Client Log DB (3 fonksiyon)
 
 #### `game_log.round_upsert`
 
@@ -2441,7 +2441,7 @@ stateDiagram-v2
 
 ---
 
-### 4.12 Reconciliation — Tenant Log DB (3 fonksiyon)
+### 4.12 Reconciliation — Client Log DB (3 fonksiyon)
 
 #### `game_log.reconciliation_report_create`
 
@@ -2635,17 +2635,17 @@ stateDiagram-v2
 | error.game.limits-data-required | P0400 | Limit verisi boş |
 | error.game.limits-invalid-format | P0400 | Limit verisi geçersiz format |
 
-### 6.4 Provider/Tenant Hata Kodları
+### 6.4 Provider/Client Hata Kodları
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.not-found | P0404 | Provider bulunamadı |
 | error.provider.not-game-type | P0400 | Provider GAME tipinde değil |
 | error.provider.invalid-rollout-status | P0400 | Geçersiz rollout_status |
 | error.provider.id-required | P0400 | Provider ID NULL |
-| error.tenant-provider.not-found | P0404 | Tenant-provider eşleşmesi yok |
-| error.tenant-game.not-found | P0404 | Tenant-game eşleşmesi yok |
+| error.client-provider.not-found | P0404 | Client-provider eşleşmesi yok |
+| error.client-game.not-found | P0404 | Client-game eşleşmesi yok |
 
 ### 6.5 Lobi/Etiket Hata Kodları
 
@@ -2712,11 +2712,11 @@ stateDiagram-v2
 
 | Tablo | DB | Strateji | Retention | Açıklama |
 |-------|-----|---------|-----------|----------|
-| game_rounds | tenant_log | Günlük | 30 gün | Oyuncu başına round detayı |
+| game_rounds | client_log | Günlük | 30 gün | Oyuncu başına round detayı |
 | provider_api_requests | game_log | Günlük | 7 gün | Çıkış API logları |
 | provider_api_callbacks | game_log | Günlük | 7 gün | Giriş callback logları |
-| game_hourly_stats | tenant_report | Aylık | Sınırsız | Saatlik istatistik |
-| game_performance_daily | tenant_report | Aylık | Sınırsız | Günlük performans |
+| game_hourly_stats | client_report | Aylık | Sınırsız | Saatlik istatistik |
+| game_performance_daily | client_report | Aylık | Sınırsız | Günlük performans |
 
 ### 7.3 Performans Notları
 
@@ -2751,87 +2751,87 @@ stateDiagram-v2
 
 | Dosya | Açıklama |
 |-------|----------|
-| `core/tables/core/integration/tenant_providers.sql` | Tenant-provider eşleme |
-| `core/tables/core/integration/tenant_games.sql` | Tenant-game eşleme |
-| `core/functions/core/tenant_providers/tenant_provider_enable.sql` | Provider açma |
-| `core/functions/core/tenant_providers/tenant_provider_disable.sql` | Provider kapama |
-| `core/functions/core/tenant_providers/tenant_provider_list.sql` | Provider listeleme |
-| `core/functions/core/tenant_providers/tenant_provider_set_rollout.sql` | Rollout değiştirme |
-| `core/functions/core/tenant_games/tenant_game_upsert.sql` | Oyun özelleştirme |
-| `core/functions/core/tenant_games/tenant_game_list.sql` | Oyun listeleme |
-| `core/functions/core/tenant_games/tenant_game_remove.sql` | Oyun kaldırma |
-| `core/functions/core/tenant_games/tenant_game_refresh.sql` | Oyun yenileme |
+| `core/tables/core/integration/client_providers.sql` | Client-provider eşleme |
+| `core/tables/core/integration/client_games.sql` | Client-game eşleme |
+| `core/functions/core/client_providers/client_provider_enable.sql` | Provider açma |
+| `core/functions/core/client_providers/client_provider_disable.sql` | Provider kapama |
+| `core/functions/core/client_providers/client_provider_list.sql` | Provider listeleme |
+| `core/functions/core/client_providers/client_provider_set_rollout.sql` | Rollout değiştirme |
+| `core/functions/core/client_games/client_game_upsert.sql` | Oyun özelleştirme |
+| `core/functions/core/client_games/client_game_list.sql` | Oyun listeleme |
+| `core/functions/core/client_games/client_game_remove.sql` | Oyun kaldırma |
+| `core/functions/core/client_games/client_game_refresh.sql` | Oyun yenileme |
 
-### 8.3 Tenant DB — Game Schema
-
-| Dosya | Açıklama |
-|-------|----------|
-| `tenant/tables/game/game_settings.sql` | Oyun yapılandırma |
-| `tenant/tables/game/game_limits.sql` | Para birimi limitleri |
-| `tenant/tables/game/game_sessions.sql` | Game session |
-| `tenant/tables/game/lobby_sections.sql` | Lobi section'ları |
-| `tenant/tables/game/lobby_section_translations.sql` | Section çevirileri |
-| `tenant/tables/game/lobby_section_games.sql` | Section oyun atamaları |
-| `tenant/tables/game/game_labels.sql` | Oyun etiketleri |
-| `tenant/functions/gateway/game/game_session_create.sql` | Session oluşturma |
-| `tenant/functions/gateway/game/game_session_validate.sql` | Session doğrulama |
-| `tenant/functions/gateway/game/game_session_end.sql` | Session kapatma |
-| `tenant/functions/backoffice/game/game_settings_sync.sql` | Settings sync |
-| `tenant/functions/backoffice/game/game_settings_get.sql` | Settings detay |
-| `tenant/functions/backoffice/game/game_settings_list.sql` | Settings listeleme |
-| `tenant/functions/backoffice/game/game_settings_update.sql` | Settings güncelleme |
-| `tenant/functions/backoffice/game/game_settings_remove.sql` | Settings kaldırma |
-| `tenant/functions/backoffice/game/game_limits_sync.sql` | Limit sync |
-| `tenant/functions/backoffice/game/game_limit_upsert.sql` | Limit upsert |
-| `tenant/functions/backoffice/game/game_limit_list.sql` | Limit listeleme |
-| `tenant/functions/backoffice/game/game_provider_rollout_sync.sql` | Rollout sync |
-| `tenant/functions/backoffice/game/lobby_section_upsert.sql` | Section upsert |
-| `tenant/functions/backoffice/game/lobby_section_list.sql` | Section listeleme |
-| `tenant/functions/backoffice/game/lobby_section_delete.sql` | Section silme |
-| `tenant/functions/backoffice/game/lobby_section_reorder.sql` | Section sıralama |
-| `tenant/functions/backoffice/game/lobby_section_translation_upsert.sql` | Çeviri upsert |
-| `tenant/functions/backoffice/game/lobby_section_game_add.sql` | Oyun ekleme |
-| `tenant/functions/backoffice/game/lobby_section_game_list.sql` | Oyun listeleme |
-| `tenant/functions/backoffice/game/lobby_section_game_remove.sql` | Oyun kaldırma |
-| `tenant/functions/backoffice/game/game_label_upsert.sql` | Label upsert |
-| `tenant/functions/backoffice/game/game_label_list.sql` | Label listeleme |
-| `tenant/functions/backoffice/game/game_label_delete.sql` | Label silme |
-| `tenant/functions/frontend/game/public_game_list.sql` | Frontend oyun listesi |
-| `tenant/functions/frontend/game/public_lobby_get.sql` | Frontend lobi yapısı |
-
-### 8.4 Tenant DB — Wallet & Bonus Schema
+### 8.3 Client DB — Game Schema
 
 | Dosya | Açıklama |
 |-------|----------|
-| `tenant/tables/wallet/wallets.sql` | Cüzdanlar |
-| `tenant/tables/wallet/wallet_snapshots.sql` | Bakiye snapshot'ları |
-| `tenant/functions/gateway/wallet/player_info_get.sql` | Oyuncu bilgisi |
-| `tenant/functions/gateway/wallet/player_balance_get.sql` | Bakiye sorgulama |
-| `tenant/functions/gateway/wallet/player_balance_per_game_get.sql` | Oyun bazlı bakiye |
-| `tenant/functions/gateway/wallet/bet_process.sql` | Bahis işlemi |
-| `tenant/functions/gateway/wallet/win_process.sql` | Kazanç işlemi |
-| `tenant/functions/gateway/wallet/rollback_process.sql` | Geri alma işlemi |
-| `tenant/functions/gateway/wallet/jackpot_win_process.sql` | Jackpot kazancı |
-| `tenant/functions/gateway/wallet/bonus_win_process.sql` | Bonus kazancı |
-| `tenant/functions/gateway/wallet/promo_win_process.sql` | Promo kazancı |
-| `tenant/functions/gateway/wallet/adjustment_process.sql` | Düzeltme işlemi |
-| `tenant/functions/gateway/bonus/provider_bonus_mapping_create.sql` | Bonus mapping oluştur |
-| `tenant/functions/gateway/bonus/provider_bonus_mapping_get.sql` | Bonus mapping sorgula |
-| `tenant/functions/gateway/bonus/provider_bonus_mapping_update_status.sql` | Bonus mapping güncelle |
+| `client/tables/game/game_settings.sql` | Oyun yapılandırma |
+| `client/tables/game/game_limits.sql` | Para birimi limitleri |
+| `client/tables/game/game_sessions.sql` | Game session |
+| `client/tables/game/lobby_sections.sql` | Lobi section'ları |
+| `client/tables/game/lobby_section_translations.sql` | Section çevirileri |
+| `client/tables/game/lobby_section_games.sql` | Section oyun atamaları |
+| `client/tables/game/game_labels.sql` | Oyun etiketleri |
+| `client/functions/gateway/game/game_session_create.sql` | Session oluşturma |
+| `client/functions/gateway/game/game_session_validate.sql` | Session doğrulama |
+| `client/functions/gateway/game/game_session_end.sql` | Session kapatma |
+| `client/functions/backoffice/game/game_settings_sync.sql` | Settings sync |
+| `client/functions/backoffice/game/game_settings_get.sql` | Settings detay |
+| `client/functions/backoffice/game/game_settings_list.sql` | Settings listeleme |
+| `client/functions/backoffice/game/game_settings_update.sql` | Settings güncelleme |
+| `client/functions/backoffice/game/game_settings_remove.sql` | Settings kaldırma |
+| `client/functions/backoffice/game/game_limits_sync.sql` | Limit sync |
+| `client/functions/backoffice/game/game_limit_upsert.sql` | Limit upsert |
+| `client/functions/backoffice/game/game_limit_list.sql` | Limit listeleme |
+| `client/functions/backoffice/game/game_provider_rollout_sync.sql` | Rollout sync |
+| `client/functions/backoffice/game/lobby_section_upsert.sql` | Section upsert |
+| `client/functions/backoffice/game/lobby_section_list.sql` | Section listeleme |
+| `client/functions/backoffice/game/lobby_section_delete.sql` | Section silme |
+| `client/functions/backoffice/game/lobby_section_reorder.sql` | Section sıralama |
+| `client/functions/backoffice/game/lobby_section_translation_upsert.sql` | Çeviri upsert |
+| `client/functions/backoffice/game/lobby_section_game_add.sql` | Oyun ekleme |
+| `client/functions/backoffice/game/lobby_section_game_list.sql` | Oyun listeleme |
+| `client/functions/backoffice/game/lobby_section_game_remove.sql` | Oyun kaldırma |
+| `client/functions/backoffice/game/game_label_upsert.sql` | Label upsert |
+| `client/functions/backoffice/game/game_label_list.sql` | Label listeleme |
+| `client/functions/backoffice/game/game_label_delete.sql` | Label silme |
+| `client/functions/frontend/game/public_game_list.sql` | Frontend oyun listesi |
+| `client/functions/frontend/game/public_lobby_get.sql` | Frontend lobi yapısı |
 
-### 8.5 Tenant Log DB
+### 8.4 Client DB — Wallet & Bonus Schema
 
 | Dosya | Açıklama |
 |-------|----------|
-| `tenant_log/tables/game_log/game_rounds.sql` | Round tablosu (partitioned) |
-| `tenant_log/tables/game_log/reconciliation_reports.sql` | Reconciliation rapor |
-| `tenant_log/tables/game_log/reconciliation_mismatches.sql` | Uyuşmazlık detayları |
-| `tenant_log/functions/game_log/round_upsert.sql` | Round upsert |
-| `tenant_log/functions/game_log/round_close.sql` | Round kapatma |
-| `tenant_log/functions/game_log/round_cancel.sql` | Round iptal |
-| `tenant_log/functions/game_log/reconciliation_report_create.sql` | Rapor oluşturma |
-| `tenant_log/functions/game_log/reconciliation_report_list.sql` | Rapor listeleme |
-| `tenant_log/functions/game_log/reconciliation_mismatch_upsert.sql` | Mismatch kayıt |
+| `client/tables/wallet/wallets.sql` | Cüzdanlar |
+| `client/tables/wallet/wallet_snapshots.sql` | Bakiye snapshot'ları |
+| `client/functions/gateway/wallet/player_info_get.sql` | Oyuncu bilgisi |
+| `client/functions/gateway/wallet/player_balance_get.sql` | Bakiye sorgulama |
+| `client/functions/gateway/wallet/player_balance_per_game_get.sql` | Oyun bazlı bakiye |
+| `client/functions/gateway/wallet/bet_process.sql` | Bahis işlemi |
+| `client/functions/gateway/wallet/win_process.sql` | Kazanç işlemi |
+| `client/functions/gateway/wallet/rollback_process.sql` | Geri alma işlemi |
+| `client/functions/gateway/wallet/jackpot_win_process.sql` | Jackpot kazancı |
+| `client/functions/gateway/wallet/bonus_win_process.sql` | Bonus kazancı |
+| `client/functions/gateway/wallet/promo_win_process.sql` | Promo kazancı |
+| `client/functions/gateway/wallet/adjustment_process.sql` | Düzeltme işlemi |
+| `client/functions/gateway/bonus/provider_bonus_mapping_create.sql` | Bonus mapping oluştur |
+| `client/functions/gateway/bonus/provider_bonus_mapping_get.sql` | Bonus mapping sorgula |
+| `client/functions/gateway/bonus/provider_bonus_mapping_update_status.sql` | Bonus mapping güncelle |
+
+### 8.5 Client Log DB
+
+| Dosya | Açıklama |
+|-------|----------|
+| `client_log/tables/game_log/game_rounds.sql` | Round tablosu (partitioned) |
+| `client_log/tables/game_log/reconciliation_reports.sql` | Reconciliation rapor |
+| `client_log/tables/game_log/reconciliation_mismatches.sql` | Uyuşmazlık detayları |
+| `client_log/functions/game_log/round_upsert.sql` | Round upsert |
+| `client_log/functions/game_log/round_close.sql` | Round kapatma |
+| `client_log/functions/game_log/round_cancel.sql` | Round iptal |
+| `client_log/functions/game_log/reconciliation_report_create.sql` | Rapor oluşturma |
+| `client_log/functions/game_log/reconciliation_report_list.sql` | Rapor listeleme |
+| `client_log/functions/game_log/reconciliation_mismatch_upsert.sql` | Mismatch kayıt |
 
 ### 8.6 Game Log DB
 
@@ -2840,12 +2840,12 @@ stateDiagram-v2
 | `game_log/tables/provider_api_requests.sql` | API istek logu (partitioned) |
 | `game_log/tables/provider_api_callbacks.sql` | Callback logu (partitioned) |
 
-### 8.7 Tenant Report DB
+### 8.7 Client Report DB
 
 | Dosya | Açıklama |
 |-------|----------|
-| `tenant_report/tables/game/game_hourly_stats.sql` | Saatlik istatistik (partitioned) |
-| `tenant_report/tables/game/game_performance_daily.sql` | Günlük performans (partitioned) |
+| `client_report/tables/game/game_hourly_stats.sql` | Saatlik istatistik (partitioned) |
+| `client_report/tables/game/game_performance_daily.sql` | Günlük performans (partitioned) |
 
 ---
 

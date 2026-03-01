@@ -1,13 +1,13 @@
 -- =============================================
--- Tablo: finance.system_hourly_kpi
+-- Tablo: finance_report.system_hourly_kpi
 -- Açıklama: Sistem genelindeki KPI metriklerinin saatlik özeti.
 -- Yönetim dashboard'ları ve finansal özetler için kullanılır.
 -- Oyuncu bağımsızdır, sistemin genel sağlığını gösterir.
 -- =============================================
 
-DROP TABLE IF EXISTS finance.system_hourly_kpi CASCADE;
+DROP TABLE IF EXISTS finance_report.system_hourly_kpi CASCADE;
 
-CREATE TABLE finance.system_hourly_kpi (
+CREATE TABLE finance_report.system_hourly_kpi (
     id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
     currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
@@ -38,6 +38,6 @@ CREATE TABLE finance.system_hourly_kpi (
     PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
 ) PARTITION BY RANGE (period_hour);
 
-CREATE TABLE finance.system_hourly_kpi_default PARTITION OF finance.system_hourly_kpi DEFAULT;
+CREATE TABLE finance_report.system_hourly_kpi_default PARTITION OF finance_report.system_hourly_kpi DEFAULT;
 
-COMMENT ON TABLE finance.system_hourly_kpi IS 'System-wide hourly Key Performance Indicators. Partitioned monthly by period_hour.';
+COMMENT ON TABLE finance_report.system_hourly_kpi IS 'System-wide hourly Key Performance Indicators. Partitioned monthly by period_hour.';

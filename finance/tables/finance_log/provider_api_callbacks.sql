@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: finance_log.provider_api_callbacks
 -- Açıklama: Ödeme provider'larından gelen callback/webhook logları
--- Gateway seviyesi: Tüm tenant'lar için ortak
+-- Gateway seviyesi: Tüm client'lar için ortak
 -- Provider'ın sisteme geri bildirdiği event'ler
 -- FINANCE_LOG DB - 14 gün retention (daily partition)
 -- =============================================
@@ -12,7 +12,7 @@ CREATE TABLE finance_log.provider_api_callbacks (
     id bigserial,
 
     -- Bağlam bilgileri
-    tenant_id BIGINT,                                    -- Çözümlenen tenant (NULL olabilir: parse hatası)
+    client_id BIGINT,                                    -- Çözümlenen client (NULL olabilir: parse hatası)
     player_id BIGINT,                                    -- Çözümlenen oyuncu (NULL olabilir)
     provider_code VARCHAR(50) NOT NULL,                  -- Provider kodu: PAPARA, PAYFIX, STRIPE
     payment_method_code VARCHAR(100),                    -- Çözümlenen ödeme yöntemi kodu (varsa)
@@ -47,4 +47,4 @@ CREATE TABLE finance_log.provider_api_callbacks (
 
 CREATE TABLE finance_log.provider_api_callbacks_default PARTITION OF finance_log.provider_api_callbacks DEFAULT;
 
-COMMENT ON TABLE finance_log.provider_api_callbacks IS 'Inbound callback/webhook logs from payment providers (deposit confirm, withdrawal confirm, chargeback). Gateway-level shared across all tenants. Partitioned daily by created_at. Retention: 14 days.';
+COMMENT ON TABLE finance_log.provider_api_callbacks IS 'Inbound callback/webhook logs from payment providers (deposit confirm, withdrawal confirm, chargeback). Gateway-level shared across all clients. Partitioned daily by created_at. Retention: 14 days.';

@@ -1,13 +1,13 @@
 -- =============================================
--- Tablo: game.game_hourly_stats
+-- Tablo: game_report.game_hourly_stats
 -- Açıklama: Oyuncu bazlı oyun aktivitelerinin saatlik JSONB özeti.
 -- Her oyun için ayrı satır yerine (row-based), tek satırda JSONB (document-based)
 -- içinde detaylar tutularak satır sayısı %90+ azaltılır.
 -- =============================================
 
-DROP TABLE IF EXISTS game.game_hourly_stats CASCADE;
+DROP TABLE IF EXISTS game_report.game_hourly_stats CASCADE;
 
-CREATE TABLE game.game_hourly_stats (
+CREATE TABLE game_report.game_hourly_stats (
     id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
 
@@ -41,8 +41,8 @@ CREATE TABLE game.game_hourly_stats (
     PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
 ) PARTITION BY RANGE (period_hour);
 
--- Indexes moved to indexes/game.sql
+-- Indexes moved to indexes/game_report.sql
 
-CREATE TABLE game.game_hourly_stats_default PARTITION OF game.game_hourly_stats DEFAULT;
+CREATE TABLE game_report.game_hourly_stats_default PARTITION OF game_report.game_hourly_stats DEFAULT;
 
-COMMENT ON TABLE game.game_hourly_stats IS 'Consolidated hourly game stats per player using JSONB map for games to reduce row count. Partitioned monthly by period_hour.';
+COMMENT ON TABLE game_report.game_hourly_stats IS 'Consolidated hourly game stats per player using JSONB map for games to reduce row count. Partitioned monthly by period_hour.';

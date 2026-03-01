@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: finance_log.provider_api_requests
 -- Açıklama: Ödeme provider'larına yapılan API çağrı logları
--- Gateway seviyesi: Tüm tenant'lar için ortak
+-- Gateway seviyesi: Tüm client'lar için ortak
 -- Deposit, withdrawal, status check vb. istekler
 -- FINANCE_LOG DB - 14 gün retention (daily partition)
 -- =============================================
@@ -12,7 +12,7 @@ CREATE TABLE finance_log.provider_api_requests (
     id bigserial,
 
     -- Bağlam bilgileri
-    tenant_id BIGINT NOT NULL,                           -- Hangi tenant adına çağrı yapıldı
+    client_id BIGINT NOT NULL,                           -- Hangi client adına çağrı yapıldı
     player_id BIGINT,                                    -- İlgili oyuncu (varsa)
     provider_code VARCHAR(50) NOT NULL,                  -- Provider kodu: PAPARA, PAYFIX, STRIPE
     payment_method_code VARCHAR(100),                    -- İlgili ödeme yöntemi kodu (varsa)
@@ -47,4 +47,4 @@ CREATE TABLE finance_log.provider_api_requests (
 
 CREATE TABLE finance_log.provider_api_requests_default PARTITION OF finance_log.provider_api_requests DEFAULT;
 
-COMMENT ON TABLE finance_log.provider_api_requests IS 'Outbound API call logs to payment/finance providers (deposit, withdrawal, status check, refund). Gateway-level shared across all tenants. Partitioned daily by created_at. Retention: 14 days.';
+COMMENT ON TABLE finance_log.provider_api_requests IS 'Outbound API call logs to payment/finance providers (deposit, withdrawal, status check, refund). Gateway-level shared across all clients. Partitioned daily by created_at. Retention: 14 days.';

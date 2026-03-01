@@ -1,15 +1,15 @@
 -- ================================================================
 -- BONUS_RULE_LIST: Bonus kuralı listesi
 -- ================================================================
--- Filtre: tenant_id, bonus_type_id, evaluation_type, is_active.
--- Platform seviyesi kurallar (tenant_id=NULL) dahil edilir.
+-- Filtre: client_id, bonus_type_id, evaluation_type, is_active.
+-- Platform seviyesi kurallar (client_id=NULL) dahil edilir.
 -- JSONB bileşenler listelemede döndürülmez (performans).
 -- ================================================================
 
 DROP FUNCTION IF EXISTS bonus.bonus_rule_list(BIGINT, BIGINT, VARCHAR, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION bonus.bonus_rule_list(
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_bonus_type_id BIGINT DEFAULT NULL,
     p_evaluation_type VARCHAR(20) DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
@@ -25,7 +25,7 @@ BEGIN
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'id', br.id,
-            'tenantId', br.tenant_id,
+            'clientId', br.client_id,
             'ruleCode', br.rule_code,
             'ruleName', br.rule_name,
             'bonusTypeId', br.bonus_type_id,
@@ -46,7 +46,7 @@ BEGIN
     INTO v_result
     FROM bonus.bonus_rules br
     JOIN bonus.bonus_types bt ON bt.id = br.bonus_type_id
-    WHERE (p_tenant_id IS NULL OR br.tenant_id IS NULL OR br.tenant_id = p_tenant_id)
+    WHERE (p_client_id IS NULL OR br.client_id IS NULL OR br.client_id = p_client_id)
       AND (p_bonus_type_id IS NULL OR br.bonus_type_id = p_bonus_type_id)
       AND (p_evaluation_type IS NULL OR br.evaluation_type = p_evaluation_type)
       AND (p_is_active IS NULL OR br.is_active = p_is_active);
@@ -55,4 +55,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION bonus.bonus_rule_list(BIGINT, BIGINT, VARCHAR, BOOLEAN) IS 'Lists bonus rules with filters. Includes platform-level rules (tenant_id=NULL). JSONB components excluded for performance — use bonus_rule_get for full detail.';
+COMMENT ON FUNCTION bonus.bonus_rule_list(BIGINT, BIGINT, VARCHAR, BOOLEAN) IS 'Lists bonus rules with filters. Includes platform-level rules (client_id=NULL). JSONB components excluded for performance — use bonus_rule_get for full detail.';

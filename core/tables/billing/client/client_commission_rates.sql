@@ -1,14 +1,14 @@
 -- =============================================
--- Tablo: billing.tenant_commission_rates
--- Açıklama: Tenant standart komisyon oranları
--- Nucleo'nun tenant'lardan alacağı standart oranlar
+-- Tablo: billing.client_commission_rates
+-- Açıklama: Client standart komisyon oranları
+-- Sortis One'ın client'lardan alacağı standart oranlar
 -- Her provider/ürün için varsayılan komisyon planı
--- Belirli tenant özel oranları: tenant_commission_plans
+-- Belirli client özel oranları: client_commission_plans
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_commission_rates CASCADE;
+DROP TABLE IF EXISTS billing.client_commission_rates CASCADE;
 
-CREATE TABLE billing.tenant_commission_rates (
+CREATE TABLE billing.client_commission_rates (
     id bigserial PRIMARY KEY,                              -- Benzersiz komisyon kimliği
     provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS, PAYMENT
@@ -33,5 +33,5 @@ CREATE TABLE billing.tenant_commission_rates (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
-COMMENT ON TABLE billing.tenant_commission_rates IS 'Standard tenant commission rates defining default charges from Nucleo to whitelabels per provider and product';
+COMMENT ON TABLE billing.client_commission_rates IS 'Standard client commission rates defining default charges from Sortis One to whitelabels per provider and product';
 

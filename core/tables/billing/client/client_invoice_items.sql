@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: billing.tenant_invoice_items
--- Açıklama: Tenant fatura kalem detayları
+-- Tablo: billing.client_invoice_items
+-- Açıklama: Client fatura kalem detayları
 -- Her fatura satırının detay bilgileri
 -- Komisyon kayıtlarıyla ilişkilendirilir
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_invoice_items CASCADE;
+DROP TABLE IF EXISTS billing.client_invoice_items CASCADE;
 
-CREATE TABLE billing.tenant_invoice_items (
+CREATE TABLE billing.client_invoice_items (
     id bigserial PRIMARY KEY,                              -- Benzersiz kalem kimliği
-    tenant_invoice_id bigint NOT NULL,                     -- Fatura ID (FK: billing.tenant_invoices)
-    tenant_commission_id bigint,                           -- Komisyon kaydı ID (FK: billing.tenant_commissions)
+    client_invoice_id bigint NOT NULL,                     -- Fatura ID (FK: billing.client_invoices)
+    client_commission_id bigint,                           -- Komisyon kaydı ID (FK: billing.client_commissions)
 
     -- Kalem bilgileri
     item_type varchar(30) NOT NULL,                        -- Kalem tipi: COMMISSION, ADJUSTMENT, DISCOUNT
@@ -41,4 +41,4 @@ CREATE TABLE billing.tenant_invoice_items (
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
 
-COMMENT ON TABLE billing.tenant_invoice_items IS 'Tenant invoice line item details for commissions, adjustments, and discounts with calculation breakdown';
+COMMENT ON TABLE billing.client_invoice_items IS 'Client invoice line item details for commissions, adjustments, and discounts with calculation breakdown';

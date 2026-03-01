@@ -3,13 +3,13 @@
 -- ================================================================
 -- Bonus kurallarını gruplandıran pazarlama kampanyası.
 -- Bütçe takibi ve hedef kitle segmentasyonu destekler.
--- Unique: (tenant_id, campaign_code).
+-- Unique: (client_id, campaign_code).
 -- ================================================================
 
 DROP FUNCTION IF EXISTS campaign.campaign_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, TEXT, TIMESTAMPTZ, TIMESTAMPTZ, CHAR, DECIMAL, VARCHAR, TEXT);
 
 CREATE OR REPLACE FUNCTION campaign.campaign_create(
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_campaign_code VARCHAR(100),
     p_campaign_name VARCHAR(255),
     p_description TEXT DEFAULT NULL,
@@ -58,21 +58,21 @@ BEGIN
     -- Unique kod kontrolü
     IF EXISTS (
         SELECT 1 FROM campaign.campaigns
-        WHERE tenant_id IS NOT DISTINCT FROM p_tenant_id
+        WHERE client_id IS NOT DISTINCT FROM p_client_id
           AND campaign_code = UPPER(TRIM(p_campaign_code))
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.campaign.code-exists';
     END IF;
 
     INSERT INTO campaign.campaigns (
-        tenant_id, campaign_code, campaign_name, description,
+        client_id, campaign_code, campaign_name, description,
         campaign_type, bonus_rule_ids,
         start_date, end_date,
         budget_currency, total_budget, spent_budget,
         award_strategy, target_segments,
         status, created_at, updated_at
     ) VALUES (
-        p_tenant_id,
+        p_client_id,
         UPPER(TRIM(p_campaign_code)),
         TRIM(p_campaign_name),
         p_description,
@@ -94,4 +94,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION campaign.campaign_create IS 'Creates a marketing campaign with bonus rule associations, budget tracking, and audience segmentation. Starts in draft status. Unique by (tenant_id, campaign_code).';
+COMMENT ON FUNCTION campaign.campaign_create IS 'Creates a marketing campaign with bonus rule associations, budget tracking, and audience segmentation. Starts in draft status. Unique by (client_id, campaign_code).';

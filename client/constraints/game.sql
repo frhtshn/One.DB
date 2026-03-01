@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Game Schema Constraints
+-- Client Game Schema Constraints
 -- =============================================
 
 -- game_settings unique constraint

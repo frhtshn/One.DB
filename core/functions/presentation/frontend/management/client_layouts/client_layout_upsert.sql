@@ -1,20 +1,20 @@
 -- ================================================================
--- TENANT_LAYOUT_UPSERT: Layout oluştur/güncelle
+-- CLIENT_LAYOUT_UPSERT: Layout oluştur/güncelle
 -- ================================================================
 -- Açıklama:
---   Tenant için widget yerleşimi oluşturur veya günceller.
---   layout_name tenant bazında unique'dir.
+--   Client için widget yerleşimi oluşturur veya günceller.
+--   layout_name client bazında unique'dir.
 -- Erişim:
---   - Platform Admin: Tüm tenant'lar
---   - CompanyAdmin: Kendi company'sindeki tenant'lar
---   - TenantAdmin: user_allowed_tenants'taki tenant'lar
+--   - Platform Admin: Tüm client'lar
+--   - CompanyAdmin: Kendi company'sindeki client'lar
+--   - ClientAdmin: user_allowed_clients'taki client'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_layout_upsert(BIGINT, BIGINT, VARCHAR, TEXT, BIGINT, BOOLEAN);
+DROP FUNCTION IF EXISTS presentation.client_layout_upsert(BIGINT, BIGINT, VARCHAR, TEXT, BIGINT, BOOLEAN);
 
-CREATE OR REPLACE FUNCTION presentation.tenant_layout_upsert(
+CREATE OR REPLACE FUNCTION presentation.client_layout_upsert(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_layout_name VARCHAR(50),
     p_structure TEXT,
     p_page_id BIGINT DEFAULT NULL,
@@ -28,17 +28,17 @@ AS $$
 DECLARE
     v_layout_id BIGINT;
 BEGIN
-    -- 1. Tenant varlık kontrolü
-    IF NOT EXISTS(SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    -- 1. Client varlık kontrolü
+    IF NOT EXISTS(SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
-    -- 2. Tenant erişim kontrolü
-    PERFORM security.user_assert_access_tenant(p_caller_id, p_tenant_id);
+    -- 2. Client erişim kontrolü
+    PERFORM security.user_assert_access_client(p_caller_id, p_client_id);
 
     -- 3. Upsert
-    INSERT INTO presentation.tenant_layouts (
-        tenant_id,
+    INSERT INTO presentation.client_layouts (
+        client_id,
         page_id,
         layout_name,
         structure,
@@ -47,7 +47,7 @@ BEGIN
         updated_at
     )
     VALUES (
-        p_tenant_id,
+        p_client_id,
         p_page_id,
         p_layout_name,
         p_structure::jsonb,
@@ -55,7 +55,7 @@ BEGIN
         NOW(),
         NOW()
     )
-    ON CONFLICT (tenant_id, layout_name) DO UPDATE
+    ON CONFLICT (client_id, layout_name) DO UPDATE
     SET page_id = EXCLUDED.page_id,
         structure = EXCLUDED.structure,
         is_active = EXCLUDED.is_active,
@@ -66,7 +66,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_layout_upsert(BIGINT, BIGINT, VARCHAR, TEXT, BIGINT, BOOLEAN) IS
-'Creates or updates a tenant layout (widget placement).
-layout_name is unique per tenant.
-Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';
+COMMENT ON FUNCTION presentation.client_layout_upsert(BIGINT, BIGINT, VARCHAR, TEXT, BIGINT, BOOLEAN) IS
+'Creates or updates a client layout (widget placement).
+layout_name is unique per client.
+Access: Platform Admin (all), CompanyAdmin (own company), ClientAdmin (allowed clients).';

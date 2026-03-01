@@ -1,5 +1,5 @@
 -- ============================================================================
--- NUCLEO PLATFORM — UIKit Katalog Seed
+-- SORTIS ONE — UIKit Katalog Seed
 -- ============================================================================
 -- İlk site açılışı için varsayılan temalar, widget'lar, UI pozisyonları
 -- ve navigasyon şablonları.

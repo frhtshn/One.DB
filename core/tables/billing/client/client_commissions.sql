@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: billing.tenant_commissions
--- Açıklama: Hesaplanan tenant komisyonları
+-- Tablo: billing.client_commissions
+-- Açıklama: Hesaplanan client komisyonları
 -- Worker tarafından upsert ile güncellenir
 -- Anlık veya dönemsel hesaplama destekler
 -- Kademeli komisyon için tier bazında ayrı satırlar
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_commissions CASCADE;
+DROP TABLE IF EXISTS billing.client_commissions CASCADE;
 
-CREATE TABLE billing.tenant_commissions (
+CREATE TABLE billing.client_commissions (
     id bigserial PRIMARY KEY,                              -- Benzersiz komisyon kimliği
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
     provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS, PAYMENT
     commission_type varchar(20) NOT NULL,                  -- Komisyon tipi: GGR, NGR, TURNOVER
@@ -38,8 +38,8 @@ CREATE TABLE billing.tenant_commissions (
     eur_rate numeric(18,8),                                -- Kullanılan EUR kuru
 
     -- Kaynak bilgisi
-    aggregate_id bigint,                                   -- Aggregate kaydı ID (FK: billing.tenant_commission_aggregates)
-    commission_plan_source varchar(20) NOT NULL,           -- Kaynak: PROVIDER_DEFAULT, TENANT_CUSTOM
+    aggregate_id bigint,                                   -- Aggregate kaydı ID (FK: billing.client_commission_aggregates)
+    commission_plan_source varchar(20) NOT NULL,           -- Kaynak: PROVIDER_DEFAULT, CLIENT_CUSTOM
     commission_plan_id bigint,                             -- Kullanılan plan ID
 
     -- Durum ve onay süreci
@@ -61,7 +61,7 @@ CREATE TABLE billing.tenant_commissions (
 
 );
 
-COMMENT ON TABLE billing.tenant_commissions IS 'Calculated tenant commissions with tier-based breakdowns updated by workers for real-time or periodic billing';
+COMMENT ON TABLE billing.client_commissions IS 'Calculated client commissions with tier-based breakdowns updated by workers for real-time or periodic billing';
 
 -- Worker upsert örneği:
 -- Her kademe için ayrı satır:

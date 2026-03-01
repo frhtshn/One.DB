@@ -1,15 +1,15 @@
 -- ================================================================
--- TENANT_SERVER_LIST: Tenant'ın tüm sunucu/container listesi
+-- CLIENT_SERVER_LIST: Client'ın tüm sunucu/container listesi
 -- ================================================================
 -- IDOR korumalı. Infrastructure server detayları dahil.
 -- Her role için container durumu ve sağlık bilgisi döner.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_server_list(BIGINT, BIGINT);
+DROP FUNCTION IF EXISTS core.client_server_list(BIGINT, BIGINT);
 
-CREATE OR REPLACE FUNCTION core.tenant_server_list(
+CREATE OR REPLACE FUNCTION core.client_server_list(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT
+    p_client_id BIGINT
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -20,12 +20,12 @@ DECLARE
     v_company_id BIGINT;
     v_result JSONB;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -54,12 +54,12 @@ BEGIN
         ) ORDER BY ts.server_role
     ), '[]'::jsonb)
     INTO v_result
-    FROM core.tenant_servers ts
+    FROM core.client_servers ts
     JOIN core.infrastructure_servers s ON s.id = ts.server_id
-    WHERE ts.tenant_id = p_tenant_id;
+    WHERE ts.client_id = p_client_id;
 
     RETURN v_result;
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_server_list(BIGINT, BIGINT) IS 'Returns all server/container assignments for a tenant with infrastructure server details. Ordered by role. IDOR protected.';
+COMMENT ON FUNCTION core.client_server_list(BIGINT, BIGINT) IS 'Returns all server/container assignments for a client with infrastructure server details. Ordered by role. IDOR protected.';

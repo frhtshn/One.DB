@@ -1,6 +1,6 @@
 -- ================================================================
--- PARTITION_INFO: Partition durumunu raporlar
--- tenant veritabanı için monitoring ve health check
+-- PARTITION_INFO: Tüm schema'lardaki partition durumunu raporlar
+-- Birleşik monitoring ve health check
 -- Her partitioned tablo için özet bilgi döner
 -- ================================================================
 
@@ -31,7 +31,18 @@ BEGIN
         JOIN pg_namespace pn ON pn.oid = pc.relnamespace
         JOIN pg_class cc ON cc.oid = i.inhrelid
         JOIN pg_namespace cn ON cn.oid = cc.relnamespace
-        WHERE pn.nspname IN ('transaction', 'messaging')
+        WHERE pn.nspname IN (
+            -- Core Business
+            'transaction', 'messaging',
+            -- Log
+            'affiliate_log', 'bonus_log', 'kyc_log', 'messaging_log', 'game_log', 'support_log',
+            -- Audit
+            'player_audit',
+            -- Report
+            'finance_report', 'game_report', 'support_report',
+            -- Affiliate
+            'tracking'
+        )
     ),
     summary AS (
         SELECT
@@ -56,4 +67,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in tenant DB. Shows count, size, oldest/newest partitions.';
+COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables across all schemas (core, log, audit, report, affiliate). Shows count, size, oldest/newest partitions.';

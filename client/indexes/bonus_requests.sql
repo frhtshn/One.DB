@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Bonus Request Schema Indexes
+-- Client Bonus Request Schema Indexes
 -- =============================================
 
 -- bonus_requests

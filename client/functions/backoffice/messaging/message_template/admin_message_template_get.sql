@@ -54,4 +54,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_template_get(INTEGER, INTEGER) IS 'Get tenant message template details with all translations as a single JSON response.';
+COMMENT ON FUNCTION messaging.admin_message_template_get(INTEGER, INTEGER) IS 'Get client message template details with all translations as a single JSON response.';

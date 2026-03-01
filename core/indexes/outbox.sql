@@ -35,11 +35,11 @@ DO $$ BEGIN
     END IF;
 END $$;
 
--- Tenant index: For tenant-specific queries
+-- Client index: For client-specific queries
 DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'idx_outbox_tenant') THEN
-        CREATE INDEX idx_outbox_tenant ON outbox.messages (tenant_id)
-        WHERE tenant_id IS NOT NULL;
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'idx_outbox_client') THEN
+        CREATE INDEX idx_outbox_client ON outbox.messages (client_id)
+        WHERE client_id IS NOT NULL;
     END IF;
 END $$;
 

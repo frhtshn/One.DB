@@ -46,7 +46,7 @@ BEGIN
         SELECT EXISTS(
             SELECT 1 FROM security.user_roles ur
             JOIN security.roles r ON ur.role_id = r.id
-            WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+            WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
         ) INTO v_has_platform_role;
 
         IF NOT v_has_platform_role THEN

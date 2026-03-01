@@ -1,5 +1,5 @@
 -- ================================================================
--- NUCLEO PLATFORM - MENU LOCALIZATION SEED
+-- SORTIS ONE - MENU LOCALIZATION SEED
 -- ================================================================
 -- seed_presentation.sql ile birebir uyumlu localization key'ler.
 -- Her key = seed_presentation.sql'deki title_localization_key veya label_localization_key.
@@ -23,7 +23,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- ----------------------------------------------------------------
 ('ui.menu-group.platform', 'ui', 'menu', 'Platform menu grubu'),
 ('ui.menu-group.companies', 'ui', 'menu', 'Companies menu grubu'),
-('ui.menu-group.tenants', 'ui', 'menu', 'Tenants menu grubu'),
+('ui.menu-group.clients', 'ui', 'menu', 'Clients menu grubu'),
 ('ui.menu-group.audit', 'ui', 'menu', 'Audit menu grubu'),
 
 -- ----------------------------------------------------------------
@@ -33,7 +33,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.menu.rbac', 'ui', 'menu', 'RBAC menüsü'),
 ('ui.menu.catalog', 'ui', 'menu', 'Catalog menüsü'),
 ('ui.menu.companies', 'ui', 'menu', 'Companies menüsü'),
-('ui.menu.tenants', 'ui', 'menu', 'Tenants menüsü'),
+('ui.menu.clients', 'ui', 'menu', 'Clients menüsü'),
 ('ui.menu.users', 'ui', 'menu', 'Users menüsü'),
 ('ui.menu.audit-logs', 'ui', 'menu', 'Audit Logs menüsü'),
 
@@ -72,7 +72,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- ----------------------------------------------------------------
 ('ui.page.dashboard', 'ui', 'page', 'Dashboard sayfası'),
 ('ui.page.company-detail', 'ui', 'page', 'Company detail sayfası'),
-('ui.page.tenant-detail', 'ui', 'page', 'Tenant detail sayfası'),
+('ui.page.client-detail', 'ui', 'page', 'Client detail sayfası'),
 ('ui.page.user-detail', 'ui', 'page', 'User detail sayfası'),
 ('ui.page.role-detail', 'ui', 'page', 'Role detail sayfası'),
 ('ui.page.provider-detail', 'ui', 'page', 'Provider detail sayfası'),
@@ -115,10 +115,10 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.page.ui-positions', 'ui', 'page', 'UI positions sayfası'),
 
 -- ----------------------------------------------------------------
--- PAGES - Companies, Tenants, Audit (4)
+-- PAGES - Companies, Clients, Audit (4)
 -- ----------------------------------------------------------------
 ('ui.page.companies', 'ui', 'page', 'Companies sayfası'),
-('ui.page.tenants', 'ui', 'page', 'Tenants sayfası'),
+('ui.page.clients', 'ui', 'page', 'Clients sayfası'),
 ('ui.page.users', 'ui', 'page', 'Users sayfası'),
 ('ui.page.audit-logs', 'ui', 'page', 'Audit logs sayfası'),
 
@@ -128,11 +128,11 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- Company Detail (2)
 ('ui.tab.company-details', 'ui', 'tab', 'Company details sekmesi'),
 ('ui.tab.company-password-policy', 'ui', 'tab', 'Company password policy sekmesi'),
--- Tenant Detail (4)
-('ui.tab.tenant-details', 'ui', 'tab', 'Tenant details sekmesi'),
-('ui.tab.tenant-settings', 'ui', 'tab', 'Tenant settings sekmesi'),
-('ui.tab.tenant-regional', 'ui', 'tab', 'Tenant regional sekmesi'),
-('ui.tab.tenant-presentation', 'ui', 'tab', 'Tenant presentation sekmesi'),
+-- Client Detail (4)
+('ui.tab.client-details', 'ui', 'tab', 'Client details sekmesi'),
+('ui.tab.client-settings', 'ui', 'tab', 'Client settings sekmesi'),
+('ui.tab.client-regional', 'ui', 'tab', 'Client regional sekmesi'),
+('ui.tab.client-presentation', 'ui', 'tab', 'Client presentation sekmesi'),
 -- User Detail (4)
 ('ui.tab.user-details', 'ui', 'tab', 'User details sekmesi'),
 ('ui.tab.user-roles', 'ui', 'tab', 'User roles sekmesi'),
@@ -162,7 +162,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- CONTEXTS - List Pages (17)
 -- ----------------------------------------------------------------
 ('ui.context.company-create', 'ui', 'context', 'Company create button'),
-('ui.context.tenant-create', 'ui', 'context', 'Tenant create button'),
+('ui.context.client-create', 'ui', 'context', 'Client create button'),
 ('ui.context.user-create', 'ui', 'context', 'User create button'),
 ('ui.context.provider-create', 'ui', 'context', 'Provider create button'),
 ('ui.context.provider-type-create', 'ui', 'context', 'Provider type create button'),
@@ -187,14 +187,14 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('ui.context.company-pp-edit', 'ui', 'context', 'Company password policy edit button'),
 
 -- ----------------------------------------------------------------
--- CONTEXTS - Tenant Detail (6)
+-- CONTEXTS - Client Detail (6)
 -- ----------------------------------------------------------------
-('ui.context.tenant-edit', 'ui', 'context', 'Tenant edit button'),
-('ui.context.tenant-delete', 'ui', 'context', 'Tenant delete action'),
-('ui.context.tenant-settings-edit', 'ui', 'context', 'Tenant settings edit button'),
-('ui.context.tenant-currencies', 'ui', 'context', 'Tenant currencies select'),
-('ui.context.tenant-languages', 'ui', 'context', 'Tenant languages select'),
-('ui.context.tenant-crypto', 'ui', 'context', 'Tenant crypto select'),
+('ui.context.client-edit', 'ui', 'context', 'Client edit button'),
+('ui.context.client-delete', 'ui', 'context', 'Client delete action'),
+('ui.context.client-settings-edit', 'ui', 'context', 'Client settings edit button'),
+('ui.context.client-currencies', 'ui', 'context', 'Client currencies select'),
+('ui.context.client-languages', 'ui', 'context', 'Client languages select'),
+('ui.context.client-crypto', 'ui', 'context', 'Client crypto select'),
 
 -- ----------------------------------------------------------------
 -- CONTEXTS - User Detail (7)
@@ -236,7 +236,7 @@ JOIN (VALUES
     -- Menu Groups (4)
     ('ui.menu-group.platform', 'Platform'),
     ('ui.menu-group.companies', 'Company Management'),
-    ('ui.menu-group.tenants', 'Tenant Management'),
+    ('ui.menu-group.clients', 'Client Management'),
     ('ui.menu-group.audit', 'Audit & Compliance'),
 
     -- Menus (7)
@@ -244,7 +244,7 @@ JOIN (VALUES
     ('ui.menu.rbac', 'Access Control'),
     ('ui.menu.catalog', 'Catalog'),
     ('ui.menu.companies', 'Companies'),
-    ('ui.menu.tenants', 'Tenants'),
+    ('ui.menu.clients', 'Clients'),
     ('ui.menu.users', 'Users'),
     ('ui.menu.audit-logs', 'Audit Logs'),
 
@@ -276,7 +276,7 @@ JOIN (VALUES
     -- Pages - Standalone (8)
     ('ui.page.dashboard', 'Dashboard'),
     ('ui.page.company-detail', 'Company Details'),
-    ('ui.page.tenant-detail', 'Tenant Details'),
+    ('ui.page.client-detail', 'Client Details'),
     ('ui.page.user-detail', 'User Details'),
     ('ui.page.role-detail', 'Role Details'),
     ('ui.page.provider-detail', 'Provider Details'),
@@ -312,19 +312,19 @@ JOIN (VALUES
     ('ui.page.widgets', 'Widgets'),
     ('ui.page.ui-positions', 'UI Positions'),
 
-    -- Pages - Companies, Tenants, Audit (4)
+    -- Pages - Companies, Clients, Audit (4)
     ('ui.page.companies', 'Companies'),
-    ('ui.page.tenants', 'Tenants'),
+    ('ui.page.clients', 'Clients'),
     ('ui.page.users', 'Users'),
     ('ui.page.audit-logs', 'Audit Logs'),
 
     -- Tabs (23)
     ('ui.tab.company-details', 'Details'),
     ('ui.tab.company-password-policy', 'Password Policy'),
-    ('ui.tab.tenant-details', 'Details'),
-    ('ui.tab.tenant-settings', 'Settings'),
-    ('ui.tab.tenant-regional', 'Regional'),
-    ('ui.tab.tenant-presentation', 'Presentation'),
+    ('ui.tab.client-details', 'Details'),
+    ('ui.tab.client-settings', 'Settings'),
+    ('ui.tab.client-regional', 'Regional'),
+    ('ui.tab.client-presentation', 'Presentation'),
     ('ui.tab.user-details', 'Details'),
     ('ui.tab.user-roles', 'Roles'),
     ('ui.tab.user-permissions', 'Permissions'),
@@ -345,7 +345,7 @@ JOIN (VALUES
 
     -- Contexts - List Pages (17)
     ('ui.context.company-create', 'Create Company'),
-    ('ui.context.tenant-create', 'Create Tenant'),
+    ('ui.context.client-create', 'Create Client'),
     ('ui.context.user-create', 'Create User'),
     ('ui.context.provider-create', 'Create Provider'),
     ('ui.context.provider-type-create', 'Create Provider Type'),
@@ -367,13 +367,13 @@ JOIN (VALUES
     ('ui.context.company-delete', 'Delete Company'),
     ('ui.context.company-pp-edit', 'Edit Password Policy'),
 
-    -- Contexts - Tenant Detail (6)
-    ('ui.context.tenant-edit', 'Edit Tenant'),
-    ('ui.context.tenant-delete', 'Delete Tenant'),
-    ('ui.context.tenant-settings-edit', 'Edit Settings'),
-    ('ui.context.tenant-currencies', 'Currencies'),
-    ('ui.context.tenant-languages', 'Languages'),
-    ('ui.context.tenant-crypto', 'Cryptocurrencies'),
+    -- Contexts - Client Detail (6)
+    ('ui.context.client-edit', 'Edit Client'),
+    ('ui.context.client-delete', 'Delete Client'),
+    ('ui.context.client-settings-edit', 'Edit Settings'),
+    ('ui.context.client-currencies', 'Currencies'),
+    ('ui.context.client-languages', 'Languages'),
+    ('ui.context.client-crypto', 'Cryptocurrencies'),
 
     -- Contexts - User Detail (7)
     ('ui.context.user-email', 'Email'),
@@ -407,7 +407,7 @@ JOIN (VALUES
     -- Menu Groups (4)
     ('ui.menu-group.platform', 'Platform'),
     ('ui.menu-group.companies', 'Şirket Yönetimi'),
-    ('ui.menu-group.tenants', 'Tenant Yönetimi'),
+    ('ui.menu-group.clients', 'Client Yönetimi'),
     ('ui.menu-group.audit', 'Denetim'),
 
     -- Menus (7)
@@ -415,7 +415,7 @@ JOIN (VALUES
     ('ui.menu.rbac', 'Erişim Kontrolü'),
     ('ui.menu.catalog', 'Katalog'),
     ('ui.menu.companies', 'Şirketler'),
-    ('ui.menu.tenants', 'Tenantlar'),
+    ('ui.menu.clients', 'Clientlar'),
     ('ui.menu.users', 'Kullanıcılar'),
     ('ui.menu.audit-logs', 'Denetim Kayıtları'),
 
@@ -447,7 +447,7 @@ JOIN (VALUES
     -- Pages - Standalone (8)
     ('ui.page.dashboard', 'Dashboard'),
     ('ui.page.company-detail', 'Şirket Detayı'),
-    ('ui.page.tenant-detail', 'Tenant Detayı'),
+    ('ui.page.client-detail', 'Client Detayı'),
     ('ui.page.user-detail', 'Kullanıcı Detayı'),
     ('ui.page.role-detail', 'Rol Detayı'),
     ('ui.page.provider-detail', 'Provider Detayı'),
@@ -483,19 +483,19 @@ JOIN (VALUES
     ('ui.page.widgets', 'Widgetlar'),
     ('ui.page.ui-positions', 'UI Pozisyonları'),
 
-    -- Pages - Companies, Tenants, Audit (4)
+    -- Pages - Companies, Clients, Audit (4)
     ('ui.page.companies', 'Şirketler'),
-    ('ui.page.tenants', 'Tenantlar'),
+    ('ui.page.clients', 'Clientlar'),
     ('ui.page.users', 'Kullanıcılar'),
     ('ui.page.audit-logs', 'Denetim Kayıtları'),
 
     -- Tabs (23)
     ('ui.tab.company-details', 'Detaylar'),
     ('ui.tab.company-password-policy', 'Şifre Politikası'),
-    ('ui.tab.tenant-details', 'Detaylar'),
-    ('ui.tab.tenant-settings', 'Ayarlar'),
-    ('ui.tab.tenant-regional', 'Bölgesel'),
-    ('ui.tab.tenant-presentation', 'Sunum'),
+    ('ui.tab.client-details', 'Detaylar'),
+    ('ui.tab.client-settings', 'Ayarlar'),
+    ('ui.tab.client-regional', 'Bölgesel'),
+    ('ui.tab.client-presentation', 'Sunum'),
     ('ui.tab.user-details', 'Detaylar'),
     ('ui.tab.user-roles', 'Roller'),
     ('ui.tab.user-permissions', 'Yetkiler'),
@@ -516,7 +516,7 @@ JOIN (VALUES
 
     -- Contexts - List Pages (17)
     ('ui.context.company-create', 'Şirket Oluştur'),
-    ('ui.context.tenant-create', 'Tenant Oluştur'),
+    ('ui.context.client-create', 'Client Oluştur'),
     ('ui.context.user-create', 'Kullanıcı Oluştur'),
     ('ui.context.provider-create', 'Provider Oluştur'),
     ('ui.context.provider-type-create', 'Provider Tipi Oluştur'),
@@ -538,13 +538,13 @@ JOIN (VALUES
     ('ui.context.company-delete', 'Şirketi Sil'),
     ('ui.context.company-pp-edit', 'Şifre Politikasını Düzenle'),
 
-    -- Contexts - Tenant Detail (6)
-    ('ui.context.tenant-edit', 'Tenantı Düzenle'),
-    ('ui.context.tenant-delete', 'Tenantı Sil'),
-    ('ui.context.tenant-settings-edit', 'Ayarları Düzenle'),
-    ('ui.context.tenant-currencies', 'Para Birimleri'),
-    ('ui.context.tenant-languages', 'Diller'),
-    ('ui.context.tenant-crypto', 'Kripto Para Birimleri'),
+    -- Contexts - Client Detail (6)
+    ('ui.context.client-edit', 'Clientı Düzenle'),
+    ('ui.context.client-delete', 'Clientı Sil'),
+    ('ui.context.client-settings-edit', 'Ayarları Düzenle'),
+    ('ui.context.client-currencies', 'Para Birimleri'),
+    ('ui.context.client-languages', 'Diller'),
+    ('ui.context.client-crypto', 'Kripto Para Birimleri'),
 
     -- Contexts - User Detail (7)
     ('ui.context.user-email', 'Email'),

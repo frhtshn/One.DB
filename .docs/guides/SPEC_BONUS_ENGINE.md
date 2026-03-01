@@ -8,13 +8,13 @@ JSON-driven generic rule engine ile bonus yönetimi: kural tanımlama, kampanya,
 
 ## 1. Kapsam ve Veritabanı Dağılımı
 
-Bonus Engine domaininde **46 fonksiyon**, **11 tablo**, **3 veritabanı** yer alır. Kural tanımları shared Bonus DB'de, oyuncu bazlı award/talep verileri tenant-izole Tenant DB'de saklanır.
+Bonus Engine domaininde **46 fonksiyon**, **11 tablo**, **3 veritabanı** yer alır. Kural tanımları shared Bonus DB'de, oyuncu bazlı award/talep verileri client-izole Client DB'de saklanır.
 
 | Veritabanı | Şema | Fonksiyon | Tablo | Açıklama |
 |------------|------|-----------|-------|----------|
 | **Bonus DB** (Shared) | bonus, campaign, promotion | 18 | 4 | Bonus tipi, kural, kampanya, promosyon kodu tanımları |
-| **Tenant DB** (Per-tenant) | bonus, wallet | 26 | 6 | Award, promo kullanım, talep workflow, gateway |
-| **Tenant Log DB** | bonus_log | — | 1 | Değerlendirme audit trail (daily partition, 90 gün) |
+| **Client DB** (Per-client) | bonus, wallet | 26 | 6 | Award, promo kullanım, talep workflow, gateway |
+| **Client Log DB** | bonus_log | — | 1 | Değerlendirme audit trail (daily partition, 90 gün) |
 | **Toplam** | | **44 + 2 bakım** | **11** | |
 
 ```mermaid
@@ -24,13 +24,13 @@ flowchart TD
         BC["campaign.campaigns"]
         BP["promotion.promo_codes"]
     end
-    subgraph tenant_db["Tenant DB (Per-tenant)"]
+    subgraph client_db["Client DB (Per-client)"]
         TA["bonus.bonus_awards<br/>bonus.provider_bonus_mappings"]
         TR["bonus.promo_redemptions"]
         TQ["bonus.bonus_requests<br/>bonus.bonus_request_actions<br/>bonus.bonus_request_settings"]
         TW["wallet.bonus_win_process"]
     end
-    subgraph tenant_log["Tenant Log DB"]
+    subgraph client_log["Client Log DB"]
         TL["bonus_log.bonus_evaluation_logs<br/>(daily partition, 90 gün)"]
     end
 
@@ -58,11 +58,11 @@ flowchart TD
 
 | Kaynak DB | Hedef DB | İlişki | Backend Sorumluluğu |
 |-----------|----------|--------|---------------------|
-| Bonus DB | Tenant DB | bonus_rule_id referansı | Backend Bonus DB'den kuralı okur, rule_snapshot JSONB olarak Tenant DB'ye yazar |
-| Bonus DB | Tenant DB | promo_code_id referansı | Backend Bonus DB'de kodu doğrular (aktif, geçerli, limit), Tenant DB'de redemption kaydeder |
-| Bonus DB | Tenant DB | campaign_id referansı | Backend campaign bütçe/durum kontrolü yapar, Tenant DB'de award oluşturur |
-| Tenant DB | Core DB | player segmentation | `auth.player_get_segmentation()` ile grup/kategori bilgisi (eligibility kontrolü) |
-| Tenant DB | Tenant DB | wallet entegrasyonu | `bonus.bonus_award_create/cancel/complete` → `wallet.wallet_snapshots` + `transaction.transactions` |
+| Bonus DB | Client DB | bonus_rule_id referansı | Backend Bonus DB'den kuralı okur, rule_snapshot JSONB olarak Client DB'ye yazar |
+| Bonus DB | Client DB | promo_code_id referansı | Backend Bonus DB'de kodu doğrular (aktif, geçerli, limit), Client DB'de redemption kaydeder |
+| Bonus DB | Client DB | campaign_id referansı | Backend campaign bütçe/durum kontrolü yapar, Client DB'de award oluşturur |
+| Client DB | Core DB | player segmentation | `auth.player_get_segmentation()` ile grup/kategori bilgisi (eligibility kontrolü) |
+| Client DB | Client DB | wallet entegrasyonu | `bonus.bonus_award_create/cancel/complete` → `wallet.wallet_snapshots` + `transaction.transactions` |
 
 ---
 
@@ -282,7 +282,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | id | BIGSERIAL | Evet | PK | Bonus tipi ID |
-| tenant_id | BIGINT | Hayır | NULL | NULL = platform seviyesi |
+| client_id | BIGINT | Hayır | NULL | NULL = platform seviyesi |
 | type_code | VARCHAR(50) | Evet | — | Benzersiz kod (UPPER) |
 | type_name | VARCHAR(255) | Evet | — | Bonus tipi adı |
 | description | TEXT | Hayır | — | Açıklama |
@@ -292,14 +292,14 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | created_at | TIMESTAMP | Evet | now() | — |
 | updated_at | TIMESTAMP | Evet | now() | — |
 
-**Unique:** `(tenant_id, type_code)` — IS NOT DISTINCT FROM ile NULL-safe
+**Unique:** `(client_id, type_code)` — IS NOT DISTINCT FROM ile NULL-safe
 
 ### 3.2 Bonus DB — bonus.bonus_rules
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | id | BIGSERIAL | Evet | PK | Kural ID |
-| tenant_id | BIGINT | Hayır | NULL | NULL = platform seviyesi |
+| client_id | BIGINT | Hayır | NULL | NULL = platform seviyesi |
 | rule_code | VARCHAR(100) | Evet | — | Benzersiz kod (UPPER) |
 | rule_name | VARCHAR(255) | Evet | — | Kural adı |
 | bonus_type_id | BIGINT | Evet | — | FK → bonus_types(id) |
@@ -321,7 +321,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | created_at | TIMESTAMPTZ | Evet | NOW() | — |
 | updated_at | TIMESTAMPTZ | Evet | NOW() | — |
 
-**Unique:** `(tenant_id, rule_code)` — IS NOT DISTINCT FROM ile NULL-safe
+**Unique:** `(client_id, rule_code)` — IS NOT DISTINCT FROM ile NULL-safe
 **FK:** `bonus_type_id → bonus_types(id)`
 **GIN Index:** `trigger_config`, `eligibility_criteria`
 
@@ -330,7 +330,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | id | BIGSERIAL | Evet | PK | Kampanya ID |
-| tenant_id | BIGINT | Hayır | NULL | — |
+| client_id | BIGINT | Hayır | NULL | — |
 | campaign_code | VARCHAR(100) | Evet | — | Benzersiz kod (UPPER) |
 | campaign_name | VARCHAR(255) | Evet | — | Kampanya adı |
 | description | TEXT | Hayır | — | Açıklama |
@@ -347,7 +347,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | created_at | TIMESTAMPTZ | Evet | NOW() | — |
 | updated_at | TIMESTAMPTZ | Evet | NOW() | — |
 
-**Unique:** `(tenant_id, campaign_code)`
+**Unique:** `(client_id, campaign_code)`
 **GIN Index:** `bonus_rule_ids`, `target_segments`
 
 ### 3.4 Bonus DB — promotion.promo_codes
@@ -355,7 +355,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | id | BIGSERIAL | Evet | PK | Promo ID |
-| tenant_id | BIGINT | Hayır | NULL | — |
+| client_id | BIGINT | Hayır | NULL | — |
 | code | VARCHAR(50) | Evet | — | Promosyon kodu (UPPER) |
 | promo_name | VARCHAR(255) | Evet | — | Promo adı |
 | bonus_rule_id | BIGINT | Evet | — | FK → bonus_rules(id) |
@@ -368,11 +368,11 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | created_at | TIMESTAMP | Evet | now() | — |
 | updated_at | TIMESTAMP | Evet | now() | — |
 
-**Unique:** `(tenant_id, code)`
+**Unique:** `(client_id, code)`
 **FK:** `bonus_rule_id → bonus_rules(id)`
-**Lookup Index:** `(tenant_id, upper(code)) WHERE is_active = true`
+**Lookup Index:** `(client_id, upper(code)) WHERE is_active = true`
 
-### 3.5 Tenant DB — bonus.bonus_awards
+### 3.5 Client DB — bonus.bonus_awards
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -395,7 +395,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | current_balance | DECIMAL(18,2) | Evet | 0 | Bonus bakiye |
 | expires_at | TIMESTAMPTZ | Hayır | — | Son kullanma tarihi |
 | status | VARCHAR(20) | Evet | 'pending' | Durum (bkz. §2.1) |
-| tenant_transaction_id | BIGINT | Hayır | — | Bonus credit TX ID |
+| client_transaction_id | BIGINT | Hayır | — | Bonus credit TX ID |
 | completion_transaction_id | BIGINT | Hayır | — | BONUS→REAL TX ID |
 | bonus_request_id | BIGINT | Hayır | — | FK → bonus_requests(id) |
 | awarded_by | BIGINT | Hayır | — | Admin user ID |
@@ -410,7 +410,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 **FK:** `player_id → auth.players(id)`, `bonus_request_id → bonus_requests(id)`
 **Key Index'ler:** `(player_id, status) WHERE status IN ('pending', 'active')`, `(expires_at) WHERE expires_at IS NOT NULL`, GIN `(usage_criteria)`
 
-### 3.6 Tenant DB — bonus.provider_bonus_mappings
+### 3.6 Client DB — bonus.provider_bonus_mappings
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -428,7 +428,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 **Unique:** `(provider_code, provider_bonus_id)`
 **Check:** `status IN ('active', 'completed', 'cancelled', 'expired')`
 
-### 3.7 Tenant DB — bonus.promo_redemptions
+### 3.7 Client DB — bonus.promo_redemptions
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -445,7 +445,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 **Index:** `(player_id, promo_code_id)` — çift kullanım engeli kontrolü
 
-### 3.8 Tenant DB — bonus.bonus_requests
+### 3.8 Client DB — bonus.bonus_requests
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -477,7 +477,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 **FK:** `player_id → auth.players(id)`
 **Key Index'ler:** `(player_id, request_type, status)`, `(status, created_at) WHERE status IN ('pending', 'assigned')`, `(expires_at) WHERE status IN ('pending', 'assigned')`
 
-### 3.9 Tenant DB — bonus.bonus_request_actions
+### 3.9 Client DB — bonus.bonus_request_actions
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -493,7 +493,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 **FK:** `request_id → bonus_requests(id)`
 **Immutable:** Sadece INSERT (güncelleme/silme yok, audit trail)
 
-### 3.10 Tenant DB — bonus.bonus_request_settings
+### 3.10 Client DB — bonus.bonus_request_settings
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -521,12 +521,12 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 **Unique:** `(bonus_type_code)`
 **UPSERT:** `ON CONFLICT (bonus_type_code) WHERE is_active = true`
 
-### 3.11 Tenant Log DB — bonus_log.bonus_evaluation_logs (Partitioned)
+### 3.11 Client Log DB — bonus_log.bonus_evaluation_logs (Partitioned)
 
 | Kolon | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | id | BIGSERIAL | Evet | PK (composite) | — |
-| tenant_id | BIGINT | Evet | — | — |
+| client_id | BIGINT | Evet | — | — |
 | player_id | BIGINT | Evet | — | — |
 | bonus_rule_id | BIGINT | Evet | — | — |
 | bonus_rule_code | VARCHAR(100) | Evet | — | Kural kodu snapshot |
@@ -553,7 +553,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Hayır | — | NULL = platform seviyesi |
+| p_client_id | BIGINT | Hayır | — | NULL = platform seviyesi |
 | p_type_code | VARCHAR(50) | Evet | — | Benzersiz kod (→ UPPER) |
 | p_type_name | VARCHAR(255) | Evet | — | Bonus tipi adı (TRIM) |
 | p_description | TEXT | Hayır | NULL | Açıklama |
@@ -565,7 +565,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 **İş Kuralları:**
 1. type_code, type_name, category, value_type zorunlu (NULL/boş hata).
 2. Kod UPPER, kategori/value_type LOWER normalizasyon.
-3. `(tenant_id, type_code)` UNIQUE — IS NOT DISTINCT FROM ile NULL-safe kontrol.
+3. `(client_id, type_code)` UNIQUE — IS NOT DISTINCT FROM ile NULL-safe kontrol.
 4. is_active=true, created_at/updated_at=NOW() ile oluşturulur.
 
 **Hata Kodları:**
@@ -576,7 +576,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | error.bonus-type.name-required | P0400 | type_name NULL/boş |
 | error.bonus-type.category-required | P0400 | category NULL/boş |
 | error.bonus-type.value-type-required | P0400 | value_type NULL/boş |
-| error.bonus-type.code-exists | P0409 | Aynı tenant'ta aynı kod |
+| error.bonus-type.code-exists | P0409 | Aynı client'ta aynı kod |
 
 ---
 
@@ -624,7 +624,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT/NULL | — |
+| clientId | BIGINT/NULL | — |
 | typeCode | VARCHAR | — |
 | typeName | VARCHAR | — |
 | description | TEXT | — |
@@ -652,7 +652,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Hayır | NULL | NULL = tümü (platform + tenant) |
+| p_client_id | BIGINT | Hayır | NULL | NULL = tümü (platform + client) |
 | p_category | VARCHAR(50) | Hayır | NULL | Kategori filtresi (LOWER) |
 | p_is_active | BOOLEAN | Hayır | NULL | Aktiflik filtresi |
 
@@ -663,7 +663,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT/NULL | — |
+| clientId | BIGINT/NULL | — |
 | typeCode | VARCHAR | — |
 | typeName | VARCHAR | — |
 | category | VARCHAR | — |
@@ -672,7 +672,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | activeRuleCount | INTEGER | — |
 
 **İş Kuralları:**
-1. p_tenant_id verilirse platform-level (NULL) + ilgili tenant tipleri döner.
+1. p_client_id verilirse platform-level (NULL) + ilgili client tipleri döner.
 2. Sıralama: category, type_code.
 3. Boş sonuç → boş dizi `[]`.
 
@@ -684,7 +684,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Hayır | — | NULL = platform seviyesi |
+| p_client_id | BIGINT | Hayır | — | NULL = platform seviyesi |
 | p_rule_code | VARCHAR(100) | Evet | — | Benzersiz kod (→ UPPER) |
 | p_rule_name | VARCHAR(255) | Evet | — | Kural adı |
 | p_bonus_type_id | BIGINT | Evet | — | Bonus tipi (aktif olmalı) |
@@ -710,7 +710,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 3. evaluation_type: immediate, periodic, manual, claim dışında hata.
 4. 6 JSONB bileşen TEXT olarak alınır, fonksiyon içinde JSONB'ye cast edilir.
 5. current_uses_total=0 ile başlatılır.
-6. `(tenant_id, rule_code)` UNIQUE kontrolü.
+6. `(client_id, rule_code)` UNIQUE kontrolü.
 
 **Hata Kodları:**
 
@@ -722,7 +722,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | error.bonus-rule.reward-config-required | P0400 | reward_config NULL/boş |
 | error.bonus-type.not-found-or-inactive | P0404 | Bonus tipi yok/inaktif |
 | error.bonus-rule.invalid-evaluation-type | P0400 | Geçersiz evaluation_type |
-| error.bonus-rule.code-exists | P0409 | Aynı tenant'ta aynı kod |
+| error.bonus-rule.code-exists | P0409 | Aynı client'ta aynı kod |
 
 ---
 
@@ -785,7 +785,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT/NULL | — |
+| clientId | BIGINT/NULL | — |
 | ruleCode | VARCHAR | — |
 | ruleName | VARCHAR | — |
 | bonusTypeId | BIGINT | — |
@@ -827,7 +827,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Hayır | NULL | NULL = tümü |
+| p_client_id | BIGINT | Hayır | NULL | NULL = tümü |
 | p_bonus_type_id | BIGINT | Hayır | NULL | Tip filtresi |
 | p_evaluation_type | VARCHAR(20) | Hayır | NULL | Değerlendirme tipi filtresi |
 | p_is_active | BOOLEAN | Hayır | NULL | Aktiflik filtresi |
@@ -839,7 +839,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT/NULL | — |
+| clientId | BIGINT/NULL | — |
 | ruleCode | VARCHAR | — |
 | ruleName | VARCHAR | — |
 | bonusTypeId | BIGINT | — |
@@ -893,7 +893,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_campaign_code | VARCHAR(100) | Evet | — | Benzersiz kod (→ UPPER) |
 | p_campaign_name | VARCHAR(255) | Evet | — | Kampanya adı |
 | p_description | TEXT | Hayır | NULL | Açıklama |
@@ -914,7 +914,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 3. award_strategy: automatic, claim, manual dışında hata.
 4. status='draft', spent_budget=0 ile başlatılır.
 5. bonus_rule_ids ve target_segments TEXT→JSONB cast.
-6. `(tenant_id, campaign_code)` UNIQUE kontrolü.
+6. `(client_id, campaign_code)` UNIQUE kontrolü.
 
 **Hata Kodları:**
 
@@ -982,7 +982,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT | — |
+| clientId | BIGINT | — |
 | campaignCode | VARCHAR | — |
 | campaignName | VARCHAR | — |
 | description | TEXT | — |
@@ -1016,7 +1016,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Hayır | NULL | Tenant filtresi |
+| p_client_id | BIGINT | Hayır | NULL | Client filtresi |
 | p_campaign_type | VARCHAR(50) | Hayır | NULL | Tip filtresi (LOWER) |
 | p_status | VARCHAR(20) | Hayır | NULL | Durum filtresi |
 
@@ -1027,7 +1027,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT | — |
+| clientId | BIGINT | — |
 | campaignCode | VARCHAR | — |
 | campaignName | VARCHAR | — |
 | campaignType | VARCHAR | — |
@@ -1075,7 +1075,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | — | Tenant ID |
+| p_client_id | BIGINT | Evet | — | Client ID |
 | p_code | VARCHAR(50) | Evet | — | Promo kodu (→ UPPER) |
 | p_promo_name | VARCHAR(255) | Evet | — | Promo adı |
 | p_bonus_rule_id | BIGINT | Evet | — | Bağlı kural (aktif olmalı) |
@@ -1092,7 +1092,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 3. bonus_rule_id mevcut VE aktif olmalı.
 4. Kod UPPER normalizasyonu.
 5. current_redemptions=0 ile başlatılır.
-6. `(tenant_id, code)` UNIQUE kontrolü.
+6. `(client_id, code)` UNIQUE kontrolü.
 
 **Hata Kodları:**
 
@@ -1153,7 +1153,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT | — |
+| clientId | BIGINT | — |
 | code | VARCHAR | — |
 | promoName | VARCHAR | — |
 | bonusRuleId | BIGINT | — |
@@ -1186,7 +1186,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Hayır | NULL | Tenant filtresi |
+| p_client_id | BIGINT | Hayır | NULL | Client filtresi |
 | p_bonus_rule_id | BIGINT | Hayır | NULL | Kural filtresi |
 | p_is_active | BOOLEAN | Hayır | NULL | Aktiflik filtresi |
 
@@ -1197,7 +1197,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | id | BIGINT | — |
-| tenantId | BIGINT | — |
+| clientId | BIGINT | — |
 | code | VARCHAR | — |
 | promoName | VARCHAR | — |
 | bonusRuleId | BIGINT | — |
@@ -1216,7 +1216,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 ---
 
-### 4.5 Bonus Award İşlemleri — Tenant DB (6 fonksiyon)
+### 4.5 Bonus Award İşlemleri — Client DB (6 fonksiyon)
 
 #### `bonus.bonus_award_create`
 
@@ -1253,7 +1253,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
    - Transaction INSERT: type_id=40 (Bonus Credit), op_type=1 (Credit).
    - Wallet bakiye güncellenir.
 5. Award INSERT: status='active', current_balance=bonus_amount, wagering_progress=0.
-6. tenant_transaction_id award'a yazılır.
+6. client_transaction_id award'a yazılır.
 
 **Hata Kodları:**
 
@@ -1297,7 +1297,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 | rewardDetails | JSONB/NULL | — |
 | expiresAt | TIMESTAMPTZ/NULL | — |
 | status | VARCHAR | — |
-| tenantTransactionId | BIGINT/NULL | Bonus credit TX |
+| clientTransactionId | BIGINT/NULL | Bonus credit TX |
 | completionTransactionId | BIGINT/NULL | BONUS→REAL TX |
 | awardedBy | BIGINT/NULL | — |
 | cancellationReason | VARCHAR/NULL | — |
@@ -1450,7 +1450,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 ---
 
-### 4.6 Promo Kullanım — Tenant DB (2 fonksiyon)
+### 4.6 Promo Kullanım — Client DB (2 fonksiyon)
 
 #### `bonus.promo_redeem`
 
@@ -1469,7 +1469,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 2. Status enum: success, failed, expired.
 3. Kod UPPER+TRIM normalizasyonu ile kaydedilir.
 4. bonus_award_id NULL gelebilir — Worker tarafından async oluşturulabilir.
-5. **NOT:** Kod geçerliliği (aktiflik, limit, süre) kontrolü bu fonksiyonda YAPILMAZ. Backend Bonus DB'de promo_code doğrulamasını yapar, sonra Tenant DB'de redemption kaydeder.
+5. **NOT:** Kod geçerliliği (aktiflik, limit, süre) kontrolü bu fonksiyonda YAPILMAZ. Backend Bonus DB'de promo_code doğrulamasını yapar, sonra Client DB'de redemption kaydeder.
 
 **Hata Kodları:**
 
@@ -1519,7 +1519,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 ---
 
-### 4.7 Bonus Talep Ayarları — Tenant DB (3 fonksiyon)
+### 4.7 Bonus Talep Ayarları — Client DB (3 fonksiyon)
 
 #### `bonus.bonus_request_setting_upsert`
 
@@ -1619,7 +1619,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 ---
 
-### 4.8 Bonus Talep Workflow — Tenant DB (12 fonksiyon)
+### 4.8 Bonus Talep Workflow — Client DB (12 fonksiyon)
 
 #### `bonus.bonus_request_create`
 
@@ -2028,7 +2028,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 ---
 
-### 4.9 Oyuncu Talep Fonksiyonları — Tenant DB (4 fonksiyon)
+### 4.9 Oyuncu Talep Fonksiyonları — Client DB (4 fonksiyon)
 
 #### `bonus.player_bonus_request_create`
 
@@ -2190,7 +2190,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 ---
 
-### 4.10 Gateway — Tenant DB (1 fonksiyon)
+### 4.10 Gateway — Client DB (1 fonksiyon)
 
 #### `wallet.bonus_win_process`
 
@@ -2240,7 +2240,7 @@ Her bonus kuralı (`bonus.bonus_rules`) 6 JSONB bileşenden oluşur:
 
 | Kural | Uygulama Alanı | Açıklama |
 |-------|---------------|----------|
-| UNIQUE kod kontrolü | Tüm create/update | `(tenant_id, code)` bazlı, IS NOT DISTINCT FROM ile NULL-safe |
+| UNIQUE kod kontrolü | Tüm create/update | `(client_id, code)` bazlı, IS NOT DISTINCT FROM ile NULL-safe |
 | FK aktiflik kontrolü | Rule→Type, Promo→Rule | Referans edilen kayıt is_active=true olmalı |
 | TEXT→JSONB cast | JSONB parametreler | TEXT olarak alınır, fonksiyon içinde cast. Parse hatasında RAISE |
 | COALESCE pattern | Tüm update | NULL parametre mevcut değeri korur |
@@ -2402,21 +2402,21 @@ Hiçbir filtre tanımlı değilse → herkes uygun.
 
 | Index | Tablo | Tip | Açıklama |
 |-------|-------|-----|----------|
-| idx_bonus_types_code | bonus_types | UNIQUE | (tenant_id, type_code) |
+| idx_bonus_types_code | bonus_types | UNIQUE | (client_id, type_code) |
 | idx_bonus_types_active | bonus_types | Partial | is_active = true |
-| idx_bonus_rules_code | bonus_rules | UNIQUE | (tenant_id, rule_code) |
+| idx_bonus_rules_code | bonus_rules | UNIQUE | (client_id, rule_code) |
 | idx_bonus_rules_trigger | bonus_rules | GIN | trigger_config JSONB |
 | idx_bonus_rules_eligibility | bonus_rules | GIN | eligibility_criteria JSONB |
 | idx_bonus_rules_evaluation | bonus_rules | Partial | evaluation_type WHERE is_active |
 | idx_bonus_rules_stacking | bonus_rules | Partial | stacking_group WHERE NOT NULL AND is_active |
-| idx_campaigns_code | campaigns | UNIQUE | (tenant_id, campaign_code) |
+| idx_campaigns_code | campaigns | UNIQUE | (client_id, campaign_code) |
 | idx_campaigns_active | campaigns | Partial | status, dates WHERE status='active' |
 | idx_campaigns_bonus_rules | campaigns | GIN | bonus_rule_ids JSONB |
 | idx_campaigns_segments | campaigns | GIN | target_segments JSONB |
-| idx_promo_codes_code | promo_codes | UNIQUE | (tenant_id, code) |
-| idx_promo_codes_lookup | promo_codes | Partial | (tenant_id, upper(code)) WHERE is_active |
+| idx_promo_codes_code | promo_codes | UNIQUE | (client_id, code) |
+| idx_promo_codes_lookup | promo_codes | Partial | (client_id, upper(code)) WHERE is_active |
 
-### 7.2 Tenant DB
+### 7.2 Client DB
 
 | Index | Tablo | Tip | Açıklama |
 |-------|-------|-----|----------|
@@ -2431,7 +2431,7 @@ Hiçbir filtre tanımlı değilse → herkes uygun.
 | idx_provider_bonus_mappings_lookup | provider_bonus_mappings | UNIQUE | (provider_code, provider_bonus_id) |
 | idx_promo_redemptions_player_code | promo_redemptions | Composite | (player_id, promo_code_id) |
 
-### 7.3 Tenant Log DB
+### 7.3 Client Log DB
 
 | Index | Tablo | Tip | Açıklama |
 |-------|-------|-----|----------|
@@ -2494,69 +2494,69 @@ bonus/indexes/bonus.sql
 bonus/constraints/bonus.sql
 ```
 
-### 8.4 Tenant DB — Tablolar
+### 8.4 Client DB — Tablolar
 
 ```
-tenant/tables/bonus/awards/bonus_awards.sql
-tenant/tables/bonus/provider_bonus_mappings.sql
-tenant/tables/bonus/redemptions/promo_redemptions.sql
-tenant/tables/bonus/requests/bonus_requests.sql
-tenant/tables/bonus/requests/bonus_request_actions.sql
-tenant/tables/bonus/requests/bonus_request_settings.sql
+client/tables/bonus/awards/bonus_awards.sql
+client/tables/bonus/provider_bonus_mappings.sql
+client/tables/bonus/redemptions/promo_redemptions.sql
+client/tables/bonus/requests/bonus_requests.sql
+client/tables/bonus/requests/bonus_request_actions.sql
+client/tables/bonus/requests/bonus_request_settings.sql
 ```
 
-### 8.5 Tenant DB — Fonksiyonlar
+### 8.5 Client DB — Fonksiyonlar
 
 ```
-tenant/functions/backoffice/bonus/bonus_award_create.sql
-tenant/functions/backoffice/bonus/bonus_award_get.sql
-tenant/functions/backoffice/bonus/bonus_award_list.sql
-tenant/functions/backoffice/bonus/bonus_award_cancel.sql
-tenant/functions/backoffice/bonus/bonus_award_complete.sql
-tenant/functions/backoffice/bonus/bonus_award_expire.sql
-tenant/functions/backoffice/bonus/promo_redemption_list.sql
-tenant/functions/backoffice/bonus/bonus_request_create.sql
-tenant/functions/backoffice/bonus/bonus_request_get.sql
-tenant/functions/backoffice/bonus/bonus_request_list.sql
-tenant/functions/backoffice/bonus/bonus_request_assign.sql
-tenant/functions/backoffice/bonus/bonus_request_start_review.sql
-tenant/functions/backoffice/bonus/bonus_request_hold.sql
-tenant/functions/backoffice/bonus/bonus_request_approve.sql
-tenant/functions/backoffice/bonus/bonus_request_reject.sql
-tenant/functions/backoffice/bonus/bonus_request_cancel.sql
-tenant/functions/backoffice/bonus/bonus_request_rollback.sql
-tenant/functions/backoffice/bonus/bonus_request_setting_upsert.sql
-tenant/functions/backoffice/bonus/bonus_request_setting_list.sql
-tenant/functions/backoffice/bonus/bonus_request_setting_get.sql
-tenant/functions/frontend/bonus/player_bonus_request_create.sql
-tenant/functions/frontend/bonus/player_bonus_request_list.sql
-tenant/functions/frontend/bonus/player_bonus_request_cancel.sql
-tenant/functions/frontend/bonus/player_requestable_bonus_types.sql
-tenant/functions/frontend/bonus/promo_redeem.sql
-tenant/functions/gateway/wallet/bonus_win_process.sql
+client/functions/backoffice/bonus/bonus_award_create.sql
+client/functions/backoffice/bonus/bonus_award_get.sql
+client/functions/backoffice/bonus/bonus_award_list.sql
+client/functions/backoffice/bonus/bonus_award_cancel.sql
+client/functions/backoffice/bonus/bonus_award_complete.sql
+client/functions/backoffice/bonus/bonus_award_expire.sql
+client/functions/backoffice/bonus/promo_redemption_list.sql
+client/functions/backoffice/bonus/bonus_request_create.sql
+client/functions/backoffice/bonus/bonus_request_get.sql
+client/functions/backoffice/bonus/bonus_request_list.sql
+client/functions/backoffice/bonus/bonus_request_assign.sql
+client/functions/backoffice/bonus/bonus_request_start_review.sql
+client/functions/backoffice/bonus/bonus_request_hold.sql
+client/functions/backoffice/bonus/bonus_request_approve.sql
+client/functions/backoffice/bonus/bonus_request_reject.sql
+client/functions/backoffice/bonus/bonus_request_cancel.sql
+client/functions/backoffice/bonus/bonus_request_rollback.sql
+client/functions/backoffice/bonus/bonus_request_setting_upsert.sql
+client/functions/backoffice/bonus/bonus_request_setting_list.sql
+client/functions/backoffice/bonus/bonus_request_setting_get.sql
+client/functions/frontend/bonus/player_bonus_request_create.sql
+client/functions/frontend/bonus/player_bonus_request_list.sql
+client/functions/frontend/bonus/player_bonus_request_cancel.sql
+client/functions/frontend/bonus/player_requestable_bonus_types.sql
+client/functions/frontend/bonus/promo_redeem.sql
+client/functions/gateway/wallet/bonus_win_process.sql
 ```
 
-### 8.6 Tenant DB — Bakım
+### 8.6 Client DB — Bakım
 
 ```
-tenant/functions/maintenance/bonus/bonus_request_expire.sql
-tenant/functions/maintenance/bonus/bonus_request_cleanup.sql
+client/functions/maintenance/bonus/bonus_request_expire.sql
+client/functions/maintenance/bonus/bonus_request_cleanup.sql
 ```
 
-### 8.7 Tenant DB — Index ve Constraint
+### 8.7 Client DB — Index ve Constraint
 
 ```
-tenant/indexes/bonus.sql
-tenant/indexes/bonus_requests.sql
-tenant/constraints/bonus.sql
-tenant/constraints/bonus_requests.sql
+client/indexes/bonus.sql
+client/indexes/bonus_requests.sql
+client/constraints/bonus.sql
+client/constraints/bonus_requests.sql
 ```
 
-### 8.8 Tenant Log DB
+### 8.8 Client Log DB
 
 ```
-tenant_log/tables/bonus_log/bonus_evaluation_logs.sql
-tenant_log/indexes/bonus_log.sql
+client_log/tables/bonus_log/bonus_evaluation_logs.sql
+client_log/indexes/bonus_log.sql
 ```
 
 ---

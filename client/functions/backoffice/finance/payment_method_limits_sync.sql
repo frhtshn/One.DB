@@ -1,5 +1,5 @@
 -- ================================================================
--- PAYMENT_METHOD_LIMITS_SYNC: Core->Tenant currency limits senkronizasyonu
+-- PAYMENT_METHOD_LIMITS_SYNC: Core->Client currency limits senkronizasyonu
 -- ================================================================
 -- p_limits TEXT → JSONB array cast.
 -- Mevcut kayıtlar güncellenir, yeniler eklenir.
@@ -111,4 +111,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION finance.payment_method_limits_sync(BIGINT, TEXT) IS 'Syncs per-method currency limits from Core to Tenant DB. Accepts TEXT->JSONB array with deposit/withdrawal limits, fees, and fee min/max. Limits not in payload are soft-deleted (is_active=false). Auth-agnostic.';
+COMMENT ON FUNCTION finance.payment_method_limits_sync(BIGINT, TEXT) IS 'Syncs per-method currency limits from Core to Client DB. Accepts TEXT->JSONB array with deposit/withdrawal limits, fees, and fee min/max. Limits not in payload are soft-deleted (is_active=false). Auth-agnostic.';

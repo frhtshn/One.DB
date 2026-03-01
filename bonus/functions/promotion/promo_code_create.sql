@@ -2,14 +2,14 @@
 -- PROMO_CODE_CREATE: Promosyon kodu oluştur
 -- ================================================================
 -- Bir bonus kuralına bağlı promo kod tanımlar.
--- Unique: (tenant_id, code). Kod büyük harfe çevrilir.
+-- Unique: (client_id, code). Kod büyük harfe çevrilir.
 -- bonus_rule_id mevcut ve aktif olmalı.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS promotion.promo_code_create(BIGINT, VARCHAR, VARCHAR, BIGINT, INT, INT, TIMESTAMPTZ, TIMESTAMPTZ);
 
 CREATE OR REPLACE FUNCTION promotion.promo_code_create(
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_code VARCHAR(50),
     p_promo_name VARCHAR(255),
     p_bonus_rule_id BIGINT,
@@ -50,19 +50,19 @@ BEGIN
     -- Unique kod kontrolü
     IF EXISTS (
         SELECT 1 FROM promotion.promo_codes
-        WHERE tenant_id IS NOT DISTINCT FROM p_tenant_id
+        WHERE client_id IS NOT DISTINCT FROM p_client_id
           AND code = UPPER(TRIM(p_code))
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.promo.code-exists';
     END IF;
 
     INSERT INTO promotion.promo_codes (
-        tenant_id, code, promo_name, bonus_rule_id,
+        client_id, code, promo_name, bonus_rule_id,
         max_redemptions, max_per_player, current_redemptions,
         valid_from, valid_until,
         is_active, created_at, updated_at
     ) VALUES (
-        p_tenant_id,
+        p_client_id,
         UPPER(TRIM(p_code)),
         TRIM(p_promo_name),
         p_bonus_rule_id,
@@ -80,4 +80,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION promotion.promo_code_create IS 'Creates a promotional code linked to a bonus rule. Code stored in uppercase. Unique by (tenant_id, code). Validates bonus rule exists and is active.';
+COMMENT ON FUNCTION promotion.promo_code_create IS 'Creates a promotional code linked to a bonus rule. Code stored in uppercase. Unique by (client_id, code). Validates bonus rule exists and is active.';

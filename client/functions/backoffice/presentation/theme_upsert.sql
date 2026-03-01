@@ -36,4 +36,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.theme_upsert(INT, JSONB, TEXT) IS 'Upsert tenant theme configuration. theme_id references core catalog.themes (validated by backend before calling).';
+COMMENT ON FUNCTION presentation.theme_upsert(INT, JSONB, TEXT) IS 'Upsert client theme configuration. theme_id references core catalog.themes (validated by backend before calling).';

@@ -1,7 +1,7 @@
 -- ================================================================
 -- AGENT_SETTING_UPSERT: Agent ayarı oluştur/güncelle
 -- ================================================================
--- Per-tenant agent profilini upsert eder.
+-- Per-client agent profilini upsert eder.
 -- Aynı user_id için aktif kayıt varsa günceller, yoksa oluşturur.
 -- Auth-agnostic (backend çağırır).
 -- ================================================================
@@ -64,4 +64,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION support.agent_setting_upsert IS 'Creates or updates per-tenant agent settings. Uses upsert on unique user_id index.';
+COMMENT ON FUNCTION support.agent_setting_upsert IS 'Creates or updates per-client agent settings. Uses upsert on unique user_id index.';

@@ -3,7 +3,7 @@
 -- ================================================================
 -- BO operatörü oyuncu durumunu değiştirir.
 -- Session sonlandırma (suspend/close) backend sorumluluğundadır.
--- Backend tenant_audit DB'de login_session_end_all() çağırır.
+-- Backend client_audit DB'de login_session_end_all() çağırır.
 -- Auth-agnostic (backend çağırır).
 -- ================================================================
 

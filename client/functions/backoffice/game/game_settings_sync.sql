@@ -1,10 +1,10 @@
 -- ================================================================
--- GAME_SETTINGS_SYNC: Core->Tenant game data upsert
+-- GAME_SETTINGS_SYNC: Core->Client game data upsert
 -- ================================================================
 -- Backend tarafından çağrılır (auth-agnostic, cross-DB auth pattern).
 -- p_catalog_data TEXT → JSONB cast → typed kolonlara extract.
--- INSERT: catalog + tenant override (default değerler)
--- UPDATE: SADECE catalog alanları — tenant override'lara DOKUNMAZ
+-- INSERT: catalog + client override (default değerler)
+-- UPDATE: SADECE catalog alanları — client override'lara DOKUNMAZ
 -- ================================================================
 
 DROP FUNCTION IF EXISTS game.game_settings_sync(BIGINT, TEXT, TEXT, VARCHAR);
@@ -12,7 +12,7 @@ DROP FUNCTION IF EXISTS game.game_settings_sync(BIGINT, TEXT, TEXT, VARCHAR);
 CREATE OR REPLACE FUNCTION game.game_settings_sync(
     p_game_id BIGINT,
     p_catalog_data TEXT,
-    p_tenant_overrides TEXT DEFAULT NULL,
+    p_client_overrides TEXT DEFAULT NULL,
     p_rollout_status VARCHAR(20) DEFAULT 'production'
 )
 RETURNS VOID
@@ -33,13 +33,13 @@ BEGIN
     END IF;
 
     v_catalog := p_catalog_data::JSONB;
-    v_overrides := COALESCE(NULLIF(TRIM(p_tenant_overrides), ''), '{}')::JSONB;
+    v_overrides := COALESCE(NULLIF(TRIM(p_client_overrides), ''), '{}')::JSONB;
 
     -- Mevcut kayıt kontrolü
     SELECT EXISTS(SELECT 1 FROM game.game_settings WHERE game_id = p_game_id) INTO v_exists;
 
     IF v_exists THEN
-        -- UPDATE: Sadece catalog alanları güncellenir, tenant override'lara DOKUNULMAZ
+        -- UPDATE: Sadece catalog alanları güncellenir, client override'lara DOKUNULMAZ
         UPDATE game.game_settings SET
             provider_id = COALESCE((v_catalog->>'provider_id')::BIGINT, provider_id),
             external_game_id = COALESCE(v_catalog->>'external_game_id', external_game_id),
@@ -78,7 +78,7 @@ BEGIN
             updated_at = NOW()
         WHERE game_id = p_game_id;
     ELSE
-        -- INSERT: catalog alanları + tenant override default değerleri
+        -- INSERT: catalog alanları + client override default değerleri
         INSERT INTO game.game_settings (
             game_id, provider_id, external_game_id, game_code, game_name, provider_code, studio,
             game_type, game_subtype, categories, tags,
@@ -131,4 +131,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION game.game_settings_sync IS 'Syncs game catalog data from Core to Tenant DB. On INSERT: applies catalog + tenant overrides. On UPDATE: only catalog fields updated, tenant overrides preserved. Auth-agnostic (cross-DB auth pattern).';
+COMMENT ON FUNCTION game.game_settings_sync IS 'Syncs game catalog data from Core to Client DB. On INSERT: applies catalog + client overrides. On UPDATE: only catalog fields updated, client overrides preserved. Auth-agnostic (cross-DB auth pattern).';

@@ -3,14 +3,14 @@
 -- ================================================================
 -- 6 JSONB bileşen ile bonus kuralı tanımlar.
 -- trigger_config ve reward_config zorunlu.
--- Unique: (tenant_id, rule_code).
+-- Unique: (client_id, rule_code).
 -- bonus_type_id mevcut ve aktif olmalı.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS bonus.bonus_rule_create(BIGINT, VARCHAR, VARCHAR, BIGINT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, VARCHAR, INT, INT, TIMESTAMPTZ, TIMESTAMPTZ, BOOLEAN, VARCHAR);
 
 CREATE OR REPLACE FUNCTION bonus.bonus_rule_create(
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_rule_code VARCHAR(100),
     p_rule_name VARCHAR(255),
     p_bonus_type_id BIGINT,
@@ -65,14 +65,14 @@ BEGIN
     -- Unique kod kontrolü
     IF EXISTS (
         SELECT 1 FROM bonus.bonus_rules
-        WHERE tenant_id IS NOT DISTINCT FROM p_tenant_id
+        WHERE client_id IS NOT DISTINCT FROM p_client_id
           AND rule_code = UPPER(TRIM(p_rule_code))
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.bonus-rule.code-exists';
     END IF;
 
     INSERT INTO bonus.bonus_rules (
-        tenant_id, rule_code, rule_name, bonus_type_id,
+        client_id, rule_code, rule_name, bonus_type_id,
         trigger_config, data_config, eligibility_criteria,
         reward_config, usage_criteria, target_config,
         evaluation_type,
@@ -81,7 +81,7 @@ BEGIN
         disables_other_bonuses, stacking_group,
         is_active, created_at, updated_at
     ) VALUES (
-        p_tenant_id,
+        p_client_id,
         UPPER(TRIM(p_rule_code)),
         TRIM(p_rule_name),
         p_bonus_type_id,
@@ -108,4 +108,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION bonus.bonus_rule_create IS 'Creates a bonus rule with 6 JSONB components (trigger, data, eligibility, reward, usage, target). TEXT params cast to JSONB internally. Unique by (tenant_id, rule_code).';
+COMMENT ON FUNCTION bonus.bonus_rule_create IS 'Creates a bonus rule with 6 JSONB components (trigger, data, eligibility, reward, usage, target). TEXT params cast to JSONB internally. Unique by (client_id, rule_code).';

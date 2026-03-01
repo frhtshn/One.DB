@@ -1,7 +1,7 @@
 -- ================================================================
 -- BONUS_REQUEST_SETTING_UPSERT: Bonus talep ayarı oluştur/güncelle
 -- ================================================================
--- Tenant bazlı bonus talep ayarını UPSERT eder.
+-- Client bazlı bonus talep ayarını UPSERT eder.
 -- bonus_type_code + is_active = true üzerinden conflict.
 -- JSONB alanları (display_name, rules_content, eligible_*,
 -- default_usage_criteria) TEXT olarak alınır, fonksiyon içinde parse edilir.

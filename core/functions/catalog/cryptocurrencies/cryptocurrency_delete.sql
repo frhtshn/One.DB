@@ -1,6 +1,6 @@
 -- ================================================================
 -- CRYPTOCURRENCY_DELETE: Kripto para birimini siler (Soft Delete)
--- Aktif durumunu false yapar. Tenant'ta kullanılıyorsa silmez.
+-- Aktif durumunu false yapar. Client'ta kullanılıyorsa silmez.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.cryptocurrency_delete(VARCHAR);
@@ -20,9 +20,9 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.cryptocurrency.not-found';
     END IF;
 
-    -- Referans kontrolü: Bu kripto tenant'larda kullanılıyor mu?
+    -- Referans kontrolü: Bu kripto client'larda kullanılıyor mu?
     SELECT COUNT(*) INTO v_usage_count
-    FROM core.tenant_cryptocurrencies tc
+    FROM core.client_cryptocurrencies tc
     WHERE tc.symbol = v_symbol;
 
     IF v_usage_count > 0 THEN
@@ -37,4 +37,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION catalog.cryptocurrency_delete(VARCHAR) IS 'Soft deletes a cryptocurrency by setting is_active to false (checks for tenant usage first)';
+COMMENT ON FUNCTION catalog.cryptocurrency_delete(VARCHAR) IS 'Soft deletes a cryptocurrency by setting is_active to false (checks for client usage first)';

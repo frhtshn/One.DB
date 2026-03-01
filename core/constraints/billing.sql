@@ -2,181 +2,181 @@
 -- Billing Schema Foreign Key Constraints
 -- =============================================
 
--- TENANT BILLING CONSTRAINTS
+-- CLIENT BILLING CONSTRAINTS
 
--- tenant_billing_periods.calculated_by -> users
-ALTER TABLE billing.tenant_billing_periods
+-- client_billing_periods.calculated_by -> users
+ALTER TABLE billing.client_billing_periods
     DROP CONSTRAINT IF EXISTS fk_billing_periods_calculated_by;
-ALTER TABLE billing.tenant_billing_periods
+ALTER TABLE billing.client_billing_periods
     ADD CONSTRAINT fk_billing_periods_calculated_by
     FOREIGN KEY (calculated_by) REFERENCES security.users(id);
 
--- tenant_billing_periods.closed_by -> users
-ALTER TABLE billing.tenant_billing_periods
+-- client_billing_periods.closed_by -> users
+ALTER TABLE billing.client_billing_periods
     DROP CONSTRAINT IF EXISTS fk_billing_periods_closed_by;
-ALTER TABLE billing.tenant_billing_periods
+ALTER TABLE billing.client_billing_periods
     ADD CONSTRAINT fk_billing_periods_closed_by
     FOREIGN KEY (closed_by) REFERENCES security.users(id);
 
--- tenant_commission_rates.provider_id -> providers
-ALTER TABLE billing.tenant_commission_rates
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_rates_provider;
-ALTER TABLE billing.tenant_commission_rates
-    ADD CONSTRAINT fk_tenant_commission_rates_provider
+-- client_commission_rates.provider_id -> providers
+ALTER TABLE billing.client_commission_rates
+    DROP CONSTRAINT IF EXISTS fk_client_commission_rates_provider;
+ALTER TABLE billing.client_commission_rates
+    ADD CONSTRAINT fk_client_commission_rates_provider
     FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
 
--- tenant_commission_rate_tiers.rate_id -> tenant_commission_rates
-ALTER TABLE billing.tenant_commission_rate_tiers
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_rate_tiers_rate;
-ALTER TABLE billing.tenant_commission_rate_tiers
-    ADD CONSTRAINT fk_tenant_commission_rate_tiers_rate
-    FOREIGN KEY (rate_id) REFERENCES billing.tenant_commission_rates(id) ON DELETE CASCADE;
+-- client_commission_rate_tiers.rate_id -> client_commission_rates
+ALTER TABLE billing.client_commission_rate_tiers
+    DROP CONSTRAINT IF EXISTS fk_client_commission_rate_tiers_rate;
+ALTER TABLE billing.client_commission_rate_tiers
+    ADD CONSTRAINT fk_client_commission_rate_tiers_rate
+    FOREIGN KEY (rate_id) REFERENCES billing.client_commission_rates(id) ON DELETE CASCADE;
 
--- tenant_commission_plans.tenant_id -> tenants
-ALTER TABLE billing.tenant_commission_plans
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_plans_tenant;
-ALTER TABLE billing.tenant_commission_plans
-    ADD CONSTRAINT fk_tenant_commission_plans_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+-- client_commission_plans.client_id -> clients
+ALTER TABLE billing.client_commission_plans
+    DROP CONSTRAINT IF EXISTS fk_client_commission_plans_client;
+ALTER TABLE billing.client_commission_plans
+    ADD CONSTRAINT fk_client_commission_plans_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
--- tenant_commission_plans.provider_id -> providers
-ALTER TABLE billing.tenant_commission_plans
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_plans_provider;
-ALTER TABLE billing.tenant_commission_plans
-    ADD CONSTRAINT fk_tenant_commission_plans_provider
+-- client_commission_plans.provider_id -> providers
+ALTER TABLE billing.client_commission_plans
+    DROP CONSTRAINT IF EXISTS fk_client_commission_plans_provider;
+ALTER TABLE billing.client_commission_plans
+    ADD CONSTRAINT fk_client_commission_plans_provider
     FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
 
--- tenant_commission_plans.source_rate_id -> tenant_commission_rates
-ALTER TABLE billing.tenant_commission_plans
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_plans_source_rate;
-ALTER TABLE billing.tenant_commission_plans
-    ADD CONSTRAINT fk_tenant_commission_plans_source_rate
-    FOREIGN KEY (source_rate_id) REFERENCES billing.tenant_commission_rates(id);
+-- client_commission_plans.source_rate_id -> client_commission_rates
+ALTER TABLE billing.client_commission_plans
+    DROP CONSTRAINT IF EXISTS fk_client_commission_plans_source_rate;
+ALTER TABLE billing.client_commission_plans
+    ADD CONSTRAINT fk_client_commission_plans_source_rate
+    FOREIGN KEY (source_rate_id) REFERENCES billing.client_commission_rates(id);
 
--- tenant_commission_plans.created_by -> users
-ALTER TABLE billing.tenant_commission_plans
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_plans_created_by;
-ALTER TABLE billing.tenant_commission_plans
-    ADD CONSTRAINT fk_tenant_commission_plans_created_by
+-- client_commission_plans.created_by -> users
+ALTER TABLE billing.client_commission_plans
+    DROP CONSTRAINT IF EXISTS fk_client_commission_plans_created_by;
+ALTER TABLE billing.client_commission_plans
+    ADD CONSTRAINT fk_client_commission_plans_created_by
     FOREIGN KEY (created_by) REFERENCES security.users(id);
 
--- tenant_commission_plan_tiers.tenant_commission_plan_id -> tenant_commission_plans
-ALTER TABLE billing.tenant_commission_plan_tiers
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_plan_tiers_plan;
-ALTER TABLE billing.tenant_commission_plan_tiers
-    ADD CONSTRAINT fk_tenant_commission_plan_tiers_plan
-    FOREIGN KEY (tenant_commission_plan_id) REFERENCES billing.tenant_commission_plans(id) ON DELETE CASCADE;
+-- client_commission_plan_tiers.client_commission_plan_id -> client_commission_plans
+ALTER TABLE billing.client_commission_plan_tiers
+    DROP CONSTRAINT IF EXISTS fk_client_commission_plan_tiers_plan;
+ALTER TABLE billing.client_commission_plan_tiers
+    ADD CONSTRAINT fk_client_commission_plan_tiers_plan
+    FOREIGN KEY (client_commission_plan_id) REFERENCES billing.client_commission_plans(id) ON DELETE CASCADE;
 
--- tenant_commission_aggregates.tenant_id -> tenants
-ALTER TABLE billing.tenant_commission_aggregates
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_aggregates_tenant;
-ALTER TABLE billing.tenant_commission_aggregates
-    ADD CONSTRAINT fk_tenant_commission_aggregates_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+-- client_commission_aggregates.client_id -> clients
+ALTER TABLE billing.client_commission_aggregates
+    DROP CONSTRAINT IF EXISTS fk_client_commission_aggregates_client;
+ALTER TABLE billing.client_commission_aggregates
+    ADD CONSTRAINT fk_client_commission_aggregates_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
--- tenant_commission_aggregates.provider_id -> providers
-ALTER TABLE billing.tenant_commission_aggregates
-    DROP CONSTRAINT IF EXISTS fk_tenant_commission_aggregates_provider;
-ALTER TABLE billing.tenant_commission_aggregates
-    ADD CONSTRAINT fk_tenant_commission_aggregates_provider
+-- client_commission_aggregates.provider_id -> providers
+ALTER TABLE billing.client_commission_aggregates
+    DROP CONSTRAINT IF EXISTS fk_client_commission_aggregates_provider;
+ALTER TABLE billing.client_commission_aggregates
+    ADD CONSTRAINT fk_client_commission_aggregates_provider
     FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
 
--- tenant_commissions.tenant_id -> tenants
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_tenant;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+-- client_commissions.client_id -> clients
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_client;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
--- tenant_commissions.provider_id -> providers
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_provider;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_provider
+-- client_commissions.provider_id -> providers
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_provider;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_provider
     FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
 
--- tenant_commissions.aggregate_id -> tenant_commission_aggregates
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_aggregate;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_aggregate
-    FOREIGN KEY (aggregate_id) REFERENCES billing.tenant_commission_aggregates(id);
+-- client_commissions.aggregate_id -> client_commission_aggregates
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_aggregate;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_aggregate
+    FOREIGN KEY (aggregate_id) REFERENCES billing.client_commission_aggregates(id);
 
--- tenant_commissions.commission_plan_id -> tenant_commission_plans
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_plan;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_plan
-    FOREIGN KEY (commission_plan_id) REFERENCES billing.tenant_commission_plans(id);
+-- client_commissions.commission_plan_id -> client_commission_plans
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_plan;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_plan
+    FOREIGN KEY (commission_plan_id) REFERENCES billing.client_commission_plans(id);
 
--- tenant_commissions.approved_by -> users
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_approved_by;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_approved_by
+-- client_commissions.approved_by -> users
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_approved_by;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_approved_by
     FOREIGN KEY (approved_by) REFERENCES security.users(id);
 
--- tenant_commissions.invoice_id -> tenant_invoices
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_invoice;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_invoice
-    FOREIGN KEY (invoice_id) REFERENCES billing.tenant_invoices(id);
+-- client_commissions.invoice_id -> client_invoices
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_invoice;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_invoice
+    FOREIGN KEY (invoice_id) REFERENCES billing.client_invoices(id);
 
--- tenant_commissions.invoice_item_id -> tenant_invoice_items
-ALTER TABLE billing.tenant_commissions
-    DROP CONSTRAINT IF EXISTS fk_tenant_commissions_invoice_item;
-ALTER TABLE billing.tenant_commissions
-    ADD CONSTRAINT fk_tenant_commissions_invoice_item
-    FOREIGN KEY (invoice_item_id) REFERENCES billing.tenant_invoice_items(id);
+-- client_commissions.invoice_item_id -> client_invoice_items
+ALTER TABLE billing.client_commissions
+    DROP CONSTRAINT IF EXISTS fk_client_commissions_invoice_item;
+ALTER TABLE billing.client_commissions
+    ADD CONSTRAINT fk_client_commissions_invoice_item
+    FOREIGN KEY (invoice_item_id) REFERENCES billing.client_invoice_items(id);
 
--- tenant_invoices.tenant_id -> tenants
-ALTER TABLE billing.tenant_invoices
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoices_tenant;
-ALTER TABLE billing.tenant_invoices
-    ADD CONSTRAINT fk_tenant_invoices_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+-- client_invoices.client_id -> clients
+ALTER TABLE billing.client_invoices
+    DROP CONSTRAINT IF EXISTS fk_client_invoices_client;
+ALTER TABLE billing.client_invoices
+    ADD CONSTRAINT fk_client_invoices_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
--- tenant_invoices.cancelled_by -> users
-ALTER TABLE billing.tenant_invoices
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoices_cancelled_by;
-ALTER TABLE billing.tenant_invoices
-    ADD CONSTRAINT fk_tenant_invoices_cancelled_by
+-- client_invoices.cancelled_by -> users
+ALTER TABLE billing.client_invoices
+    DROP CONSTRAINT IF EXISTS fk_client_invoices_cancelled_by;
+ALTER TABLE billing.client_invoices
+    ADD CONSTRAINT fk_client_invoices_cancelled_by
     FOREIGN KEY (cancelled_by) REFERENCES security.users(id);
 
--- tenant_invoices.created_by -> users
-ALTER TABLE billing.tenant_invoices
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoices_created_by;
-ALTER TABLE billing.tenant_invoices
-    ADD CONSTRAINT fk_tenant_invoices_created_by
+-- client_invoices.created_by -> users
+ALTER TABLE billing.client_invoices
+    DROP CONSTRAINT IF EXISTS fk_client_invoices_created_by;
+ALTER TABLE billing.client_invoices
+    ADD CONSTRAINT fk_client_invoices_created_by
     FOREIGN KEY (created_by) REFERENCES security.users(id);
 
--- tenant_invoice_items.tenant_invoice_id -> tenant_invoices
-ALTER TABLE billing.tenant_invoice_items
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoice_items_invoice;
-ALTER TABLE billing.tenant_invoice_items
-    ADD CONSTRAINT fk_tenant_invoice_items_invoice
-    FOREIGN KEY (tenant_invoice_id) REFERENCES billing.tenant_invoices(id) ON DELETE CASCADE;
+-- client_invoice_items.client_invoice_id -> client_invoices
+ALTER TABLE billing.client_invoice_items
+    DROP CONSTRAINT IF EXISTS fk_client_invoice_items_invoice;
+ALTER TABLE billing.client_invoice_items
+    ADD CONSTRAINT fk_client_invoice_items_invoice
+    FOREIGN KEY (client_invoice_id) REFERENCES billing.client_invoices(id) ON DELETE CASCADE;
 
--- tenant_invoice_items.tenant_commission_id -> tenant_commissions
-ALTER TABLE billing.tenant_invoice_items
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoice_items_commission;
-ALTER TABLE billing.tenant_invoice_items
-    ADD CONSTRAINT fk_tenant_invoice_items_commission
-    FOREIGN KEY (tenant_commission_id) REFERENCES billing.tenant_commissions(id);
+-- client_invoice_items.client_commission_id -> client_commissions
+ALTER TABLE billing.client_invoice_items
+    DROP CONSTRAINT IF EXISTS fk_client_invoice_items_commission;
+ALTER TABLE billing.client_invoice_items
+    ADD CONSTRAINT fk_client_invoice_items_commission
+    FOREIGN KEY (client_commission_id) REFERENCES billing.client_commissions(id);
 
--- tenant_invoice_payments.tenant_invoice_id -> tenant_invoices
-ALTER TABLE billing.tenant_invoice_payments
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoice_payments_invoice;
-ALTER TABLE billing.tenant_invoice_payments
-    ADD CONSTRAINT fk_tenant_invoice_payments_invoice
-    FOREIGN KEY (tenant_invoice_id) REFERENCES billing.tenant_invoices(id);
+-- client_invoice_payments.client_invoice_id -> client_invoices
+ALTER TABLE billing.client_invoice_payments
+    DROP CONSTRAINT IF EXISTS fk_client_invoice_payments_invoice;
+ALTER TABLE billing.client_invoice_payments
+    ADD CONSTRAINT fk_client_invoice_payments_invoice
+    FOREIGN KEY (client_invoice_id) REFERENCES billing.client_invoices(id);
 
--- tenant_invoice_payments.recorded_by -> users
-ALTER TABLE billing.tenant_invoice_payments
-    DROP CONSTRAINT IF EXISTS fk_tenant_invoice_payments_recorded_by;
-ALTER TABLE billing.tenant_invoice_payments
-    ADD CONSTRAINT fk_tenant_invoice_payments_recorded_by
+-- client_invoice_payments.recorded_by -> users
+ALTER TABLE billing.client_invoice_payments
+    DROP CONSTRAINT IF EXISTS fk_client_invoice_payments_recorded_by;
+ALTER TABLE billing.client_invoice_payments
+    ADD CONSTRAINT fk_client_invoice_payments_recorded_by
     FOREIGN KEY (recorded_by) REFERENCES security.users(id);
 
 
@@ -210,19 +210,19 @@ ALTER TABLE billing.provider_settlements
     ADD CONSTRAINT fk_provider_settlements_reconciled_by
     FOREIGN KEY (reconciled_by) REFERENCES security.users(id);
 
--- provider_settlement_tenants.provider_settlement_id -> provider_settlements
-ALTER TABLE billing.provider_settlement_tenants
-    DROP CONSTRAINT IF EXISTS fk_provider_settlement_tenants_settlement;
-ALTER TABLE billing.provider_settlement_tenants
-    ADD CONSTRAINT fk_provider_settlement_tenants_settlement
+-- provider_settlement_clients.provider_settlement_id -> provider_settlements
+ALTER TABLE billing.provider_settlement_clients
+    DROP CONSTRAINT IF EXISTS fk_provider_settlement_clients_settlement;
+ALTER TABLE billing.provider_settlement_clients
+    ADD CONSTRAINT fk_provider_settlement_clients_settlement
     FOREIGN KEY (provider_settlement_id) REFERENCES billing.provider_settlements(id) ON DELETE CASCADE;
 
--- provider_settlement_tenants.tenant_id -> tenants
-ALTER TABLE billing.provider_settlement_tenants
-    DROP CONSTRAINT IF EXISTS fk_provider_settlement_tenants_tenant;
-ALTER TABLE billing.provider_settlement_tenants
-    ADD CONSTRAINT fk_provider_settlement_tenants_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+-- provider_settlement_clients.client_id -> clients
+ALTER TABLE billing.provider_settlement_clients
+    DROP CONSTRAINT IF EXISTS fk_provider_settlement_clients_client;
+ALTER TABLE billing.provider_settlement_clients
+    ADD CONSTRAINT fk_provider_settlement_clients_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
 -- provider_invoices.provider_id -> providers
 ALTER TABLE billing.provider_invoices
@@ -252,12 +252,12 @@ ALTER TABLE billing.provider_invoice_items
     ADD CONSTRAINT fk_provider_invoice_items_invoice
     FOREIGN KEY (provider_invoice_id) REFERENCES billing.provider_invoices(id) ON DELETE CASCADE;
 
--- provider_invoice_items.tenant_id -> tenants
+-- provider_invoice_items.client_id -> clients
 ALTER TABLE billing.provider_invoice_items
-    DROP CONSTRAINT IF EXISTS fk_provider_invoice_items_tenant;
+    DROP CONSTRAINT IF EXISTS fk_provider_invoice_items_client;
 ALTER TABLE billing.provider_invoice_items
-    ADD CONSTRAINT fk_provider_invoice_items_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    ADD CONSTRAINT fk_provider_invoice_items_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
 -- provider_payments.provider_id -> providers
 ALTER TABLE billing.provider_payments

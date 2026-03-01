@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log - Game Log Schema Indexes
+-- Client Log - Game Log Schema Indexes
 -- =============================================
 
 -- game_rounds — yüksek hacim, kritik sorgular

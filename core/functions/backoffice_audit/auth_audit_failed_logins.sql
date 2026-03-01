@@ -5,9 +5,9 @@
 -- Partitioned tablo: created_at filtresi ile partition pruning aktif
 -- ================================================================
 
-DROP FUNCTION IF EXISTS backoffice.auth_audit_failed_logins(BIGINT,INT);
+DROP FUNCTION IF EXISTS backoffice_audit.auth_audit_failed_logins(BIGINT,INT);
 
-CREATE OR REPLACE FUNCTION backoffice.auth_audit_failed_logins(
+CREATE OR REPLACE FUNCTION backoffice_audit.auth_audit_failed_logins(
     p_user_id BIGINT,
     p_hours INT DEFAULT 1
 )
@@ -58,7 +58,7 @@ BEGIN
             '[]'::JSONB
         )
     ) INTO v_result
-    FROM backoffice.auth_audit_log a
+    FROM backoffice_audit.auth_audit_log a
     WHERE a.user_id = p_user_id
       AND a.event_type = 'LOGIN_FAILED'
       AND a.created_at >= v_since;
@@ -67,4 +67,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_failed_logins IS 'Gets failed login attempts with full GeoIP data for brute-force detection';
+COMMENT ON FUNCTION backoffice_audit.auth_audit_failed_logins IS 'Gets failed login attempts with full GeoIP data for brute-force detection';

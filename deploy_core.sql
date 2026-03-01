@@ -6,10 +6,10 @@ CREATE SCHEMA IF NOT EXISTS catalog;
 COMMENT ON SCHEMA catalog IS 'Reference and master data';
 
 CREATE SCHEMA IF NOT EXISTS core;
-COMMENT ON SCHEMA core IS 'Tenant and company information';
+COMMENT ON SCHEMA core IS 'Client and company information';
 
 CREATE SCHEMA IF NOT EXISTS presentation;
-COMMENT ON SCHEMA presentation IS 'Backoffice and Tenant Frontend configuration';
+COMMENT ON SCHEMA presentation IS 'Backoffice and Client Frontend configuration';
 
 CREATE SCHEMA IF NOT EXISTS routing;
 COMMENT ON SCHEMA routing IS 'Provider endpoint and callback routing';
@@ -31,6 +31,27 @@ COMMENT ON SCHEMA messaging IS 'User messaging system';
 
 CREATE SCHEMA IF NOT EXISTS maintenance;
 COMMENT ON SCHEMA maintenance IS 'Partition management functions';
+
+-- Log schemas (eski core_log DB)
+CREATE SCHEMA IF NOT EXISTS backoffice_log;
+COMMENT ON SCHEMA backoffice_log IS 'Backoffice activity log records';
+
+CREATE SCHEMA IF NOT EXISTS logs;
+COMMENT ON SCHEMA logs IS 'System and error logs';
+
+-- Audit schemas (eski core_audit DB)
+CREATE SCHEMA IF NOT EXISTS backoffice_audit;
+COMMENT ON SCHEMA backoffice_audit IS 'Backoffice authentication audit records';
+
+-- Report schemas (eski core_report DB)
+CREATE SCHEMA IF NOT EXISTS finance_report;
+COMMENT ON SCHEMA finance_report IS 'Aggregated financial report stats per client/company';
+
+CREATE SCHEMA IF NOT EXISTS billing_report;
+COMMENT ON SCHEMA billing_report IS 'Invoicing and commission report data';
+
+CREATE SCHEMA IF NOT EXISTS performance;
+COMMENT ON SCHEMA performance IS 'Global system performance stats';
 
 -- DROP UNUSED SCHEMAS
 DROP SCHEMA IF EXISTS metric_helpers CASCADE;
@@ -88,32 +109,32 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- CORE TABLES
 
--- Organization (Şirket ve Tenant yapısı)
+-- Organization (Şirket ve Client yapısı)
 \i core/tables/core/organization/companies.sql
-\i core/tables/core/organization/tenants.sql
+\i core/tables/core/organization/clients.sql
 \i core/tables/core/organization/departments.sql
 \i core/tables/core/organization/user_departments.sql
 
--- Configuration (Platform ve Tenant ayarları)
+-- Configuration (Platform ve Client ayarları)
 \i core/tables/core/configuration/platform_settings.sql
-\i core/tables/core/configuration/tenant_settings.sql
-\i core/tables/core/configuration/tenant_currencies.sql
-\i core/tables/core/configuration/tenant_cryptocurrencies.sql
-\i core/tables/core/configuration/tenant_languages.sql
-\i core/tables/core/configuration/tenant_jurisdictions.sql
-\i core/tables/core/configuration/tenant_data_policies.sql
+\i core/tables/core/configuration/client_settings.sql
+\i core/tables/core/configuration/client_currencies.sql
+\i core/tables/core/configuration/client_cryptocurrencies.sql
+\i core/tables/core/configuration/client_languages.sql
+\i core/tables/core/configuration/client_jurisdictions.sql
+\i core/tables/core/configuration/client_data_policies.sql
 
 -- Infrastructure (Sunucu envanteri ve provisioning)
 \i core/tables/core/configuration/infrastructure_servers.sql
-\i core/tables/core/configuration/tenant_servers.sql
-\i core/tables/core/configuration/tenant_provisioning_log.sql
+\i core/tables/core/configuration/client_servers.sql
+\i core/tables/core/configuration/client_provisioning_log.sql
 \i core/tables/core/configuration/template_dumps.sql
 
 -- Integration (Oyun, Provider, Ödeme entegrasyonları)
-\i core/tables/core/integration/tenant_games.sql
-\i core/tables/core/integration/tenant_providers.sql
-\i core/tables/core/integration/tenant_provider_limits.sql
-\i core/tables/core/integration/tenant_payment_methods.sql
+\i core/tables/core/integration/client_games.sql
+\i core/tables/core/integration/client_providers.sql
+\i core/tables/core/integration/client_provider_limits.sql
+\i core/tables/core/integration/client_payment_methods.sql
 
 -- PRESENTATION TABLES
 -- Backoffice UI
@@ -125,9 +146,9 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/presentation/backoffice/tabs.sql
 
 -- Frontend (Theme Engine)
-\i core/tables/presentation/frontend/tenant_themes.sql
-\i core/tables/presentation/frontend/tenant_layouts.sql
-\i core/tables/presentation/frontend/tenant_navigation.sql
+\i core/tables/presentation/frontend/client_themes.sql
+\i core/tables/presentation/frontend/client_layouts.sql
+\i core/tables/presentation/frontend/client_navigation.sql
 
 -- ROUTING TABLES
 \i core/tables/routing/callback_routes.sql
@@ -148,7 +169,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/tables/security/rbac/permissions.sql
 \i core/tables/security/rbac/role_permissions.sql
 \i core/tables/security/rbac/user_roles.sql
-\i core/tables/security/rbac/user_allowed_tenants.sql
+\i core/tables/security/rbac/user_allowed_clients.sql
 \i core/tables/security/rbac/user_permission_overrides.sql
 \i core/tables/security/rbac/permission_templates.sql
 \i core/tables/security/rbac/permission_template_items.sql
@@ -156,25 +177,25 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- Secrets (Hassas veriler)
 \i core/tables/security/secrets/secrets_provider.sql
-\i core/tables/security/secrets/secrets_tenant.sql
+\i core/tables/security/secrets/secrets_client.sql
 
--- BILLING TABLES (Tenant Faturalama - Nucleo'nun Alacakları)
-\i core/tables/billing/tenant/tenant_billing_periods.sql
-\i core/tables/billing/tenant/tenant_commission_rates.sql
-\i core/tables/billing/tenant/tenant_commission_rate_tiers.sql
-\i core/tables/billing/tenant/tenant_commission_plans.sql
-\i core/tables/billing/tenant/tenant_commission_plan_tiers.sql
-\i core/tables/billing/tenant/tenant_commission_aggregates.sql
-\i core/tables/billing/tenant/tenant_commissions.sql
-\i core/tables/billing/tenant/tenant_invoices.sql
-\i core/tables/billing/tenant/tenant_invoice_items.sql
-\i core/tables/billing/tenant/tenant_invoice_payments.sql
+-- BILLING TABLES (Client Faturalama - Sortis One'ın Alacakları)
+\i core/tables/billing/client/client_billing_periods.sql
+\i core/tables/billing/client/client_commission_rates.sql
+\i core/tables/billing/client/client_commission_rate_tiers.sql
+\i core/tables/billing/client/client_commission_plans.sql
+\i core/tables/billing/client/client_commission_plan_tiers.sql
+\i core/tables/billing/client/client_commission_aggregates.sql
+\i core/tables/billing/client/client_commissions.sql
+\i core/tables/billing/client/client_invoices.sql
+\i core/tables/billing/client/client_invoice_items.sql
+\i core/tables/billing/client/client_invoice_payments.sql
 
--- BILLING TABLES (Provider Ödemeleri - Nucleo'nun Borçları)
+-- BILLING TABLES (Provider Ödemeleri - Sortis One'ın Borçları)
 \i core/tables/billing/provider/provider_commission_rates.sql
 \i core/tables/billing/provider/provider_commission_tiers.sql
 \i core/tables/billing/provider/provider_settlements.sql
-\i core/tables/billing/provider/provider_settlement_tenants.sql
+\i core/tables/billing/provider/provider_settlement_clients.sql
 \i core/tables/billing/provider/provider_invoices.sql
 \i core/tables/billing/provider/provider_invoice_items.sql
 \i core/tables/billing/provider/provider_payments.sql
@@ -214,14 +235,14 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 \i core/functions/core/companies/company_lookup.sql
 
--- Tenants
-\i core/functions/core/tenants/tenant_list.sql
-\i core/functions/core/tenants/tenant_get.sql
-\i core/functions/core/tenants/tenant_create.sql
-\i core/functions/core/tenants/tenant_update.sql
+-- Clients
+\i core/functions/core/clients/client_list.sql
+\i core/functions/core/clients/client_get.sql
+\i core/functions/core/clients/client_create.sql
+\i core/functions/core/clients/client_update.sql
 
-\i core/functions/core/tenants/tenant_lookup.sql
-\i core/functions/core/tenants/tenant_get_verification_timing.sql
+\i core/functions/core/clients/client_lookup.sql
+\i core/functions/core/clients/client_get_verification_timing.sql
 
 -- Platform Settings
 \i core/functions/core/platform_settings/platform_setting_create.sql
@@ -230,26 +251,26 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/platform_settings/platform_setting_get.sql
 \i core/functions/core/platform_settings/platform_setting_list.sql
 
--- Tenant Settings
-\i core/functions/core/tenant_settings/tenant_setting_upsert.sql
-\i core/functions/core/tenant_settings/tenant_setting_get.sql
-\i core/functions/core/tenant_settings/tenant_setting_list.sql
-\i core/functions/core/tenant_settings/tenant_setting_delete.sql
-\i core/functions/core/tenant_settings/tenant_setting_list_by_key.sql
+-- Client Settings
+\i core/functions/core/client_settings/client_setting_upsert.sql
+\i core/functions/core/client_settings/client_setting_get.sql
+\i core/functions/core/client_settings/client_setting_list.sql
+\i core/functions/core/client_settings/client_setting_delete.sql
+\i core/functions/core/client_settings/client_setting_list_by_key.sql
 
--- Tenant Configs - Currencies
-\i core/functions/core/tenant_currencies/tenant_currency_upsert.sql
-\i core/functions/core/tenant_currencies/tenant_currency_list.sql
-\i core/functions/core/tenant_currencies/tenant_currency_mapping_list.sql
+-- Client Configs - Currencies
+\i core/functions/core/client_currencies/client_currency_upsert.sql
+\i core/functions/core/client_currencies/client_currency_list.sql
+\i core/functions/core/client_currencies/client_currency_mapping_list.sql
 
--- Tenant Configs - Cryptocurrencies
-\i core/functions/core/tenant_cryptocurrencies/tenant_cryptocurrency_upsert.sql
-\i core/functions/core/tenant_cryptocurrencies/tenant_cryptocurrency_list.sql
-\i core/functions/core/tenant_cryptocurrencies/tenant_cryptocurrency_mapping_list.sql
+-- Client Configs - Cryptocurrencies
+\i core/functions/core/client_cryptocurrencies/client_cryptocurrency_upsert.sql
+\i core/functions/core/client_cryptocurrencies/client_cryptocurrency_list.sql
+\i core/functions/core/client_cryptocurrencies/client_cryptocurrency_mapping_list.sql
 
--- Tenant Configs - Languages
-\i core/functions/core/tenant_languages/tenant_language_upsert.sql
-\i core/functions/core/tenant_languages/tenant_language_list.sql
+-- Client Configs - Languages
+\i core/functions/core/client_languages/client_language_upsert.sql
+\i core/functions/core/client_languages/client_language_list.sql
 
 -- Departments
 \i core/functions/core/departments/department_create.sql
@@ -268,45 +289,45 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/core/infrastructure/infrastructure_server_create.sql
 \i core/functions/core/infrastructure/infrastructure_server_update.sql
 
--- Provisioning Functions (Tenant yaşam döngüsü)
-\i core/functions/core/provisioning/tenant_config_auto_populate.sql
-\i core/functions/core/provisioning/tenant_secrets_generate.sql
-\i core/functions/core/provisioning/tenant_provision_start.sql
-\i core/functions/core/provisioning/tenant_provision_step_update.sql
-\i core/functions/core/provisioning/tenant_provision_complete.sql
-\i core/functions/core/provisioning/tenant_provision_fail.sql
-\i core/functions/core/provisioning/tenant_provision_status.sql
-\i core/functions/core/provisioning/tenant_provision_history_list.sql
-\i core/functions/core/provisioning/tenant_decommission_start.sql
-\i core/functions/core/provisioning/tenant_decommission_complete.sql
+-- Provisioning Functions (Client yaşam döngüsü)
+\i core/functions/core/provisioning/client_config_auto_populate.sql
+\i core/functions/core/provisioning/client_secrets_generate.sql
+\i core/functions/core/provisioning/client_provision_start.sql
+\i core/functions/core/provisioning/client_provision_step_update.sql
+\i core/functions/core/provisioning/client_provision_complete.sql
+\i core/functions/core/provisioning/client_provision_fail.sql
+\i core/functions/core/provisioning/client_provision_status.sql
+\i core/functions/core/provisioning/client_provision_history_list.sql
+\i core/functions/core/provisioning/client_decommission_start.sql
+\i core/functions/core/provisioning/client_decommission_complete.sql
 
--- Tenant Server Functions (Sunucu ataması)
-\i core/functions/core/tenant_servers/tenant_server_list.sql
-\i core/functions/core/tenant_servers/tenant_server_assign.sql
-\i core/functions/core/tenant_servers/tenant_server_update.sql
+-- Client Server Functions (Sunucu ataması)
+\i core/functions/core/client_servers/client_server_list.sql
+\i core/functions/core/client_servers/client_server_assign.sql
+\i core/functions/core/client_servers/client_server_update.sql
 
--- Tenant Provider Functions (Provider entegrasyonu)
-\i core/functions/core/tenant_providers/tenant_provider_list.sql
-\i core/functions/core/tenant_providers/tenant_provider_enable.sql
-\i core/functions/core/tenant_providers/tenant_provider_disable.sql
-\i core/functions/core/tenant_providers/tenant_provider_set_rollout.sql
+-- Client Provider Functions (Provider entegrasyonu)
+\i core/functions/core/client_providers/client_provider_list.sql
+\i core/functions/core/client_providers/client_provider_enable.sql
+\i core/functions/core/client_providers/client_provider_disable.sql
+\i core/functions/core/client_providers/client_provider_set_rollout.sql
 
--- Tenant Game Functions (Oyun yönetimi)
-\i core/functions/core/tenant_games/tenant_game_list.sql
-\i core/functions/core/tenant_games/tenant_game_upsert.sql
-\i core/functions/core/tenant_games/tenant_game_remove.sql
-\i core/functions/core/tenant_games/tenant_game_refresh.sql
+-- Client Game Functions (Oyun yönetimi)
+\i core/functions/core/client_games/client_game_list.sql
+\i core/functions/core/client_games/client_game_upsert.sql
+\i core/functions/core/client_games/client_game_remove.sql
+\i core/functions/core/client_games/client_game_refresh.sql
 
--- Tenant Payment Method Functions (Ödeme yöntemi)
-\i core/functions/core/tenant_payment_methods/tenant_payment_method_list.sql
-\i core/functions/core/tenant_payment_methods/tenant_payment_method_upsert.sql
-\i core/functions/core/tenant_payment_methods/tenant_payment_method_remove.sql
-\i core/functions/core/tenant_payment_methods/tenant_payment_method_refresh.sql
+-- Client Payment Method Functions (Ödeme yöntemi)
+\i core/functions/core/client_payment_methods/client_payment_method_list.sql
+\i core/functions/core/client_payment_methods/client_payment_method_upsert.sql
+\i core/functions/core/client_payment_methods/client_payment_method_remove.sql
+\i core/functions/core/client_payment_methods/client_payment_method_refresh.sql
 
--- Tenant Payment Provider Functions (Ödeme sağlayıcı)
-\i core/functions/core/tenant_payment_providers/tenant_payment_provider_list.sql
-\i core/functions/core/tenant_payment_providers/tenant_payment_provider_enable.sql
-\i core/functions/core/tenant_payment_providers/tenant_payment_provider_disable.sql
+-- Client Payment Provider Functions (Ödeme sağlayıcı)
+\i core/functions/core/client_payment_providers/client_payment_provider_list.sql
+\i core/functions/core/client_payment_providers/client_payment_provider_enable.sql
+\i core/functions/core/client_payment_providers/client_payment_provider_disable.sql
 
 -- Country Functions
 \i core/functions/catalog/countries/country_list.sql
@@ -468,10 +489,10 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 
 -- Access Helper Functions (IDOR Protection)
 \i core/functions/security/access/user_get_access_level.sql
-\i core/functions/security/access/user_can_access_tenant.sql
+\i core/functions/security/access/user_can_access_client.sql
 \i core/functions/security/access/user_can_access_company.sql
 \i core/functions/security/access/user_can_manage_user.sql
-\i core/functions/security/access/user_assert_access_tenant.sql
+\i core/functions/security/access/user_assert_access_client.sql
 \i core/functions/security/access/user_assert_access_company.sql
 \i core/functions/security/access/user_assert_manage_user.sql
 
@@ -610,27 +631,27 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/functions/presentation/backoffice/structure/menu_structure.sql
 
 -- Presentation Functions (Frontend)
--- Management (Platform Admin + CompanyAdmin + TenantAdmin with IDOR)
--- Tenant Navigation
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_init_from_template.sql
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_list.sql
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_get.sql
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_create.sql
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_update.sql
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_delete.sql
-\i core/functions/presentation/frontend/management/tenant_navigation/tenant_navigation_reorder.sql
+-- Management (Platform Admin + CompanyAdmin + ClientAdmin with IDOR)
+-- Client Navigation
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_init_from_template.sql
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_list.sql
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_get.sql
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_create.sql
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_update.sql
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_delete.sql
+\i core/functions/presentation/frontend/management/client_navigation/client_navigation_reorder.sql
 
--- Tenant Themes
-\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_list.sql
-\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_get.sql
-\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_upsert.sql
-\i core/functions/presentation/frontend/management/tenant_themes/tenant_theme_activate.sql
+-- Client Themes
+\i core/functions/presentation/frontend/management/client_themes/client_theme_list.sql
+\i core/functions/presentation/frontend/management/client_themes/client_theme_get.sql
+\i core/functions/presentation/frontend/management/client_themes/client_theme_upsert.sql
+\i core/functions/presentation/frontend/management/client_themes/client_theme_activate.sql
 
--- Tenant Layouts
-\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_list.sql
-\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_get.sql
-\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_upsert.sql
-\i core/functions/presentation/frontend/management/tenant_layouts/tenant_layout_delete.sql
+-- Client Layouts
+\i core/functions/presentation/frontend/management/client_layouts/client_layout_list.sql
+\i core/functions/presentation/frontend/management/client_layouts/client_layout_get.sql
+\i core/functions/presentation/frontend/management/client_layouts/client_layout_upsert.sql
+\i core/functions/presentation/frontend/management/client_layouts/client_layout_delete.sql
 
 -- Consumer (Frontend App - Read Only)
 \i core/functions/presentation/frontend/consumer/get_navigation.sql
@@ -710,6 +731,80 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 \i core/indexes/outbox.sql
 \i core/indexes/messaging.sql
 \i core/indexes/messaging_notification_template.sql
+
+-- =============================================================================
+-- LOG TABLES (eski core_log DB — daily partitioned)
+-- =============================================================================
+\i core/tables/backoffice_log/audit_logs.sql
+\i core/tables/logs/error_logs.sql
+\i core/tables/logs/dead_letter_messages.sql
+\i core/tables/logs/dead_letter_audit.sql
+\i core/tables/logs/audit_logs.sql
+
+-- =============================================================================
+-- AUDIT TABLES (eski core_audit DB — daily partitioned)
+-- =============================================================================
+\i core/tables/backoffice_audit/auth_audit_log.sql
+
+-- =============================================================================
+-- REPORT TABLES (eski core_report DB — monthly partitioned)
+-- =============================================================================
+\i core/tables/finance_report/client_daily_kpi.sql
+\i core/tables/billing_report/monthly_invoices.sql
+\i core/tables/performance/provider_global_daily.sql
+\i core/tables/performance/payment_global_daily.sql
+\i core/tables/performance/client_traffic_hourly.sql
+
+-- =============================================================================
+-- FUNCTIONS — Log (eski core_log DB)
+-- =============================================================================
+\i core/functions/backoffice_log/audit_create.sql
+\i core/functions/backoffice_log/audit_list.sql
+\i core/functions/backoffice_log/audit_get.sql
+\i core/functions/logs/error_log.sql
+\i core/functions/logs/error_list.sql
+\i core/functions/logs/error_get.sql
+\i core/functions/logs/error_stats.sql
+\i core/functions/logs/dead_letter_create.sql
+\i core/functions/logs/dead_letter_get.sql
+\i core/functions/logs/dead_letter_update_status.sql
+\i core/functions/logs/dead_letter_list.sql
+\i core/functions/logs/dead_letter_bulk_retry.sql
+\i core/functions/logs/dead_letter_bulk_resolve.sql
+\i core/functions/logs/dead_letter_bulk_ignore.sql
+\i core/functions/logs/dead_letter_archive.sql
+\i core/functions/logs/dead_letter_purge.sql
+\i core/functions/logs/dead_letter_stats_detailed.sql
+\i core/functions/logs/dead_letter_get_for_auto_retry.sql
+\i core/functions/logs/dead_letter_schedule_retry.sql
+\i core/functions/logs/core_audit_create.sql
+\i core/functions/logs/core_audit_list.sql
+
+-- =============================================================================
+-- FUNCTIONS — Audit (eski core_audit DB)
+-- =============================================================================
+\i core/functions/backoffice_audit/auth_audit_create.sql
+\i core/functions/backoffice_audit/auth_audit_list_by_user.sql
+\i core/functions/backoffice_audit/auth_audit_list_by_type.sql
+\i core/functions/backoffice_audit/auth_audit_failed_logins.sql
+
+-- =============================================================================
+-- CONSTRAINTS — Log / Audit / Report
+-- =============================================================================
+\i core/constraints/logs.sql
+\i core/constraints/finance_report.sql
+\i core/constraints/billing_report.sql
+\i core/constraints/performance.sql
+
+-- =============================================================================
+-- INDEXES — Log / Audit / Report
+-- =============================================================================
+\i core/indexes/backoffice_log.sql
+\i core/indexes/logs.sql
+\i core/indexes/backoffice_audit.sql
+\i core/indexes/finance_report.sql
+\i core/indexes/billing_report.sql
+\i core/indexes/performance.sql
 
 -- PARTITION INITIALIZATION
 SELECT * FROM maintenance.create_partitions();

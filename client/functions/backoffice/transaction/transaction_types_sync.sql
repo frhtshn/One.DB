@@ -1,9 +1,9 @@
 -- ================================================================
--- TRANSACTION_TYPES_SYNC: Core→Tenant işlem tipi senkronizasyonu
+-- TRANSACTION_TYPES_SYNC: Core→Client işlem tipi senkronizasyonu
 -- ================================================================
 -- p_data TEXT → JSONB array cast.
 -- Core DB catalog.transaction_types'dan gelen veriyi
--- Tenant DB transaction.transaction_types'a UPSERT eder.
+-- Client DB transaction.transaction_types'a UPSERT eder.
 -- ID bazlı eşleşme (Core ile aynı ID'ler kullanılır).
 -- Auth-agnostic (backend provisioning sırasında çağırır).
 -- ================================================================
@@ -69,4 +69,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION transaction.transaction_types_sync(TEXT) IS 'Syncs transaction type catalog from Core DB. Accepts TEXT->JSONB array, UPSERT by id. Used during tenant provisioning. Auth-agnostic.';
+COMMENT ON FUNCTION transaction.transaction_types_sync(TEXT) IS 'Syncs transaction type catalog from Core DB. Accepts TEXT->JSONB array, UPSERT by id. Used during client provisioning. Auth-agnostic.';

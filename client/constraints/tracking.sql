@@ -1,7 +1,7 @@
 -- =============================================
--- Tenant Affiliate - Tracking Schema Constraints
+-- Client Affiliate - Tracking Schema Constraints
 -- =============================================
--- NOT: player_id referansları cross-database (tenant DB) olduğu için FK yok
+-- NOT: player_id referansları cross-database (client DB) olduğu için FK yok
 -- Sadece affiliate ve campaign referansları ekleniyor
 
 -- player_affiliate_current -> affiliates

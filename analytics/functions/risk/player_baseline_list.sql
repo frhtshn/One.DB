@@ -9,7 +9,7 @@ DROP FUNCTION IF EXISTS risk.player_baseline_list();
 
 CREATE OR REPLACE FUNCTION risk.player_baseline_list()
 RETURNS TABLE (
-    tenant_id                INT,
+    client_id                INT,
     player_id                BIGINT,
     avg_deposit              NUMERIC(18,2),
     deposit_stddev           NUMERIC(18,2),
@@ -47,7 +47,7 @@ AS $$
 BEGIN
     RETURN QUERY
     SELECT
-        rpb.tenant_id, rpb.player_id,
+        rpb.client_id, rpb.player_id,
         rpb.avg_deposit, rpb.deposit_stddev,
         rpb.avg_withdrawal, rpb.withdrawal_stddev,
         rpb.avg_deposits_per_day, rpb.avg_withdrawals_per_day,

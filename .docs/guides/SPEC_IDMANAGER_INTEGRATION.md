@@ -1,6 +1,6 @@
 # SPEC_IDMANAGER_INTEGRATION: KYC Belge Doğrulama (IDManager AI)
 
-IDManager (Python/gRPC) AI-destekli KYC belge doğrulama servisinin Nucleo.DB entegrasyonu. İki pipeline destekler: kimlik belgesi (yüz + canlılık) ve adres belgesi (metin analizi). Operatör son kararı verir; AI sonucu tavsiye niteliğindedir.
+IDManager (Python/gRPC) AI-destekli KYC belge doğrulama servisinin OneDB entegrasyonu. İki pipeline destekler: kimlik belgesi (yüz + canlılık) ve adres belgesi (metin analizi). Operatör son kararı verir; AI sonucu tavsiye niteliğindedir.
 
 > İlgili spesifikasyonlar: [SPEC_PLAYER_AUTH_KYC.md](SPEC_PLAYER_AUTH_KYC.md)
 > İlgili servis: `C:\Projects\Git\IDManager` (gRPC :5085, Python 3.11)
@@ -23,8 +23,8 @@ Bu spesifikasyon **7 yeni fonksiyon**, **2 yeni tablo** ve **4 güncellenen fonk
 
 | DB | Şema | Modül | Fonksiyon | Tablo |
 |----|------|-------|-----------|-------|
-| Tenant | kyc | Document Analysis | 4 | 1 (document_analysis) |
-| Tenant | kyc | Document Decisions | 3 | 1 (document_decisions) |
+| Client | kyc | Document Analysis | 4 | 1 (document_analysis) |
+| Client | kyc | Document Decisions | 3 | 1 (document_decisions) |
 
 ### DB Topolojisi
 
@@ -41,7 +41,7 @@ flowchart TD
         I2["AnalyzeDocument — Adres Pipeline"]
     end
 
-    subgraph TENANT["Tenant DB — kyc şeması"]
+    subgraph CLIENT["Client DB — kyc şeması"]
         T1["player_documents<br/>(status yönetimi)"]
         T2["document_analysis<br/>(AI sonuçları, append-only)"]
         T3["document_decisions<br/>(operatör kararları, append-only)"]

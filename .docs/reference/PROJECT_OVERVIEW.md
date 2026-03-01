@@ -1,6 +1,6 @@
-# NUCLEO DATABASE PROJESİ - GENEL BAKIŞ
+# SORTIS ONE DATABASE PROJESİ - GENEL BAKIŞ
 
-Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalıştığını açıklar.
+Bu doküman, **OneDB** projesinin büyük resmini ve sistemin nasıl çalıştığını açıklar.
 
 ---
 
@@ -9,7 +9,7 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 1. [Proje Hakkında](#1-proje-hakkında)
 2. [Sistem Mimarisi](#2-sistem-mimarisi)
 3. [Veritabanı Katmanları](#3-veritabanı-katmanları)
-4. [Multi-Tenant Yapı](#4-multi-tenant-yapı)
+4. [Multi-Client Yapı](#4-multi-client-yapı)
 5. [Veri Akışı](#5-veri-akışı)
 6. [Proje Yapısı](#6-proje-yapısı)
 7. [Deploy Süreci](#7-deploy-süreci)
@@ -23,7 +23,7 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 
 ### 1.1 Ne İçin Kullanılıyor?
 
-**Nucleo**, online gaming/betting platformları için tasarlanmış **multi-tenant (whitelabel)** bir veritabanı altyapısıdır. Platform:
+**Sortis One**, online gaming/betting platformları için tasarlanmış **multi-client (whitelabel)** bir veritabanı altyapısıdır. Platform:
 
 - **Oyun Entegrasyonu** - Game provider'larla entegrasyon (Pragmatic, Evolution vb.)
 - **Ödeme İşlemleri** - Finance provider'larla ödeme yönetimi (Stripe, Papara vb.)
@@ -32,8 +32,8 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 - **Mesajlaşma** - Kampanya, şablon ve oyuncu inbox (email/SMS/local)
 - **Kullanıcı Mesajlaşma** - Backoffice kullanıcılar arası mesaj sistemi (draft/publish/recall/direct)
 - **Affiliate Sistemi** - Ortaklık ve komisyon yönetimi
-- **Multi-Tenant** - Birden fazla markanın tek platformda çalışması
-- **Theme Engine** - Tenant'ların kendi frontend ve navigasyonunu yönetebilmesi
+- **Multi-Client** - Birden fazla markanın tek platformda çalışması
+- **Theme Engine** - Client'ların kendi frontend ve navigasyonunu yönetebilmesi
 - **Fiat & Kripto Kur Takibi** - CurrencyLayer ve Coinlayer entegrasyonu
 - **GeoIP Takibi** - ip-api.com entegrasyonu ile IP lokasyon çözümleme
 
@@ -41,10 +41,10 @@ Bu doküman, **NucleoDB** projesinin büyük resmini ve sistemin nasıl çalış
 
 | Prensip                          | Açıklama                                                 |
 | -------------------------------- | -------------------------------------------------------- |
-| **Veri İzolasyonu**              | Her tenant (marka) tam veri izolasyonuna sahiptir        |
-| **Sorumluluk Ayrımı**            | Her veritabanı tek bir sorumluluk taşır                  |
-| **Log ≠ Audit ≠ Business**       | Farklı veri tipleri farklı DB'lerde tutulur              |
-| **Core Shared, Tenant Isolated** | Merkezi veriler paylaşılır, tenant verileri izole edilir |
+| **Veri İzolasyonu**              | Her client (marka) tam veri izolasyonuna sahiptir        |
+| **Sorumluluk Ayrımı**            | Her veritabanı belirli bir domain sorumluluğu taşır     |
+| **Log ≠ Audit ≠ Business**       | Farklı veri tipleri aynı DB içinde farklı schema'larda tutulur |
+| **Core Shared, Client Isolated** | Merkezi veriler paylaşılır, client verileri izole edilir |
 | **Cross-DB Yasağı**              | Fiziksel DB'ler arası doğrudan sorgu yapılamaz           |
 
 ---
@@ -58,14 +58,14 @@ flowchart TD
     BO["Backoffice Application"]
     BE["Backend (.NET + Orleans + gRPC)"]
     BO --> BE
-    subgraph core["Core Databases"]
-        CD["core · core_log · core_audit · core_report"]
+    subgraph core["Core Database (16 schema)"]
+        CD["core (iş + log + audit + report)"]
     end
-    subgraph gateway["Gateway Databases"]
-        GD["game · game_log · finance · finance_log · bonus"]
+    subgraph gateway["Gateway & Plugin Databases"]
+        GD["game (iş + log) · finance (iş + log) · bonus"]
     end
-    subgraph tenant["Tenant Databases"]
-        TD2["tenant_XXX + log/audit/report/affiliate"]
+    subgraph client["Client Databases"]
+        TD2["client_XXX (30 schema)"]
     end
     BE --> CD
     BE --> GD
@@ -76,25 +76,19 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    subgraph core["CORE (Merkezi Yapı)"]
-        C["Companies · Tenants · Users/Roles · Catalog"]
-    end
-    subgraph core_subs["Core Alt DB'ler"]
-        CL["CORE_LOG<br/>30-90 gün"]
-        CA["CORE_AUDIT<br/>90 gün"]
-        CR["CORE_REPORT<br/>Sınırsız"]
+    subgraph core["CORE DB (16 schema)"]
+        C["Companies · Clients · Users/Roles · Catalog"]
+        CS["backoffice_log · backoffice_audit · finance_report · billing_report · performance"]
     end
     subgraph gw["Gateway & Plugin"]
-        GW["game · game_log · finance · finance_log · bonus"]
+        GW["game (iş + game_log) · finance (iş + finance_log) · bonus"]
     end
-    subgraph tenants["Tenant (per-tenant)"]
-        T1["tenant_001 + log/aud/rep/aff"]
-        T2["tenant_002 + log/aud/rep/aff"]
-        TX["tenant_XXX + ..."]
+    subgraph clients["Client (per-client, 30 schema)"]
+        T1["client_001"]
+        T2["client_002"]
+        TX["client_XXX"]
     end
-    C --> CL
-    C --> CA
-    C --> CR
+    C --> CS
     GW --> T1
     GW --> T2
     GW --> TX
@@ -108,86 +102,90 @@ flowchart TD
 
 | #  | Veritabanı         | Amaç                                      | Paylaşım | Partition      | Retention     |
 |----|--------------------|--------------------------------------------|----------|----------------|---------------|
-| 1  | `core`             | Platform merkezi yapı ve konfigürasyon     | Shared   | Monthly (2)    | 90-180 gün    |
-| 2  | `core_log`         | Merkezi teknik log kayıtları               | Shared   | Daily (4)      | 30-90 gün     |
-| 3  | `core_audit`       | Backoffice güvenlik denetim kayıtları      | Shared   | Daily (1)      | 90 gün        |
-| 4  | `core_report`      | Merkezi raporlama ve BI verileri           | Shared   | Monthly (5)    | Sınırsız      |
-| 5  | `game`             | Oyun gateway entegrasyon durumu            | Shared   | -              | -             |
-| 6  | `game_log`         | Oyun gateway teknik logları                | Shared   | Daily (2)      | 7 gün         |
-| 7  | `finance`          | Finans gateway entegrasyon durumu          | Shared   | -              | -             |
-| 8  | `finance_log`      | Finans gateway teknik logları              | Shared   | Daily (2)      | 14 gün        |
-| 9  | `bonus`            | Bonus ve promosyon yapılandırması          | Shared   | -              | Sınırsız      |
-| 10 | `tenant`           | Kiracıya özel iş verileri                  | Isolated | Monthly (2)    | Sınırsız*     |
-| 11 | `tenant_log`       | Kiracıya özel operasyonel loglar           | Isolated | Daily (8)      | 30-90 gün     |
-| 12 | `tenant_audit`     | Kiracıya özel audit kayıtları              | Isolated | Hybrid (2)     | 1-5 yıl       |
-| 13 | `tenant_report`    | Kiracıya özel raporlar ve istatistikler    | Isolated | Monthly (6)    | Sınırsız      |
-| 14 | `tenant_affiliate` | Affiliate tracking ve komisyon yönetimi    | Isolated | Monthly (7)    | Sınırsız      |
+| 1  | `core`             | Platform merkezi yapı (16 schema: iş + log + audit + report) | Shared | Hybrid* | Çeşitli** |
+| 2  | `game`             | Oyun gateway entegrasyon + logları         | Shared   | Daily (2)      | 7 gün         |
+| 3  | `finance`          | Finans gateway entegrasyon + logları       | Shared   | Daily (2)      | 14 gün        |
+| 4  | `bonus`            | Bonus ve promosyon yapılandırması          | Shared   | -              | Sınırsız      |
+| 5  | `client`           | Client'a özel birleşik DB (30 schema: iş verileri, log, audit, report, affiliate) | Isolated | Hybrid*** | Değişken**** |
 
-> **Toplam:** 14 veritabanı, 41 partitioned tablo, 11 DB'de partition yönetimi, ~671 fonksiyon
+> **Toplam:** 5 veritabanı, 41 partitioned tablo, 5 DB'de partition yönetimi, ~671 fonksiyon
 >
-> \* `core` Monthly: `messaging.user_messages` (180 gün) + `security.user_sessions` (90 gün)
-> \* `tenant` Monthly: `transaction.transactions` (sınırsız) + `messaging.player_messages` (180 gün)
-> \* `tenant_audit` Hybrid: `player_audit.login_attempts` Daily (365 gün) + `player_audit.login_sessions` Monthly (5 yıl)
-> \* `game_log` Daily: `game_log.provider_api_requests` + `game_log.provider_api_callbacks` (7 gün)
-> \* `finance_log` Daily: `finance_log.provider_api_requests` + `finance_log.provider_api_callbacks` (14 gün)
-> \* `tenant_log` Daily (8): affiliate (3) + kyc (1) + messaging (1) + game_rounds (1) + bonus_log (1) + support_log (1)
-> \* `tenant_report` Monthly (6): finance (3) + game (2) + support (1)
+> \* `core` Hybrid: İş schema'ları Monthly (messaging.user_messages 180 gün, security.user_sessions 90 gün), log schema'ları (backoffice_log, logs) Daily (30-90 gün), audit (backoffice_audit) Daily (90 gün), report schema'ları (finance_report, billing_report, performance) Monthly (sınırsız)
+> \*\* Core retention: iş verileri sınırsız, loglar 30-90 gün, audit 90 gün, raporlar sınırsız
+> \*\*\* `client` birleşik DB partition detayı:
+>   - Monthly: transaction.transactions, messaging.player_messages, player_audit.login_sessions (5 yıl), finance_report.* (sınırsız), game_report.* (sınırsız), support_report.* (sınırsız), tracking.* (sınırsız)
+>   - Daily: affiliate_log (90 gün), bonus_log (90 gün), kyc_log (90 gün), messaging_log (90 gün), game_log.game_rounds (30 gün), support_log (90 gün), player_audit.login_attempts (365 gün)
+> \*\*\*\* Client retention: iş verileri sınırsız, loglar 30-90 gün, audit 1-5 yıl, raporlar sınırsız
 
-### 3.2 Core Veritabanı (Merkezi)
+### 3.2 Core Veritabanı (Merkezi, 16 Schema)
 
-Core veritabanı platformun beynidir. Tüm merkezi konfigürasyon ve yönetim verilerini barındırır.
-
-```
-CORE DATABASE
-├── catalog (Referans Data)
-│   ├── reference        → Ülkeler, para birimleri, kripto paralar, diller, saat dilimleri
-│   ├── localization     → Lokalizasyon key/value çevirileri
-│   ├── provider         → Provider tipleri, sağlayıcılar, ayarlar, ödeme metodları
-│   ├── game             → Oyun kataloğu
-│   ├── compliance       → Jurisdiction, KYC kuralları, data retention, RG politikaları
-│   ├── uikit            → Tema marketi, widget'lar, navigasyon şablonları
-│   ├── geo              → IP geo cache (ip-api.com, TTL 30 gün)
-│   └── transaction      → İşlem ve operasyon tipi tanımları
-│
-├── core (Tenant Yönetimi)
-│   ├── organization     → Şirketler, departmanlar, tenantlar
-│   ├── configuration    → Platform ayarları, tenant dil/kur/kripto/jurisdiction ayarları
-│   └── integration      → Tenant provider/oyun/ödeme erişimleri
-│
-├── security (Yetki Yönetimi)
-│   ├── identity         → Backoffice kullanıcıları, oturumlar, şifre geçmişi
-│   ├── rbac             → Roller, yetkiler, kullanıcı-rol atamaları
-│   └── secrets          → Provider ve tenant API anahtarları
-│
-├── presentation (UI Yapısı)
-│   ├── backoffice       → Admin panel menü, sayfa, tab, context yapısı
-│   └── frontend         → Tenant tema, layout, navigasyon (Theme Engine)
-│
-├── messaging (Kullanıcı Mesajlaşma)
-│   ├── user_message_drafts  → Draft/publish/recall yönetimi
-│   └── user_messages        → Kullanıcı inbox (monthly partitioned)
-│
-├── billing (Faturalandırma)
-│   ├── tenant_*         → Tenant faturaları (Nucleo'nun alacakları)
-│   └── provider_*       → Provider ödemeleri (Nucleo'nun borçları)
-│
-├── routing (Provider Yönlendirme)
-│   ├── provider_endpoints   → API endpoint'leri
-│   └── provider_callbacks   → Callback tanımları
-│
-├── outbox (Event Outbox Pattern)
-│   └── outbox_messages  → Transactional outbox mesajları
-│
-└── maintenance (Partition Yönetimi)
-    └── 4 fonksiyon: create_partitions, drop_expired, partition_info, run_maintenance
-```
-
-### 3.3 Tenant Veritabanı (Oyuncu Verileri)
-
-Her tenant (marka) için `tenant` şablon DB'si klonlanarak `tenant_<tenantid>` formatında oluşturulur.
+Core veritabanı platformun beynidir. Tüm merkezi konfigürasyon ve yönetim verilerini barındırır. Eski ayrı core_log, core_audit ve core_report veritabanları artık bu DB içinde schema olarak birleştirilmiştir.
 
 ```
-TENANT DATABASE (per tenant)
+CORE DATABASE (16 schema)
+│
+├── İŞ SCHEMA'LARI
+│   ├── catalog (Referans Data)
+│   │   ├── reference        → Ülkeler, para birimleri, kripto paralar, diller, saat dilimleri
+│   │   ├── localization     → Lokalizasyon key/value çevirileri
+│   │   ├── provider         → Provider tipleri, sağlayıcılar, ayarlar, ödeme metodları
+│   │   ├── game             → Oyun kataloğu
+│   │   ├── compliance       → Jurisdiction, KYC kuralları, data retention, RG politikaları
+│   │   ├── uikit            → Tema marketi, widget'lar, navigasyon şablonları
+│   │   ├── geo              → IP geo cache (ip-api.com, TTL 30 gün)
+│   │   └── transaction      → İşlem ve operasyon tipi tanımları
+│   │
+│   ├── core (Client Yönetimi)
+│   │   ├── organization     → Şirketler, departmanlar, clientlar
+│   │   ├── configuration    → Platform ayarları, client dil/kur/kripto/jurisdiction ayarları
+│   │   └── integration      → Client provider/oyun/ödeme erişimleri
+│   │
+│   ├── security (Yetki Yönetimi)
+│   │   ├── identity         → Backoffice kullanıcıları, oturumlar, şifre geçmişi
+│   │   ├── rbac             → Roller, yetkiler, kullanıcı-rol atamaları
+│   │   └── secrets          → Provider ve client API anahtarları
+│   │
+│   ├── presentation (UI Yapısı)
+│   │   ├── backoffice       → Admin panel menü, sayfa, tab, context yapısı
+│   │   └── frontend         → Client tema, layout, navigasyon (Theme Engine)
+│   │
+│   ├── messaging (Kullanıcı Mesajlaşma)
+│   │   ├── user_message_drafts  → Draft/publish/recall yönetimi
+│   │   └── user_messages        → Kullanıcı inbox (monthly partitioned)
+│   │
+│   ├── billing (Faturalandırma)
+│   │   ├── client_*         → Client faturaları (Sortis One'ın alacakları)
+│   │   └── provider_*       → Provider ödemeleri (Sortis One'ın borçları)
+│   │
+│   ├── routing (Provider Yönlendirme)
+│   │   ├── provider_endpoints   → API endpoint'leri
+│   │   └── provider_callbacks   → Callback tanımları
+│   │
+│   ├── outbox (Event Outbox Pattern)
+│   │   └── outbox_messages  → Transactional outbox mesajları
+│   │
+│   ├── infra → PostgreSQL extension'ları
+│   └── maintenance → Partition yönetimi (4 fonksiyon)
+│
+├── LOG SCHEMA'LARI (eski core_log DB'den)
+│   ├── backoffice_log       → Platform operasyonel logları (30-90 gün)
+│   └── logs                 → Genel teknik loglar
+│
+├── AUDIT SCHEMA'LARI (eski core_audit DB'den)
+│   └── backoffice_audit     → Platform denetim kayıtları (90 gün)
+│
+└── REPORT SCHEMA'LARI (eski core_report DB'den)
+    ├── finance_report       → Finansal raporlama (sınırsız)
+    ├── billing_report       → Faturalandırma raporlama (sınırsız)
+    └── performance          → Global performans metrikleri (sınırsız)
+```
+
+### 3.3 Client Veritabanı (Oyuncu Verileri)
+
+Her client (marka) için `client` şablon DB'si klonlanarak `client_<clientid>` formatında oluşturulur.
+
+```
+CLIENT DATABASE (per client)
 ├── player_auth    → Oyuncu kimlik, kategori/grup, şifre yönetimi, shadow testers
 ├── player_profile → Oyuncu profil, kimlik bilgileri, adres/iletişim
 ├── wallet         → Cüzdan bakiyeleri ve snapshot'ları (fiat + kripto)
@@ -206,39 +204,39 @@ TENANT DATABASE (per tenant)
 
 ---
 
-## 4. Multi-Tenant Yapı
+## 4. Multi-Client Yapı
 
-### 4.1 Database-Per-Tenant Model
+### 4.1 Database-Per-Client Model
 
-Nucleo, her tenant için **fiziksel olarak ayrı veritabanları** kullanır. Bu model tam veri izolasyonu sağlar.
+Sortis One, her client için **tek bir birleşik veritabanı** (`client_{id}`) kullanır. Bu DB, 30 schema ile tüm iş verilerini, logları, audit kayıtlarını, raporları ve affiliate verilerini barındırır.
 
 ```
-Tenant kaydı yapıldığında (örn: tenant_id = 5):
-├── tenant_5           → Ana iş verileri
-├── tenant_log_5       → Operasyonel loglar
-├── tenant_audit_5     → Audit kayıtları
-├── tenant_report_5    → Raporlar
-└── tenant_affiliate_5 → Affiliate tracking
+Client kaydı yapıldığında (örn: client_id = 5):
+└── client_5 (tek birleşik DB — 30 schema)
+    ├── Core Business (14): auth, profile, transaction, finance, wallet, game, kyc, bonus, content, messaging, presentation, support, infra, maintenance
+    ├── Log (6): affiliate_log, bonus_log, kyc_log, messaging_log, game_log, support_log
+    ├── Audit (3): affiliate_audit, kyc_audit, player_audit
+    ├── Report (3): finance_report, game_report, support_report
+    └── Affiliate (5): affiliate, campaign, commission, payout, tracking
 ```
 
 ### 4.2 Cross-DB İletişim
 
-**Her klasör = Ayrı fiziksel PostgreSQL veritabanı.** Veritabanları arası doğrudan sorgu yapılamaz.
+**5 fiziksel DB (core, game, finance, bonus, client) arası doğrudan sorgu yapılamaz.** Aynı DB içindeki tüm schema'lar arası JOIN mümkündür (core DB'deki iş ve log/audit/report schema'ları dahil).
 
 | Yöntem | Kullanım |
 |--------|----------|
-| **Backend Application** (Önerilen) | Ayrı DB connection'ları ile. Core'dan okur, tenant'a yazar |
+| **Backend Application** (Önerilen) | Ayrı DB connection'ları ile. Core'dan okur, client'a yazar |
 | `dblink` / `postgres_fdw` | Sadece zorunlu durumlarda |
 
-**Örnek akış:** Backend önce Core DB'den `tenant_cryptocurrency_mapping_list()` çağırır, sonra her tenant DB'ye bağlanıp `crypto_rates_bulk_upsert()` çalıştırır.
+**Örnek akış:** Backend önce Core DB'den `client_cryptocurrency_mapping_list()` çağırır, sonra her client DB'ye bağlanıp `crypto_rates_bulk_upsert()` çalıştırır.
 
-### 4.3 Tenant Seeding
+### 4.3 Client Seeding
 
-Yeni tenant oluşturulduğunda:
-1. Core DB'de `tenant_create()` ile tenant kaydı yapılır
-2. Backend, `deploy_tenant.sql` şablonunu klonlayarak yeni DB oluşturur
-3. İlişkili log/audit/report/affiliate DB'leri de oluşturulur
-4. Core DB'de tenant-currency, tenant-language gibi mapping'ler atanır
+Yeni client oluşturulduğunda:
+1. Core DB'de `client_create()` ile client kaydı yapılır
+2. Backend, `deploy_client.sql` şablonunu klonlayarak yeni birleşik client DB oluşturur (30 schema)
+3. Core DB'de client-currency, client-language gibi mapping'ler atanır
 
 ---
 
@@ -252,14 +250,14 @@ flowchart TD
     CU["CurrencyLayer API"] -- "HTTP" --> BE["Backend<br/>(CurrencyGrain / CryptoGrain)"]
     CM --> BE
     BE -- "cryptocurrency_upsert()" --> Core["Core DB<br/>(katalog sync)"]
-    BE -- "crypto_rates_bulk_upsert()" --> T1["Tenant_001 DB"]
-    BE -- "crypto_rates_bulk_upsert()" --> T2["Tenant_002 DB"]
+    BE -- "crypto_rates_bulk_upsert()" --> T1["Client_001 DB"]
+    BE -- "crypto_rates_bulk_upsert()" --> T2["Client_002 DB"]
 ```
 
 **Akış:**
 1. **Katalog sync:** Coinlayer `/list` → `catalog.cryptocurrency_upsert()` (Core DB)
-2. **Mapping okuma:** `tenant_cryptocurrency_mapping_list()` → hangi tenant'a hangi coin (Core DB)
-3. **Kur yazma:** Her tenant DB'ye `crypto_rates_bulk_upsert()` çağrısı (Tenant DB)
+2. **Mapping okuma:** `client_cryptocurrency_mapping_list()` → hangi client'a hangi coin (Core DB)
+3. **Kur yazma:** Her client DB'ye `crypto_rates_bulk_upsert()` çağrısı (Client DB)
 
 ### 5.2 Outbox Pattern (Event-Driven)
 
@@ -274,8 +272,8 @@ flowchart TD
     IP --> BE
     BE --> G1["Core: ip_geo_cache<br/>(TTL 30 gün)"]
     BE --> G2["Core: user_sessions<br/>(backoffice + geo)"]
-    BE --> G3["Core Audit: auth_audit_log<br/>(denetim + geo)"]
-    BE --> G4["Tenant Audit: login_attempts<br/>(oyuncu + geo)"]
+    BE --> G3["Core: backoffice_audit.auth_audit_log<br/>(denetim + geo)"]
+    BE --> G4["Client: player_audit.login_attempts<br/>(oyuncu + geo)"]
 ```
 
 ---
@@ -285,7 +283,7 @@ flowchart TD
 ### 6.1 Klasör Yapısı
 
 ```
-nucleoDb/
+OneDB/
 │
 ├── .context/                    # Claude AI context ve proje talimatları
 │   └── CLAUDE.md               # Proje geliştirme kuralları
@@ -295,7 +293,7 @@ nucleoDb/
 │   │   ├── DATABASE_ARCHITECTURE.md # Detaylı DB mimarisi
 │   │   ├── DATABASE_FUNCTIONS.md    # Fonksiyon referansı (index)
 │   │   ├── FUNCTIONS_CORE.md        # Core katmanı fonksiyonları
-│   │   ├── FUNCTIONS_TENANT.md      # Tenant katmanı fonksiyonları
+│   │   ├── FUNCTIONS_CLIENT.md      # Client katmanı fonksiyonları
 │   │   ├── FUNCTIONS_GATEWAY.md     # Gateway katmanı fonksiyonları
 │   │   ├── PARTITION_ARCHITECTURE.md# Partition yapısı
 │   │   └── LOGSTRATEGY.md           # Log/audit stratejisi
@@ -303,14 +301,14 @@ nucleoDb/
 │       ├── GAME_GATEWAY_GUIDE.md         # Oyun gateway entegrasyon rehberi
 │       ├── FINANCE_GATEWAY_GUIDE.md      # Finans gateway entegrasyon rehberi
 │       ├── BONUS_ENGINE_GUIDE.md         # Bonus motoru rehberi
-│       ├── PROVISIONING_GUIDE.md         # Tenant provisioning rehberi
+│       ├── PROVISIONING_GUIDE.md         # Client provisioning rehberi
 │       ├── SHADOW_MODE_GUIDE.md          # Shadow mode test rehberi
 │       ├── CROSS_DB_JOIN_GUIDE.md        # Cross-DB join rehberi
 │       ├── CALL_CENTER_GUIDE.md          # Çağrı merkezi rehberi
 │       ├── PLAYER_AUTH_KYC_GUIDE.md      # Oyuncu auth & KYC rehberi
 │       └── IMPLEMENTATION_CHANGE_GUIDE.md# Implementasyon değişiklik rehberi
 │
-├── core/                        # Core veritabanı
+├── core/                        # Core birleşik DB (16 schema: iş + log + audit + report)
 │   ├── tables/
 │   │   ├── catalog/
 │   │   │   ├── reference/      # Ülkeler, para birimleri, kripto paralar, diller
@@ -321,9 +319,9 @@ nucleoDb/
 │   │   │   ├── geo/            # IP geo cache
 │   │   │   └── transaction/    # İşlem/operasyon tipi tanımları
 │   │   ├── core/
-│   │   │   ├── organization/   # Şirketler, departmanlar, tenantlar
-│   │   │   ├── configuration/  # Platform/tenant ayarları, kur/kripto/dil mapping
-│   │   │   └── integration/    # Tenant-provider/game/payment erişimleri
+│   │   │   ├── organization/   # Şirketler, departmanlar, clientlar
+│   │   │   ├── configuration/  # Platform/client ayarları, kur/kripto/dil mapping
+│   │   │   └── integration/    # Client-provider/game/payment erişimleri
 │   │   ├── security/
 │   │   │   ├── identity/       # Kullanıcılar, oturumlar, şifre geçmişi
 │   │   │   ├── rbac/           # Roller, yetkiler, atamalar
@@ -341,17 +339,11 @@ nucleoDb/
 │   ├── indexes/                # Performance index'ler (schema bazlı)
 │   └── data/                   # Seed data (permissions, roles, menus, localization)
 │
-├── core_log/                    # Core log veritabanı (daily partitioned)
-├── core_audit/                  # Core audit veritabanı (daily partitioned)
-├── core_report/                 # Core raporlama veritabanı (monthly partitioned)
-│
-├── game/                        # Game gateway veritabanı
-├── game_log/                    # Game log veritabanı
-├── finance/                     # Finance gateway veritabanı
-├── finance_log/                 # Finance log veritabanı
+├── game/                        # Game gateway birleşik DB (iş + game_log schema'sı)
+├── finance/                     # Finance gateway birleşik DB (iş + finance_log schema'sı)
 ├── bonus/                       # Bonus plugin veritabanı
 │
-├── tenant/                      # Tenant şablon veritabanı
+├── client/                      # Client şablon veritabanı
 │   ├── tables/
 │   │   ├── player_auth/        # Oyuncu kimlik ve güvenlik
 │   │   ├── player_profile/     # Oyuncu profil
@@ -372,27 +364,13 @@ nucleoDb/
 │   ├── constraints/             # FK constraint'ler
 │   └── indexes/                 # Performance index'ler
 │
-├── tenant_log/                  # Tenant log veritabanı (daily partitioned)
-├── tenant_audit/                # Tenant audit veritabanı (hybrid partitioned)
-├── tenant_report/               # Tenant raporlama veritabanı (monthly partitioned)
-├── tenant_affiliate/            # Tenant affiliate veritabanı (monthly partitioned)
-│
-├── deploy_core.sql              # Core production deploy
+├── deploy_core.sql              # Core birleşik DB deploy (iş + log + audit + report, 16 schema)
 ├── deploy_core_staging.sql      # Core staging deploy (seed dahil)
 ├── deploy_core_production.sql   # Core production deploy (seed dahil)
-├── deploy_core_log.sql          # Core log deploy
-├── deploy_core_audit.sql        # Core audit deploy
-├── deploy_core_report.sql       # Core report deploy
-├── deploy_game.sql              # Game gateway deploy
-├── deploy_game_log.sql          # Game log deploy
-├── deploy_finance.sql           # Finance gateway deploy
-├── deploy_finance_log.sql       # Finance log deploy
+├── deploy_game.sql              # Game birleşik DB deploy (iş + game_log)
+├── deploy_finance.sql           # Finance birleşik DB deploy (iş + finance_log)
 ├── deploy_bonus.sql             # Bonus plugin deploy
-├── deploy_tenant.sql            # Tenant template deploy
-├── deploy_tenant_log.sql        # Tenant log deploy
-├── deploy_tenant_audit.sql      # Tenant audit deploy
-├── deploy_tenant_report.sql     # Tenant report deploy
-└── deploy_tenant_affiliate.sql  # Tenant affiliate deploy
+└── deploy_client.sql            # Client birleşik deploy (30 schema)
 ```
 
 ---
@@ -407,25 +385,16 @@ Veritabanları aşağıdaki sırada deploy edilmelidir:
 
 | Sıra | Script | Açıklama |
 |------|--------|----------|
-| 1 | `deploy_core.sql` | Core katalog, tenant yönetimi, security, theme engine |
-| 2 | `deploy_core_log.sql` | Core teknik loglar |
-| 3 | `deploy_core_audit.sql` | Core denetim kayıtları |
-| 4 | `deploy_core_report.sql` | Core raporlama |
-| 5 | `deploy_game.sql` | Game gateway |
-| 6 | `deploy_game_log.sql` | Game log |
-| 7 | `deploy_finance.sql` | Finance gateway |
-| 8 | `deploy_finance_log.sql` | Finance log |
-| 9 | `deploy_bonus.sql` | Bonus yapılandırması |
+| 1 | `deploy_core.sql` | Core birleşik DB (16 schema: iş + log + audit + report) |
+| 2 | `deploy_game.sql` | Game birleşik DB (iş + game_log schema) |
+| 3 | `deploy_finance.sql` | Finance birleşik DB (iş + finance_log schema) |
+| 4 | `deploy_bonus.sql` | Bonus yapılandırması |
 
-**2. Tenant Katmanı (her tenant için):**
+**2. Client Katmanı (her client için):**
 
 | Sıra | Script | Açıklama |
 |------|--------|----------|
-| 10 | `deploy_tenant.sql` | Tenant ana iş verileri |
-| 11 | `deploy_tenant_log.sql` | Tenant operasyonel loglar |
-| 12 | `deploy_tenant_audit.sql` | Tenant audit kayıtları |
-| 13 | `deploy_tenant_report.sql` | Tenant raporlama |
-| 14 | `deploy_tenant_affiliate.sql` | Tenant affiliate tracking |
+| 5 | `deploy_client.sql` | Client birleşik DB (30 schema: iş + log + audit + report + affiliate) |
 
 **3. Staging / Development (opsiyonel):**
 
@@ -466,7 +435,7 @@ Veritabanları aşağıdaki sırada deploy edilmelidir:
 
 1. Fonksiyon dosyası: `{db}/functions/{schema}/{domain}/{fonksiyon_adi}.sql`
 2. Deploy script'e `\i` satırı ekle
-3. İlgili fonksiyon dosyasını güncelle (`FUNCTIONS_CORE.md`, `FUNCTIONS_TENANT.md` veya `FUNCTIONS_GATEWAY.md`)
+3. İlgili fonksiyon dosyasını güncelle (`FUNCTIONS_CORE.md`, `FUNCTIONS_CLIENT.md` veya `FUNCTIONS_GATEWAY.md`)
 
 ### 8.3 Partition Ekleme
 
@@ -494,7 +463,7 @@ Veritabanları aşağıdaki sırada deploy edilmelidir:
 
 ### 9.1 RBAC (Role Based Access Control)
 
-8 sistem rolü: `superadmin`, `admin`, `companyadmin`, `tenantadmin`, `moderator`, `editor`, `operator`, `user`
+8 sistem rolü: `superadmin`, `admin`, `companyadmin`, `clientadmin`, `moderator`, `editor`, `operator`, `user`
 
 143 permission (`core/data/permissions_full.sql`). Yetkiler UPSERT pattern ile tanımlanır.
 
@@ -506,17 +475,17 @@ Core DB `security` şemasında merkezi access control fonksiyonları:
 |-----------|----------|
 | `user_get_access_level(caller_id)` | Caller'ın erişim seviyesini döner |
 | `user_assert_access_company(caller_id, company_id)` | Company erişim kontrolü (P0403 exception) |
-| `user_assert_access_tenant(caller_id, tenant_id)` | Tenant erişim kontrolü (P0403 exception) |
+| `user_assert_access_client(caller_id, client_id)` | Client erişim kontrolü (P0403 exception) |
 | `user_assert_manage_user(caller_id, target_user_id)` | Kullanıcı yönetim kontrolü (P0403 exception) |
 
 ### 9.3 Cross-DB Güvenlik Deseni
 
-Tenant DB fonksiyonları auth kontrolü **yapmaz**. Yetkilendirme Core DB'de, iş mantığı Tenant DB'de çalışır:
+Client DB fonksiyonları auth kontrolü **yapmaz**. Yetkilendirme Core DB'de, iş mantığı Client DB'de çalışır:
 
 ```mermaid
 flowchart LR
-    R["Backend Request"] --> A["1. Core DB:<br/>user_assert_access_tenant<br/>(P0403 → işlem durur)"]
-    A -- "Başarılı" --> B["2. Tenant DB:<br/>İş fonksiyonu (auth-agnostic)"]
+    R["Backend Request"] --> A["1. Core DB:<br/>user_assert_access_client<br/>(P0403 → işlem durur)"]
+    A -- "Başarılı" --> B["2. Client DB:<br/>İş fonksiyonu (auth-agnostic)"]
 ```
 
 ### 9.4 GeoIP ile Güvenlik İzleme
@@ -529,21 +498,24 @@ Tüm login ve oturum olayları 22 GeoIP alanı ile zenginleştirilir (ip-api.com
 
 ### 10.1 Altın Kurallar
 
-> 1. **"Core paylaşılır, tenant izole edilir."**
-> 2. **"Log kısa ömürlüdür, audit kalıcıdır."**
-> 3. **"Her tenant için ayrı veritabanı = tam izolasyon."**
-> 4. **"Frontend state (tema) Core'da, business data Tenant'ta tutulur."**
+> 1. **"5 fiziksel DB: core, game, finance, bonus, client. Core paylaşılır, client izole edilir."**
+> 2. **"Log kısa ömürlüdür, audit kalıcıdır. Her ikisi de ana DB'nin schema'sı olarak yaşar."**
+> 3. **"Her client için ayrı veritabanı = tam izolasyon."**
+> 4. **"Frontend state (tema) Core'da, business data Client'ta tutulur."**
 
 ### 10.2 Retention Stratejisi
 
-| Veri Tipi | DB | Partition | Retention |
-|-----------|----|-----------|-----------|
-| Teknik loglar | `*_log` DB'ler | Daily | 30-90 gün |
-| Auth denetim | `core_audit` | Daily | 90 gün |
-| Player audit | `tenant_audit` | Hybrid | 365 gün - 5 yıl |
-| İş verileri | `tenant`, `tenant_affiliate` | Monthly | Sınırsız |
-| Raporlar | `*_report` DB'ler | Monthly | Sınırsız |
-| Kullanıcı mesajları | `core`, `tenant` | Monthly | 180 gün |
+| Veri Tipi | DB / Schema | Partition | Retention |
+|-----------|-------------|-----------|-----------|
+| Core teknik loglar | `core` DB: backoffice_log, logs schema'ları | Daily | 30-90 gün |
+| Core auth denetim | `core` DB: backoffice_audit schema'sı | Daily | 90 gün |
+| Core raporlar | `core` DB: finance_report, billing_report, performance schema'ları | Monthly | Sınırsız |
+| Game loglar | `game` DB: game_log schema'sı | Daily | 7 gün |
+| Finance loglar | `finance` DB: finance_log schema'sı | Daily | 14 gün |
+| Player audit | `client` DB: player_audit schema'sı | Hybrid | 365 gün - 5 yıl |
+| Client iş verileri | `client` DB: iş + affiliate schema'ları | Monthly | Sınırsız |
+| Client raporlar | `client` DB: report schema'ları | Monthly | Sınırsız |
+| Kullanıcı mesajları | `core`, `client` | Monthly | 180 gün |
 
 > Detaylar: **[LOGSTRATEGY.md](LOGSTRATEGY.md)** | Partition detayları: **[PARTITION_ARCHITECTURE.md](PARTITION_ARCHITECTURE.md)**
 
@@ -556,7 +528,7 @@ Tüm login ve oturum olayları 22 GeoIP alanı ile zenginleştirilir (ip-api.com
 | Doküman | Açıklama |
 |---------|----------|
 | [DATABASE_ARCHITECTURE.md](DATABASE_ARCHITECTURE.md) | Detaylı veritabanı mimarisi, şemalar ve tablolar |
-| [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md) | Fonksiyon referansı (index → [Core](FUNCTIONS_CORE.md) · [Tenant](FUNCTIONS_TENANT.md) · [Gateway](FUNCTIONS_GATEWAY.md)) |
+| [DATABASE_FUNCTIONS.md](DATABASE_FUNCTIONS.md) | Fonksiyon referansı (index → [Core](FUNCTIONS_CORE.md) · [Client](FUNCTIONS_CLIENT.md) · [Gateway](FUNCTIONS_GATEWAY.md)) |
 | [LOGSTRATEGY.md](LOGSTRATEGY.md) | Log, audit ve retention stratejisi |
 | [PARTITION_ARCHITECTURE.md](PARTITION_ARCHITECTURE.md) | Partition yapısı ve yönetim fonksiyonları |
 
@@ -567,7 +539,7 @@ Tüm login ve oturum olayları 22 GeoIP alanı ile zenginleştirilir (ip-api.com
 | [GAME_GATEWAY_GUIDE.md](../guides/GAME_GATEWAY_GUIDE.md) | Oyun gateway entegrasyon rehberi (PP + Hub88) |
 | [FINANCE_GATEWAY_GUIDE.md](../guides/FINANCE_GATEWAY_GUIDE.md) | Finans gateway entegrasyon rehberi |
 | [BONUS_ENGINE_GUIDE.md](../guides/BONUS_ENGINE_GUIDE.md) | Bonus motoru ve kural sistemi rehberi |
-| [PROVISIONING_GUIDE.md](../guides/PROVISIONING_GUIDE.md) | Tenant provisioning rehberi |
+| [PROVISIONING_GUIDE.md](../guides/PROVISIONING_GUIDE.md) | Client provisioning rehberi |
 | [SHADOW_MODE_GUIDE.md](../guides/SHADOW_MODE_GUIDE.md) | Shadow mode test rehberi |
 | [CROSS_DB_JOIN_GUIDE.md](../guides/CROSS_DB_JOIN_GUIDE.md) | Cross-DB join rehberi |
 | [CALL_CENTER_GUIDE.md](../guides/CALL_CENTER_GUIDE.md) | Çağrı merkezi ve ticket sistemi rehberi |
@@ -582,4 +554,4 @@ Tüm login ve oturum olayları 22 GeoIP alanı ile zenginleştirilir (ip-api.com
 
 ---
 
-_Son Güncelleme: 2026-02-20_
+_Son Güncelleme: 2026-03-01_

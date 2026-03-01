@@ -31,7 +31,7 @@ CREATE TABLE bonus.bonus_awards (
     -- Tüm 6 bileşeni içerir: trigger, data, eligibility, reward, usage, target
     rule_snapshot JSONB,
 
-    -- Usage kuralları (Tenant tarafında enforce edilir)
+    -- Usage kuralları (Client tarafında enforce edilir)
     -- {"wagering_multiplier":30,"min_combined_count":5,"min_selection_odds":1.65,
     --  "min_total_odds":13.0,"excluded_bet_types":["virtual","live"],
     --  "max_withdrawal_factor":25,"turnover_applies_to":"bonus",
@@ -60,7 +60,7 @@ CREATE TABLE bonus.bonus_awards (
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
 
     -- ═══ Transaction Referansları ═══
-    tenant_transaction_id BIGINT,                      -- Bonus credit transaction ID
+    client_transaction_id BIGINT,                      -- Bonus credit transaction ID
     completion_transaction_id BIGINT,                  -- BONUS→REAL dönüşüm transaction ID
 
     -- ═══ Bonus Request Referansı ═══

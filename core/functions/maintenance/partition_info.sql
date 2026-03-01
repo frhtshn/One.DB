@@ -1,6 +1,6 @@
 -- ================================================================
--- PARTITION_INFO: Partition durumunu raporlar
--- Core veritabanı için monitoring ve health check
+-- PARTITION_INFO: Tüm schema'lardaki partition durumunu raporlar
+-- Core veritabanı: Birleşik monitoring ve health check
 -- Her partitioned tablo için özet bilgi döner
 -- ================================================================
 
@@ -31,7 +31,16 @@ BEGIN
         JOIN pg_namespace pn ON pn.oid = pc.relnamespace
         JOIN pg_class cc ON cc.oid = i.inhrelid
         JOIN pg_namespace cn ON cn.oid = cc.relnamespace
-        WHERE pn.nspname IN ('messaging', 'security')
+        WHERE pn.nspname IN (
+            -- Core Business
+            'messaging', 'security',
+            -- Log (eski core_log)
+            'logs', 'backoffice_log',
+            -- Audit (eski core_audit)
+            'backoffice_audit',
+            -- Report (eski core_report)
+            'performance', 'finance_report', 'billing_report'
+        )
     ),
     summary AS (
         SELECT
@@ -56,4 +65,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in core DB (messaging, security). Shows count, size, oldest/newest partitions.';
+COMMENT ON FUNCTION maintenance.partition_info() IS 'Reports partition status for all partitioned tables in core DB. Covers: messaging, security, logs, backoffice_log, backoffice_audit, performance, finance_report, billing_report.';

@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Presentation Schema Foreign Key Constraints
+-- Client Presentation Schema Foreign Key Constraints
 -- =============================================
 
 -- navigation: Hiyerarşi (self-referencing)

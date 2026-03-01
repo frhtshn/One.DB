@@ -67,4 +67,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_template_list(INTEGER, VARCHAR, VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) IS 'List tenant message templates with channel, category, status, and search filters. Returns paginated results with total count.';
+COMMENT ON FUNCTION messaging.admin_message_template_list(INTEGER, VARCHAR, VARCHAR, VARCHAR, VARCHAR, INTEGER, INTEGER) IS 'List client message templates with channel, category, status, and search filters. Returns paginated results with total count.';

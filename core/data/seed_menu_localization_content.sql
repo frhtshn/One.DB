@@ -1,5 +1,5 @@
 -- ================================================================
--- NUCLEO PLATFORM - MENU LOCALIZATION SEED (CONTENT & SECURITY)
+-- SORTIS ONE - MENU LOCALIZATION SEED (CONTENT & SECURITY)
 -- ================================================================
 -- staging_seed_menu_localization.sql ile birebir uyumlu.
 -- Bu dosya seed_presentation.sql'den ÖNCE çalıştırılmalıdır.
@@ -66,12 +66,12 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- ----------------------------------------------------------------
 -- FRONTEND_CONTENT — TABS (1)
 -- ----------------------------------------------------------------
-('ui.tab.tenant-licenses', 'ui', 'tab', 'Tenant licenses sekmesi'),
+('ui.tab.client-licenses', 'ui', 'tab', 'Client licenses sekmesi'),
 
 -- ----------------------------------------------------------------
 -- FRONTEND_CONTENT — CONTEXTS (10)
 -- ----------------------------------------------------------------
-('ui.context.tenant-license-add',       'ui', 'context', 'Tenant license add button'),
+('ui.context.client-license-add',       'ui', 'context', 'Client license add button'),
 ('ui.context.social-link-create',       'ui', 'context', 'Social link create button'),
 ('ui.context.social-link-edit',         'ui', 'context', 'Social link edit button'),
 ('ui.context.announcement-bar-create',  'ui', 'context', 'Announcement bar create button'),
@@ -173,10 +173,10 @@ JOIN (VALUES
 ('ui.page.game-labels',        'Game Labels'),
 
 -- Tabs (1)
-('ui.tab.tenant-licenses', 'Licenses'),
+('ui.tab.client-licenses', 'Licenses'),
 
 -- Contexts - Site Management (10)
-('ui.context.tenant-license-add',      'Add License'),
+('ui.context.client-license-add',      'Add License'),
 ('ui.context.social-link-create',      'Add Social Link'),
 ('ui.context.social-link-edit',        'Edit Social Link'),
 ('ui.context.announcement-bar-create', 'Create Announcement'),
@@ -269,10 +269,10 @@ JOIN (VALUES
 ('ui.page.game-labels',        'Oyun Etiketleri'),
 
 -- Tabs (1)
-('ui.tab.tenant-licenses', 'Lisanslar'),
+('ui.tab.client-licenses', 'Lisanslar'),
 
 -- Contexts - Site Management (10)
-('ui.context.tenant-license-add',      'Lisans Ekle'),
+('ui.context.client-license-add',      'Lisans Ekle'),
 ('ui.context.social-link-create',      'Sosyal Link Ekle'),
 ('ui.context.social-link-edit',        'Sosyal Linki Düzenle'),
 ('ui.context.announcement-bar-create', 'Duyuru Oluştur'),

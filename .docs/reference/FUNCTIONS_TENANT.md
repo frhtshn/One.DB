@@ -1,17 +1,17 @@
-# Tenant Functions & Triggers
+# Client Functions & Triggers
 
-Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
+Client katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
-**Veritabanları:** `tenant`, `tenant_log`, `tenant_report`, `tenant_audit`, `tenant_affiliate`
+**Veritabanı:** `client` (birleşik DB — 30 schema: core business, log, audit, report, affiliate)
 **Toplam:** 337 fonksiyon
 
 ---
 
-## Tenant Database (292 fonksiyon)
+## Client Database (292 fonksiyon)
 
-> **Note:** Tenant database functions do NOT perform IDOR (access control) checks.
-> Authorization is handled in Core DB via `user_assert_access_tenant(caller_id, tenant_id)` before calling tenant functions.
-> This follows the cross-database security pattern: **Core DB (auth) → Tenant DB (business logic)**.
+> **Note:** Client database functions do NOT perform IDOR (access control) checks.
+> Authorization is handled in Core DB via `user_assert_access_client(caller_id, client_id)` before calling client functions.
+> This follows the cross-database security pattern: **Core DB (auth) → Client DB (business logic)**.
 
 ### Auth Schema (31)
 
@@ -251,10 +251,10 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `game_settings_sync` | Core DB→Tenant oyun kataloğu senkronizasyonu (UPSERT, tenant override'ları korur) |
+| `game_settings_sync` | Core DB→Client oyun kataloğu senkronizasyonu (UPSERT, client override'ları korur) |
 | `game_settings_remove` | Oyunu devre dışı bırak (soft delete, is_enabled=FALSE) |
 | `game_settings_get` | Oyun ayarı detay. Returns JSONB |
-| `game_settings_update` | Tenant özelleştirmelerini güncelle (COALESCE, 14 parametre). Returns VOID |
+| `game_settings_update` | Client özelleştirmelerini güncelle (COALESCE, 14 parametre). Returns VOID |
 | `game_settings_list` | Cursor pagination, provider/tip/arama filtreli, shadow mode destekli. Returns JSONB |
 
 #### Oyun Limitleri (4)
@@ -308,8 +308,8 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `transaction_types_sync` | Core→Tenant işlem tipi kataloğu senkronizasyonu (UPSERT by id) |
-| `operation_types_sync` | Core→Tenant operasyon tipi kataloğu senkronizasyonu (UPSERT by id) |
+| `transaction_types_sync` | Core→Client işlem tipi kataloğu senkronizasyonu (UPSERT by id) |
+| `operation_types_sync` | Core→Client operasyon tipi kataloğu senkronizasyonu (UPSERT by id) |
 
 #### Payment Sessions (3)
 
@@ -705,7 +705,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 | Fonksiyon | Açıklama |
 |-----------|----------|
-| `admin_message_template_create` | Create tenant message template with multilingual translations. Validates channel-specific requirements → INT |
+| `admin_message_template_create` | Create client message template with multilingual translations. Validates channel-specific requirements → INT |
 | `admin_message_template_update` | Update template metadata and translations. Channel type immutable → BOOL |
 | `admin_message_template_get` | Get template details with all translations. Returns JSONB |
 | `admin_message_template_list` | Paginated list with channel/category/status/search filters. Returns JSONB |
@@ -825,7 +825,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Tenant Log Database (12 fonksiyon)
+## Client Log Database (12 fonksiyon)
 
 ### Game Log Schema (6)
 
@@ -863,7 +863,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Tenant Report Database (4 fonksiyon)
+## Client Report Database (4 fonksiyon)
 
 ### Maintenance Schema (4)
 
@@ -876,7 +876,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Tenant Audit Database (19 fonksiyon)
+## Client Audit Database (19 fonksiyon)
 
 ### Player Audit Schema (8)
 
@@ -928,7 +928,7 @@ Tenant katmanındaki tüm stored procedure, function ve trigger'ları içerir.
 
 ---
 
-## Tenant Affiliate Database (4 fonksiyon)
+## Client Affiliate Database (4 fonksiyon)
 
 ### Maintenance Schema (4)
 

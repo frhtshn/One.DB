@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: billing.provider_settlement_tenants
--- Açıklama: Settlement tenant bazında breakdown
--- Her settlement için tenant bazında detaylar
+-- Tablo: billing.provider_settlement_clients
+-- Açıklama: Settlement client bazında breakdown
+-- Her settlement için client bazında detaylar
 -- Reconciliation karşılaştırması için
 -- =============================================
 
-DROP TABLE IF EXISTS billing.provider_settlement_tenants CASCADE;
+DROP TABLE IF EXISTS billing.provider_settlement_clients CASCADE;
 
-CREATE TABLE billing.provider_settlement_tenants (
+CREATE TABLE billing.provider_settlement_clients (
     id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
     provider_settlement_id bigint NOT NULL,                -- Settlement ID (FK: billing.provider_settlements)
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
 
     -- Bizim hesapladığımız
     our_total_bet numeric(18,6) NOT NULL DEFAULT 0,        -- Bizim toplam bahis
@@ -38,4 +38,4 @@ CREATE TABLE billing.provider_settlement_tenants (
 
 );
 
-COMMENT ON TABLE billing.provider_settlement_tenants IS 'Per-tenant breakdown within provider settlements for detailed reconciliation and variance analysis';
+COMMENT ON TABLE billing.provider_settlement_clients IS 'Per-client breakdown within provider settlements for detailed reconciliation and variance analysis';

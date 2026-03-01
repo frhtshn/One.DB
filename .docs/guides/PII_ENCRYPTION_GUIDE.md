@@ -391,7 +391,7 @@ Okuma sırasında (DB → C#):
 sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
-    participant DB as Tenant DB
+    participant DB as Client DB
 
     FE->>BE: POST /register {username, email, password}
     Note over BE: AES-256(email) → emailEncrypted
@@ -414,7 +414,7 @@ public async Task<long> RegisterAsync(RegisterRequest request)
         SELECT auth.player_register(
             @username, @email_enc, @email_hash,
             @pwd_hash, @token, 1440, @country, @lang
-        )", _tenantDb);
+        )", _clientDb);
 
     cmd.Parameters.AddWithValue("username", request.Username);
     cmd.Parameters.AddWithValue("email_enc", emailEncrypted);   // byte[] → BYTEA
@@ -436,7 +436,7 @@ public async Task<long> RegisterAsync(RegisterRequest request)
 sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
-    participant DB as Tenant DB
+    participant DB as Client DB
 
     FE->>BE: POST /login {email, password}
     Note over BE: SHA-256(normalize(email)) → emailHash
@@ -453,7 +453,7 @@ public async Task<PlayerAuthResult> AuthenticateAsync(string email, string passw
     var emailHash = _crypto.Hash(email);
 
     await using var cmd = new NpgsqlCommand(
-        "SELECT auth.player_authenticate(@email_hash)", _tenantDb);
+        "SELECT auth.player_authenticate(@email_hash)", _clientDb);
     cmd.Parameters.AddWithValue("email_hash", emailHash);
 
     var json = await cmd.ExecuteScalarAsync();
@@ -487,7 +487,7 @@ public async Task<long> CreateProfileAsync(long playerId, ProfileRequest req)
             @middle_name, @last_name, @last_name_hash,
             @birth_date, @address, @phone, @phone_hash,
             @gsm, @gsm_hash, @country_code, @city, @gender
-        )", _tenantDb);
+        )", _clientDb);
 
     cmd.Parameters.AddWithValue("player_id", playerId);
 
@@ -539,7 +539,7 @@ public async Task<long> CreateProfileAsync(long playerId, ProfileRequest req)
 public async Task<PlayerProfile> GetProfileAsync(long playerId)
 {
     await using var cmd = new NpgsqlCommand(
-        "SELECT profile.player_profile_get(@player_id)", _tenantDb);
+        "SELECT profile.player_profile_get(@player_id)", _clientDb);
     cmd.Parameters.AddWithValue("player_id", playerId);
 
     var json = await cmd.ExecuteScalarAsync();
@@ -586,7 +586,7 @@ public async Task<PagedResult<PlayerSummary>> SearchPlayersAsync(PlayerSearchReq
             @identity_no_hash, @category_id, @group_id,
             @country_code, @birth_date_from, @birth_date_to,
             @registered_from, @registered_to, @page, @page_size
-        )", _tenantDb);
+        )", _clientDb);
 
     // Hash-based arama: operatör tam değeri girer → backend hash'ler → DB eşleştirir
     cmd.Parameters.AddWithValue("email_hash",
@@ -640,7 +640,7 @@ public async Task<long> UpsertIdentityAsync(long playerId, string identityNo)
     await using var cmd = new NpgsqlCommand(@"
         SELECT profile.player_identity_upsert(
             @player_id, @identity_no, @identity_no_hash
-        )", _tenantDb);
+        )", _clientDb);
 
     cmd.Parameters.AddWithValue("player_id", playerId);
     cmd.Parameters.AddWithValue("identity_no", identityEncrypted);

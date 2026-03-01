@@ -1,14 +1,14 @@
 -- ================================================================
 -- PROMO_CODE_LIST: Promo kod listesi
 -- ================================================================
--- Filtre: tenant_id, bonus_rule_id, is_active.
--- Platform seviyesi kodlar (tenant_id=NULL) dahil.
+-- Filtre: client_id, bonus_rule_id, is_active.
+-- Platform seviyesi kodlar (client_id=NULL) dahil.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS promotion.promo_code_list(BIGINT, BIGINT, BOOLEAN);
 
 CREATE OR REPLACE FUNCTION promotion.promo_code_list(
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_bonus_rule_id BIGINT DEFAULT NULL,
     p_is_active BOOLEAN DEFAULT NULL
 )
@@ -23,7 +23,7 @@ BEGIN
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'id', pc.id,
-            'tenantId', pc.tenant_id,
+            'clientId', pc.client_id,
             'code', pc.code,
             'promoName', pc.promo_name,
             'bonusRuleId', pc.bonus_rule_id,
@@ -39,7 +39,7 @@ BEGIN
     INTO v_result
     FROM promotion.promo_codes pc
     JOIN bonus.bonus_rules br ON br.id = pc.bonus_rule_id
-    WHERE (p_tenant_id IS NULL OR pc.tenant_id IS NULL OR pc.tenant_id = p_tenant_id)
+    WHERE (p_client_id IS NULL OR pc.client_id IS NULL OR pc.client_id = p_client_id)
       AND (p_bonus_rule_id IS NULL OR pc.bonus_rule_id = p_bonus_rule_id)
       AND (p_is_active IS NULL OR pc.is_active = p_is_active);
 
@@ -47,4 +47,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION promotion.promo_code_list(BIGINT, BIGINT, BOOLEAN) IS 'Lists promotional codes filtered by tenant, bonus rule, and active status. Includes platform-level codes.';
+COMMENT ON FUNCTION promotion.promo_code_list(BIGINT, BIGINT, BOOLEAN) IS 'Lists promotional codes filtered by client, bonus rule, and active status. Includes platform-level codes.';

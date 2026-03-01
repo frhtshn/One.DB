@@ -6,7 +6,7 @@ DROP FUNCTION IF EXISTS security.auth_user_tokens_list(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.auth_user_tokens_list(
     p_user_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -19,7 +19,7 @@ BEGIN
     WHERE t.user_id = p_user_id
       AND t.is_revoked = FALSE
       AND t.expires_at > NOW()
-      AND (p_tenant_id IS NULL OR t.tenant_id = p_tenant_id);
+      AND (p_client_id IS NULL OR t.client_id = p_client_id);
 
     RETURN v_result;
 END;

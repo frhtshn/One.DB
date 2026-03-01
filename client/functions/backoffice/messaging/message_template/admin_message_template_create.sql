@@ -95,4 +95,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_template_create(INTEGER, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB, BOOLEAN, JSONB) IS 'Create a new tenant message template with multilingual translations. Validates channel-specific content requirements.';
+COMMENT ON FUNCTION messaging.admin_message_template_create(INTEGER, VARCHAR, VARCHAR, VARCHAR, VARCHAR, TEXT, JSONB, BOOLEAN, JSONB) IS 'Create a new client message template with multilingual translations. Validates channel-specific content requirements.';

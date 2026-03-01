@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: game_log.provider_api_callbacks
 -- Açıklama: Provider'lardan gelen callback/webhook logları
--- Gateway seviyesi: Tüm tenant'lar için ortak
+-- Gateway seviyesi: Tüm client'lar için ortak
 -- Provider'ın sisteme geri bildirdiği event'ler
 -- GAME_LOG DB - 7 gün retention (daily partition)
 -- =============================================
@@ -12,7 +12,7 @@ CREATE TABLE game_log.provider_api_callbacks (
     id bigserial,
 
     -- Bağlam bilgileri
-    tenant_id BIGINT,                                    -- Çözümlenen tenant (NULL olabilir: parse hatası)
+    client_id BIGINT,                                    -- Çözümlenen client (NULL olabilir: parse hatası)
     player_id BIGINT,                                    -- Çözümlenen oyuncu (NULL olabilir)
     provider_code VARCHAR(50) NOT NULL,                  -- Provider kodu: PRAGMATIC, EVOLUTION, EGT
     game_code VARCHAR(100),                              -- Çözümlenen oyun kodu (varsa)
@@ -47,4 +47,4 @@ CREATE TABLE game_log.provider_api_callbacks (
 
 CREATE TABLE game_log.provider_api_callbacks_default PARTITION OF game_log.provider_api_callbacks DEFAULT;
 
-COMMENT ON TABLE game_log.provider_api_callbacks IS 'Inbound callback/webhook logs from game providers (bet, win, refund, rollback). Gateway-level shared across all tenants. Partitioned daily by created_at. Retention: 7 days.';
+COMMENT ON TABLE game_log.provider_api_callbacks IS 'Inbound callback/webhook logs from game providers (bet, win, refund, rollback). Gateway-level shared across all clients. Partitioned daily by created_at. Retention: 7 days.';

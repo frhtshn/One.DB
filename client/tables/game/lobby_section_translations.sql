@@ -16,4 +16,4 @@ CREATE TABLE game.lobby_section_translations (
     CONSTRAINT uq_lobby_section_translation UNIQUE (lobby_section_id, language_code)
 );
 
-COMMENT ON TABLE game.lobby_section_translations IS 'Multilingual title and subtitle for lobby sections. FK to lobby_sections defined in tenant/constraints/content.sql.';
+COMMENT ON TABLE game.lobby_section_translations IS 'Multilingual title and subtitle for lobby sections. FK to lobby_sections defined in client/constraints/content.sql.';

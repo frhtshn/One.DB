@@ -54,4 +54,40 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- =============================================================================
 \i finance/indexes/catalog.sql
 
+-- =============================================================================
+-- LOG SCHEMAS (eski finance_log DB)
+-- =============================================================================
+CREATE SCHEMA IF NOT EXISTS finance_log;
+COMMENT ON SCHEMA finance_log IS 'Finance activity logs';
+
+CREATE SCHEMA IF NOT EXISTS maintenance;
+COMMENT ON SCHEMA maintenance IS 'Partition management and maintenance utilities';
+
+-- =============================================================================
+-- FINANCE LOG TABLES (daily partitioned)
+-- =============================================================================
+\i finance/tables/finance_log/provider_api_requests.sql
+\i finance/tables/finance_log/provider_api_callbacks.sql
+
+-- =============================================================================
+-- FINANCE LOG CONSTRAINTS
+-- =============================================================================
+\i finance/constraints/finance_log.sql
+
+-- =============================================================================
+-- FINANCE LOG INDEXES
+-- =============================================================================
+\i finance/indexes/finance_log.sql
+
+-- =============================================================================
+-- FUNCTIONS - MAINTENANCE (Partition yönetimi)
+-- =============================================================================
+\i finance/functions/maintenance/create_partitions.sql
+\i finance/functions/maintenance/drop_expired_partitions.sql
+\i finance/functions/maintenance/partition_info.sql
+\i finance/functions/maintenance/run_maintenance.sql
+
+-- INITIAL PARTITIONS
+SELECT * FROM maintenance.create_partitions();
+
 COMMIT;

@@ -2,7 +2,7 @@
 -- PAYMENT_METHOD_LIMIT_UPSERT: Ödeme metot limiti ekle/güncelle
 -- ================================================================
 -- (payment_method_id, currency_code) bazlı UPSERT.
--- Tenant override olarak kaydedilir.
+-- Client override olarak kaydedilir.
 -- Auth-agnostic.
 -- ================================================================
 
@@ -118,4 +118,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION finance.payment_method_limit_upsert IS 'Upserts per-method currency limit with deposit/withdrawal limits, fees, and fee min/max (tenant override). Supports fiat (type=1) and crypto (type=2). Auth-agnostic.';
+COMMENT ON FUNCTION finance.payment_method_limit_upsert IS 'Upserts per-method currency limit with deposit/withdrawal limits, fees, and fee min/max (client override). Supports fiat (type=1) and crypto (type=2). Auth-agnostic.';

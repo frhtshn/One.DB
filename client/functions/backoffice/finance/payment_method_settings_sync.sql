@@ -1,10 +1,10 @@
 -- ================================================================
--- PAYMENT_METHOD_SETTINGS_SYNC: Core->Tenant ödeme metot data upsert
+-- PAYMENT_METHOD_SETTINGS_SYNC: Core->Client ödeme metot data upsert
 -- ================================================================
 -- Backend tarafından çağrılır (auth-agnostic, cross-DB auth pattern).
 -- p_catalog_data TEXT → JSONB cast → typed kolonlara extract.
--- INSERT: catalog + tenant override (default değerler)
--- UPDATE: SADECE catalog alanları — tenant override'lara DOKUNMAZ
+-- INSERT: catalog + client override (default değerler)
+-- UPDATE: SADECE catalog alanları — client override'lara DOKUNMAZ
 -- ================================================================
 
 DROP FUNCTION IF EXISTS finance.payment_method_settings_sync(BIGINT, TEXT, TEXT, VARCHAR);
@@ -12,7 +12,7 @@ DROP FUNCTION IF EXISTS finance.payment_method_settings_sync(BIGINT, TEXT, TEXT,
 CREATE OR REPLACE FUNCTION finance.payment_method_settings_sync(
     p_payment_method_id BIGINT,
     p_catalog_data TEXT,
-    p_tenant_overrides TEXT DEFAULT NULL,
+    p_client_overrides TEXT DEFAULT NULL,
     p_rollout_status VARCHAR(20) DEFAULT 'production'
 )
 RETURNS VOID
@@ -33,13 +33,13 @@ BEGIN
     END IF;
 
     v_catalog := p_catalog_data::JSONB;
-    v_overrides := COALESCE(NULLIF(TRIM(p_tenant_overrides), ''), '{}')::JSONB;
+    v_overrides := COALESCE(NULLIF(TRIM(p_client_overrides), ''), '{}')::JSONB;
 
     -- Mevcut kayıt kontrolü
     SELECT EXISTS(SELECT 1 FROM finance.payment_method_settings WHERE payment_method_id = p_payment_method_id) INTO v_exists;
 
     IF v_exists THEN
-        -- UPDATE: Sadece catalog alanları güncellenir, tenant override'lara DOKUNULMAZ
+        -- UPDATE: Sadece catalog alanları güncellenir, client override'lara DOKUNULMAZ
         UPDATE finance.payment_method_settings SET
             provider_id = COALESCE((v_catalog->>'provider_id')::BIGINT, provider_id),
             external_method_id = COALESCE(v_catalog->>'external_method_id', external_method_id),
@@ -69,7 +69,7 @@ BEGIN
             updated_at = NOW()
         WHERE payment_method_id = p_payment_method_id;
     ELSE
-        -- INSERT: catalog alanları + tenant override default değerleri
+        -- INSERT: catalog alanları + client override default değerleri
         INSERT INTO finance.payment_method_settings (
             payment_method_id, provider_id, external_method_id,
             payment_method_code, payment_method_name, provider_code,
@@ -126,4 +126,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION finance.payment_method_settings_sync IS 'Syncs payment method catalog data from Core to Tenant DB. On INSERT: applies catalog + tenant overrides. On UPDATE: only catalog fields updated, tenant overrides preserved. Auth-agnostic (cross-DB auth pattern).';
+COMMENT ON FUNCTION finance.payment_method_settings_sync IS 'Syncs payment method catalog data from Core to Client DB. On INSERT: applies catalog + client overrides. On UPDATE: only catalog fields updated, client overrides preserved. Auth-agnostic (cross-DB auth pattern).';

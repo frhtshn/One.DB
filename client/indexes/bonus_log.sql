@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log Bonus Log Schema Indexes
+-- Client Log Bonus Log Schema Indexes
 -- =============================================
 
 -- bonus_evaluation_logs — oyuncu bazlı sorgulama

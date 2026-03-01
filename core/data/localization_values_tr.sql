@@ -85,16 +85,16 @@ JOIN (VALUES
     -- Error Messages - System Database
     ('error.system.database.connection-failed', 'Veritabanı bağlantısı kurulamadı'),
     ('error.system.database.query-failed', 'Veritabanı sorgusu başarısız: {0}'),
-    ('error.system.database.invalid-tenant-id', 'Geçersiz tenant ID: {0}'),
+    ('error.system.database.invalid-client-id', 'Geçersiz client ID: {0}'),
     ('error.system.database.command-failed', 'Veritabanı işlemi başarısız: {0}'),
 
     -- Error Messages - Forbidden
     ('error.forbidden.resource', '{0} kaynağına erişim için yetkiniz yok. Gerekli yetki: {1}'),
-    ('error.tenant.access-denied', 'Tenant {0} için erişim izniniz yok'),
-    ('error.tenant.mismatch', 'Farklı bir tenant için izin değişikliği yapılamaz'),
-    ('error.tenant.scope-missing', 'Tenant kapsam parametresi bulunamadı'),
+    ('error.client.access-denied', 'Client {0} için erişim izniniz yok'),
+    ('error.client.mismatch', 'Farklı bir client için izin değişikliği yapılamaz'),
+    ('error.client.scope-missing', 'Client kapsam parametresi bulunamadı'),
     ('error.access.company-scope-denied', 'Şirket kapsamı dışında işlem yapılamaz'),
-    ('error.access.tenant-scope-denied', 'Tenant kapsamı dışında işlem yapılamaz'),
+    ('error.access.client-scope-denied', 'Client kapsamı dışında işlem yapılamaz'),
     ('error.access.hierarchy-violation', 'Hiyerarşi ihlali - yetkisiz işlem'),
     ('error.access.denied', 'Erişim engellendi'),
     ('error.access.unauthorized', 'Yetkisiz erişim'),
@@ -116,9 +116,9 @@ JOIN (VALUES
     ('error.system.silo.cluster-unavailable', 'Orleans cluster erişilemez durumda'),
     ('error.system.silo.auth-init-failed', 'Auth altyapısı başlatılamadı'),
 
-    -- Error Messages - Tenant
-    ('error.tenant.not-active', 'Tenant {0} aktif değil'),
-    ('error.tenant.configuration-invalid', 'Tenant {0} konfigürasyonu geçersiz: {1}'),
+    -- Error Messages - Client
+    ('error.client.not-active', 'Client {0} aktif değil'),
+    ('error.client.configuration-invalid', 'Client {0} konfigürasyonu geçersiz: {1}'),
 
     -- Error Messages - Resource
     ('error.resource.not-found', '{0} bulunamadı: {1}'),
@@ -219,13 +219,13 @@ JOIN (VALUES
     ('error.role.bulk-assign.failed', 'Toplu yetki atama başarısız'),
     ('error.role.assign-permission.failed', 'Role yetki atama başarısız'),
     ('error.role.remove-permission.failed', 'Rolden yetki kaldırma başarısız'),
-    ('error.role.assign-tenant.failed', 'Tenant rol atama başarısız'),
-    ('error.role.remove-tenant.failed', 'Tenant rol kaldırma başarısız'),
+    ('error.role.assign-client.failed', 'Client rol atama başarısız'),
+    ('error.role.remove-client.failed', 'Client rol kaldırma başarısız'),
     ('error.role.user-not-found', 'Kullanıcı bulunamadı'),
     ('error.role.permission-not-found', 'Yetki bulunamadı'),
     ('error.role.permission-deleted', 'Silinmiş yetki atanamaz'),
     ('error.role.operation-failed', 'Rol işlemi başarısız'),
-    ('error.role.tenant-mismatch', 'Tenant uyuşmazlığı'),
+    ('error.role.client-mismatch', 'Client uyuşmazlığı'),
 
     -- Error Messages - User
     ('error.user.not-found', 'Kullanıcı bulunamadı'),
@@ -278,8 +278,8 @@ JOIN (VALUES
     ('error.currency.create.code-exists', 'Bu para birimi kodu zaten mevcut'),
     ('error.currency.code-invalid', 'Geçersiz para birimi kodu. 3 karakter olmalı'),
     ('error.currency.name-invalid', 'Geçersiz para birimi adı. En az 2 karakter olmalı'),
-    ('error.currency.delete.in-use', 'Para birimi silinemez. Tenant tarafından kullanılıyor'),
-    ('error.currency.delete.is-base-currency', 'Para birimi silinemez. Tenant tarafından base currency olarak kullanılıyor'),
+    ('error.currency.delete.in-use', 'Para birimi silinemez. Client tarafından kullanılıyor'),
+    ('error.currency.delete.is-base-currency', 'Para birimi silinemez. Client tarafından base currency olarak kullanılıyor'),
 
     -- Error Messages - SQL
     ('error.sql.function-name-invalid', 'Geçersiz function adı: {0}'),
@@ -296,9 +296,9 @@ JOIN (VALUES
     ('error.country.not-found', 'Ülke kodu bulunamadı'),
     ('error.pagination.invalid', 'Geçersiz sayfa veya sayfa boyutu'),
 
-    -- Error Messages - Tenant
-    ('error.tenant.code-exists', 'Tenant kodu zaten mevcut'),
-    ('error.tenant.not-found', 'Tenant bulunamadı'),
+    -- Error Messages - Client
+    ('error.client.code-exists', 'Client kodu zaten mevcut'),
+    ('error.client.not-found', 'Client bulunamadı'),
 
     -- Error Messages - Access Control
     ('error.access.superadmin-required', 'Bu işlem için SuperAdmin yetkisi gerekli'),
@@ -337,7 +337,7 @@ JOIN (VALUES
     ('error.payment-method.name-invalid', 'Geçersiz ödeme yöntemi adı. En az 2 karakter olmalı'),
     ('error.payment-method.type-invalid', 'Geçersiz ödeme tipi. CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER olmalı'),
     ('error.payment-method.code-exists', 'Ödeme yöntemi kodu bu provider altında zaten mevcut'),
-    ('error.payment-method.in-use', 'Ödeme yöntemi silinemez. Tenant tarafından kullanılıyor'),
+    ('error.payment-method.in-use', 'Ödeme yöntemi silinemez. Client tarafından kullanılıyor'),
 
     -- Error Messages - Jurisdiction
     ('error.jurisdiction.not-found', 'Jurisdiction bulunamadı'),
@@ -351,7 +351,7 @@ JOIN (VALUES
     ('error.jurisdiction.has-document-requirements', 'Jurisdiction silinemez. Bağlı belge gereksinimleri mevcut'),
     ('error.jurisdiction.has-level-requirements', 'Jurisdiction silinemez. Bağlı seviye gereksinimleri mevcut'),
     ('error.jurisdiction.has-gaming-policy', 'Jurisdiction silinemez. Bağlı sorumlu oyun politikası mevcut'),
-    ('error.jurisdiction.in-use-by-tenants', 'Jurisdiction silinemez. Tenant tarafından kullanılıyor'),
+    ('error.jurisdiction.in-use-by-clients', 'Jurisdiction silinemez. Client tarafından kullanılıyor'),
 
     -- Error Messages - KYC Policy
     ('error.kyc-policy.not-found', 'KYC politikası bulunamadı'),
@@ -426,23 +426,23 @@ JOIN (VALUES
     ('error.navigation-template-item.self-parent', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
     ('error.navigation-template-item.has-children', 'Öğe silinemez. Alt öğeleri mevcut'),
 
-    -- Tenant Navigation Errors
-    ('error.tenant-navigation.not-found', 'Navigasyon öğesi bulunamadı'),
-    ('error.tenant-navigation.already-initialized', 'Tenant navigasyonu zaten mevcut'),
-    ('error.tenant-navigation.is-locked', 'Kilitli öğe silinemez'),
-    ('error.tenant-navigation.has-children', 'Öğe silinemez. Alt öğeleri mevcut'),
-    ('error.tenant-navigation.parent-not-found', 'Üst öğe bulunamadı'),
-    ('error.tenant-navigation.self-parent', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
-    ('error.tenant-navigation.readonly-field-update', 'Salt okunur alan güncellenemez'),
-    ('error.tenant-navigation.invalid-item-ids', 'Geçersiz öğe ID listesi'),
+    -- Client Navigation Errors
+    ('error.client-navigation.not-found', 'Navigasyon öğesi bulunamadı'),
+    ('error.client-navigation.already-initialized', 'Client navigasyonu zaten mevcut'),
+    ('error.client-navigation.is-locked', 'Kilitli öğe silinemez'),
+    ('error.client-navigation.has-children', 'Öğe silinemez. Alt öğeleri mevcut'),
+    ('error.client-navigation.parent-not-found', 'Üst öğe bulunamadı'),
+    ('error.client-navigation.self-parent', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
+    ('error.client-navigation.readonly-field-update', 'Salt okunur alan güncellenemez'),
+    ('error.client-navigation.invalid-item-ids', 'Geçersiz öğe ID listesi'),
 
-    -- Tenant Theme Errors
-    ('error.tenant-theme.not-found', 'Tenant tema yapılandırması bulunamadı'),
-    ('error.tenant-theme.no-active-theme', 'Aktif tema bulunamadı'),
+    -- Client Theme Errors
+    ('error.client-theme.not-found', 'Client tema yapılandırması bulunamadı'),
+    ('error.client-theme.no-active-theme', 'Aktif tema bulunamadı'),
 
-    -- Tenant Layout Errors
-    ('error.tenant-layout.not-found', 'Layout bulunamadı'),
-    ('error.tenant-layout.no-filter', 'En az bir filtre parametresi gerekli'),
+    -- Client Layout Errors
+    ('error.client-layout.not-found', 'Layout bulunamadı'),
+    ('error.client-layout.no-filter', 'En az bir filtre parametresi gerekli'),
 
     -- Error Messages - Messaging
     ('error.messaging.sender-id-required', 'Gönderen kullanıcı ID zorunludur'),
@@ -478,7 +478,7 @@ JOIN (VALUES
     ('error.role.hierarchy-violation', 'Rol hiyerarşi ihlali'),
     ('error.role.insufficient-level', 'Yetersiz rol seviyesi'),
     ('error.role.target-level-violation', 'Hedef rol seviyesi ihlali'),
-    ('error.role.tenant-required', 'Tenant ID zorunludur'),
+    ('error.role.client-required', 'Client ID zorunludur'),
 
     -- Kullanıcı (yeni)
     ('error.user.concurrent-modification', 'Kullanıcı başka bir işlem tarafından değiştirildi'),
@@ -489,11 +489,11 @@ JOIN (VALUES
     -- Departman
     ('error.department.not-found', 'Departman bulunamadı'),
 
-    -- Tenant (yeni)
-    ('error.tenant.id-required', 'Tenant ID zorunludur'),
-    ('error.tenant-provider.not-found', 'Tenant provider kaydı bulunamadı'),
-    ('error.tenant-game.not-found', 'Tenant oyun kaydı bulunamadı'),
-    ('error.tenant-payment-method.not-found', 'Tenant ödeme yöntemi kaydı bulunamadı'),
+    -- Client (yeni)
+    ('error.client.id-required', 'Client ID zorunludur'),
+    ('error.client-provider.not-found', 'Client provider kaydı bulunamadı'),
+    ('error.client-game.not-found', 'Client oyun kaydı bulunamadı'),
+    ('error.client-payment-method.not-found', 'Client ödeme yöntemi kaydı bulunamadı'),
 
     -- Provider (yeni)
     ('error.provider.invalid-rollout-status', 'Geçersiz rollout durumu'),
@@ -525,7 +525,7 @@ JOIN (VALUES
     ('error.payment-method.limits-data-required', 'Limit verisi zorunludur'),
     ('error.payment-method.limits-invalid-format', 'Geçersiz limit veri formatı'),
 
-    -- Oyuncu (Tenant DB)
+    -- Oyuncu (Client DB)
     ('error.player.id-required', 'Oyuncu ID zorunludur'),
     ('error.player-limit.invalid-type', 'Geçersiz limit tipi'),
 
@@ -592,7 +592,7 @@ JOIN (VALUES
     ('error.crypto-rates.rates-empty', 'Kur verisi boş olamaz'),
     ('error.crypto-rates.timestamp-required', 'Zaman damgası zorunludur'),
 
-    -- Mesajlaşma — Tenant (kampanya, şablon, gelen kutusu)
+    -- Mesajlaşma — Client (kampanya, şablon, gelen kutusu)
     ('error.messaging.player-id-required', 'Oyuncu ID zorunludur'),
     ('error.messaging.message-not-found', 'Mesaj bulunamadı'),
     ('error.messaging.invalid-message-type', 'Geçersiz mesaj tipi'),
@@ -973,7 +973,7 @@ JOIN (VALUES
     ('error.kyc-provider-log.case-required', 'Vaka ID zorunludur'),
     ('error.kyc-provider-log.provider-required', 'Sağlayıcı kodu zorunludur'),
 
-    -- Tenant Backoffice — İçerik Yönetimi (CMS)
+    -- Client Backoffice — İçerik Yönetimi (CMS)
     ('error.content.id-required', 'İçerik ID zorunludur'),
     ('error.content.not-found', 'İçerik bulunamadı'),
     ('error.content.slug-required', 'Slug zorunludur'),
@@ -988,7 +988,7 @@ JOIN (VALUES
     ('error.content.type-not-found', 'İçerik tipi bulunamadı'),
     ('error.content.type-has-active-contents', 'Aktif içerikleri olan tip silinemez'),
 
-    -- Tenant Backoffice — FAQ Yönetimi
+    -- Client Backoffice — FAQ Yönetimi
     ('error.faq.user-id-required', 'Kullanıcı ID zorunludur'),
     ('error.faq.category-code-required', 'FAQ kategori kodu zorunludur'),
     ('error.faq.category-id-required', 'FAQ kategori ID zorunludur'),
@@ -997,17 +997,17 @@ JOIN (VALUES
     ('error.faq.item-id-required', 'FAQ öğesi ID zorunludur'),
     ('error.faq.item-not-found', 'FAQ öğesi bulunamadı'),
 
-    -- Tenant Backoffice — Layout Yönetimi
+    -- Client Backoffice — Layout Yönetimi
     ('error.layout.id-required', 'Layout ID zorunludur'),
     ('error.layout.not-found', 'Layout bulunamadı'),
     ('error.layout.name-required', 'Layout adı zorunludur'),
     ('error.layout.structure-required', 'Layout yapısı zorunludur'),
 
-    -- Tenant Backoffice — Mesaj Tercihleri
+    -- Client Backoffice — Mesaj Tercihleri
     ('error.messaging.preference.invalid-channel-type', 'Geçersiz tercih kanal tipi'),
     ('error.messaging.preference.opted-in-required', 'Tercih durumu (opted_in) zorunludur'),
 
-    -- Tenant Backoffice — Navigasyon Yönetimi
+    -- Client Backoffice — Navigasyon Yönetimi
     ('error.navigation.id-required', 'Navigasyon öğesi ID zorunludur'),
     ('error.navigation.item-not-found', 'Navigasyon öğesi bulunamadı'),
     ('error.navigation.item-locked', 'Kilitli navigasyon öğesi silinemez'),
@@ -1017,7 +1017,7 @@ JOIN (VALUES
     ('error.navigation.label-required', 'Etiket veya çeviri anahtarı zorunludur'),
     ('error.navigation.item-ids-required', 'Öğe ID listesi zorunludur'),
 
-    -- Tenant Backoffice — Popup Yönetimi
+    -- Client Backoffice — Popup Yönetimi
     ('error.popup.id-required', 'Popup ID zorunludur'),
     ('error.popup.not-found', 'Popup bulunamadı'),
     ('error.popup.user-id-required', 'Kullanıcı ID zorunludur'),
@@ -1025,7 +1025,7 @@ JOIN (VALUES
     ('error.popup.type-id-required', 'Popup tipi ID zorunludur'),
     ('error.popup.type-not-found', 'Popup tipi bulunamadı'),
 
-    -- Tenant Backoffice — Promosyon Yönetimi
+    -- Client Backoffice — Promosyon Yönetimi
     ('error.promotion.id-required', 'Promosyon ID zorunludur'),
     ('error.promotion.not-found', 'Promosyon bulunamadı'),
     ('error.promotion.code-required', 'Promosyon kodu zorunludur'),
@@ -1034,7 +1034,7 @@ JOIN (VALUES
     ('error.promotion.type-id-required', 'Promosyon tipi ID zorunludur'),
     ('error.promotion.type-not-found', 'Promosyon tipi bulunamadı'),
 
-    -- Tenant Backoffice — Slide/Banner Yönetimi
+    -- Client Backoffice — Slide/Banner Yönetimi
     ('error.slide.id-required', 'Slide ID zorunludur'),
     ('error.slide.not-found', 'Slide bulunamadı'),
     ('error.slide.user-id-required', 'Kullanıcı ID zorunludur'),
@@ -1046,10 +1046,10 @@ JOIN (VALUES
     ('error.slide.category-code-required', 'Slide kategori kodu zorunludur'),
     ('error.slide.category-not-found', 'Slide kategorisi bulunamadı'),
 
-    -- Tenant Backoffice — Tema Yönetimi (ek)
+    -- Client Backoffice — Tema Yönetimi (ek)
     ('error.theme.theme-id-required', 'Tema referans ID zorunludur'),
 
-    -- Tenant Backoffice — Güven Logoları
+    -- Client Backoffice — Güven Logoları
     ('error.trust-logo.code-required', 'Logo kodu zorunludur'),
     ('error.trust-logo.type-required', 'Logo tipi zorunludur'),
     ('error.trust-logo.name-required', 'Logo adı zorunludur'),
@@ -1058,14 +1058,14 @@ JOIN (VALUES
     ('error.trust-logo.id-required', 'Logo ID zorunludur'),
     ('error.trust-logo.not-found', 'Logo bulunamadı'),
 
-    -- Tenant Backoffice — Operatör Lisansları
+    -- Client Backoffice — Operatör Lisansları
     ('error.operator-license.jurisdiction-required', 'Yetki alanı zorunludur'),
     ('error.operator-license.license-number-required', 'Lisans numarası zorunludur'),
     ('error.operator-license.expiry-before-issued', 'Bitiş tarihi başlangıç tarihinden önce olamaz'),
     ('error.operator-license.id-required', 'Lisans ID zorunludur'),
     ('error.operator-license.not-found', 'Lisans bulunamadı'),
 
-    -- Tenant Backoffice — SEO Yönlendirme
+    -- Client Backoffice — SEO Yönlendirme
     ('error.seo-redirect.from-slug-required', 'Kaynak URL zorunludur'),
     ('error.seo-redirect.to-url-required', 'Hedef URL zorunludur'),
     ('error.seo-redirect.invalid-redirect-type', 'Geçersiz yönlendirme tipi (301 veya 302 olmalıdır)'),
@@ -1074,26 +1074,26 @@ JOIN (VALUES
     ('error.seo-redirect.id-required', 'Yönlendirme ID zorunludur'),
     ('error.seo-redirect.not-found', 'Yönlendirme bulunamadı'),
 
-    -- Tenant Backoffice — İçerik SEO Meta
+    -- Client Backoffice — İçerik SEO Meta
     ('error.content-seo-meta.content-id-required', 'İçerik ID zorunludur'),
     ('error.content-seo-meta.language-required', 'Dil kodu zorunludur'),
     ('error.content-seo-meta.invalid-twitter-card', 'Geçersiz Twitter kart tipi'),
     ('error.content-seo-meta.translation-not-found', 'İçerik çevirisi bulunamadı'),
 
-    -- Tenant Backoffice — Sosyal Medya Bağlantıları
+    -- Client Backoffice — Sosyal Medya Bağlantıları
     ('error.social-link.platform-required', 'Platform adı zorunludur'),
     ('error.social-link.url-required', 'URL zorunludur'),
     ('error.social-link.items-required', 'Bağlantı listesi zorunludur'),
     ('error.social-link.id-required', 'Bağlantı ID zorunludur'),
     ('error.social-link.not-found', 'Sosyal medya bağlantısı bulunamadı'),
 
-    -- Tenant Backoffice — Site Ayarları
+    -- Client Backoffice — Site Ayarları
     ('error.site-settings.field-name-required', 'Alan adı zorunludur'),
     ('error.site-settings.value-required', 'Alan değeri zorunludur'),
     ('error.site-settings.invalid-field', 'Geçersiz alan adı'),
     ('error.site-settings.not-found', 'Site ayarları bulunamadı'),
 
-    -- Tenant Backoffice — Duyuru Çubukları
+    -- Client Backoffice — Duyuru Çubukları
     ('error.announcement-bar.code-required', 'Duyuru çubuğu kodu zorunludur'),
     ('error.announcement-bar.invalid-audience', 'Geçersiz hedef kitle'),
     ('error.announcement-bar.ends-before-starts', 'Bitiş tarihi başlangıçtan önce olamaz'),
@@ -1103,7 +1103,7 @@ JOIN (VALUES
     ('error.announcement-bar-translation.language-required', 'Dil kodu zorunludur'),
     ('error.announcement-bar-translation.text-required', 'Duyuru metni zorunludur'),
 
-    -- Tenant Backoffice — Lobi Bölümleri
+    -- Client Backoffice — Lobi Bölümleri
     ('error.lobby-section.code-required', 'Bölüm kodu zorunludur'),
     ('error.lobby-section.max-items-invalid', 'Maksimum öğe sayısı geçersiz'),
     ('error.lobby-section.id-required', 'Bölüm ID zorunludur'),
@@ -1117,7 +1117,7 @@ JOIN (VALUES
     ('error.lobby-section-game.section-not-manual', 'Bölüm manuel küratörlük tipinde değil'),
     ('error.lobby-section-game.not-found', 'Bölüm-oyun ilişkisi bulunamadı'),
 
-    -- Tenant Backoffice — Oyun Etiketleri
+    -- Client Backoffice — Oyun Etiketleri
     ('error.game-label.game-id-required', 'Oyun ID zorunludur'),
     ('error.game-label.label-type-required', 'Etiket tipi zorunludur'),
     ('error.game-label.expires-in-past', 'Bitiş tarihi geçmişte olamaz'),

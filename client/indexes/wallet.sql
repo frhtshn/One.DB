@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Wallet Schema Indexes
+-- Client Wallet Schema Indexes
 -- =============================================
 
 -- wallets

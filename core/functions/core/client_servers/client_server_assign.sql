@@ -1,17 +1,17 @@
 -- ================================================================
--- TENANT_SERVER_ASSIGN: Tenant'a sunucu ata (role bazlı)
+-- CLIENT_SERVER_ASSIGN: Client'a sunucu ata (role bazlı)
 -- ================================================================
 -- IDOR korumalı (user_assert_access_company).
 -- server_id active ve kapasiteli olmalı.
--- UPSERT: (tenant_id, server_id, server_role).
--- Shared sunucularda yeni atamada current_tenants++ yapılır.
+-- UPSERT: (client_id, server_id, server_role).
+-- Shared sunucularda yeni atamada current_clients++ yapılır.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_server_assign(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, INTEGER, VARCHAR);
+DROP FUNCTION IF EXISTS core.client_server_assign(BIGINT, BIGINT, BIGINT, VARCHAR, VARCHAR, INTEGER, VARCHAR);
 
-CREATE OR REPLACE FUNCTION core.tenant_server_assign(
+CREATE OR REPLACE FUNCTION core.client_server_assign(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_server_id BIGINT,
     p_server_role VARCHAR(30),
     p_container_image VARCHAR(255) DEFAULT NULL,
@@ -28,12 +28,12 @@ DECLARE
     v_is_new BOOLEAN;
     v_new_id BIGINT;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -49,7 +49,7 @@ BEGIN
     END IF;
 
     -- Sunucu varlık + durum kontrolü
-    SELECT id, server_type, max_tenants, current_tenants, status
+    SELECT id, server_type, max_clients, current_clients, status
     INTO v_server
     FROM core.infrastructure_servers
     WHERE id = p_server_id;
@@ -63,37 +63,37 @@ BEGIN
     END IF;
 
     -- Shared sunucularda kapasite kontrolü
-    IF v_server.server_type = 'shared' AND v_server.current_tenants >= v_server.max_tenants THEN
+    IF v_server.server_type = 'shared' AND v_server.current_clients >= v_server.max_clients THEN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.server.capacity-full';
     END IF;
 
     -- Mevcut atama kontrolü (yeni mi güncelleme mi?)
     v_is_new := NOT EXISTS(
-        SELECT 1 FROM core.tenant_servers
-        WHERE tenant_id = p_tenant_id AND server_id = p_server_id AND server_role = p_server_role
+        SELECT 1 FROM core.client_servers
+        WHERE client_id = p_client_id AND server_id = p_server_id AND server_role = p_server_role
     );
 
     -- UPSERT
-    INSERT INTO core.tenant_servers (
-        tenant_id, server_id, server_role,
+    INSERT INTO core.client_servers (
+        client_id, server_id, server_role,
         container_image, container_port, health_endpoint,
         status, created_at, updated_at
     ) VALUES (
-        p_tenant_id, p_server_id, p_server_role,
+        p_client_id, p_server_id, p_server_role,
         p_container_image, p_container_port, p_health_endpoint,
         'pending', NOW(), NOW()
     )
-    ON CONFLICT (tenant_id, server_id, server_role) DO UPDATE SET
-        container_image = COALESCE(p_container_image, core.tenant_servers.container_image),
-        container_port = COALESCE(p_container_port, core.tenant_servers.container_port),
-        health_endpoint = COALESCE(p_health_endpoint, core.tenant_servers.health_endpoint),
+    ON CONFLICT (client_id, server_id, server_role) DO UPDATE SET
+        container_image = COALESCE(p_container_image, core.client_servers.container_image),
+        container_port = COALESCE(p_container_port, core.client_servers.container_port),
+        health_endpoint = COALESCE(p_health_endpoint, core.client_servers.health_endpoint),
         updated_at = NOW()
     RETURNING id INTO v_new_id;
 
-    -- Yeni atamada shared sunucu current_tenants++
+    -- Yeni atamada shared sunucu current_clients++
     IF v_is_new AND v_server.server_type = 'shared' THEN
         UPDATE core.infrastructure_servers
-        SET current_tenants = current_tenants + 1, updated_at = NOW()
+        SET current_clients = current_clients + 1, updated_at = NOW()
         WHERE id = p_server_id;
     END IF;
 
@@ -101,4 +101,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_server_assign IS 'Assigns a server to a tenant for a specific role (db_primary, backend, etc). UPSERT by (tenant, server, role). Checks capacity for shared servers. IDOR protected.';
+COMMENT ON FUNCTION core.client_server_assign IS 'Assigns a server to a client for a specific role (db_primary, backend, etc). UPSERT by (client, server, role). Checks capacity for shared servers. IDOR protected.';

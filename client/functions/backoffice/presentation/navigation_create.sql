@@ -1,6 +1,6 @@
 -- ================================================================
 -- NAVIGATION_CREATE: Yeni menü öğesi oluştur
--- Tenant'ın kendi öğeleri (is_locked=FALSE, is_readonly=FALSE)
+-- Client'ın kendi öğeleri (is_locked=FALSE, is_readonly=FALSE)
 -- Template'den gelen öğeler provisioning ile eklenir
 -- ================================================================
 
@@ -66,4 +66,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.navigation_create(VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BIGINT, INT, BOOLEAN, BOOLEAN, VARCHAR, VARCHAR) IS 'Create a new tenant-owned navigation item. Items created by tenant are never locked or readonly.';
+COMMENT ON FUNCTION presentation.navigation_create(VARCHAR, JSONB, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BIGINT, INT, BOOLEAN, BOOLEAN, VARCHAR, VARCHAR) IS 'Create a new client-owned navigation item. Items created by client are never locked or readonly.';

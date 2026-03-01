@@ -5,7 +5,7 @@
 --   - Kendisi: SİLEMEZ (güvenlik)
 --   - Platform Admin: Herkesi silebilir
 --   - CompanyAdmin: Kendi şirketinde, hiyerarşi (caller_level > target_level)
---   - TenantAdmin: Kendi tenant'ında, hiyerarşi
+--   - ClientAdmin: Kendi client'ında, hiyerarşi
 --   - Diğerleri: ERİŞİM YOK
 -- Güvenlik:
 --   - Kilitli caller erişemez
@@ -27,11 +27,11 @@ DECLARE
     v_caller_level INT;
     v_caller_has_platform_role BOOLEAN;
     v_caller_is_company_admin BOOLEAN;
-    v_caller_tenant_ids BIGINT[];
+    v_caller_client_ids BIGINT[];
     v_target_company_id BIGINT;
     v_target_level INT;
     v_target_status SMALLINT;
-    v_target_has_role_in_caller_tenant BOOLEAN;
+    v_target_has_role_in_caller_client BOOLEAN;
 BEGIN
     -- ========================================
     -- 1. KENDİNİ SİLEMEZ
@@ -49,16 +49,16 @@ BEGIN
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.is_platform_role = TRUE
         ),
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.code = 'companyadmin'
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.code = 'companyadmin'
         )
     INTO v_caller_company_id, v_caller_level, v_caller_has_platform_role, v_caller_is_company_admin
     FROM security.users u
-    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.tenant_id IS NULL
+    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.client_id IS NULL
     LEFT JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
     WHERE u.id = p_caller_id
       AND u.status = 1
@@ -79,7 +79,7 @@ BEGIN
         COALESCE(MAX(r.level), 0)
     INTO v_target_company_id, v_target_status, v_target_level
     FROM security.users u
-    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.tenant_id IS NULL
+    LEFT JOIN security.user_roles ur ON ur.user_id = u.id AND ur.client_id IS NULL
     LEFT JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
     WHERE u.id = p_user_id
     GROUP BY u.id, u.company_id, u.status;
@@ -107,32 +107,32 @@ BEGIN
             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.hierarchy-violation';
         END IF;
 
-        -- CompanyAdmin değilse TenantAdmin kontrolü
+        -- CompanyAdmin değilse ClientAdmin kontrolü
         IF NOT v_caller_is_company_admin THEN
-            -- TenantAdmin olduğu tenant'ları al (aktif roller)
-            SELECT ARRAY_AGG(DISTINCT ur.tenant_id)
-            INTO v_caller_tenant_ids
+            -- ClientAdmin olduğu client'ları al (aktif roller)
+            SELECT ARRAY_AGG(DISTINCT ur.client_id)
+            INTO v_caller_client_ids
             FROM security.user_roles ur
             JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
             WHERE ur.user_id = p_caller_id
-              AND ur.tenant_id IS NOT NULL
-              AND r.code = 'tenantadmin';
+              AND ur.client_id IS NOT NULL
+              AND r.code = 'clientadmin';
 
-            -- TenantAdmin değilse (tenant_ids NULL) erişemez
-            IF v_caller_tenant_ids IS NULL THEN
+            -- ClientAdmin değilse (client_ids NULL) erişemez
+            IF v_caller_client_ids IS NULL THEN
                 RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.denied';
             END IF;
 
-            -- TenantAdmin scope kontrolü (aktif roller)
+            -- ClientAdmin scope kontrolü (aktif roller)
             SELECT EXISTS(
                 SELECT 1 FROM security.user_roles ur
                 JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
                 WHERE ur.user_id = p_user_id
-                  AND ur.tenant_id = ANY(v_caller_tenant_ids)
-            ) INTO v_target_has_role_in_caller_tenant;
+                  AND ur.client_id = ANY(v_caller_client_ids)
+            ) INTO v_target_has_role_in_caller_client;
 
-            IF NOT v_target_has_role_in_caller_tenant THEN
-                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.tenant-scope-denied';
+            IF NOT v_target_has_role_in_caller_client THEN
+                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.client-scope-denied';
             END IF;
         END IF;
     END IF;
@@ -156,5 +156,5 @@ $$;
 COMMENT ON FUNCTION security.user_delete(BIGINT, BIGINT) IS
 'Soft deletes a user with IDOR protection.
 Self-delete NOT allowed.
-Access: Platform Admin (all), CompanyAdmin (own company + hierarchy), TenantAdmin (own tenants + hierarchy).
+Access: Platform Admin (all), CompanyAdmin (own company + hierarchy), ClientAdmin (own clients + hierarchy).
 Locked callers are rejected.';

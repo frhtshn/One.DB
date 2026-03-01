@@ -13,7 +13,7 @@ CREATE TABLE security.roles (
     description VARCHAR(500),                              -- Rol açıklaması
     level INT NOT NULL DEFAULT 0,                          -- Hiyerarşi seviyesi (yüksek = daha yetkili)
     status SMALLINT NOT NULL DEFAULT 1,                    -- Durum
-    is_platform_role BOOLEAN NOT NULL DEFAULT FALSE,       -- Platform rolü mü? (True ise tenant bağımsız)
+    is_platform_role BOOLEAN NOT NULL DEFAULT FALSE,       -- Platform rolü mü? (True ise client bağımsız)
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Oluşturulma zamanı
     created_by BIGINT,                                     -- Oluşturan kullanıcı ID
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),         -- Güncellenme zamanı

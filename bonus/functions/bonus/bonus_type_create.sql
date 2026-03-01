@@ -2,14 +2,14 @@
 -- BONUS_TYPE_CREATE: Bonus tipi oluştur
 -- ================================================================
 -- Bonus kategorisi tanımlar: deposit_match, free_spin, cashback vb.
--- tenant_id NULL ise platform seviyesi, değer ise tenant'a özel.
--- Unique: (tenant_id, type_code).
+-- client_id NULL ise platform seviyesi, değer ise client'a özel.
+-- Unique: (client_id, type_code).
 -- ================================================================
 
 DROP FUNCTION IF EXISTS bonus.bonus_type_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION bonus.bonus_type_create(
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_type_code VARCHAR(50),
     p_type_name VARCHAR(255),
     p_description TEXT DEFAULT NULL,
@@ -43,17 +43,17 @@ BEGIN
     -- Unique kod kontrolü
     IF EXISTS (
         SELECT 1 FROM bonus.bonus_types
-        WHERE tenant_id IS NOT DISTINCT FROM p_tenant_id
+        WHERE client_id IS NOT DISTINCT FROM p_client_id
           AND type_code = UPPER(TRIM(p_type_code))
     ) THEN
         RAISE EXCEPTION USING ERRCODE = 'P0409', MESSAGE = 'error.bonus-type.code-exists';
     END IF;
 
     INSERT INTO bonus.bonus_types (
-        tenant_id, type_code, type_name, description,
+        client_id, type_code, type_name, description,
         category, value_type, is_active, created_at, updated_at
     ) VALUES (
-        p_tenant_id,
+        p_client_id,
         UPPER(TRIM(p_type_code)),
         TRIM(p_type_name),
         p_description,
@@ -68,4 +68,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION bonus.bonus_type_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR) IS 'Creates a bonus type definition (deposit_match, free_spin, cashback, etc). Unique by (tenant_id, type_code). No auth check — handled by Core backend.';
+COMMENT ON FUNCTION bonus.bonus_type_create(BIGINT, VARCHAR, VARCHAR, TEXT, VARCHAR, VARCHAR) IS 'Creates a bonus type definition (deposit_match, free_spin, cashback, etc). Unique by (client_id, type_code). No auth check — handled by Core backend.';

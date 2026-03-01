@@ -10,14 +10,14 @@ DROP FUNCTION IF EXISTS security.user_permission_override_load(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION security.user_permission_override_load(
     p_user_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS TABLE (
     permission_code VARCHAR(100),
     permission_name VARCHAR(150),
     category VARCHAR(50),
     is_granted BOOLEAN,
-    tenant_id BIGINT,
+    client_id BIGINT,
     context_id BIGINT,
     reason VARCHAR(500),
     assigned_by BIGINT,
@@ -39,7 +39,7 @@ BEGIN
         p.name AS permission_name,
         p.category,
         up.is_granted,
-        up.tenant_id,
+        up.client_id,
         up.context_id,
         up.reason,
         up.assigned_by,
@@ -48,7 +48,7 @@ BEGIN
     FROM security.user_permission_overrides up
     JOIN security.permissions p ON up.permission_id = p.id
     WHERE up.user_id = p_user_id
-      AND (p_tenant_id IS NULL OR up.tenant_id IS NULL OR up.tenant_id = p_tenant_id)
+      AND (p_client_id IS NULL OR up.client_id IS NULL OR up.client_id = p_client_id)
       AND (up.expires_at IS NULL OR up.expires_at > NOW())
     ORDER BY p.category, p.code;
 END;

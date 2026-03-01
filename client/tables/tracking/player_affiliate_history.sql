@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS tracking.player_affiliate_history CASCADE;
 
 CREATE TABLE tracking.player_affiliate_history (
     id bigserial PRIMARY KEY,                              -- Benzersiz geçmiş kaydı kimliği
-    player_id bigint NOT NULL,                             -- Oyuncu ID (FK: tenant.players)
+    player_id bigint NOT NULL,                             -- Oyuncu ID (FK: client.players)
     affiliate_id bigint,                                   -- Affiliate ID (FK: affiliate.affiliates)
     campaign_id bigint,                                    -- Kampanya ID (FK: campaign.campaigns)
     action varchar(30) NOT NULL,                           -- İşlem: ASSIGNED, TRANSFERRED, REMOVED

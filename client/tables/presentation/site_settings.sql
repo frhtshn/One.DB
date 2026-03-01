@@ -25,4 +25,4 @@ CREATE TABLE presentation.site_settings (
     updated_by           BIGINT
 );
 
-COMMENT ON TABLE presentation.site_settings IS 'Global site settings per tenant (single row). Stores contact info, analytics IDs (GA4, GTM, FB Pixel), cookie consent configuration, age gate settings, and live chat provider config. Cached at application startup.';
+COMMENT ON TABLE presentation.site_settings IS 'Global site settings per client (single row). Stores contact info, analytics IDs (GA4, GTM, FB Pixel), cookie consent configuration, age gate settings, and live chat provider config. Cached at application startup.';

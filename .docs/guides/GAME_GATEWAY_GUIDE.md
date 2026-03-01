@@ -4,7 +4,7 @@
 
 # Game Gateway — Geliştirici Rehberi
 
-Oyun entegrasyonu iki temel bileşenden oluşur: **Oyun Kataloğu** (Game DB + Core DB + Tenant DB) ve **Seamless Wallet Gateway** (wallet işlemleri + game session + round yaşam döngüsü). Bu rehber her iki bileşeni de kapsar.
+Oyun entegrasyonu iki temel bileşenden oluşur: **Oyun Kataloğu** (Game DB + Core DB + Client DB) ve **Seamless Wallet Gateway** (wallet işlemleri + game session + round yaşam döngüsü). Bu rehber her iki bileşeni de kapsar.
 
 > **Desteklenen provider'lar:** Pragmatic Play (PP) API v3.235, Hub88 Operator API
 > **Detaylı spesifikasyon:** [GAME_GATEWAY_SEAMLESS_WALLET.md](../../.planning/GAME_GATEWAY_SEAMLESS_WALLET.md)
@@ -21,14 +21,14 @@ Oyun entegrasyonu iki temel bileşenden oluşur: **Oyun Kataloğu** (Game DB + C
 | | GameLaunchController | ASP.NET Core | Oyun açma isteklerini karşılar |
 | **Orchestration** | PlayerWalletGrain | Orleans | Oyuncu başına wallet işlemleri (seri erişim) |
 | | GameSessionGrain | Orleans | Oturum yaşam döngüsü, token doğrulama |
-| **Cache** | Session Cache | Redis | `session:{token}` → player/tenant/game bilgisi |
-| | Routing Cache | Redis | `route:{routeKey}` → tenant_id, provider_id |
-| | Balance Cache | Redis | `balance:{tenantId}:{playerId}:{currency}` → cash, bonus |
-| | Idempotency Cache | Redis | `idemp:{tenantId}:{key}` → önceki response |
+| **Cache** | Session Cache | Redis | `session:{token}` → player/client/game bilgisi |
+| | Routing Cache | Redis | `route:{routeKey}` → client_id, provider_id |
+| | Balance Cache | Redis | `balance:{clientId}:{playerId}:{currency}` → cash, bonus |
+| | Idempotency Cache | Redis | `idemp:{clientId}:{key}` → önceki response |
 | **Async** | callback.logged | RabbitMQ → Consumer | Game Log DB'ye ham callback yaz |
-| | round.updated | RabbitMQ → Consumer | Tenant Log DB'ye round kaydı yaz |
+| | round.updated | RabbitMQ → Consumer | Client Log DB'ye round kaydı yaz |
 | | session.expired | RabbitMQ → Consumer | Süresi dolan session'ları temizle |
-| **DB** | Core / Game / Tenant / Tenant Log / Game Log | PostgreSQL | Kalıcı veri |
+| **DB** | Core / Game / Client / Client Log / Game Log | PostgreSQL | Kalıcı veri |
 
 ### 1.2 Katmanlı Mimari
 
@@ -43,7 +43,7 @@ flowchart TD
     end
 
     subgraph ORLEANS["Orleans Silo"]
-        PWG["PlayerWalletGrain<br/>(tenantId:playerId:currency)"]
+        PWG["PlayerWalletGrain<br/>(clientId:playerId:currency)"]
         GSG["GameSessionGrain<br/>(sessionToken)"]
     end
 
@@ -58,8 +58,8 @@ flowchart TD
     subgraph DB["PostgreSQL"]
         CDB["Core DB"]
         GDB["Game DB"]
-        TDB["Tenant DB"]
-        TLDB["Tenant Log DB"]
+        TDB["Client DB"]
+        TLDB["Client Log DB"]
         GLDB["Game Log DB"]
     end
 
@@ -80,10 +80,10 @@ flowchart TD
 
 | DB | Schema → Tablolar | Rol |
 |----|-------------------|-----|
-| **Core DB** | `routing` → callback_routes, provider_callbacks, provider_endpoints<br/>`security` → secrets_provider<br/>`catalog` → providers, provider_types, provider_settings<br/>`core` → tenant_providers, tenant_games | Routing, auth, secret yönetimi |
+| **Core DB** | `routing` → callback_routes, provider_callbacks, provider_endpoints<br/>`security` → secrets_provider<br/>`catalog` → providers, provider_types, provider_settings<br/>`core` → client_providers, client_games | Routing, auth, secret yönetimi |
 | **Game DB** | `catalog` → games, game_providers, game_currency_limits | Oyun kataloğu |
-| **Tenant DB** | `wallet` → wallets, wallet_snapshots<br/>`transaction` → transactions ◆<br/>`game` → game_settings, game_limits, game_sessions<br/>`auth` → players<br/>`bonus` → bonus_awards, provider_bonus_mappings | Wallet, transaction, player, session |
-| **Tenant Log DB** | `game_log` → game_rounds ◆, reconciliation_reports, reconciliation_mismatches | Round takip, reconciliation |
+| **Client DB** | `wallet` → wallets, wallet_snapshots<br/>`transaction` → transactions ◆<br/>`game` → game_settings, game_limits, game_sessions<br/>`auth` → players<br/>`bonus` → bonus_awards, provider_bonus_mappings | Wallet, transaction, player, session |
+| **Client Log DB** | `game_log` → game_rounds ◆, reconciliation_reports, reconciliation_mismatches | Round takip, reconciliation |
 | **Game Log DB** | `game_log` → provider_api_requests ◆, provider_api_callbacks ◆ | Ham callback log |
 
 > Cross-DB bağlantılarda FK yok. `idempotency_key` ve `external_round_id` ile correlation sağlanır.
@@ -92,7 +92,7 @@ flowchart TD
 
 | Grain | Key Format | Yaşam Döngüsü | Sorumluluk |
 |-------|-----------|---------------|------------|
-| **PlayerWalletGrain** | `{tenantId}:{playerId}:{currency}` | İlk bet'te aktif → idle timeout (5dk) sonra deaktif | Wallet işlemleri (bet/win/rollback/balance). **Seri erişim garantisi** — aynı oyuncuya paralel callback'ler grain seviyesinde sıralanır. |
+| **PlayerWalletGrain** | `{clientId}:{playerId}:{currency}` | İlk bet'te aktif → idle timeout (5dk) sonra deaktif | Wallet işlemleri (bet/win/rollback/balance). **Seri erişim garantisi** — aynı oyuncuya paralel callback'ler grain seviyesinde sıralanır. |
 | **GameSessionGrain** | `{sessionToken}` | Game launch'ta aktif → session expire'da deaktif | Token doğrulama, session metadata cache, expire reminder. |
 
 > **Neden Orleans?** Wallet işlemlerinde aynı oyuncuya eşzamanlı gelen callback'ler (hızlı spin'lerde bet+win arka arkaya) grain'in single-threaded yapısıyla sıralanır. DB `FOR UPDATE` kilidine ek koruma katmanı sağlar, deadlock riskini ortadan kaldırır.
@@ -101,10 +101,10 @@ flowchart TD
 
 | Key Pattern | Value | TTL | Yazılma Zamanı | Geçersizleşme |
 |-------------|-------|-----|----------------|---------------|
-| `route:{routeKey}` | `{tenantId, providerId, providerCode}` | 5 dk | İlk callback | TTL expire veya config değişikliği |
-| `session:{token}` | `{playerId, tenantId, gameCode, currency, mode}` | 30 dk (sliding) | Game launch | Session end / expire |
-| `balance:{tenantId}:{playerId}:{currency}` | `{cash, bonus}` | 60 sn | Her wallet işlemi sonrası | Sonraki wallet işlemi üzerine yazar |
-| `idemp:{tenantId}:{key}` | Önceki response JSONB | 5 dk | Başarılı wallet işlemi | TTL expire |
+| `route:{routeKey}` | `{clientId, providerId, providerCode}` | 5 dk | İlk callback | TTL expire veya config değişikliği |
+| `session:{token}` | `{playerId, clientId, gameCode, currency, mode}` | 30 dk (sliding) | Game launch | Session end / expire |
+| `balance:{clientId}:{playerId}:{currency}` | `{cash, bonus}` | 60 sn | Her wallet işlemi sonrası | Sonraki wallet işlemi üzerine yazar |
+| `idemp:{clientId}:{key}` | Önceki response JSONB | 5 dk | Başarılı wallet işlemi | TTL expire |
 | `whitelist:{providerId}` | `cidr[]` | 10 dk | İlk IP kontrol | TTL expire |
 
 > **Balance cache:** Sadece okuma hızlandırma (balance endpoint). Wallet işlemleri **her zaman** DB'den okur (`FOR UPDATE`). Cache, provider'ın sık balance sorguları için kullanılır.
@@ -114,14 +114,14 @@ flowchart TD
 | Exchange | Routing Key | Queue | Consumer | Hedef DB | Kritiklik |
 |----------|-------------|-------|----------|----------|-----------|
 | `game.gateway` | `callback.logged` | `q.callback.log` | CallbackLogConsumer | Game Log DB | Düşük — log kaybı tolere edilir |
-| `game.gateway` | `round.updated` | `q.round.update` | RoundUpdateConsumer | Tenant Log DB | Orta — eventual consistency |
-| `game.gateway` | `session.expired` | `q.session.cleanup` | SessionCleanupConsumer | Tenant DB | Düşük — temizlik |
+| `game.gateway` | `round.updated` | `q.round.update` | RoundUpdateConsumer | Client Log DB | Orta — eventual consistency |
+| `game.gateway` | `session.expired` | `q.session.cleanup` | SessionCleanupConsumer | Client DB | Düşük — temizlik |
 
 > Wallet işlemi senkron, loglama asenkron — provider SLA'ını (1-3 sn) etkilememek için.
 
 ### 1.7 DB Rol Matrisi
 
-| Akış | Core DB | Game DB | Tenant DB | Tenant Log DB | Game Log DB |
+| Akış | Core DB | Game DB | Client DB | Client Log DB | Game Log DB |
 |------|---------|---------|-----------|--------------|-------------|
 | Game launch | READ | READ | READ+WRITE | — | WRITE |
 | Routing + Auth | READ | — | — | — | — |
@@ -138,7 +138,7 @@ flowchart TD
 
 Core DB eskiden hem provider hem game tablosunu tutuyordu. Sorunları:
 
-1. **Cross-DB FK**: `core.tenant_games → catalog.games` FK'sı çalışmaz (farklı fiziksel DB)
+1. **Cross-DB FK**: `core.client_games → catalog.games` FK'sı çalışmaz (farklı fiziksel DB)
 2. **Monolith catalog**: Game domain'i Core'a bağımlı kalır
 3. **Performans**: Game DB kendi catalog'unu lokalde okur, Core'a sorgu atmaz
 
@@ -168,24 +168,24 @@ flowchart LR
     BO["BO Admin"] --> BE["Backend"] --> SU["game.game_upsert(p_catalog_data)"]
 ```
 
-### 2.4 Tenant'a Provider Açma
+### 2.4 Client'a Provider Açma
 
 ```
 1. BO Admin "Provider Aç" butonuna basar
 2. Backend:
-   a. Core: tenant_provider_enable(tenant_id, provider_id, rollout_status)
-      → core.tenant_providers INSERT
+   a. Core: client_provider_enable(client_id, provider_id, rollout_status)
+      → core.client_providers INSERT
    b. Game DB: game_list(provider_id) → oyun listesini çeker
-   c. Core: tenant_game_upsert(tenant_id, game_data)
-      → core.tenant_games INSERT (denormalize: game_name, game_code, provider_code...)
-   d. Tenant DB: game_settings_sync(settings_data) + game_limits_sync(limits_data)
+   c. Core: client_game_upsert(client_id, game_data)
+      → core.client_games INSERT (denormalize: game_name, game_code, provider_code...)
+   d. Client DB: game_settings_sync(settings_data) + game_limits_sync(limits_data)
 ```
 
 ### 2.5 Denormalizasyon
 
-Core DB'deki `tenant_games` tablosunda denormalize alanlar: `game_name`, `game_code`, `provider_code`, `game_type`, `thumbnail_url`
+Core DB'deki `client_games` tablosunda denormalize alanlar: `game_name`, `game_code`, `provider_code`, `game_type`, `thumbnail_url`
 
-**Neden?** Cross-DB FK kullanılamaz. Backend Game DB'den veriyi alır, Core'a denormalize yazar. Tenant DB'ye sync ederken bu veriler aktarılır.
+**Neden?** Cross-DB FK kullanılamaz. Backend Game DB'den veriyi alır, Core'a denormalize yazar. Client DB'ye sync ederken bu veriler aktarılır.
 
 ### 2.6 Core'da Oyun Kapanması
 
@@ -193,12 +193,12 @@ Core'da `is_active = false` yapıldığında:
 
 ```
 Core: game.is_active = false
-  → Backend: tenant_game_refresh çağrılır
-  → Tenant DB: game_settings.is_enabled = false (sync)
+  → Backend: client_game_refresh çağrılır
+  → Client DB: game_settings.is_enabled = false (sync)
   → Oyuncu lobide göremez
 ```
 
-**Provider kapanırsa** (`tenant_providers.is_enabled = false`): Oyunların state'i değişmez, sadece provider'ın tüm oyunları backend seviyesinde filtrelenir.
+**Provider kapanırsa** (`client_providers.is_enabled = false`): Oyunların state'i değişmez, sadece provider'ın tüm oyunları backend seviyesinde filtrelenir.
 
 ### 2.7 Crypto Desteği
 
@@ -219,7 +219,7 @@ Limit tabloları `currency_code VARCHAR(20)` + `currency_type SMALLINT` kullanı
 sequenceDiagram
     participant PL as Player
     participant BE as Backend
-    participant DB as Core + Tenant DB
+    participant DB as Core + Client DB
     participant GS as GameSessionGrain
     participant PR as Provider API
 
@@ -246,8 +246,8 @@ sequenceDiagram
 | # | Adım | Senkron/Asenkron | Hedef | Hata → |
 |---|------|-----------------|-------|--------|
 | 1 | Routing & config al | Senkron (cache-first) | Redis → Core DB | 404 route bulunamadı |
-| 2 | Player + game kontrol | Senkron | Tenant DB | 403 frozen / oyun kapalı |
-| 3 | Session oluştur | Senkron | Orleans → Tenant DB → Redis | 500 session hatası |
+| 2 | Player + game kontrol | Senkron | Client DB | 403 frozen / oyun kapalı |
+| 3 | Session oluştur | Senkron | Orleans → Client DB → Redis | 500 session hatası |
 | 4 | Provider launch API | Senkron | Provider HTTP | 502 provider yanıt yok |
 | 5 | Launch log | **Asenkron** | RabbitMQ → Game Log DB | Fire-and-forget |
 
@@ -262,7 +262,7 @@ sequenceDiagram
     participant C as Core DB
     participant GS as GameSessionGrain
     participant WG as PlayerWalletGrain
-    participant T as Tenant DB
+    participant T as Client DB
 
     PR->>BE: POST /callback/{provider}/{routeKey}/bet
 
@@ -294,11 +294,11 @@ sequenceDiagram
 | 1a | Route çöz | Senkron (cache-first) | Redis → Core DB | `route:{routeKey}` TTL 5dk | 404 |
 | 1b | IP whitelist | Senkron | Core DB | — | 403 |
 | 1c | Signature doğrula | Senkron | Core DB → Backend | — | 401 |
-| 2 | Player çöz (token) | Senkron (cache-first) | Redis → Orleans → Tenant DB | `session:{token}` TTL 30dk | session-not-found / expired |
-| 3a | İdempotency kontrol | Senkron (cache-first) | Redis → Grain → Tenant DB | `idemp:{key}` TTL 5dk | — |
-| 3b | Wallet işlemi | **Senkron (grain-serialized)** | Orleans → Tenant DB | Balance sonra güncellenir | insufficient-balance, frozen |
+| 2 | Player çöz (token) | Senkron (cache-first) | Redis → Orleans → Client DB | `session:{token}` TTL 30dk | session-not-found / expired |
+| 3a | İdempotency kontrol | Senkron (cache-first) | Redis → Grain → Client DB | `idemp:{key}` TTL 5dk | — |
+| 3b | Wallet işlemi | **Senkron (grain-serialized)** | Orleans → Client DB | Balance sonra güncellenir | insufficient-balance, frozen |
 | 4a | Callback log | **Asenkron** | RabbitMQ → Game Log DB | — | Fire-and-forget |
-| 4b | Round kaydı | **Asenkron** | RabbitMQ → Tenant Log DB | — | Fire-and-forget |
+| 4b | Round kaydı | **Asenkron** | RabbitMQ → Client Log DB | — | Fire-and-forget |
 
 ### Action → Fonksiyon Eşleştirmesi
 
@@ -400,7 +400,7 @@ Hepsi internal olarak `win_process()` çağırır, sadece `transaction_type_id` 
 
 Game launch sırasında oluşturulur. Provider callback'lerinde `session_token` ile player çözümlenir.
 
-> **Neden gerekli?** Callback geldiğinde `route_key` ile tenant çözülür (Core DB), ama **hangi player?** sorusu kalır. PP `playerId` gönderir ama Hub88 sadece `token` + `user` gönderir. `game_sessions` tablosu tüm provider'lar için tutarlı bir doğrulama noktası oluşturur.
+> **Neden gerekli?** Callback geldiğinde `route_key` ile client çözülür (Core DB), ama **hangi player?** sorusu kalır. PP `playerId` gönderir ama Hub88 sadece `token` + `user` gönderir. `game_sessions` tablosu tüm provider'lar için tutarlı bir doğrulama noktası oluşturur.
 
 ### 6.1 game.game_sessions Tablosu
 
@@ -422,7 +422,7 @@ Temel alanlar: `session_token VARCHAR(100)`, `player_id`, `provider_code`, `game
 
 ## 7. Round Yaşam Döngüsü
 
-Fonksiyonlar `game_log` schema'sında, Tenant Log DB'de çalışır.
+Fonksiyonlar `game_log` schema'sında, Client Log DB'de çalışır.
 
 ```mermaid
 stateDiagram-v2
@@ -463,7 +463,7 @@ sequenceDiagram
     participant BE as Bonus Engine
     participant BK as .NET Backend
     participant PR as Provider API
-    participant T as Tenant DB
+    participant T as Client DB
 
     Note over BE,T: 1 — Bonus Aktivasyonu
     BE->>BK: bonus_award aktif (subtype=freespin)
@@ -491,13 +491,13 @@ Provider tarafı bonus takibi: `bonus_award_id` (FK → bonus_awards), `provider
 
 ## 9. Reconciliation
 
-Günlük job ile provider data feed'leri karşılaştırılır. Tablolar Tenant Log DB'de (`game_log` schema).
+Günlük job ile provider data feed'leri karşılaştırılır. Tablolar Client Log DB'de (`game_log` schema).
 
 ```mermaid
 sequenceDiagram
     participant JOB as Günlük Job
     participant PR as Provider Feed
-    participant TL as Tenant Log DB
+    participant TL as Client Log DB
     participant BO as Back Office
 
     JOB->>PR: Data feed indir (PP Data Feeds / Hub88 Transactions API)
@@ -615,22 +615,22 @@ sequenceDiagram
 |----|------|-------------|
 | Game DB | Provider Sync | `game_provider_sync` |
 | Game DB | Catalog CRUD | `game_upsert`, `game_bulk_upsert`, `game_update`, `game_get`, `game_list`, `game_lookup`, `game_currency_limit_sync` |
-| Core DB | Tenant Provider | `tenant_provider_enable`, `tenant_provider_disable`, `tenant_provider_list` |
-| Core DB | Tenant Game | `tenant_game_upsert`, `tenant_game_list`, `tenant_game_remove`, `tenant_game_refresh` |
-| Core DB | Rollout | `tenant_provider_set_rollout` |
-| Tenant DB | Sync | `game_settings_sync`, `game_settings_remove`, `game_limits_sync` |
-| Tenant DB | BO + Game Open | `game_settings_get`, `game_settings_update`, `game_settings_list`, `game_limit_upsert`, `game_limit_list` |
-| Tenant DB | Shadow Mode | `shadow_tester_add`, `shadow_tester_remove` |
+| Core DB | Client Provider | `client_provider_enable`, `client_provider_disable`, `client_provider_list` |
+| Core DB | Client Game | `client_game_upsert`, `client_game_list`, `client_game_remove`, `client_game_refresh` |
+| Core DB | Rollout | `client_provider_set_rollout` |
+| Client DB | Sync | `game_settings_sync`, `game_settings_remove`, `game_limits_sync` |
+| Client DB | BO + Game Open | `game_settings_get`, `game_settings_update`, `game_settings_list`, `game_limit_upsert`, `game_limit_list` |
+| Client DB | Shadow Mode | `shadow_tester_add`, `shadow_tester_remove` |
 
 ### Seamless Wallet (22 fonksiyon)
 
 | DB | Grup | Fonksiyonlar |
 |----|------|-------------|
-| Tenant DB | Game Session (3) | `game_session_create`, `game_session_validate`, `game_session_end` |
-| Tenant DB | Wallet (10) | `player_info_get`, `player_balance_get`, `player_balance_per_game_get`, `bet_process`, `win_process`, `rollback_process`, `jackpot_win_process`, `bonus_win_process`, `promo_win_process`, `adjustment_process` |
-| Tenant DB | Bonus Mapping (3) | `provider_bonus_mapping_create`, `provider_bonus_mapping_get`, `provider_bonus_mapping_update_status` |
-| Tenant Log DB | Round (3) | `round_upsert`, `round_close`, `round_cancel` |
-| Tenant Log DB | Reconciliation (3) | `reconciliation_report_create`, `reconciliation_mismatch_upsert`, `reconciliation_report_list` |
+| Client DB | Game Session (3) | `game_session_create`, `game_session_validate`, `game_session_end` |
+| Client DB | Wallet (10) | `player_info_get`, `player_balance_get`, `player_balance_per_game_get`, `bet_process`, `win_process`, `rollback_process`, `jackpot_win_process`, `bonus_win_process`, `promo_win_process`, `adjustment_process` |
+| Client DB | Bonus Mapping (3) | `provider_bonus_mapping_create`, `provider_bonus_mapping_get`, `provider_bonus_mapping_update_status` |
+| Client Log DB | Round (3) | `round_upsert`, `round_close`, `round_cancel` |
+| Client Log DB | Reconciliation (3) | `reconciliation_report_create`, `reconciliation_mismatch_upsert`, `reconciliation_report_list` |
 
 ---
 
@@ -644,7 +644,7 @@ sequenceDiagram
 | 1b | Core DB → signature secret | ~3-5 ms | Tek SELECT |
 | 2 | Redis → `session:{token}` | ~1 ms | Cache hit |
 | 3a | Redis → `idemp:{key}` | ~1 ms | Cache miss (yeni işlem) |
-| **3b** | **Orleans → Tenant DB → `bet_process()`** | **~10-25 ms** | **Kritik yol** |
+| **3b** | **Orleans → Client DB → `bet_process()`** | **~10-25 ms** | **Kritik yol** |
 | 4 | RabbitMQ publish | ~1 ms | Asenkron |
 | | **Toplam** | **~18-35 ms** | Provider SLA: 1-3 sn |
 
@@ -681,7 +681,7 @@ sequenceDiagram
 
 - **TEXT→JSONB pattern**: Tüm sync fonksiyonları `p_data TEXT` → `::JSONB` cast
 - **Cross-DB**: Her DB ayrı connection. Backend orchestrate eder
-- **Auth**: Game DB ve wallet fonksiyonları auth-agnostic. Core DB'de `user_assert_access_tenant`
+- **Auth**: Game DB ve wallet fonksiyonları auth-agnostic. Core DB'de `user_assert_access_client`
 - **Shadow mode**: `game_settings_list` fonksiyonunda `rollout_status` filtresi → [SHADOW_MODE_GUIDE.md](SHADOW_MODE_GUIDE.md)
 - **Wallet senkron, log asenkron**: Provider response SLA'ını karşılamak için
 - **Grain seri erişim + DB FOR UPDATE**: Çift katmanlı koruma — deadlock riski yok
@@ -690,4 +690,4 @@ sequenceDiagram
 
 ---
 
-_İlgili dokümanlar: [GAME_GATEWAY_SEAMLESS_WALLET.md](../../.planning/GAME_GATEWAY_SEAMLESS_WALLET.md) · [FINANCE_GATEWAY_GUIDE.md](FINANCE_GATEWAY_GUIDE.md) · [FUNCTIONS_GATEWAY.md](../reference/FUNCTIONS_GATEWAY.md) · [FUNCTIONS_TENANT.md](../reference/FUNCTIONS_TENANT.md) · [SHADOW_MODE_GUIDE.md](SHADOW_MODE_GUIDE.md)_
+_İlgili dokümanlar: [GAME_GATEWAY_SEAMLESS_WALLET.md](../../.planning/GAME_GATEWAY_SEAMLESS_WALLET.md) · [FINANCE_GATEWAY_GUIDE.md](FINANCE_GATEWAY_GUIDE.md) · [FUNCTIONS_GATEWAY.md](../reference/FUNCTIONS_GATEWAY.md) · [FUNCTIONS_CLIENT.md](../reference/FUNCTIONS_CLIENT.md) · [SHADOW_MODE_GUIDE.md](SHADOW_MODE_GUIDE.md)_

@@ -2,7 +2,7 @@
 -- Tablo: security.users
 -- Açıklama: Backoffice kullanıcı tablosu
 -- Sisteme giriş yapan tüm yönetici kullanıcılar
--- Kullanıcılar şirkete bağlıdır, rolleri tenant bazındadır
+-- Kullanıcılar şirkete bağlıdır, rolleri client bazındadır
 -- =============================================
 
 DROP TABLE IF EXISTS security.users CASCADE;

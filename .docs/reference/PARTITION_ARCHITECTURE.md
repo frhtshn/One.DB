@@ -1,6 +1,6 @@
-# NUCLEO – PARTITION MİMARİSİ
+# SORTIS ONE – PARTITION MİMARİSİ
 
-Bu doküman, Nucleo platformundaki tüm partitioned tabloların yapısını, yönetim fonksiyonlarını ve operasyonel kullanımını açıklar.
+Bu doküman, Sortis One platformundaki tüm partitioned tabloların yapısını, yönetim fonksiyonlarını ve operasyonel kullanımını açıklar.
 
 ---
 
@@ -60,16 +60,16 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `core_audit` | Daily | 1 | 90 gün |
 | `core_log` | Daily | 4 | 30–90 gün |
 | `game_log` | Daily | 2 | 7 gün |
-| `tenant` | Monthly | 2 | Sınırsız* |
-| `tenant_log` | Daily | 7 | 30–90 gün |
-| `tenant_report` | Monthly | 5 | Sınırsız |
+| `client` | Monthly | 2 | Sınırsız* |
+| `client_log` | Daily | 7 | 30–90 gün |
+| `client_report` | Monthly | 5 | Sınırsız |
 | `core_report` | Monthly | 5 | Sınırsız |
-| `tenant_affiliate` | Monthly | 7 | Sınırsız |
-| `tenant_audit` | Hybrid (Daily+Monthly) | 2 | 365 gün / 5 yıl |
+| `client_affiliate` | Monthly | 7 | Sınırsız |
+| `client_audit` | Hybrid (Daily+Monthly) | 2 | 365 gün / 5 yıl |
 | **Toplam** | | **37** | |
 
 > \* `core` Monthly: `messaging.user_messages` (180 gün) + `security.user_sessions` (90 gün).
-> \* `tenant` Monthly: `transaction.transactions` (sınırsız) + `messaging.player_messages` (180 gün).
+> \* `client` Monthly: `transaction.transactions` (sınırsız) + `messaging.player_messages` (180 gün).
 
 ### 2.2 core_audit (Daily, 90 gün retention)
 
@@ -97,70 +97,70 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `logs.dead_letter_messages` | `created_at` | `core_log/tables/logs/dead_letter_messages.sql` |
 | `backoffice.audit_logs` | `created_at` | `core_log/tables/backoffice/audit_logs.sql` |
 
-### 2.5 tenant_log (Daily, 30–90 gün retention)
+### 2.5 client_log (Daily, 30–90 gün retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
-| `affiliate_log.api_requests` | `created_at` | `tenant_log/tables/affiliate/api_requests.sql` |
-| `affiliate_log.commission_calculations` | `created_at` | `tenant_log/tables/affiliate/commission_calculations.sql` |
-| `affiliate_log.report_generations` | `created_at` | `tenant_log/tables/affiliate/report_generations.sql` |
-| `kyc_log.player_kyc_provider_logs` | `created_at` | `tenant_log/tables/kyc/player_kyc_provider_logs.sql` |
-| `messaging_log.message_delivery_logs` | `created_at` | `tenant_log/tables/messaging/message_delivery_logs.sql` |
+| `affiliate_log.api_requests` | `created_at` | `client_log/tables/affiliate/api_requests.sql` |
+| `affiliate_log.commission_calculations` | `created_at` | `client_log/tables/affiliate/commission_calculations.sql` |
+| `affiliate_log.report_generations` | `created_at` | `client_log/tables/affiliate/report_generations.sql` |
+| `kyc_log.player_kyc_provider_logs` | `created_at` | `client_log/tables/kyc/player_kyc_provider_logs.sql` |
+| `messaging_log.message_delivery_logs` | `created_at` | `client_log/tables/messaging/message_delivery_logs.sql` |
 
-### 2.6 tenant_report (Monthly, sınırsız retention)
+### 2.6 client_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
-| `finance.player_hourly_stats` | `period_hour` | `tenant_report/tables/finance/player_hourly_stats.sql` |
-| `finance.transaction_hourly_stats` | `period_hour` | `tenant_report/tables/finance/transaction_hourly_stats.sql` |
-| `finance.system_hourly_kpi` | `period_hour` | `tenant_report/tables/finance/system_hourly_kpi.sql` |
-| `game.game_hourly_stats` | `period_hour` | `tenant_report/tables/game/game_hourly_stats.sql` |
-| `game.game_performance_daily` | `report_date` | `tenant_report/tables/game/game_performance_daily.sql` |
+| `finance.player_hourly_stats` | `period_hour` | `client_report/tables/finance/player_hourly_stats.sql` |
+| `finance.transaction_hourly_stats` | `period_hour` | `client_report/tables/finance/transaction_hourly_stats.sql` |
+| `finance.system_hourly_kpi` | `period_hour` | `client_report/tables/finance/system_hourly_kpi.sql` |
+| `game.game_hourly_stats` | `period_hour` | `client_report/tables/game/game_hourly_stats.sql` |
+| `game.game_performance_daily` | `report_date` | `client_report/tables/game/game_performance_daily.sql` |
 
 ### 2.7 core_report (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
-| `finance.tenant_daily_kpi` | `report_date` | `core_report/tables/finance/tenant_daily_kpi.sql` |
+| `finance.client_daily_kpi` | `report_date` | `core_report/tables/finance/client_daily_kpi.sql` |
 | `billing.monthly_invoices` | `created_at` | `core_report/tables/billing/monthly_invoices.sql` |
-| `performance.tenant_traffic_hourly` | `period_hour` | `core_report/tables/performance/tenant_traffic_hourly.sql` |
+| `performance.client_traffic_hourly` | `period_hour` | `core_report/tables/performance/client_traffic_hourly.sql` |
 | `performance.provider_global_daily` | `report_date` | `core_report/tables/performance/provider_global_daily.sql` |
 | `performance.payment_global_daily` | `report_date` | `core_report/tables/performance/payment_global_daily.sql` |
 
-### 2.8 tenant (Monthly, karma retention)
+### 2.8 client (Monthly, karma retention)
 
 | Tablo | Partition Key | Retention | Dosya |
 |-------|--------------|-----------|-------|
-| `transaction.transactions` | `created_at` | Sınırsız | `tenant/tables/transaction/transactions.sql` |
-| `messaging.player_messages` | `created_at` | 180 gün | `tenant/tables/messaging/player_messages.sql` |
+| `transaction.transactions` | `created_at` | Sınırsız | `client/tables/transaction/transactions.sql` |
+| `messaging.player_messages` | `created_at` | 180 gün | `client/tables/messaging/player_messages.sql` |
 
-> **FK Etkisi (transactions):** `transactions` tablosunun PK'sı `(id, created_at)` olduğundan, `transaction_workflows.transaction_id → transactions(id)` ve `transactions.related_transaction_id → transactions(id)` (self-reference) FK'ları kaldırılmıştır. Bütünlük application-level'da sağlanır. Değişiklik: `tenant/constraints/transaction.sql`
+> **FK Etkisi (transactions):** `transactions` tablosunun PK'sı `(id, created_at)` olduğundan, `transaction_workflows.transaction_id → transactions(id)` ve `transactions.related_transaction_id → transactions(id)` (self-reference) FK'ları kaldırılmıştır. Bütünlük application-level'da sağlanır. Değişiklik: `client/constraints/transaction.sql`
 >
 > **FK Etkisi (player_messages):** `player_messages` tablosunun PK'sı `(id, created_at)` olduğundan composite PK'dır. `campaign_id → message_campaigns(id)` FK'sı partitioned'dan regular tabloya gittiği için sorunsuz çalışır (PG 12+).
 
-### 2.9 tenant_affiliate (Monthly, sınırsız retention)
+### 2.9 client_affiliate (Monthly, sınırsız retention)
 
 | Tablo | Partition Key | Dosya |
 |-------|--------------|-------|
-| `tracking.link_clicks` | `clicked_at` | `tenant_affiliate/tables/tracking/link_clicks.sql` |
-| `tracking.transaction_events` | `created_at` | `tenant_affiliate/tables/tracking/transaction_events.sql` |
-| `tracking.player_game_stats_daily` | `game_date` | `tenant_affiliate/tables/tracking/player_game_stats_daily.sql` |
-| `tracking.player_finance_stats_daily` | `stats_date` | `tenant_affiliate/tables/tracking/player_finance_stats_daily.sql` |
-| `tracking.affiliate_stats_daily` | `stats_date` | `tenant_affiliate/tables/tracking/affiliate_stats_daily.sql` |
-| `tracking.player_stats_monthly` | `(period_year, period_month)` | `tenant_affiliate/tables/tracking/player_stats_monthly.sql` |
-| `tracking.affiliate_stats_monthly` | `(period_year, period_month)` | `tenant_affiliate/tables/tracking/affiliate_stats_monthly.sql` |
+| `tracking.link_clicks` | `clicked_at` | `client_affiliate/tables/tracking/link_clicks.sql` |
+| `tracking.transaction_events` | `created_at` | `client_affiliate/tables/tracking/transaction_events.sql` |
+| `tracking.player_game_stats_daily` | `game_date` | `client_affiliate/tables/tracking/player_game_stats_daily.sql` |
+| `tracking.player_finance_stats_daily` | `stats_date` | `client_affiliate/tables/tracking/player_finance_stats_daily.sql` |
+| `tracking.affiliate_stats_daily` | `stats_date` | `client_affiliate/tables/tracking/affiliate_stats_daily.sql` |
+| `tracking.player_stats_monthly` | `(period_year, period_month)` | `client_affiliate/tables/tracking/player_stats_monthly.sql` |
+| `tracking.affiliate_stats_monthly` | `(period_year, period_month)` | `client_affiliate/tables/tracking/affiliate_stats_monthly.sql` |
 
 > **Multi-column Range:** `player_stats_monthly` ve `affiliate_stats_monthly` tabloları tek bir tarih kolonu olmadığından `PARTITION BY RANGE (period_year, period_month)` kullanır.
 
-### 2.10 tenant_audit (Hybrid: Daily + Monthly)
+### 2.10 client_audit (Hybrid: Daily + Monthly)
 
 | Tablo | Partition Tipi | Partition Key | Retention | Dosya |
 |-------|---------------|--------------|-----------|-------|
-| `player_audit.login_attempts` | Daily | `attempted_at` | 365 gün | `tenant_audit/tables/player_audit/login_attempts.sql` |
-| `player_audit.login_sessions` | Monthly | `created_at` | 1825 gün (5 yıl) | `tenant_audit/tables/player_audit/login_sessions.sql` |
+| `player_audit.login_attempts` | Daily | `attempted_at` | 365 gün | `client_audit/tables/player_audit/login_attempts.sql` |
+| `player_audit.login_sessions` | Monthly | `created_at` | 1825 gün (5 yıl) | `client_audit/tables/player_audit/login_sessions.sql` |
 
-> **Hybrid partition:** tenant_audit, tek DB'de hem daily hem monthly partition stratejisi barındıran ilk veritabanıdır. `create_partitions()` fonksiyonu her iki stratejiyi ayrı parametrelerle yönetir (`p_look_ahead_days` + `p_look_ahead_months`).
-> Diğer tenant_audit tabloları (`affiliate_audit`, `kyc_audit`) partitioned **değildir** (düşük hacim, long retention).
+> **Hybrid partition:** client_audit, tek DB'de hem daily hem monthly partition stratejisi barındıran ilk veritabanıdır. `create_partitions()` fonksiyonu her iki stratejiyi ayrı parametrelerle yönetir (`p_look_ahead_days` + `p_look_ahead_months`).
+> Diğer client_audit tabloları (`affiliate_audit`, `kyc_audit`) partitioned **değildir** (düşük hacim, long retention).
 
 ### 2.11 game_log (Daily, 7 gün retention)
 
@@ -169,15 +169,15 @@ CREATE TABLE schema.table_name_default PARTITION OF schema.table_name DEFAULT;
 | `game_log.provider_api_requests` | `created_at` | 7 gün | `game_log/tables/provider_api_requests.sql` |
 | `game_log.provider_api_callbacks` | `created_at` | 7 gün | `game_log/tables/provider_api_callbacks.sql` |
 
-> **Hybrid tasarım (Seçenek C):** Gateway seviyesi provider API logları `game_log` DB'de (shared, 7 gün). Yüksek hacimli oyun round/spin detayları `tenant_log` DB'de per-tenant izolasyonda (30 gün). Bu sayede tenant izolasyonu korunur ve gateway logları hafif kalır.
+> **Hybrid tasarım (Seçenek C):** Gateway seviyesi provider API logları `game_log` DB'de (shared, 7 gün). Yüksek hacimli oyun round/spin detayları `client_log` DB'de per-client izolasyonda (30 gün). Bu sayede client izolasyonu korunur ve gateway logları hafif kalır.
 
-### 2.12 tenant_log — game_log şeması (Daily, 30 gün retention)
+### 2.12 client_log — game_log şeması (Daily, 30 gün retention)
 
 | Tablo | Partition Key | Retention | Dosya |
 |-------|--------------|-----------|-------|
-| `game_log.game_rounds` | `created_at` | 30 gün | `tenant_log/tables/game_log/game_rounds.sql` |
+| `game_log.game_rounds` | `created_at` | 30 gün | `client_log/tables/game_log/game_rounds.sql` |
 
-> **Yüksek hacim tablosu:** Her spin/el/bahis bir round kaydı oluşturur. Per-tenant izolasyon ile yüzlerce tenant'ın yükü doğal olarak dağılır. `round_detail` JSONB kolonu oyun tipine göre değişken detayları (semboller, çarpanlar, kart bilgileri vb.) tutar.
+> **Yüksek hacim tablosu:** Her spin/el/bahis bir round kaydı oluşturur. Per-client izolasyon ile yüzlerce client'ın yükü doğal olarak dağılır. `round_detail` JSONB kolonu oyun tipine göre değişken detayları (semboller, çarpanlar, kart bilgileri vb.) tutar.
 
 ### 2.13 Partition Uygulanmayan Veritabanları
 
@@ -308,7 +308,7 @@ security.user_sessions                    -- Ana partitioned tablo (90 gün rete
 └── security.user_sessions_default        -- Güvenlik ağı
 ```
 
-**`deploy_tenant.sql` çalıştırıldıktan sonra:**
+**`deploy_client.sql` çalıştırıldıktan sonra:**
 
 ```
 transaction.transactions                  -- Ana partitioned tablo (sınırsız retention)
@@ -350,7 +350,7 @@ SELECT cron.schedule('core-log-maintenance',
 );
 
 -- Monthly partition DB'leri: Her hafta Pazartesi 03:00
-SELECT cron.schedule('tenant-maintenance',
+SELECT cron.schedule('client-maintenance',
     '0 3 * * 1',
     $$SELECT * FROM maintenance.run_maintenance()$$
 );
@@ -362,20 +362,20 @@ SELECT cron.schedule('tenant-maintenance',
 # Daily partition DB'leri - Her gün 02:00
 0 2 * * * psql -d core_audit -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 0 2 * * * psql -d core_log -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
-0 2 * * * psql -d tenant_log_001 -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
+0 2 * * * psql -d client_log_001 -c "SELECT * FROM maintenance.run_maintenance(90, 7);"
 
 # Monthly partition DB'leri - Her hafta Pazartesi 03:00
 0 3 * * 1 psql -d core -c "SELECT * FROM maintenance.run_maintenance();"
-0 3 * * 1 psql -d tenant_001 -c "SELECT * FROM maintenance.run_maintenance();"
-0 3 * * 1 psql -d tenant_report_001 -c "SELECT * FROM maintenance.run_maintenance();"
-0 3 * * 1 psql -d tenant_affiliate_001 -c "SELECT * FROM maintenance.run_maintenance();"
+0 3 * * 1 psql -d client_001 -c "SELECT * FROM maintenance.run_maintenance();"
+0 3 * * 1 psql -d client_report_001 -c "SELECT * FROM maintenance.run_maintenance();"
+0 3 * * 1 psql -d client_affiliate_001 -c "SELECT * FROM maintenance.run_maintenance();"
 0 3 * * 1 psql -d core_report -c "SELECT * FROM maintenance.run_maintenance();"
 ```
 
 #### Backend Application ile (Önerilen)
 
 Backend scheduled job/worker üzerinden:
-1. Her tenant DB'ye ayrı connection aç
+1. Her client DB'ye ayrı connection aç
 2. `SELECT * FROM maintenance.run_maintenance(...)` çağır
 3. Sonuçları logla
 4. `default_partition_size > 0` ise alert gönder
@@ -387,12 +387,12 @@ Backend scheduled job/worker üzerinden:
 | `core` | Monthly | Haftada 1 | 180 | 3 |
 | `core_audit` | Daily | Her gün | 90 | 7 |
 | `core_log` | Daily | Her gün | 90 | 7 |
-| `tenant_log` | Daily | Her gün | 90 | 7 |
-| `tenant_report` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
+| `client_log` | Daily | Her gün | 90 | 7 |
+| `client_report` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
 | `core_report` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
-| `tenant_affiliate` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
-| `tenant` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
-| `tenant_audit` | Hybrid | Her gün | 365 (daily) / 1825 (monthly) | 7 gün / 3 ay |
+| `client_affiliate` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
+| `client` | Monthly | Haftada 1 | 36500 (sınırsız) | 3 |
+| `client_audit` | Hybrid | Her gün | 365 (daily) / 1825 (monthly) | 7 gün / 3 ay |
 
 ### 5.4 Monitoring Sorguları
 
@@ -436,11 +436,11 @@ WHERE created_at >= '2026-02-01' AND created_at < '2026-03-01'
 
 ## 7. Jurisdiction Bazlı Retention Yönetimi
 
-Farklı ülke/lisans otoritelerinin veri saklama süreleri farklıdır (örn. Almanya GwG: 10 yıl, Malta MGA: 5 yıl). Bu nedenle `drop_expired_partitions` fonksiyonu her tenant için farklı parametrelerle çağrılmalıdır.
+Farklı ülke/lisans otoritelerinin veri saklama süreleri farklıdır (örn. Almanya GwG: 10 yıl, Malta MGA: 5 yıl). Bu nedenle `drop_expired_partitions` fonksiyonu her client için farklı parametrelerle çağrılmalıdır.
 
 ### 7.1 Mimari Karar
 
-**Retention kuralları merkezi olarak Core DB'de tutulur.** Tenant DB'lerde ayrı bir config tablosu yoktur.
+**Retention kuralları merkezi olarak Core DB'de tutulur.** Client DB'lerde ayrı bir config tablosu yoktur.
 
 ```
 core.catalog.data_retention_policies
@@ -454,12 +454,12 @@ core.catalog.data_retention_policies
 
 ```mermaid
 flowchart TD
-    J["Backend Scheduled Job"] --> S1["1. Tenant listesini çek<br/>(core.tenants + jurisdiction_id)"]
+    J["Backend Scheduled Job"] --> S1["1. Client listesini çek<br/>(core.clients + jurisdiction_id)"]
     S1 --> S2["2. Retention kurallarını çek<br/>(catalog.data_retention_policies)"]
-    S2 --> S3["3. Her tenant için retention uygula"]
-    S3 --> TL["tenant_log DB<br/>run_maintenance(kyc_retention, 7)"]
-    S3 --> TD2["tenant DB<br/>run_maintenance(transaction_retention, 3)"]
-    S3 --> TA["tenant_affiliate DB<br/>run_maintenance(affiliate_retention, 3)"]
+    S2 --> S3["3. Her client için retention uygula"]
+    S3 --> TL["client_log DB<br/>run_maintenance(kyc_retention, 7)"]
+    S3 --> TD2["client DB<br/>run_maintenance(transaction_retention, 3)"]
+    S3 --> TA["client_affiliate DB<br/>run_maintenance(affiliate_retention, 3)"]
     TL --> S4["4. Logla + alert gönder"]
     TD2 --> S4
     TA --> S4
@@ -476,9 +476,9 @@ flowchart TD
 
 > **Not:** Bu süreler örnektir. Gerçek değerler yasal danışmanlık ile belirlenmelidir.
 
-### 7.4 Neden Tenant DB'de Config Yok?
+### 7.4 Neden Client DB'de Config Yok?
 
 - **Tek kaynak (single source of truth):** Jurisdiction kuralları değiştiğinde sadece core güncellenir
-- **Senkronizasyon gereksiz:** Tenant DB'de kopyası olsa güncelliği garanti edilemez
-- **Backend zaten biliyor:** Her tenant'ın jurisdiction'ını çağrı anında core'dan okur
+- **Senkronizasyon gereksiz:** Client DB'de kopyası olsa güncelliği garanti edilemez
+- **Backend zaten biliyor:** Her client'ın jurisdiction'ını çağrı anında core'dan okur
 - **Basitlik:** maintenance fonksiyonları parametrik kalır, config bağımlılığı yoktur

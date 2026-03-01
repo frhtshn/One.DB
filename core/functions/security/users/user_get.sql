@@ -4,8 +4,8 @@
 -- Erişim Kuralları:
 --   - Platform Admin (SuperAdmin/Admin): Herkesi görebilir
 --   - CompanyAdmin: Kendi şirketindeki kullanıcıları görebilir
---   - TenantAdmin: Kendi tenant'ındaki kullanıcıları görebilir
---                  (sadece o tenant'taki rolleri görür)
+--   - ClientAdmin: Kendi client'ındaki kullanıcıları görebilir
+--                  (sadece o client'taki rolleri görür)
 --   - Diğerleri: ERİŞİM YOK
 -- Güvenlik:
 --   - Kilitli caller erişemez
@@ -28,11 +28,11 @@ DECLARE
     v_caller_company_id BIGINT;
     v_caller_has_platform_role BOOLEAN;
     v_caller_is_company_admin BOOLEAN;
-    v_caller_tenant_ids BIGINT[];
+    v_caller_client_ids BIGINT[];
     v_target_company_id BIGINT;
     v_target_status SMALLINT;
-    v_target_has_role_in_caller_tenant BOOLEAN;
-    v_visible_tenant_ids BIGINT[];
+    v_target_has_role_in_caller_client BOOLEAN;
+    v_visible_client_ids BIGINT[];
 BEGIN
     -- ========================================
     -- 1. CALLER BİLGİLERİNİ AL
@@ -42,12 +42,12 @@ BEGIN
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.is_platform_role = TRUE
         ),
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.code = 'companyadmin'
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.code = 'companyadmin'
         )
     INTO v_caller_company_id, v_caller_has_platform_role, v_caller_is_company_admin
     FROM security.users u
@@ -60,14 +60,14 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.unauthorized';
     END IF;
 
-    -- Caller'ın TenantAdmin olduğu tenant'ları al (aktif roller)
-    SELECT ARRAY_AGG(DISTINCT ur.tenant_id)
-    INTO v_caller_tenant_ids
+    -- Caller'ın ClientAdmin olduğu client'ları al (aktif roller)
+    SELECT ARRAY_AGG(DISTINCT ur.client_id)
+    INTO v_caller_client_ids
     FROM security.user_roles ur
     JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
     WHERE ur.user_id = p_caller_id
-      AND ur.tenant_id IS NOT NULL
-      AND r.code = 'tenantadmin';
+      AND ur.client_id IS NOT NULL
+      AND r.code = 'clientadmin';
 
     -- ========================================
     -- 2. TARGET KULLANICI VARLIK KONTROLÜ
@@ -95,36 +95,36 @@ BEGIN
             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.company-scope-denied';
         END IF;
 
-        -- CompanyAdmin değilse TenantAdmin kontrolü
+        -- CompanyAdmin değilse ClientAdmin kontrolü
         IF NOT v_caller_is_company_admin THEN
-            -- TenantAdmin değilse (tenant_ids NULL) erişemez
-            IF v_caller_tenant_ids IS NULL THEN
+            -- ClientAdmin değilse (client_ids NULL) erişemez
+            IF v_caller_client_ids IS NULL THEN
                 RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.denied';
             END IF;
 
-            -- TenantAdmin scope kontrolü (aktif roller)
+            -- ClientAdmin scope kontrolü (aktif roller)
             SELECT EXISTS(
                 SELECT 1 FROM security.user_roles ur
                 JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
                 WHERE ur.user_id = p_user_id
-                  AND ur.tenant_id = ANY(v_caller_tenant_ids)
-            ) INTO v_target_has_role_in_caller_tenant;
+                  AND ur.client_id = ANY(v_caller_client_ids)
+            ) INTO v_target_has_role_in_caller_client;
 
-            IF NOT v_target_has_role_in_caller_tenant THEN
-                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.tenant-scope-denied';
+            IF NOT v_target_has_role_in_caller_client THEN
+                RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.client-scope-denied';
             END IF;
         END IF;
     END IF;
 
     -- ========================================
-    -- 4. GÖRÜNÜR TENANT'LARI BELİRLE
+    -- 4. GÖRÜNÜR CLIENT'LARI BELİRLE
     -- ========================================
-    -- Platform Admin veya CompanyAdmin: Tüm tenant'ları görür
-    -- TenantAdmin: Sadece kendi tenant'larını görür
+    -- Platform Admin veya CompanyAdmin: Tüm client'ları görür
+    -- ClientAdmin: Sadece kendi client'larını görür
     IF v_caller_has_platform_role OR v_caller_is_company_admin THEN
-        v_visible_tenant_ids := NULL; -- NULL = tümü
+        v_visible_client_ids := NULL; -- NULL = tümü
     ELSE
-        v_visible_tenant_ids := v_caller_tenant_ids;
+        v_visible_client_ids := v_caller_client_ids;
     END IF;
 
     -- ========================================
@@ -181,32 +181,32 @@ BEGIN
                     ) ORDER BY r.id)
                     FROM security.user_roles ur
                     JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
-                    WHERE ur.user_id = u.id AND ur.tenant_id IS NULL
+                    WHERE ur.user_id = u.id AND ur.client_id IS NULL
                 ), '[]'::jsonb)
             ELSE '[]'::jsonb
         END,
-        -- Tenant rolleri (filtrelenmiş, aktif roller)
-        'tenantRoles', COALESCE((
+        -- Client rolleri (filtrelenmiş, aktif roller)
+        'clientRoles', COALESCE((
             SELECT jsonb_agg(jsonb_build_object(
-                'tenantId', ur.tenant_id,
-                'tenantName', t.tenant_name,
+                'clientId', ur.client_id,
+                'clientName', t.client_name,
                 'roleId', r.id,
                 'roleCode', r.code,
                 'roleName', r.name
-            ) ORDER BY ur.tenant_id, r.id)
+            ) ORDER BY ur.client_id, r.id)
             FROM security.user_roles ur
             JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
-            JOIN core.tenants t ON t.id = ur.tenant_id
+            JOIN core.clients t ON t.id = ur.client_id
             WHERE ur.user_id = u.id
-              AND ur.tenant_id IS NOT NULL
-              AND (v_visible_tenant_ids IS NULL OR ur.tenant_id = ANY(v_visible_tenant_ids))
+              AND ur.client_id IS NOT NULL
+              AND (v_visible_client_ids IS NULL OR ur.client_id = ANY(v_visible_client_ids))
         ), '[]'::jsonb),
-        -- Allowed tenants (filtrelenmiş)
-        'allowedTenants', COALESCE((
-            SELECT jsonb_agg(uat.tenant_id ORDER BY uat.tenant_id)
-            FROM security.user_allowed_tenants uat
+        -- Allowed clients (filtrelenmiş)
+        'allowedClients', COALESCE((
+            SELECT jsonb_agg(uat.client_id ORDER BY uat.client_id)
+            FROM security.user_allowed_clients uat
             WHERE uat.user_id = u.id
-              AND (v_visible_tenant_ids IS NULL OR uat.tenant_id = ANY(v_visible_tenant_ids))
+              AND (v_visible_client_ids IS NULL OR uat.client_id = ANY(v_visible_client_ids))
         ), '[]'::jsonb)
     )
     INTO v_result
@@ -220,6 +220,6 @@ $$;
 
 COMMENT ON FUNCTION security.user_get(BIGINT, BIGINT) IS
 'Returns user details with IDOR protection. Includes departments (JSONB multi-language name).
-Access: Platform Admin (all), CompanyAdmin (same company), TenantAdmin (own tenant users).
-TenantAdmin only sees roles in their own tenant.
+Access: Platform Admin (all), CompanyAdmin (same company), ClientAdmin (own client users).
+ClientAdmin only sees roles in their own client.
 Locked callers and deleted targets are rejected.';

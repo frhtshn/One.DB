@@ -54,35 +54,35 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_contexts_page_code ON presentation.context
 -- Theme & Navigation Indexes
 -- =========================================================================================
 
--- tenant_themes
-CREATE INDEX IF NOT EXISTS idx_tenant_themes_tenant ON presentation.tenant_themes USING btree(tenant_id);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_themes_active ON presentation.tenant_themes USING btree(tenant_id) WHERE is_active = true;
+-- client_themes
+CREATE INDEX IF NOT EXISTS idx_client_themes_client ON presentation.client_themes USING btree(client_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_themes_active ON presentation.client_themes USING btree(client_id) WHERE is_active = true;
 
--- tenant_layouts
-CREATE INDEX IF NOT EXISTS idx_tenant_layouts_tenant ON presentation.tenant_layouts USING btree(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_tenant_layouts_lookup ON presentation.tenant_layouts USING btree(tenant_id, layout_name);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_layouts_page ON presentation.tenant_layouts USING btree(tenant_id, page_id) WHERE page_id IS NOT NULL;
+-- client_layouts
+CREATE INDEX IF NOT EXISTS idx_client_layouts_client ON presentation.client_layouts USING btree(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_layouts_lookup ON presentation.client_layouts USING btree(client_id, layout_name);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_layouts_page ON presentation.client_layouts USING btree(client_id, page_id) WHERE page_id IS NOT NULL;
 
--- tenant_navigation
-CREATE INDEX IF NOT EXISTS idx_tenant_navigation_tenant ON presentation.tenant_navigation USING btree(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_tenant_navigation_parent ON presentation.tenant_navigation USING btree(parent_id);
-CREATE INDEX IF NOT EXISTS idx_tenant_navigation_ordering ON presentation.tenant_navigation USING btree(tenant_id, menu_location, display_order);
+-- client_navigation
+CREATE INDEX IF NOT EXISTS idx_client_navigation_client ON presentation.client_navigation USING btree(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_navigation_parent ON presentation.client_navigation USING btree(parent_id);
+CREATE INDEX IF NOT EXISTS idx_client_navigation_ordering ON presentation.client_navigation USING btree(client_id, menu_location, display_order);
 
--- tenant_themes (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_themes_tenant_theme ON presentation.tenant_themes USING btree(tenant_id, theme_id);
+-- client_themes (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_themes_client_theme ON presentation.client_themes USING btree(client_id, theme_id);
 
--- tenant_layouts (unique lookup)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_layouts_unique_layout ON presentation.tenant_layouts USING btree(tenant_id, page_id, layout_name);
+-- client_layouts (unique lookup)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_layouts_unique_layout ON presentation.client_layouts USING btree(client_id, page_id, layout_name);
 
 -- =========================================================================================
 -- GIN Indexes for JSONB Columns
 -- =========================================================================================
 
--- presentation.tenant_themes (config)
-CREATE INDEX IF NOT EXISTS idx_tenant_themes_config_gin ON presentation.tenant_themes USING gin(config);
+-- presentation.client_themes (config)
+CREATE INDEX IF NOT EXISTS idx_client_themes_config_gin ON presentation.client_themes USING gin(config);
 
--- presentation.tenant_navigation (custom_label)
-CREATE INDEX IF NOT EXISTS idx_tenant_navigation_label_gin ON presentation.tenant_navigation USING gin(custom_label);
+-- presentation.client_navigation (custom_label)
+CREATE INDEX IF NOT EXISTS idx_client_navigation_label_gin ON presentation.client_navigation USING gin(custom_label);
 
--- presentation.tenant_layouts (structure)
-CREATE INDEX IF NOT EXISTS idx_tenant_layouts_structure_gin ON presentation.tenant_layouts USING gin(structure);
+-- presentation.client_layouts (structure)
+CREATE INDEX IF NOT EXISTS idx_client_layouts_structure_gin ON presentation.client_layouts USING gin(structure);

@@ -2,7 +2,7 @@
 -- Tablo: core.platform_settings
 -- Açıklama: Platform seviyesi dış servis ayarları
 -- ip-api, currencylayer, SMTP, AWS SES gibi
--- Nucleo'nun kullandığı harici API yapılandırmaları
+-- Sortis One'ın kullandığı harici API yapılandırmaları
 -- Config değerleri uygulama katmanında şifreli tutulur
 -- =============================================
 

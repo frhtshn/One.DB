@@ -28,7 +28,7 @@ BEGIN
     -- ========================================
     -- 1. ASSIGNMENT KONTROLU
     -- ========================================
-    SELECT id, user_id, template_id, tenant_id, removed_at
+    SELECT id, user_id, template_id, client_id, removed_at
     INTO v_assignment
     FROM security.permission_template_assignments
     WHERE id = p_assignment_id AND user_id = p_user_id;
@@ -63,7 +63,7 @@ BEGIN
     SELECT EXISTS(
         SELECT 1 FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+        WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
     ) INTO v_has_platform_role;
 
     IF NOT v_has_platform_role THEN

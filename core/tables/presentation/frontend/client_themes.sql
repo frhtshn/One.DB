@@ -1,14 +1,14 @@
 -- =============================================
--- Tenant Themes (Tenant Tema Ayarları)
--- Tenant'ın seçtiği tema ve özelleştirmeleri
+-- Client Themes (Client Tema Ayarları)
+-- Client'ın seçtiği tema ve özelleştirmeleri
 -- =============================================
 
-DROP TABLE IF EXISTS presentation.tenant_themes CASCADE;
+DROP TABLE IF EXISTS presentation.client_themes CASCADE;
 
-CREATE TABLE presentation.tenant_themes (
+CREATE TABLE presentation.client_themes (
     id bigserial PRIMARY KEY,
 
-    tenant_id bigint NOT NULL,                    -- Hangi tenant
+    client_id bigint NOT NULL,                    -- Hangi client
     theme_id int NOT NULL,                        -- Hangi tema (catalog.themes)
 
     -- Konfigürasyon Override
@@ -29,4 +29,4 @@ CREATE TABLE presentation.tenant_themes (
 
 );
 
-COMMENT ON TABLE presentation.tenant_themes IS 'Tenant-specific theme configuration and customizations';
+COMMENT ON TABLE presentation.client_themes IS 'Client-specific theme configuration and customizations';

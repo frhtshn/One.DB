@@ -27,7 +27,7 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.bonus-type.id-required';
     END IF;
 
-    SELECT id, tenant_id, type_code INTO v_current
+    SELECT id, client_id, type_code INTO v_current
     FROM bonus.bonus_types WHERE id = p_id;
 
     IF NOT FOUND THEN
@@ -38,7 +38,7 @@ BEGIN
     IF p_type_code IS NOT NULL AND UPPER(TRIM(p_type_code)) != v_current.type_code THEN
         IF EXISTS (
             SELECT 1 FROM bonus.bonus_types
-            WHERE tenant_id IS NOT DISTINCT FROM v_current.tenant_id
+            WHERE client_id IS NOT DISTINCT FROM v_current.client_id
               AND type_code = UPPER(TRIM(p_type_code))
               AND id != p_id
         ) THEN

@@ -1,15 +1,15 @@
 -- =============================================
--- Tablo: security.secrets_tenant
--- Açıklama: Tenant gizli bilgileri (secrets)
--- Tenant bazında API key, JWT secret gibi hassas bilgiler
+-- Tablo: security.secrets_client
+-- Açıklama: Client gizli bilgileri (secrets)
+-- Client bazında API key, JWT secret gibi hassas bilgiler
 -- Farklı ortamlar (prod, staging) için ayrı kayıtlar tutulabilir
 -- =============================================
 
-DROP TABLE IF EXISTS security.secrets_tenant CASCADE;
+DROP TABLE IF EXISTS security.secrets_client CASCADE;
 
-CREATE TABLE security.secrets_tenant (
+CREATE TABLE security.secrets_client (
     id bigserial PRIMARY KEY,                              -- Benzersiz secret kimliği
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
     secret_type varchar(50) NOT NULL,                      -- Secret tipi: JWT_SECRET, ENCRYPTION_KEY
     secret_value text NOT NULL,                            -- Şifreli secret değeri
     environment varchar(20) NOT NULL DEFAULT 'production', -- Ortam: production, staging, shadow
@@ -18,4 +18,4 @@ CREATE TABLE security.secrets_tenant (
     rotated_at timestamp without time zone                 -- Son anahtar rotasyon zamanı
 );
 
-COMMENT ON TABLE security.secrets_tenant IS 'Tenant secrets storage for sensitive credentials like JWT secrets and encryption keys, supporting multiple environments';
+COMMENT ON TABLE security.secrets_client IS 'Client secrets storage for sensitive credentials like JWT secrets and encryption keys, supporting multiple environments';

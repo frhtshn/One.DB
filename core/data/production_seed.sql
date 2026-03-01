@@ -1,5 +1,5 @@
 -- ================================================================
--- NUCLEO PLATFORM - PRODUCTION SEED FILE
+-- SORTIS ONE - PRODUCTION SEED FILE
 -- ================================================================
 -- Minimal production seed data.
 -- ================================================================
@@ -29,16 +29,16 @@
 -- Bunlar permissions_full.sql ve role_permissions_full.sql'de yönetiliyor
 
 -- Security (users & roles only)
-TRUNCATE TABLE security.user_allowed_tenants RESTART IDENTITY CASCADE;
+TRUNCATE TABLE security.user_allowed_clients RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.users RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.roles RESTART IDENTITY CASCADE;
 
 -- Core
-TRUNCATE TABLE core.tenant_settings RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenant_languages RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenant_currencies RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenants RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_settings RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_languages RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_currencies RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.clients RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.companies RESTART IDENTITY CASCADE;
 
 -- Sequence reset
@@ -49,20 +49,20 @@ SELECT setval('core.companies_id_seq', 1, false);
 -- ================================================================
 
 INSERT INTO core.companies (id, company_code, company_name, status, country_code, timezone) VALUES
-(0, 'NUCLEO', 'Nucleo Platform', 1, 'TR', 'Europe/Istanbul');
+(0, 'SORTIS', 'Sortis One Platform', 1, 'TR', 'Europe/Istanbul');
 
 SELECT setval('core.companies_id_seq', (SELECT MAX(id) FROM core.companies) + 1);
 
 -- ================================================================
 -- 3. ROLES
 -- ================================================================
--- Hierarchy: superadmin > admin > companyadmin > tenantadmin > moderator > editor > operator > user
+-- Hierarchy: superadmin > admin > companyadmin > clientadmin > moderator > editor > operator > user
 
 INSERT INTO security.roles (code, name, description, level, status, is_platform_role) VALUES
 ('superadmin', 'Super Admin', 'Platform owner - Full access to all features', 100, 1, TRUE),
-('admin', 'Admin', 'System administrator - All company and tenant operations', 90, 1, TRUE),
-('companyadmin', 'Company Admin', 'Company manager - Tenant operations under own company', 80, 1, FALSE),
-('tenantadmin', 'Tenant Admin', 'Tenant manager - Operations within own tenant', 70, 1, FALSE),
+('admin', 'Admin', 'System administrator - All company and client operations', 90, 1, TRUE),
+('companyadmin', 'Company Admin', 'Company manager - Client operations under own company', 80, 1, FALSE),
+('clientadmin', 'Client Admin', 'Client manager - Operations within own client', 70, 1, FALSE),
 ('moderator', 'Moderator', 'Content moderator - Player editing permissions', 60, 1, FALSE),
 ('editor', 'Editor', 'Content editor - Banner, slider, content management', 50, 1, FALSE),
 ('operator', 'Operator', 'Customer service - Player viewing and KYC', 40, 1, FALSE),
@@ -76,7 +76,7 @@ INSERT INTO security.roles (code, name, description, level, status, is_platform_
 -- WARNING: Change this password immediately after first login!
 
 INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency, country) VALUES
-(0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin',
+(0, 'Super', 'Admin', 'superadmin@sortisgaming.com', 'superadmin',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Europe/Istanbul', 'EUR', 'MT');
 
@@ -84,10 +84,10 @@ INSERT INTO security.users (company_id, first_name, last_name, email, username, 
 -- 5. GLOBAL ROLE ASSIGNMENT
 -- ================================================================
 
--- superadmin@nucleo.io → superadmin (global)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- superadmin@sortisgaming.com → superadmin (global)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, NULL FROM security.users u, security.roles r
-WHERE u.email = 'superadmin@nucleo.io' AND r.code = 'superadmin';
+WHERE u.email = 'superadmin@sortisgaming.com' AND r.code = 'superadmin';
 
 -- ================================================================
 -- 6. VALIDATION
@@ -110,7 +110,7 @@ BEGIN
     SELECT COUNT(*) INTO v_user_roles FROM security.user_roles;
 
     RAISE NOTICE '================================================';
-    RAISE NOTICE 'NUCLEO PLATFORM PRODUCTION SEED COMPLETED';
+    RAISE NOTICE 'SORTIS ONE PRODUCTION SEED COMPLETED';
     RAISE NOTICE '================================================';
     RAISE NOTICE 'Companies: %', v_companies;
     RAISE NOTICE 'Roles: %', v_roles;
@@ -130,7 +130,7 @@ LEFT JOIN security.role_permissions rp ON r.id = rp.role_id
 GROUP BY r.code, r.id
 ORDER BY CASE r.code
     WHEN 'superadmin' THEN 1 WHEN 'admin' THEN 2 WHEN 'companyadmin' THEN 3
-    WHEN 'tenantadmin' THEN 4 WHEN 'moderator' THEN 5 WHEN 'editor' THEN 6
+    WHEN 'clientadmin' THEN 4 WHEN 'moderator' THEN 5 WHEN 'editor' THEN 6
     WHEN 'operator' THEN 7 WHEN 'user' THEN 8
 END;
 
@@ -140,7 +140,7 @@ END;
 --
 -- | Email                | Company | Role       |
 -- |----------------------|---------|------------|
--- | superadmin@nucleo.io | NUCLEO  | superadmin |
+-- | superadmin@sortisgaming.com | SORTIS  | superadmin |
 --
 -- Default password: deneme (MUST BE CHANGED!)
 -- ================================================================

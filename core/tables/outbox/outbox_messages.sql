@@ -13,14 +13,14 @@ CREATE TABLE outbox.messages (
 
     -- Message Type
     action_type varchar(50) NOT NULL,           -- 'cache_invalidate', 'event_publish'
-    aggregate_type varchar(100) NOT NULL,       -- 'user_permission', 'role', 'tenant'
+    aggregate_type varchar(100) NOT NULL,       -- 'user_permission', 'role', 'client'
     aggregate_id varchar(100) NOT NULL,         -- İlgili entity ID
 
     -- Payload
     payload jsonb NOT NULL,                     -- İşlenecek data
 
     -- Context
-    tenant_id bigint,                           -- Opsiyonel tenant context
+    client_id bigint,                           -- Opsiyonel client context
     correlation_id uuid DEFAULT gen_random_uuid(),
 
     -- Processing State

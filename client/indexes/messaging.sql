@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Messaging Schema Indexes
+-- Client Messaging Schema Indexes
 -- =============================================
 
 -- message_templates

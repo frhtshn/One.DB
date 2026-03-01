@@ -1,15 +1,15 @@
 -- ================================================================
--- TENANT_PAYMENT_METHOD_LIST: Tenant ödeme metot listesi (BO admin)
+-- CLIENT_PAYMENT_METHOD_LIST: Client ödeme metot listesi (BO admin)
 -- ================================================================
 -- Denormalize alanlardan sorgu, catalog JOIN YOK (cross-DB).
 -- Provider filtresi + payment_type filtresi + metin arama + sayfalama.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_payment_method_list(BIGINT, BIGINT, VARCHAR, VARCHAR, BOOLEAN, TEXT, INTEGER, INTEGER);
+DROP FUNCTION IF EXISTS core.client_payment_method_list(BIGINT, BIGINT, VARCHAR, VARCHAR, BOOLEAN, TEXT, INTEGER, INTEGER);
 
-CREATE OR REPLACE FUNCTION core.tenant_payment_method_list(
+CREATE OR REPLACE FUNCTION core.client_payment_method_list(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_provider_code VARCHAR(50) DEFAULT NULL,
     p_payment_type VARCHAR(50) DEFAULT NULL,
     p_is_enabled BOOLEAN DEFAULT NULL,
@@ -27,12 +27,12 @@ DECLARE
     v_total INTEGER;
     v_items JSONB;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -40,8 +40,8 @@ BEGIN
 
     -- Toplam sayı
     SELECT COUNT(*) INTO v_total
-    FROM core.tenant_payment_methods tpm
-    WHERE tpm.tenant_id = p_tenant_id
+    FROM core.client_payment_methods tpm
+    WHERE tpm.client_id = p_client_id
       AND (p_provider_code IS NULL OR tpm.provider_code = UPPER(TRIM(p_provider_code)))
       AND (p_payment_type IS NULL OR tpm.payment_type = UPPER(TRIM(p_payment_type)))
       AND (p_is_enabled IS NULL OR tpm.is_enabled = p_is_enabled)
@@ -92,8 +92,8 @@ BEGIN
         ) ORDER BY tpm.display_order ASC, tpm.id ASC
     ), '[]'::jsonb)
     INTO v_items
-    FROM core.tenant_payment_methods tpm
-    WHERE tpm.tenant_id = p_tenant_id
+    FROM core.client_payment_methods tpm
+    WHERE tpm.client_id = p_client_id
       AND (p_provider_code IS NULL OR tpm.provider_code = UPPER(TRIM(p_provider_code)))
       AND (p_payment_type IS NULL OR tpm.payment_type = UPPER(TRIM(p_payment_type)))
       AND (p_is_enabled IS NULL OR tpm.is_enabled = p_is_enabled)
@@ -113,4 +113,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_payment_method_list IS 'Returns tenant payment method list for BO admin. Uses denormalized fields (no cross-DB JOIN). Supports provider, type, status filtering and text search. IDOR protected.';
+COMMENT ON FUNCTION core.client_payment_method_list IS 'Returns client payment method list for BO admin. Uses denormalized fields (no cross-DB JOIN). Supports provider, type, status filtering and text search. IDOR protected.';

@@ -2,7 +2,7 @@
 -- Tablo: billing.provider_invoice_items
 -- Açıklama: Provider fatura kalem detayları
 -- Her fatura satırının detay bilgileri
--- Tenant bazında breakdown olabilir
+-- Client bazında breakdown olabilir
 -- =============================================
 
 DROP TABLE IF EXISTS billing.provider_invoice_items CASCADE;
@@ -11,8 +11,8 @@ CREATE TABLE billing.provider_invoice_items (
     id bigserial PRIMARY KEY,                              -- Benzersiz kalem kimliği
     provider_invoice_id bigint NOT NULL,                   -- Provider fatura ID (FK: billing.provider_invoices)
 
-    -- Tenant bilgisi (varsa)
-    tenant_id bigint,                                      -- Tenant ID (FK: core.tenants) - NULL = genel
+    -- Client bilgisi (varsa)
+    client_id bigint,                                      -- Client ID (FK: core.clients) - NULL = genel
 
     -- Kalem bilgileri
     item_type varchar(30) NOT NULL,                        -- Kalem tipi: GGR_COMMISSION, LICENSE_FEE, SETUP_FEE, ADJUSTMENT
@@ -47,4 +47,4 @@ CREATE TABLE billing.provider_invoice_items (
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
 
-COMMENT ON TABLE billing.provider_invoice_items IS 'Provider invoice line item details with tenant breakdown for commission, license fees, and adjustments';
+COMMENT ON TABLE billing.provider_invoice_items IS 'Provider invoice line item details with client breakdown for commission, license fees, and adjustments';

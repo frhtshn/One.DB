@@ -2,7 +2,7 @@ DROP FUNCTION IF EXISTS logs.error_stats(BIGINT, INT);
 
 -- Get error statistics
 CREATE OR REPLACE FUNCTION logs.error_stats(
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_hours INT DEFAULT 24
 )
 RETURNS JSONB
@@ -25,7 +25,7 @@ BEGIN
                 SELECT error_code AS "errorCode", COUNT(*) AS count
                 FROM logs.error_logs
                 WHERE occurred_at >= v_since
-                  AND (p_tenant_id IS NULL OR tenant_id = p_tenant_id)
+                  AND (p_client_id IS NULL OR client_id = p_client_id)
                 GROUP BY error_code
                 ORDER BY count DESC
                 LIMIT 10
@@ -37,7 +37,7 @@ BEGIN
                 SELECT cluster_name AS "clusterName", COUNT(*) AS count
                 FROM logs.error_logs
                 WHERE occurred_at >= v_since
-                  AND (p_tenant_id IS NULL OR tenant_id = p_tenant_id)
+                  AND (p_client_id IS NULL OR client_id = p_client_id)
                   AND cluster_name IS NOT NULL
                 GROUP BY cluster_name
                 ORDER BY count DESC
@@ -48,7 +48,7 @@ BEGIN
     ) INTO v_result
     FROM logs.error_logs
     WHERE occurred_at >= v_since
-      AND (p_tenant_id IS NULL OR tenant_id = p_tenant_id);
+      AND (p_client_id IS NULL OR client_id = p_client_id);
 
     RETURN v_result;
 END;

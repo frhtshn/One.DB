@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Profile Schema Indexes
+-- Client Profile Schema Indexes
 -- =============================================
 
 -- player_profile

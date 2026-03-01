@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Finance Schema Indexes
+-- Client Finance Schema Indexes
 -- =============================================
 
 -- currency_rates

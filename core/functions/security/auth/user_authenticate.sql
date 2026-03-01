@@ -2,12 +2,12 @@
 -- USER_AUTHENTICATE: Email ile kullanıcı doğrulama
 -- ================================================================
 -- Birleşik user_roles tablosu:
---   tenant_id IS NULL: Global roller (platform + company)
---   tenant_id IS NOT NULL: Tenant-specific roller
+--   client_id IS NULL: Global roller (platform + company)
+--   client_id IS NOT NULL: Client-specific roller
 -- Scope belirleme (hardcoded rol yok):
---   Platform: user_roles WHERE tenant_id IS NULL AND is_platform_role = TRUE
---   Company:  user_roles WHERE tenant_id IS NULL AND is_platform_role = FALSE
---   Tenant:   user_roles WHERE tenant_id IS NOT NULL
+--   Platform: user_roles WHERE client_id IS NULL AND is_platform_role = TRUE
+--   Company:  user_roles WHERE client_id IS NULL AND is_platform_role = FALSE
+--   Client:   user_roles WHERE client_id IS NOT NULL
 -- ================================================================
 
 DROP FUNCTION IF EXISTS security.user_authenticate(VARCHAR);
@@ -22,9 +22,9 @@ DECLARE
     v_user RECORD;
     v_is_platform_role BOOLEAN := FALSE;
     v_is_company_role BOOLEAN := FALSE;
-    v_has_allowed_tenants BOOLEAN := FALSE;
-    v_accessible_tenants JSONB := '[]'::jsonb;
-    v_tenant_permissions JSONB := '{}'::jsonb;
+    v_has_allowed_clients BOOLEAN := FALSE;
+    v_accessible_clients JSONB := '[]'::jsonb;
+    v_client_permissions JSONB := '{}'::jsonb;
     v_platform_roles TEXT[] := '{}';
     v_company_roles TEXT[] := '{}';
     v_global_permissions JSONB := '[]'::jsonb;
@@ -74,7 +74,7 @@ BEGIN
             AND v_user.password_changed_at + (v_password_expiry_days || ' days')::INTERVAL < NOW());
 
     -- ================================================================
-    -- 3. GLOBAL ROLLER VE SCOPE (tek sorgu - tenant_id IS NULL)
+    -- 3. GLOBAL ROLLER VE SCOPE (tek sorgu - client_id IS NULL)
     -- ================================================================
     SELECT
         COALESCE(ARRAY_AGG(DISTINCT r.code) FILTER (WHERE r.is_platform_role), '{}'),
@@ -82,7 +82,7 @@ BEGIN
     INTO v_platform_roles, v_company_roles
     FROM security.user_roles ur
     JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
-    WHERE ur.user_id = v_user.id AND ur.tenant_id IS NULL;
+    WHERE ur.user_id = v_user.id AND ur.client_id IS NULL;
 
     v_is_platform_role := array_length(v_platform_roles, 1) > 0;
     v_is_company_role := array_length(v_company_roles, 1) > 0;
@@ -100,10 +100,10 @@ BEGIN
     END IF;
 
     -- ================================================================
-    -- 5. ALLOWED TENANTS KONTROLU
+    -- 5. ALLOWED CLIENTS KONTROLU
     -- ================================================================
-    v_has_allowed_tenants := EXISTS (
-        SELECT 1 FROM security.user_allowed_tenants WHERE user_id = v_user.id
+    v_has_allowed_clients := EXISTS (
+        SELECT 1 FROM security.user_allowed_clients WHERE user_id = v_user.id
     );
 
     -- ================================================================
@@ -125,26 +125,26 @@ BEGIN
 
     IF v_user.company_id = 0 AND v_is_platform_role THEN
         -- ============================================================
-        -- PLATFORM ROLE: Tenant isi yok, sadece global permission
+        -- PLATFORM ROLE: Client isi yok, sadece global permission
         -- ============================================================
-        NULL; -- v_accessible_tenants ve v_tenant_permissions zaten bos
+        NULL; -- v_accessible_clients ve v_client_permissions zaten bos
 
     ELSIF v_is_company_role THEN
         -- ============================================================
-        -- COMPANY (companyadmin vb.): Kendi sirketinin tenant'lari
+        -- COMPANY (companyadmin vb.): Kendi sirketinin client'lari
         -- ============================================================
 
-        -- Tenant listesi
+        -- Client listesi
         SELECT COALESCE(jsonb_agg(
             jsonb_build_object(
                 'id', t.id,
-                'code', t.tenant_code,
-                'name', t.tenant_name,
+                'code', t.client_code,
+                'name', t.client_name,
                 'environment', t.environment
             ) ORDER BY t.id
         ), '[]'::jsonb)
-        INTO v_accessible_tenants
-        FROM core.tenants t
+        INTO v_accessible_clients
+        FROM core.clients t
         WHERE t.company_id = v_user.company_id AND t.status = 1
           AND COALESCE(t.provisioning_status, 'draft') != 'decommissioned';
 
@@ -156,7 +156,7 @@ BEGIN
         JOIN security.roles r ON rp.role_id = r.id
         WHERE r.code = ANY(v_company_roles);
 
-        -- Her tenant icin: base + granted - denied
+        -- Her client icin: base + granted - denied
         SELECT COALESCE(jsonb_object_agg(
             t.id::text,
             jsonb_build_object(
@@ -171,7 +171,7 @@ BEGIN
                         JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
                         WHERE up.user_id = v_user.id
                           AND up.is_granted = TRUE
-                          AND (up.tenant_id IS NULL OR up.tenant_id = t.id)
+                          AND (up.client_id IS NULL OR up.client_id = t.id)
                           AND (up.expires_at IS NULL OR up.expires_at > NOW())
                     ) base_perms
                     WHERE perm NOT IN (
@@ -180,50 +180,50 @@ BEGIN
                         JOIN security.permissions p ON up.permission_id = p.id
                         WHERE up.user_id = v_user.id
                           AND up.is_granted = FALSE
-                          AND (up.tenant_id IS NULL OR up.tenant_id = t.id)
+                          AND (up.client_id IS NULL OR up.client_id = t.id)
                           AND (up.expires_at IS NULL OR up.expires_at > NOW())
                     )
                 )
             )
         ), '{}'::jsonb)
-        INTO v_tenant_permissions
-        FROM core.tenants t
+        INTO v_client_permissions
+        FROM core.clients t
         WHERE t.company_id = v_user.company_id AND t.status = 1
           AND COALESCE(t.provisioning_status, 'draft') != 'decommissioned';
 
     ELSE
         -- ============================================================
-        -- TENANT (tenantadmin, moderator vb.): Atanmis tenant'lar
-        -- user_roles WHERE tenant_id IS NOT NULL
+        -- CLIENT (clientadmin, moderator vb.): Atanmis client'lar
+        -- user_roles WHERE client_id IS NOT NULL
         -- ============================================================
 
-        -- Tenant listesi
+        -- Client listesi
         SELECT COALESCE(jsonb_agg(
             jsonb_build_object(
                 'id', t.id,
-                'code', t.tenant_code,
-                'name', t.tenant_name,
+                'code', t.client_code,
+                'name', t.client_name,
                 'environment', t.environment
             ) ORDER BY t.id
         ), '[]'::jsonb)
-        INTO v_accessible_tenants
+        INTO v_accessible_clients
         FROM (
-            SELECT DISTINCT t.id, t.tenant_code, t.tenant_name, t.environment
+            SELECT DISTINCT t.id, t.client_code, t.client_name, t.environment
             FROM security.user_roles ur
-            JOIN core.tenants t ON ur.tenant_id = t.id AND t.status = 1
+            JOIN core.clients t ON ur.client_id = t.id AND t.status = 1
                 AND COALESCE(t.provisioning_status, 'draft') != 'decommissioned'
-            WHERE ur.user_id = v_user.id AND ur.tenant_id IS NOT NULL
+            WHERE ur.user_id = v_user.id AND ur.client_id IS NOT NULL
         ) t;
 
-        -- Her tenant icin: roller + base + granted - denied
+        -- Her client icin: roller + base + granted - denied
         SELECT COALESCE(jsonb_object_agg(
-            tenant_id::text,
+            client_id::text,
             jsonb_build_object('roles', roles, 'permissions', permissions)
         ), '{}'::jsonb)
-        INTO v_tenant_permissions
+        INTO v_client_permissions
         FROM (
             SELECT
-                ur.tenant_id,
+                ur.client_id,
                 jsonb_agg(DISTINCT r.code) as roles,
                 (
                     SELECT COALESCE(jsonb_agg(DISTINCT perm), '[]'::jsonb)
@@ -234,7 +234,7 @@ BEGIN
                         JOIN security.permissions p ON rp.permission_id = p.id AND p.status = 1
                         WHERE rp.role_id IN (
                             SELECT role_id FROM security.user_roles
-                            WHERE user_id = v_user.id AND tenant_id = ur.tenant_id
+                            WHERE user_id = v_user.id AND client_id = ur.client_id
                         )
                         UNION
                         -- Granted override'lar
@@ -243,7 +243,7 @@ BEGIN
                         JOIN security.permissions p ON up.permission_id = p.id AND p.status = 1
                         WHERE up.user_id = v_user.id
                           AND up.is_granted = TRUE
-                          AND (up.tenant_id IS NULL OR up.tenant_id = ur.tenant_id)
+                          AND (up.client_id IS NULL OR up.client_id = ur.client_id)
                           AND (up.expires_at IS NULL OR up.expires_at > NOW())
                     ) base_perms
                     WHERE perm NOT IN (
@@ -253,14 +253,14 @@ BEGIN
                         JOIN security.permissions p ON up.permission_id = p.id
                         WHERE up.user_id = v_user.id
                           AND up.is_granted = FALSE
-                          AND (up.tenant_id IS NULL OR up.tenant_id = ur.tenant_id)
+                          AND (up.client_id IS NULL OR up.client_id = ur.client_id)
                           AND (up.expires_at IS NULL OR up.expires_at > NOW())
                     )
                 ) as permissions
             FROM security.user_roles ur
             JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
-            WHERE ur.user_id = v_user.id AND ur.tenant_id IS NOT NULL
-            GROUP BY ur.tenant_id
+            WHERE ur.user_id = v_user.id AND ur.client_id IS NOT NULL
+            GROUP BY ur.client_id
         ) t;
 
     END IF;
@@ -290,11 +290,11 @@ BEGIN
         ),
         'globalRoles', to_jsonb(v_platform_roles),
         'globalPermissions', v_global_permissions,
-        'accessibleTenants', v_accessible_tenants,
-        'tenantPermissions', v_tenant_permissions
+        'accessibleClients', v_accessible_clients,
+        'clientPermissions', v_client_permissions
     );
 END;
 $$;
 
 COMMENT ON FUNCTION security.user_authenticate IS
-'Email ile kullanici dogrulama. Unified user_roles tablosu: tenant_id=NULL for global, tenant_id=value for tenant-specific. Includes primaryDepartment (JSONB multi-language name) and twoFactorEnabled in user object. Sifre suresi dolmussa requirePasswordChange=true doner.';
+'Email ile kullanici dogrulama. Unified user_roles tablosu: client_id=NULL for global, client_id=value for client-specific. Includes primaryDepartment (JSONB multi-language name) and twoFactorEnabled in user object. Sifre suresi dolmussa requirePasswordChange=true doner.';

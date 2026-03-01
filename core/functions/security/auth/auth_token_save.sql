@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION security.auth_token_save(
     p_token_id VARCHAR(100),
     p_user_id BIGINT,
     p_company_id BIGINT DEFAULT NULL,
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_session_id VARCHAR(50) DEFAULT NULL,
     p_token_type SMALLINT DEFAULT 1,
     p_global_roles TEXT[] DEFAULT '{}',
@@ -27,11 +27,11 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     INSERT INTO security.auth_tokens (
-        token_hash, token_id, user_id, company_id, tenant_id,
+        token_hash, token_id, user_id, company_id, client_id,
         session_id, token_type, global_roles, ip_address, user_agent,
         device_id, metadata, preferences, created_at, expires_at
     ) VALUES (
-        p_token_hash, p_token_id, p_user_id, p_company_id, p_tenant_id,
+        p_token_hash, p_token_id, p_user_id, p_company_id, p_client_id,
         p_session_id, p_token_type, p_global_roles, p_ip_address, p_user_agent,
         p_device_id, p_metadata::jsonb, p_preferences::jsonb, p_created_at, p_expires_at
     )
@@ -39,7 +39,7 @@ BEGIN
         token_id = EXCLUDED.token_id,
         user_id = EXCLUDED.user_id,
         company_id = EXCLUDED.company_id,
-        tenant_id = EXCLUDED.tenant_id,
+        client_id = EXCLUDED.client_id,
         session_id = EXCLUDED.session_id,
         token_type = EXCLUDED.token_type,
         global_roles = EXCLUDED.global_roles,

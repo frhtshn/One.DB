@@ -1,5 +1,5 @@
 -- ================================================================
--- TENANT_PROVIDER_ENABLE: Tenant'a game provider aç + oyunları seed et
+-- CLIENT_PROVIDER_ENABLE: Client'a game provider aç + oyunları seed et
 -- ================================================================
 -- Backend Game DB'den oyun listesini alır, p_game_data TEXT olarak
 -- bu fonksiyona geçirir. Fonksiyon catalog.games sorgusu YAPMAZ.
@@ -7,11 +7,11 @@
 -- Yeni oyunlar ON CONFLICT DO NOTHING ile seed edilir.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_provider_enable(BIGINT, BIGINT, BIGINT, TEXT, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS core.client_provider_enable(BIGINT, BIGINT, BIGINT, TEXT, VARCHAR, VARCHAR);
 
-CREATE OR REPLACE FUNCTION core.tenant_provider_enable(
+CREATE OR REPLACE FUNCTION core.client_provider_enable(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_provider_id BIGINT,
     p_game_data TEXT DEFAULT NULL,
     p_mode VARCHAR(20) DEFAULT 'real',
@@ -27,12 +27,12 @@ DECLARE
     v_elem JSONB;
     v_count INTEGER := 0;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -56,10 +56,10 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.provider.invalid-rollout-status';
     END IF;
 
-    -- tenant_providers UPSERT
-    INSERT INTO core.tenant_providers (tenant_id, provider_id, mode, is_enabled, rollout_status, created_at, updated_at)
-    VALUES (p_tenant_id, p_provider_id, p_mode, true, p_rollout_status, NOW(), NOW())
-    ON CONFLICT (tenant_id, provider_id) DO UPDATE SET
+    -- client_providers UPSERT
+    INSERT INTO core.client_providers (client_id, provider_id, mode, is_enabled, rollout_status, created_at, updated_at)
+    VALUES (p_client_id, p_provider_id, p_mode, true, p_rollout_status, NOW(), NOW())
+    ON CONFLICT (client_id, provider_id) DO UPDATE SET
         is_enabled = true,
         mode = p_mode,
         rollout_status = p_rollout_status,
@@ -71,12 +71,12 @@ BEGIN
 
         FOR v_elem IN SELECT * FROM jsonb_array_elements(v_games)
         LOOP
-            INSERT INTO core.tenant_games (
-                tenant_id, game_id, game_name, game_code,
+            INSERT INTO core.client_games (
+                client_id, game_id, game_name, game_code,
                 provider_code, game_type, thumbnail_url,
                 sync_status, created_by, created_at, updated_at
             ) VALUES (
-                p_tenant_id,
+                p_client_id,
                 (v_elem->>'game_id')::BIGINT,
                 v_elem->>'game_name',
                 v_elem->>'game_code',
@@ -88,7 +88,7 @@ BEGIN
                 NOW(),
                 NOW()
             )
-            ON CONFLICT (tenant_id, game_id) DO NOTHING;
+            ON CONFLICT (client_id, game_id) DO NOTHING;
 
             IF FOUND THEN
                 v_count := v_count + 1;
@@ -100,4 +100,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_provider_enable IS 'Enables a GAME provider for tenant and seeds games from backend-provided data (cross-DB orchestration). Existing games untouched (ON CONFLICT DO NOTHING). Supports shadow rollout mode.';
+COMMENT ON FUNCTION core.client_provider_enable IS 'Enables a GAME provider for client and seeds games from backend-provided data (cross-DB orchestration). Existing games untouched (ON CONFLICT DO NOTHING). Supports shadow rollout mode.';

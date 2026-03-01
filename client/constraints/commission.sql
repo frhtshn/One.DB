@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Commission Schema Constraints
+-- Client Affiliate - Commission Schema Constraints
 -- =============================================
 
 -- commission_tiers -> commission_plans

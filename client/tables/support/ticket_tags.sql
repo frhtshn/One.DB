@@ -1,6 +1,6 @@
 -- =============================================
 -- Tablo: support.ticket_tags
--- Açıklama: Tenant seviyesinde yeniden kullanılabilir
+-- Açıklama: Client seviyesinde yeniden kullanılabilir
 --           ticket etiketleri. Ticketları
 --           kategorize etmek ve filtrelemek için.
 -- =============================================
@@ -20,4 +20,4 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_ticket_tags_name
     ON support.ticket_tags (name)
     WHERE is_active = true;
 
-COMMENT ON TABLE support.ticket_tags IS 'Reusable tags for categorizing and filtering support tickets at tenant level.';
+COMMENT ON TABLE support.ticket_tags IS 'Reusable tags for categorizing and filtering support tickets at client level.';

@@ -1,7 +1,7 @@
 -- =============================================
--- Tenant Log - Game Log Schema Constraints
+-- Client Log - Game Log Schema Constraints
 -- =============================================
--- Cross-DB referanslar (player_id → tenant.auth.players) uygulama
+-- Cross-DB referanslar (player_id → client.auth.players) uygulama
 -- katmanında kontrol edilir. Partitioned tablo olduğu için
 -- FK tanımlanamaz.
 -- =============================================

@@ -1,14 +1,14 @@
 -- =============================================
--- Tenant Navigation (Site Menüleri)
--- Tenant'ın frontend navigasyon yönetimi
+-- Client Navigation (Site Menüleri)
+-- Client'ın frontend navigasyon yönetimi
 -- Header, Footer, Sidebar, Mobile Menu vb.
 -- =============================================
 
-DROP TABLE IF EXISTS presentation.tenant_navigation CASCADE;
+DROP TABLE IF EXISTS presentation.client_navigation CASCADE;
 
-CREATE TABLE presentation.tenant_navigation (
+CREATE TABLE presentation.client_navigation (
     id bigserial PRIMARY KEY,
-    tenant_id bigint NOT NULL,                            -- Hangi tenant
+    client_id bigint NOT NULL,                            -- Hangi client
 
     -- Master Data Bağlantısı (Opsiyonel)
     template_item_id bigint,                              -- Catalog'daki master öğe ID'si (catalog.navigation_template_items)
@@ -17,7 +17,7 @@ CREATE TABLE presentation.tenant_navigation (
 
     -- Menü Metni (Hibrit Lokalizasyon)
     translation_key varchar(100),                         -- Sistem çevirisi için key: 'menu.main.home'
-    custom_label jsonb,                                   -- Tenant override veya özel metin: {"en": "My Home", "tr": "Evim"}
+    custom_label jsonb,                                   -- Client override veya özel metin: {"en": "My Home", "tr": "Evim"}
 
     icon varchar(50),                                     -- İkon (fa-home, custom-icon)
     badge_text varchar(20),                               -- Badge (NEW, HOT)
@@ -42,8 +42,8 @@ CREATE TABLE presentation.tenant_navigation (
     device_visibility varchar(20) DEFAULT 'all',          -- all, mobile_only, desktop_only
 
     -- Korumalar (Master Data Yönetimi)
-    is_locked boolean DEFAULT false,                      -- True = Tenant bu kaydı SİLEMEZ (Master'dan geldi)
-    is_readonly boolean DEFAULT false,                    -- True = Tenant target/type/action değiştiremez (Sadece label/order/visibility değiştirebilir)
+    is_locked boolean DEFAULT false,                      -- True = Client bu kaydı SİLEMEZ (Master'dan geldi)
+    is_readonly boolean DEFAULT false,                    -- True = Client target/type/action değiştiremez (Sadece label/order/visibility değiştirebilir)
 
     custom_css_class varchar(100),                        -- Özel CSS sınıfı
 
@@ -51,4 +51,4 @@ CREATE TABLE presentation.tenant_navigation (
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE presentation.tenant_navigation IS 'Dynamic frontend navigation management. Can be derived from catalog templates.';
+COMMENT ON TABLE presentation.client_navigation IS 'Dynamic frontend navigation management. Can be derived from catalog templates.';

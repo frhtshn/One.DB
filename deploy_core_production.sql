@@ -1,10 +1,10 @@
 -- ============================================================================
--- NUCLEO PLATFORM - CORE PRODUCTION DEPLOYMENT
+-- SORTIS ONE - CORE PRODUCTION DEPLOYMENT
 -- ============================================================================
 -- Production environment full deployment script.
 -- Combined: Core Schema + Production Seed Data
 -- ============================================================================
--- Usage: psql -U postgres -d nucleo -f deploy_core_production.sql
+-- Usage: psql -U postgres -d core -f deploy_core_production.sql
 -- ============================================================================
 -- CONTENT:
 -- 1. Core Deployment (schemas, tables, functions, triggers, constraints)
@@ -12,7 +12,7 @@
 --    - Includes localization data
 -- 2. Production Seed Data
 --    - Overwrites generic Security/Company data with Production constraints
---    - Sets up Roles and the Nucleo Company with SuperAdmin user
+--    - Sets up Roles and the Sortis Company with SuperAdmin user
 -- 3. Permissions (UPSERT - 99 permissions)
 -- 4. Role-Permission Mappings (role bazlı permission atamaları)
 -- ============================================================================
@@ -32,7 +32,7 @@
 -- ============================================================================
 -- 2. PRODUCTION SEED DATA
 -- ============================================================================
--- Truncates Security and Tenant/Company tables.
+-- Truncates Security and Client/Company tables.
 -- Inserts defined Roles, Permissions, and the SuperAdmin user.
 
 \i core/data/production_seed.sql
@@ -54,6 +54,6 @@
 -- ============================================================================
 -- DEPLOYMENT COMPLETE
 -- ============================================================================
--- SuperAdmin User: superadmin@nucleo.io
+-- SuperAdmin User: superadmin@sortisgaming.com
 -- Change the default password immediately!
 -- ============================================================================

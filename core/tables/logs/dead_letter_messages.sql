@@ -10,7 +10,7 @@ CREATE TABLE logs.dead_letter_messages (
     id UUID DEFAULT gen_random_uuid(),                        -- Kayıt ID
     event_id VARCHAR(255) NOT NULL,                        -- Olay (Event) ID
     event_type VARCHAR(255) NOT NULL,                      -- Olay türü
-    tenant_id VARCHAR(100),                                -- Tenant ID
+    client_id VARCHAR(100),                                -- Client ID
     payload JSONB,                                         -- Mesaj içeriği (Payload)
     exception_message TEXT,                                -- Hata mesajı
     exception_stack_trace TEXT,                            -- Hata izi (Stack trace)

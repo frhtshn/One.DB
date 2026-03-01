@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log KYC Schema Constraints
+-- Client Log KYC Schema Constraints
 -- Using IF NOT EXISTS pattern for idempotent deploys
 -- =============================================
 -- NOTE: Cross-DB foreign keys are not possible in PostgreSQL.

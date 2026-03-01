@@ -4,7 +4,7 @@
 
 # Finance Gateway — Geliştirici Rehberi
 
-Ödeme entegrasyonu iki temel bileşenden oluşur: **Ödeme Kataloğu** (Finance DB + Core DB + Tenant DB) ve **Ödeme İşlemleri** (deposit, withdrawal, manuel, workflow). Bu rehber her iki bileşeni de kapsar.
+Ödeme entegrasyonu iki temel bileşenden oluşur: **Ödeme Kataloğu** (Finance DB + Core DB + Client DB) ve **Ödeme İşlemleri** (deposit, withdrawal, manuel, workflow). Bu rehber her iki bileşeni de kapsar.
 
 > **Kapsam:** TR (Papara, Mpay, Havale) + EU (Visa, Skrill, Paysafecard, Swift) + Crypto
 > **Detaylı spesifikasyon:** [FINANCE_GATEWAY.md](../../.planning/FINANCE_GATEWAY.md)
@@ -23,12 +23,12 @@
 | **Orchestration** | PaymentSessionGrain | Orleans | Session yaşam döngüsü, durum geçişleri |
 | | PlayerWalletGrain | Orleans | Oyuncu başına wallet işlemleri (seri erişim) |
 | **Cache** | Session Cache | Redis | `payment-session:{token}` → session bilgisi |
-| | Limit Cache | Redis | `limit:{tenantId}:{methodId}:{currency}` → limit bilgisi |
-| | Rate Cache | Redis | `fee:{tenantId}:{methodId}:{currency}` → fee bilgisi |
+| | Limit Cache | Redis | `limit:{clientId}:{methodId}:{currency}` → limit bilgisi |
+| | Rate Cache | Redis | `fee:{clientId}:{methodId}:{currency}` → fee bilgisi |
 | **Async** | callback.logged | RabbitMQ → Consumer | Finance Log DB'ye ham callback yaz |
 | | workflow.created | RabbitMQ → Consumer | Workflow notification gönder |
 | | session.expired | RabbitMQ → Consumer | Süresi dolan session'ları temizle |
-| **DB** | Core / Finance / Tenant / Finance Log | PostgreSQL | Kalıcı veri |
+| **DB** | Core / Finance / Client / Finance Log | PostgreSQL | Kalıcı veri |
 
 ### 1.2 Veritabanı Katmanları
 
@@ -37,7 +37,7 @@ flowchart TD
     subgraph CORE["Core DB (Merkezi)"]
         CT["catalog.transaction_types<br/>(ID 80-91)"]
         CPM["catalog.payment_methods<br/>(PSP referans kataloğu)"]
-        TPM["core.tenant_payment_methods<br/>(tenant→method atama)"]
+        TPM["core.client_payment_methods<br/>(client→method atama)"]
     end
 
     subgraph FINANCE["Finance DB (Gateway — Paylaşımlı)"]
@@ -46,9 +46,9 @@ flowchart TD
         FPL["finance.provider_limits<br/>(Katman 1 — global limit)"]
     end
 
-    subgraph TENANT["Tenant DB (İzole)"]
-        PMS["finance.payment_method_settings<br/>(tenant özelleştirmesi)"]
-        PML["finance.payment_method_limits<br/>(Katman 3 — tenant limit)"]
+    subgraph CLIENT["Client DB (İzole)"]
+        PMS["finance.payment_method_settings<br/>(client özelleştirmesi)"]
+        PML["finance.payment_method_limits<br/>(Katman 3 — client limit)"]
         PPL["finance.payment_player_limits<br/>(Katman 4 — metot bazlı oyuncu limit)"]
         PFL["finance.player_financial_limits<br/>(Katman 5 — global oyuncu limit)"]
         PS["transaction.payment_sessions<br/>(aktif ödeme oturumları)"]
@@ -83,7 +83,7 @@ Game ile aynı mimari pattern. Finance DB kendi catalog'unun sahibi olur.
 | Fark | Game | Finance |
 |------|------|---------|
 | Catalog doldurma | Gateway API + BO import | **Sadece BO admin** (provider dokümantasyonuna göre) |
-| Limit katmanı | 2 seviye (catalog → tenant) | **4 seviye** (provider → platform → tenant → player) |
+| Limit katmanı | 2 seviye (catalog → client) | **4 seviye** (provider → platform → client → player) |
 | CRUD kaynağı | Fonksiyonlar yeni yazıldı | 6 fonksiyon **Core'dan taşındı** |
 | Ek özellik | — | Player individual limits (sorumlu oyun) |
 
@@ -98,31 +98,31 @@ flowchart LR
 - **TEXT→JSONB pattern**: `p_sync_data TEXT` → fonksiyon içinde `::JSONB` cast
 - **UPSERT**: Mevcut provider varsa günceller, yoksa ekler
 
-### 2.3 Tenant'a Provider Açma
+### 2.3 Client'a Provider Açma
 
 ```
-1. Core: tenant_provider_enable(tenant_id, provider_id)
+1. Core: client_provider_enable(client_id, provider_id)
 2. Finance DB: payment_method_list(provider_id) → metot listesi
-3. Core: tenant_payment_method_upsert(tenant_id, method_data)
-4. Tenant DB: payment_method_settings_sync + payment_method_limits_sync
+3. Core: client_payment_method_upsert(client_id, method_data)
+4. Client DB: payment_method_settings_sync + payment_method_limits_sync
 ```
 
 ### 2.4 Denormalizasyon
 
-Core DB'deki `tenant_payment_methods` tablosunda denormalize alanlar: `payment_method_name`, `payment_method_code`, `provider_code`, `payment_type`, `icon_url`
+Core DB'deki `client_payment_methods` tablosunda denormalize alanlar: `payment_method_name`, `payment_method_code`, `provider_code`, `payment_type`, `icon_url`
 
-**Neden?** Cross-DB FK kullanılamaz. Backend Finance DB'den veriyi alır, Core'a denormalize yazar. Tenant DB'ye sync ederken bu veriler aktarılır.
+**Neden?** Cross-DB FK kullanılamaz. Backend Finance DB'den veriyi alır, Core'a denormalize yazar. Client DB'ye sync ederken bu veriler aktarılır.
 
 ### 2.5 Core'da Metot Kapanması
 
 ```
 Core: payment_method.is_active = false
-  → Backend: tenant_payment_method_refresh çağrılır
-  → Tenant DB: payment_method_settings.is_enabled = false (sync)
+  → Backend: client_payment_method_refresh çağrılır
+  → Client DB: payment_method_settings.is_enabled = false (sync)
   → Oyuncu cashier'da göremez
 ```
 
-**Provider kapanırsa** (`tenant_providers.is_enabled = false`): Metotların state'i değişmez, sadece provider'ın tüm metotları backend seviyesinde filtrelenir.
+**Provider kapanırsa** (`client_providers.is_enabled = false`): Metotların state'i değişmez, sadece provider'ın tüm metotları backend seviyesinde filtrelenir.
 
 ### 2.6 Crypto Desteği
 
@@ -142,10 +142,10 @@ Tüm limit tabloları `currency_code VARCHAR(20)` + `currency_type SMALLINT` kul
 ```mermaid
 flowchart TD
     L1["Katman 1: Provider (Finance DB)<br/>Global PSP limitleri<br/>Backend kontrol eder"] --> L2
-    L2["Katman 2: Platform (Core DB)<br/>Tenant→method atama limitleri<br/>Backend kontrol eder"] --> L3
-    L3["Katman 3: Tenant (Tenant DB)<br/>payment_method_limits tablosu<br/>DB fonksiyonu kontrol eder"] --> L4
-    L4["Katman 4: Player/Metot (Tenant DB)<br/>payment_player_limits tablosu<br/>DB fonksiyonu kontrol eder"] --> L5
-    L5["Katman 5: Player/Global (Tenant DB)<br/>player_financial_limits tablosu<br/>DB fonksiyonu kontrol eder"]
+    L2["Katman 2: Platform (Core DB)<br/>Client→method atama limitleri<br/>Backend kontrol eder"] --> L3
+    L3["Katman 3: Client (Client DB)<br/>payment_method_limits tablosu<br/>DB fonksiyonu kontrol eder"] --> L4
+    L4["Katman 4: Player/Metot (Client DB)<br/>payment_player_limits tablosu<br/>DB fonksiyonu kontrol eder"] --> L5
+    L5["Katman 5: Player/Global (Client DB)<br/>player_financial_limits tablosu<br/>DB fonksiyonu kontrol eder"]
 
     style L1 fill:#e1f5fe,color:#222
     style L2 fill:#e8f5e9,color:#222
@@ -157,12 +157,12 @@ flowchart TD
 | Katman | DB | Kontrol Eden | Tablo |
 |--------|----|-------------|-------|
 | L1 — Provider | Finance DB | Backend | `catalog.payment_method_currency_limits` |
-| L2 — Platform | Core DB | Backend | `core.tenant_provider_limits` |
-| L3 — Tenant | Tenant DB | DB fonksiyonu | `finance.payment_method_limits` |
-| L4 — Player/Metot | Tenant DB | DB fonksiyonu | `finance.payment_player_limits` |
-| L5 — Player/Global | Tenant DB | DB fonksiyonu | `finance.player_financial_limits` |
+| L2 — Platform | Core DB | Backend | `core.client_provider_limits` |
+| L3 — Client | Client DB | DB fonksiyonu | `finance.payment_method_limits` |
+| L4 — Player/Metot | Client DB | DB fonksiyonu | `finance.payment_player_limits` |
+| L5 — Player/Global | Client DB | DB fonksiyonu | `finance.player_financial_limits` |
 
-> L1+L2: Backend uygulama katmanında kontrol (farklı DB'ler arası join yapılamaz). L3-L5: Tenant DB fonksiyonu ile kontrol. En kısıtlayıcı limit geçerli olur.
+> L1+L2: Backend uygulama katmanında kontrol (farklı DB'ler arası join yapılamaz). L3-L5: Client DB fonksiyonu ile kontrol. En kısıtlayıcı limit geçerli olur.
 
 ### Player Limit Katmanları
 
@@ -188,7 +188,7 @@ flowchart TD
 sequenceDiagram
     participant PL as Player
     participant BE as Backend
-    participant TDB as Tenant DB
+    participant TDB as Client DB
     participant PSP as PSP Provider
     participant FLOG as Finance Log DB
 
@@ -228,7 +228,7 @@ sequenceDiagram
 sequenceDiagram
     participant PSP as PSP Provider
     participant BE as Backend
-    participant TDB as Tenant DB
+    participant TDB as Client DB
 
     PSP->>BE: Callback (fail/timeout)
     BE->>TDB: deposit_fail(idempotency_key, reason)
@@ -286,7 +286,7 @@ flowchart LR
 sequenceDiagram
     participant PL as Player
     participant BE as Backend
-    participant TDB as Tenant DB
+    participant TDB as Client DB
     participant BO as BO Operatör
     participant PSP as PSP Provider
 
@@ -368,7 +368,7 @@ sequenceDiagram
 
 ### 5.4 Bonus Çevrim Kontrolü (Otomatik)
 
-`withdrawal_initiate()` fonksiyonu içinde otomatik çevrim kontrolü yapılır. Tenant'ın `wagering_completion_policy` ayarına göre iki farklı davranış:
+`withdrawal_initiate()` fonksiyonu içinde otomatik çevrim kontrolü yapılır. Client'ın `wagering_completion_policy` ayarına göre iki farklı davranış:
 
 #### Adım 1 — Tamamlanmamış çevrim engeli (her iki politikada ortak)
 
@@ -423,7 +423,7 @@ END LOOP;
 
 **Onay durumunda:** BONUS wallet'tan kilitli tutar düşülür, REAL kısmı zaten düşmüş — ek işlem yok.
 
-> **Neden tenant-configurable?** Bazı tenant'lar çevrim tamamlanınca anında REAL'a aktarım isterken, diğerleri bonus parasının çekim onaylanana kadar BONUS wallet'ta kalmasını tercih eder. `hold_until_withdrawal` iptalleri temiz tutar ve bonus parasının kontrolünü korur.
+> **Neden client-configurable?** Bazı client'lar çevrim tamamlanınca anında REAL'a aktarım isterken, diğerleri bonus parasının çekim onaylanana kadar BONUS wallet'ta kalmasını tercih eder. `hold_until_withdrawal` iptalleri temiz tutar ve bonus parasının kontrolünü korur.
 
 ---
 
@@ -465,7 +465,7 @@ Yetkili BO operatörünün oyuncu wallet'ına **credit** (ekleme) veya **debit**
 sequenceDiagram
     participant BO as BO Operatör
     participant BE as Backend
-    participant TDB as Tenant DB
+    participant TDB as Client DB
     participant SR as Senior Operatör
 
     BO->>BE: Hesap düzeltme talebi
@@ -584,9 +584,9 @@ CREATE TABLE transaction.transaction_adjustments (
 
 Backend, ödeme yönteminin `integration_type` alanına göre (`API` / `MANUAL`) hangi akışa gireceğine karar verir.
 
-### 7.7 Bonus Çevrim Politikaları (Tenant-Configurable)
+### 7.7 Bonus Çevrim Politikaları (Client-Configurable)
 
-Tenant ayarı: `wagering_completion_policy` — çevrim tamamlanınca ne olacağını belirler.
+Client ayarı: `wagering_completion_policy` — çevrim tamamlanınca ne olacağını belirler.
 
 #### Politika Karşılaştırması
 
@@ -641,7 +641,7 @@ active → wagering_complete → pending_withdrawal → completed
 ### 7.3 Cross-DB Limit Kontrolü
 
 - **L1 (Provider) + L2 (Platform):** Backend uygulama katmanında kontrol (Finance DB + Core DB)
-- **L3 (Tenant) + L4 (Player):** Tenant DB fonksiyonu ile kontrol
+- **L3 (Client) + L4 (Player):** Client DB fonksiyonu ile kontrol
 - Farklı DB'ler arası join yapılamaz, backend orchestrate eder
 
 ### 7.4 Manuel İşlemler
@@ -872,19 +872,19 @@ active → wagering_complete → pending_withdrawal → completed
 |----|------|-------------|
 | Finance DB | Provider Sync | `payment_provider_sync` |
 | Finance DB | Catalog CRUD | `payment_method_create/update/delete/get/list/lookup`, `payment_method_currency_limit_sync` |
-| Core DB | Tenant Provider | `tenant_provider_enable/disable/list` (Finance variant) |
-| Core DB | Tenant Method | `tenant_payment_method_upsert/list/remove/refresh` |
-| Tenant DB | Sync | `payment_method_settings_sync/remove`, `payment_method_limits_sync` |
-| Tenant DB | BO + Cashier | `payment_method_settings_get/update/list`, `payment_method_limit_upsert/list` |
-| Tenant DB | Player Limits | `payment_player_limit_set/get/list` |
+| Core DB | Client Provider | `client_provider_enable/disable/list` (Finance variant) |
+| Core DB | Client Method | `client_payment_method_upsert/list/remove/refresh` |
+| Client DB | Sync | `payment_method_settings_sync/remove`, `payment_method_limits_sync` |
+| Client DB | BO + Cashier | `payment_method_settings_get/update/list`, `payment_method_limit_upsert/list` |
+| Client DB | Player Limits | `payment_player_limit_set/get/list` |
 
 ---
 
 ## 14. Backend İçin Notlar
 
 - **TEXT→JSONB pattern**: Tüm sync fonksiyonları `p_data TEXT` → `::JSONB` cast
-- **Cross-DB**: Her DB ayrı connection. Backend orchestrate eder: Finance DB → Core DB → Tenant DB
-- **Auth**: Finance DB fonksiyonları auth-agnostic. Core DB'de `user_assert_access_tenant` ile kontrol
+- **Cross-DB**: Her DB ayrı connection. Backend orchestrate eder: Finance DB → Core DB → Client DB
+- **Auth**: Finance DB fonksiyonları auth-agnostic. Core DB'de `user_assert_access_client` ile kontrol
 - **Shadow mode**: `payment_method_settings_list` fonksiyonunda `rollout_status` filtresi → [SHADOW_MODE_GUIDE.md](SHADOW_MODE_GUIDE.md)
 - **Limit kontrolü**: Cashier akışında 4 katman sırasıyla kontrol edilmeli, en kısıtlayıcı değer geçerli
 - **Toplam fonksiyon**: 36 (ödeme işlemleri) + 27 (katalog) = 63 fonksiyon

@@ -1,7 +1,7 @@
 -- =============================================
 -- 1. ROLE_LIST: Sayfalamali rol listesi
 -- Returns: JSONB {items, totalCount} - success wrapper YOK
--- Birleşik user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
+-- Birleşik user_roles: client_id IS NULL = global, client_id IS NOT NULL = client
 -- =============================================
 
 DROP FUNCTION IF EXISTS security.role_list(INT, INT, VARCHAR, SMALLINT);
@@ -38,8 +38,8 @@ BEGIN
     WITH role_stats AS (
         SELECT
             r.id AS role_id,
-            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NULL THEN ur.user_id END) AS global_user_count,
-            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NOT NULL THEN ur.user_id END) AS tenant_user_count,
+            COUNT(DISTINCT CASE WHEN ur.client_id IS NULL THEN ur.user_id END) AS global_user_count,
+            COUNT(DISTINCT CASE WHEN ur.client_id IS NOT NULL THEN ur.user_id END) AS client_user_count,
             COUNT(DISTINCT rp.permission_id) AS permission_count
         FROM security.roles r
         LEFT JOIN security.user_roles ur ON ur.role_id = r.id
@@ -61,7 +61,7 @@ BEGIN
             r.status,
             r.created_at AS "createdAt",
             r.updated_at AS "updatedAt",
-            COALESCE(rs.global_user_count, 0) + COALESCE(rs.tenant_user_count, 0) AS "userCount",
+            COALESCE(rs.global_user_count, 0) + COALESCE(rs.client_user_count, 0) AS "userCount",
             COALESCE(rs.permission_count, 0) AS "permissionCount"
         FROM security.roles r
         LEFT JOIN role_stats rs ON rs.role_id = r.id

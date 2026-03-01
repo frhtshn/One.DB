@@ -1,14 +1,14 @@
 -- =============================================
--- Tenant Layouts (Sayfa Yerleşimleri)
+-- Client Layouts (Sayfa Yerleşimleri)
 -- Hangi sayfada, hangi pozisyonda, hangi widget var?
 -- =============================================
 
-DROP TABLE IF EXISTS presentation.tenant_layouts CASCADE;
+DROP TABLE IF EXISTS presentation.client_layouts CASCADE;
 
-CREATE TABLE presentation.tenant_layouts (
+CREATE TABLE presentation.client_layouts (
     id bigserial PRIMARY KEY,
 
-    tenant_id bigint NOT NULL,                    -- Hangi tenant
+    client_id bigint NOT NULL,                    -- Hangi client
 
     -- Kapsam
     page_id bigint,                               -- Spesifik sayfa için mi? (NULL = Global/Varsayılan)
@@ -40,4 +40,4 @@ CREATE TABLE presentation.tenant_layouts (
 
 );
 
-COMMENT ON TABLE presentation.tenant_layouts IS 'Defines widget placements for tenant pages or global layouts';
+COMMENT ON TABLE presentation.client_layouts IS 'Defines widget placements for client pages or global layouts';

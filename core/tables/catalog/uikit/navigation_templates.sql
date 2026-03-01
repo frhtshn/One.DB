@@ -1,6 +1,6 @@
 -- =============================================
 -- Navigation Templates (Navigasyon Şablonları)
--- Tenant'lar için hazır menü setleri
+-- Client'lar için hazır menü setleri
 -- =============================================
 
 DROP TABLE IF EXISTS catalog.navigation_templates CASCADE;
@@ -13,10 +13,10 @@ CREATE TABLE catalog.navigation_templates (
     description text,
 
     is_active boolean NOT NULL DEFAULT true,
-    is_default boolean NOT NULL DEFAULT false,    -- Yeni tenant için varsayılan mı?
+    is_default boolean NOT NULL DEFAULT false,    -- Yeni client için varsayılan mı?
 
     created_at timestamp NOT NULL DEFAULT now(),
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE catalog.navigation_templates IS 'Pre-defined navigation structures for tenants';
+COMMENT ON TABLE catalog.navigation_templates IS 'Pre-defined navigation structures for clients';

@@ -1,6 +1,6 @@
 # SPEC_PLATFORM_OPERATIONS: Platform Operasyonları
 
-Tenant provisioning yaşam döngüsü (oluşturma → canlıya alma → kapatma), altyapı sunucu yönetimi ve shadow mode (staged rollout) mekanizması.
+Client provisioning yaşam döngüsü (oluşturma → canlıya alma → kapatma), altyapı sunucu yönetimi ve shadow mode (staged rollout) mekanizması.
 
 > İlgili spesifikasyonlar: [SPEC_GAME_GATEWAY.md](SPEC_GAME_GATEWAY.md) · [SPEC_FINANCE_GATEWAY.md](SPEC_FINANCE_GATEWAY.md)
 
@@ -12,7 +12,7 @@ Bu spesifikasyon iki operasyonel alanı kapsar:
 
 | Alan | Açıklama | Fonksiyon |
 |------|----------|-----------|
-| **Provisioning** | Tenant yaşam döngüsü, altyapı yönetimi, sunucu ataması | 15 |
+| **Provisioning** | Client yaşam döngüsü, altyapı yönetimi, sunucu ataması | 15 |
 | **Shadow Mode** | Staged rollout, shadow tester yönetimi, provider rollout senkronizasyonu | 7 |
 | **Toplam** | | **22** |
 
@@ -25,11 +25,11 @@ Bu spesifikasyon iki operasyonel alanı kapsar:
 | Core | core | Provisioning Orchestration | 6 |
 | Core | core | Decommission | 2 |
 | Core | core | Infrastructure Server | 4 |
-| Core | core | Tenant Server | 3 |
+| Core | core | Client Server | 3 |
 | Core | core | Provider Rollout | 1 |
-| Tenant | auth | Shadow Tester | 4 |
-| Tenant | game | Game Rollout Sync | 1 |
-| Tenant | finance | Payment Rollout Sync | 1 |
+| Client | auth | Shadow Tester | 4 |
+| Client | game | Game Rollout Sync | 1 |
+| Client | finance | Payment Rollout Sync | 1 |
 
 ### DB Topolojisi
 
@@ -39,10 +39,10 @@ flowchart TD
         PROV["Provisioning<br/>6 fonksiyon"]
         DECOM["Decommission<br/>2 fonksiyon"]
         INFRA["Infrastructure<br/>4 fonksiyon"]
-        TSRV["Tenant Server<br/>3 fonksiyon"]
+        TSRV["Client Server<br/>3 fonksiyon"]
         ROLL["Provider Rollout<br/>1 fonksiyon"]
     end
-    subgraph TENANT["Tenant DB — 6 fonksiyon"]
+    subgraph CLIENT["Client DB — 6 fonksiyon"]
         SHAD["Shadow Tester<br/>4 fonksiyon"]
         GSYNC["Game Rollout Sync<br/>1 fonksiyon"]
         FSYNC["Payment Rollout Sync<br/>1 fonksiyon"]
@@ -54,36 +54,36 @@ flowchart TD
 ### Cross-DB İlişki
 
 - **Provisioning**: Tümü Core DB. ProductionManager gRPC servisi tarafından çağrılır
-- **Shadow Mode**: `tenant_provider_set_rollout` (Core) → backend → `game_provider_rollout_sync` + `payment_provider_rollout_sync` (Tenant)
-- **Denormalizasyon**: rollout_status Core'da (`tenant_providers`) ve Tenant'ta (`game_settings`, `payment_method_settings`) tutulur; sync fonksiyonları tutarlılığı sağlar
+- **Shadow Mode**: `client_provider_set_rollout` (Core) → backend → `game_provider_rollout_sync` + `payment_provider_rollout_sync` (Client)
+- **Denormalizasyon**: rollout_status Core'da (`client_providers`) ve Client'ta (`game_settings`, `payment_method_settings`) tutulur; sync fonksiyonları tutarlılığı sağlar
 
 ---
 
 ## 2. Durum Makinaları ve İş Akışları
 
-### 2.1 Tenant Provisioning Yaşam Döngüsü
+### 2.1 Client Provisioning Yaşam Döngüsü
 
 ```mermaid
 stateDiagram-v2
-    [*] --> draft: Tenant oluştur
-    draft --> provisioning: tenant_provision_start
-    provisioning --> active: tenant_provision_complete
-    provisioning --> failed: tenant_provision_fail
-    failed --> provisioning: tenant_provision_start (retry)
-    active --> suspended: tenant_decommission_start
-    suspended --> decommissioned: tenant_decommission_complete
+    [*] --> draft: Client oluştur
+    draft --> provisioning: client_provision_start
+    provisioning --> active: client_provision_complete
+    provisioning --> failed: client_provision_fail
+    failed --> provisioning: client_provision_start (retry)
+    active --> suspended: client_decommission_start
+    suspended --> decommissioned: client_decommission_complete
 ```
 
 | Durum | Açıklama |
 |-------|----------|
-| `draft` | Tenant kaydı yapıldı, ayarlar giriliyor |
+| `draft` | Client kaydı yapıldı, ayarlar giriliyor |
 | `provisioning` | ProductionManager adımları çalıştırıyor |
-| `active` | Tüm health check'ler geçti, tenant canlı |
+| `active` | Tüm health check'ler geçti, client canlı |
 | `failed` | Bir adımda hata oluştu (retry edilebilir) |
 | `suspended` | Decommission başlatıldı, servisler durduruluyor |
 | `decommissioned` | Kalıcı kapatma tamamlandı |
 
-**Not:** `user_authenticate` fonksiyonunda `provisioning_status != 'decommissioned'` filtresi var. Draft, pending, provisioning durumundaki tenant'lara erişim açıktır.
+**Not:** `user_authenticate` fonksiyonunda `provisioning_status != 'decommissioned'` filtresi var. Draft, pending, provisioning durumundaki client'lara erişim açıktır.
 
 ### 2.2 Provisioning Adımları (11 Adım)
 
@@ -91,7 +91,7 @@ stateDiagram-v2
 |---|------|----------|-----------|
 | 1 | `VALIDATE` | Konfigürasyon kontrol, sunucu erişim testi | 3 |
 | 2 | `DB_PROVISION` | PostgreSQL container/user oluştur | 3 |
-| 3 | `DB_CREATE` | 5 veritabanı oluştur | 3 |
+| 3 | `DB_CREATE` | Client birleşik veritabanı oluştur (30 schema) | 3 |
 | 4 | `DB_MIGRATE` | Template dump'tan `pg_restore` | 3 |
 | 5 | `DB_SEED` | transaction_types, operation_types, ilk partition'lar | 3 |
 | 6 | `WRITE_CONFIG` | DB connection string, secrets, routing | 3 |
@@ -138,7 +138,7 @@ stateDiagram-v2
 | `full` | Kapasite dolu |
 | `decommissioned` | Kullanım dışı |
 
-**Tenant Server (Container):**
+**Client Server (Container):**
 
 | Durum | Açıklama |
 |-------|----------|
@@ -153,7 +153,7 @@ stateDiagram-v2
 
 ## 3. Veri Modeli
 
-### 3.1 core.tenants (Provisioning Kolonları)
+### 3.1 core.clients (Provisioning Kolonları)
 
 | Kolon | Tip | Açıklama |
 |-------|-----|----------|
@@ -182,8 +182,8 @@ stateDiagram-v2
 | server_type | VARCHAR(30) | DEFAULT 'shared' | dedicated / shared |
 | server_purpose | VARCHAR(30) | DEFAULT 'all' | all / db_only / app_only |
 | specs | JSONB | DEFAULT '{}' | `{"cpu": 8, "ram_gb": 32, "disk_gb": 500}` |
-| max_tenants | INTEGER | DEFAULT 10 | Kapasite limiti |
-| current_tenants | INTEGER | DEFAULT 0 | Mevcut tenant sayısı |
+| max_clients | INTEGER | DEFAULT 10 | Kapasite limiti |
+| current_clients | INTEGER | DEFAULT 0 | Mevcut client sayısı |
 | status | VARCHAR(20) | DEFAULT 'active' | active, maintenance, full, decommissioned |
 | health_status | VARCHAR(20) | DEFAULT 'unknown' | healthy, degraded, unhealthy, unknown |
 | last_health_at | TIMESTAMPTZ | | Son health check zamanı |
@@ -192,17 +192,17 @@ stateDiagram-v2
 | updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
 | created_by | BIGINT | | Oluşturan kullanıcı |
 
-### 3.3 core.tenant_servers
+### 3.3 core.client_servers
 
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|------------|----------|
 | id | BIGSERIAL | PK | |
-| tenant_id | BIGINT | NOT NULL FK | core.tenants |
+| client_id | BIGINT | NOT NULL FK | core.clients |
 | server_id | BIGINT | NOT NULL FK | core.infrastructure_servers |
 | server_role | VARCHAR(30) | NOT NULL | db_primary, db_replica, db_failover, backend, callback, frontend |
 | container_id | VARCHAR(100) | | Docker container ID |
-| container_name | VARCHAR(150) | | nucleo_tenant_42_db_primary |
-| container_image | VARCHAR(255) | | postgres:16, nucleo/backend:latest |
+| container_name | VARCHAR(150) | | so_client_42_db_primary |
+| container_image | VARCHAR(255) | | postgres:16, so/backend:latest |
 | container_port | INTEGER | | Expose edilen port |
 | status | VARCHAR(20) | DEFAULT 'pending' | pending, creating, running, stopped, error, removed |
 | health_status | VARCHAR(20) | DEFAULT 'unknown' | healthy, unhealthy, unknown |
@@ -213,14 +213,14 @@ stateDiagram-v2
 | created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
 | updated_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
 
-**UNIQUE:** (tenant_id, server_id, server_role) — UPSERT pattern ile sağlanır
+**UNIQUE:** (client_id, server_id, server_role) — UPSERT pattern ile sağlanır
 
-### 3.4 core.tenant_provisioning_log
+### 3.4 core.client_provisioning_log
 
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|------------|----------|
 | id | BIGSERIAL | PK | |
-| tenant_id | BIGINT | NOT NULL FK | core.tenants |
+| client_id | BIGINT | NOT NULL FK | core.clients |
 | provision_run_id | UUID | NOT NULL | Oturum takip ID |
 | step_name | VARCHAR(50) | NOT NULL | VALIDATE, DB_CREATE, ... |
 | step_order | SMALLINT | NOT NULL | Sıra numarası |
@@ -240,9 +240,9 @@ stateDiagram-v2
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|------------|----------|
 | id | BIGSERIAL | PK | |
-| db_type | VARCHAR(30) | NOT NULL | tenant, tenant_audit, tenant_log, tenant_report, tenant_affiliate |
+| db_type | VARCHAR(30) | NOT NULL | client (birleşik DB) |
 | version | VARCHAR(50) | NOT NULL | 2026.02.12-001 |
-| dump_path | VARCHAR(500) | NOT NULL | s3://nucleo-dumps/tenant/... |
+| dump_path | VARCHAR(500) | NOT NULL | s3://so-dumps/client/... |
 | dump_size_bytes | BIGINT | | Dosya boyutu |
 | dump_format | VARCHAR(20) | DEFAULT 'custom' | custom (pg_dump -Fc), directory, plain |
 | schema_hash | VARCHAR(64) | | Deploy script SHA256 |
@@ -253,7 +253,7 @@ stateDiagram-v2
 | created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
 | created_by | BIGINT | | Oluşturan |
 
-### 3.6 auth.shadow_testers (Tenant DB)
+### 3.6 auth.shadow_testers (Client DB)
 
 | Kolon | Tip | Constraint | Açıklama |
 |-------|-----|------------|----------|
@@ -263,15 +263,15 @@ stateDiagram-v2
 | added_by | VARCHAR(100) | | Ekleyen kullanıcı |
 | created_at | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | |
 
-**Not:** Tipik boyut 5-10 kayıt per tenant. `UNIQUE(player_id)` otomatik B-tree index oluşturur.
+**Not:** Tipik boyut 5-10 kayıt per client. `UNIQUE(player_id)` otomatik B-tree index oluşturur.
 
 ### 3.7 Rollout Status Kolonları (Mevcut Tablolarda)
 
 | Tablo | DB | Kolon |
 |-------|-----|-------|
-| `core.tenant_providers` | Core | `rollout_status VARCHAR(20) DEFAULT 'production'` |
-| `game.game_settings` | Tenant | `rollout_status VARCHAR(20) DEFAULT 'production'` |
-| `finance.payment_method_settings` | Tenant | `rollout_status VARCHAR(20) DEFAULT 'production'` |
+| `core.client_providers` | Core | `rollout_status VARCHAR(20) DEFAULT 'production'` |
+| `game.game_settings` | Client | `rollout_status VARCHAR(20) DEFAULT 'production'` |
+| `finance.payment_method_settings` | Client | `rollout_status VARCHAR(20) DEFAULT 'production'` |
 
 CHECK: `rollout_status IN ('shadow', 'production')`
 
@@ -281,28 +281,28 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ### 4.1 Provisioning Orchestration (6 fonksiyon)
 
-#### `core.tenant_provision_start`
+#### `core.client_provision_start`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 
 **Dönüş:** `UUID` — provisioning run_id
 
 **İş Kuralları:**
-1. Tenant mevcudiyet kontrolü
+1. Client mevcudiyet kontrolü
 2. Durum kontrolü: sadece `draft` veya `failed` durumunda başlatılabilir
 3. Ön koşul kontrolü: domain, base_currency tanımlanmış olmalı
 4. Sunucu ataması kontrolü: en az `db_primary`, `backend`, `frontend` rolleri atanmış olmalı
-5. `tenants.provisioning_status = 'provisioning'`, `provisioning_step = 'VALIDATE'` güncellenir
-6. 11 adımın tamamı `tenant_provisioning_log`'a `status = 'pending'` olarak eklenir
+5. `clients.provisioning_status = 'provisioning'`, `provisioning_step = 'VALIDATE'` güncellenir
+6. 11 adımın tamamı `client_provisioning_log`'a `status = 'pending'` olarak eklenir
 7. Yeni `run_id` (UUID) üretilir ve dönülür
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provision.invalid-status | P0400 | Durum draft veya failed değil |
 | error.provision.domain-required | P0400 | Domain tanımlanmamış |
 | error.provision.base-currency-required | P0400 | Baz para birimi tanımlanmamış |
@@ -312,11 +312,11 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-#### `core.tenant_provision_step_update`
+#### `core.client_provision_step_update`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_run_id | UUID | Evet | - | Provisioning run ID |
 | p_step_name | VARCHAR(50) | Evet | - | Adım adı (VALIDATE, DB_CREATE, ...) |
 | p_status | VARCHAR(20) | Evet | - | Yeni durum |
@@ -332,13 +332,13 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 3. `completed` → `completed_at = NOW()`, `duration_ms` hesaplanır, output birleştirilir
 4. `failed` → `completed_at = NOW()`, `duration_ms` hesaplanır, hata bilgileri kaydedilir, `retry_count` artırılır
 5. `skipped` / `rolled_back` → `completed_at = NOW()`, output birleştirilir
-6. `tenants.provisioning_step` güncellenir
+6. `clients.provisioning_step` güncellenir
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
+| error.client.id-required | P0400 | client_id NULL |
 | error.provision.run-id-required | P0400 | run_id NULL |
 | error.provision.invalid-step-status | P0400 | Geçersiz status değeri |
 | error.provision.step-not-found | P0404 | Adım kaydı bulunamadı |
@@ -347,27 +347,27 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-#### `core.tenant_provision_complete`
+#### `core.client_provision_complete`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_run_id | UUID | Evet | - | Provisioning run ID |
 
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Tenant `provisioning` durumunda olmalı
+1. Client `provisioning` durumunda olmalı
 2. Tüm adımlar `completed` veya `skipped` olmalı
-3. `tenants` güncellenir: `provisioning_status = 'active'`, `provisioning_step = 'ACTIVATE'`, `provisioned_at = NOW()`
-4. Outbox event yayınlanır: `tenant_provisioned`
+3. `clients` güncellenir: `provisioning_status = 'active'`, `provisioning_step = 'ACTIVATE'`, `provisioned_at = NOW()`
+4. Outbox event yayınlanır: `client_provisioned`
 
 **Outbox Event:**
 ```json
 {
-  "event": "tenant_provisioned",
-  "tenantId": 42,
-  "tenantCode": "eurobet",
+  "event": "client_provisioned",
+  "clientId": 42,
+  "clientCode": "eurobet",
   "runId": "uuid",
   "provisionedAt": "2026-02-23T..."
 }
@@ -377,7 +377,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
+| error.client.id-required | P0400 | client_id NULL |
 | error.provision.run-id-required | P0400 | run_id NULL |
 | error.provision.not-in-provisioning | P0400 | Durum provisioning değil |
 | error.provision.steps-not-complete | P0400 | Tamamlanmamış adım var |
@@ -386,11 +386,11 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-#### `core.tenant_provision_fail`
+#### `core.client_provision_fail`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_run_id | UUID | Evet | - | Provisioning run ID |
 | p_error_message | TEXT | Hayır | NULL | Hata mesajı |
 | p_error_detail | TEXT | Hayır | NULL | Hata detayı |
@@ -398,17 +398,17 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Tenant `provisioning` durumunda olmalı
-2. `tenants.provisioning_status = 'failed'` güncellenir
-3. Outbox event yayınlanır: `tenant_provision_failed`
-4. BO'da "Retry" seçeneği sunulur (tekrar `tenant_provision_start` çağrılabilir)
+1. Client `provisioning` durumunda olmalı
+2. `clients.provisioning_status = 'failed'` güncellenir
+3. Outbox event yayınlanır: `client_provision_failed`
+4. BO'da "Retry" seçeneği sunulur (tekrar `client_provision_start` çağrılabilir)
 
 **Outbox Event:**
 ```json
 {
-  "event": "tenant_provision_failed",
-  "tenantId": 42,
-  "tenantCode": "eurobet",
+  "event": "client_provision_failed",
+  "clientId": 42,
+  "clientCode": "eurobet",
   "runId": "uuid",
   "failedStep": "DB_MIGRATE",
   "errorMessage": "...",
@@ -421,7 +421,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
+| error.client.id-required | P0400 | client_id NULL |
 | error.provision.run-id-required | P0400 | run_id NULL |
 | error.provision.not-in-provisioning | P0400 | Durum provisioning değil |
 
@@ -429,12 +429,12 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-#### `core.tenant_provision_status`
+#### `core.client_provision_status`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | Çağıran kullanıcı ID (IDOR) |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 
 **Dönüş:** `JSONB`
 
@@ -442,8 +442,8 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Alan | Tip | Açıklama |
 |------|-----|----------|
-| tenantId | BIGINT | Tenant ID |
-| tenantCode | VARCHAR | Tenant kodu |
+| clientId | BIGINT | Client ID |
+| clientCode | VARCHAR | Client kodu |
 | provisioningStatus | VARCHAR | Yaşam döngüsü durumu |
 | provisioningStep | VARCHAR | Mevcut/son adım |
 | provisionedAt | TIMESTAMPTZ | Aktivasyon zamanı |
@@ -482,7 +482,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 | lastHealthAt | TIMESTAMPTZ | Son kontrol zamanı |
 
 **İş Kuralları:**
-1. IDOR koruması: çağıran kullanıcının tenant'ın company'sine erişimi olmalı
+1. IDOR koruması: çağıran kullanıcının client'ın company'sine erişimi olmalı
 2. En son run_id'nin adımları döndürülür
 3. Sunucu atamaları ve sağlık bilgileri dahil edilir
 
@@ -490,18 +490,18 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 **Güvenlik:** IDOR korumalı (`user_assert_access_company`)
 
 ---
 
-#### `core.tenant_provision_history_list`
+#### `core.client_provision_history_list`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | Çağıran kullanıcı ID (IDOR) |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 
 **Dönüş:** `TABLE`
 
@@ -529,8 +529,8 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.id-required | P0400 | client_id NULL |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 **Güvenlik:** IDOR korumalı (`user_assert_access_company`)
 
@@ -538,29 +538,29 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ### 4.2 Decommission (2 fonksiyon)
 
-#### `core.tenant_decommission_start`
+#### `core.client_decommission_start`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | Çağıran kullanıcı ID |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_reason | TEXT | Hayır | NULL | Kapatma nedeni |
 
 **Dönüş:** `UUID` — decommission run_id
 
 **İş Kuralları:**
 1. IDOR koruması
-2. Tenant `active` veya `suspended` durumunda olmalı
-3. `tenants.status = 0` (disabled), `provisioning_status = 'suspended'`, `provisioning_step = 'STOP_SERVICES'`
+2. Client `active` veya `suspended` durumunda olmalı
+3. `clients.status = 0` (disabled), `provisioning_status = 'suspended'`, `provisioning_step = 'STOP_SERVICES'`
 4. 4 decommission adımı oluşturulur: STOP_SERVICES, DROP_DATABASES, CLEANUP_CONFIG, FINALIZE
-5. Outbox event yayınlanır: `tenant_decommission_started`
+5. Outbox event yayınlanır: `client_decommission_started`
 
 **Outbox Event:**
 ```json
 {
-  "event": "tenant_decommission_started",
-  "tenantId": 42,
-  "tenantCode": "eurobet",
+  "event": "client_decommission_started",
+  "clientId": 42,
+  "clientCode": "eurobet",
   "runId": "uuid",
   "reason": "Sözleşme sona erdi",
   "startedAt": "2026-02-23T..."
@@ -571,36 +571,36 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.id-required | P0400 | client_id NULL |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.decommission.invalid-status | P0400 | Durum active veya suspended değil |
 
 **Güvenlik:** IDOR korumalı (`user_assert_access_company`)
 
 ---
 
-#### `core.tenant_decommission_complete`
+#### `core.client_decommission_complete`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_run_id | UUID | Evet | - | Decommission run ID |
 
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. Tenant `suspended` durumunda olmalı
+1. Client `suspended` durumunda olmalı
 2. Tüm decommission adımları `completed` veya `skipped` olmalı
-3. `tenants.provisioning_status = 'decommissioned'`, `provisioning_step = 'FINALIZE'`, `decommissioned_at = NOW()`
-4. Tenant'a ait tüm `tenant_servers` kayıtları `status = 'removed'`, `health_status = 'unknown'` yapılır
-5. İlgili infrastructure sunucuların `current_tenants` değeri 1 azaltılır (minimum 0)
-6. Outbox event yayınlanır: `tenant_decommissioned`
+3. `clients.provisioning_status = 'decommissioned'`, `provisioning_step = 'FINALIZE'`, `decommissioned_at = NOW()`
+4. Client'a ait tüm `client_servers` kayıtları `status = 'removed'`, `health_status = 'unknown'` yapılır
+5. İlgili infrastructure sunucuların `current_clients` değeri 1 azaltılır (minimum 0)
+6. Outbox event yayınlanır: `client_decommissioned`
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
+| error.client.id-required | P0400 | client_id NULL |
 | error.provision.run-id-required | P0400 | run_id NULL |
 | error.decommission.not-in-progress | P0400 | Durum suspended değil |
 | error.decommission.steps-not-complete | P0400 | Tamamlanmamış adım var |
@@ -627,7 +627,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 | p_server_type | VARCHAR(30) | Hayır | 'shared' | dedicated / shared |
 | p_server_purpose | VARCHAR(30) | Hayır | 'all' | all / db_only / app_only |
 | p_specs | JSONB | Hayır | '{}' | `{"cpu": 8, "ram_gb": 32}` |
-| p_max_tenants | INTEGER | Hayır | 10 | Kapasite limiti |
+| p_max_clients | INTEGER | Hayır | 10 | Kapasite limiti |
 
 **Dönüş:** `BIGINT` — yeni sunucu ID
 
@@ -637,7 +637,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 3. `server_code` benzersiz olmalı (case-insensitive)
 4. `server_type` değerleri: `dedicated`, `shared`
 5. `server_purpose` değerleri: `all`, `db_only`, `app_only`
-6. Yeni kayıt: `status = 'active'`, `health_status = 'unknown'`, `current_tenants = 0`
+6. Yeni kayıt: `status = 'active'`, `health_status = 'unknown'`, `current_clients = 0`
 
 **Hata Kodları:**
 
@@ -670,8 +670,8 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 | p_server_type | VARCHAR(30) | Hayır | NULL | dedicated / shared |
 | p_server_purpose | VARCHAR(30) | Hayır | NULL | all / db_only / app_only |
 | p_specs | JSONB | Hayır | NULL | Donanım bilgileri |
-| p_max_tenants | INTEGER | Hayır | NULL | Kapasite limiti |
-| p_current_tenants | INTEGER | Hayır | NULL | Mevcut tenant sayısı |
+| p_max_clients | INTEGER | Hayır | NULL | Kapasite limiti |
+| p_current_clients | INTEGER | Hayır | NULL | Mevcut client sayısı |
 | p_status | VARCHAR(20) | Hayır | NULL | Durum |
 | p_health_status | VARCHAR(20) | Hayır | NULL | Sağlık durumu |
 | p_health_metadata | JSONB | Hayır | NULL | Sağlık metadata |
@@ -724,8 +724,8 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 | serverType | VARCHAR | dedicated / shared |
 | serverPurpose | VARCHAR | all / db_only / app_only |
 | specs | JSONB | Donanım |
-| maxTenants | INTEGER | Kapasite |
-| currentTenants | INTEGER | Mevcut |
+| maxClients | INTEGER | Kapasite |
+| currentClients | INTEGER | Mevcut |
 | availableSlots | INTEGER | **Hesaplanan:** max - current (min 0) |
 | status | VARCHAR | Durum |
 | healthStatus | VARCHAR | Sağlık |
@@ -736,7 +736,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 **İş Kuralları:**
 1. SUPER_ADMIN yetkisi gerekli
-2. `availableSlots = max_tenants - current_tenants` (minimum 0) hesaplanan alan
+2. `availableSlots = max_clients - current_clients` (minimum 0) hesaplanan alan
 
 **Hata Kodları:**
 
@@ -775,8 +775,8 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 | serverType | VARCHAR | Tip |
 | serverPurpose | VARCHAR | Amaç |
 | specs | JSONB | Donanım |
-| maxTenants | INTEGER | Kapasite |
-| currentTenants | INTEGER | Mevcut |
+| maxClients | INTEGER | Kapasite |
+| currentClients | INTEGER | Mevcut |
 | availableSlots | INTEGER | Boş slot |
 | status | VARCHAR | Durum |
 | healthStatus | VARCHAR | Sağlık |
@@ -785,7 +785,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 **İş Kuralları:**
 1. SUPER_ADMIN yetkisi gerekli
 2. Tüm filtreler opsiyonel (AND koşulları)
-3. `p_has_capacity = true` → sadece `current_tenants < max_tenants` olanlar
+3. `p_has_capacity = true` → sadece `current_clients < max_clients` olanlar
 4. Sıralama: region, server_code
 5. Eşleşme yoksa boş array `[]`
 
@@ -799,37 +799,37 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-### 4.4 Tenant Server (3 fonksiyon)
+### 4.4 Client Server (3 fonksiyon)
 
-#### `core.tenant_server_assign`
+#### `core.client_server_assign`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | Çağıran kullanıcı ID |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_server_id | BIGINT | Evet | - | Infrastructure sunucu ID |
 | p_server_role | VARCHAR(30) | Evet | - | Rol |
 | p_container_image | VARCHAR(255) | Hayır | NULL | Container image |
 | p_container_port | INTEGER | Hayır | NULL | Port |
 | p_health_endpoint | VARCHAR(255) | Hayır | NULL | Health check endpoint |
 
-**Dönüş:** `BIGINT` — tenant_servers.id (yeni veya mevcut)
+**Dönüş:** `BIGINT` — client_servers.id (yeni veya mevcut)
 
 **İş Kuralları:**
-1. IDOR koruması: çağıranın tenant'ın company'sine erişimi olmalı
+1. IDOR koruması: çağıranın client'ın company'sine erişimi olmalı
 2. Sunucu mevcudiyet ve `status = 'active'` kontrolü
-3. Shared sunucularda kapasite kontrolü: `current_tenants < max_tenants`
-4. UPSERT pattern (tenant_id, server_id, server_role):
+3. Shared sunucularda kapasite kontrolü: `current_clients < max_clients`
+4. UPSERT pattern (client_id, server_id, server_role):
    - Yeni kayıt → `status = 'pending'`, INSERT
    - Mevcut kayıt → container_image/port/health_endpoint COALESCE ile güncelleme
-5. Sadece YENİ atamalarda `infrastructure_servers.current_tenants` 1 artırılır
+5. Sadece YENİ atamalarda `infrastructure_servers.current_clients` 1 artırılır
 6. `server_role` değerleri: `db_primary`, `db_replica`, `db_failover`, `backend`, `callback`, `frontend`
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.server.id-required | P0400 | server_id NULL |
 | error.server.invalid-role | P0400 | Geçersiz server_role |
 | error.server.not-found | P0404 | Sunucu bulunamadı |
@@ -840,11 +840,11 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-#### `core.tenant_server_update`
+#### `core.client_server_update`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_server_role | VARCHAR(30) | Evet | - | Sunucu rolü |
 | p_container_id | VARCHAR(100) | Hayır | NULL | Docker container ID |
 | p_container_name | VARCHAR(150) | Hayır | NULL | Container adı |
@@ -860,28 +860,28 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 1. Provisioning sırasında ProductionManager tarafından çağrılır
 2. COALESCE pattern: NULL değerler mevcut değeri korur
 3. `p_health_status` güncellendiğinde `last_health_at = NOW()` de güncellenir
-4. (tenant_id, server_role) ile eşleşen kayıt güncellenir
+4. (client_id, server_role) ile eşleşen kayıt güncellenir
 5. `p_status` değerleri: `pending`, `creating`, `running`, `stopped`, `error`, `removed`
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.id-required | P0400 | tenant_id NULL |
+| error.client.id-required | P0400 | client_id NULL |
 | error.server.role-required | P0400 | server_role NULL |
 | error.server.invalid-container-status | P0400 | Geçersiz status |
-| error.tenant-server.not-found | P0404 | Kayıt bulunamadı |
+| error.client-server.not-found | P0404 | Kayıt bulunamadı |
 
 **Güvenlik:** System caller (p_caller_id = -1 olabilir)
 
 ---
 
-#### `core.tenant_server_list`
+#### `core.client_server_list`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | Çağıran kullanıcı ID |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 
 **Dönüş:** `JSONB` — array
 
@@ -910,7 +910,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 **İş Kuralları:**
 1. IDOR koruması
-2. `tenant_servers` JOIN `infrastructure_servers` ile detaylar dahil edilir
+2. `client_servers` JOIN `infrastructure_servers` ile detaylar dahil edilir
 3. `server_role` sıralı
 4. Eşleşme yoksa boş array `[]`
 
@@ -918,7 +918,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 
 **Güvenlik:** IDOR korumalı (`user_assert_access_company`)
 
@@ -926,36 +926,36 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ### 4.5 Provider Rollout (1 fonksiyon — Core DB)
 
-#### `core.tenant_provider_set_rollout`
+#### `core.client_provider_set_rollout`
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
 | p_caller_id | BIGINT | Evet | - | Çağıran kullanıcı ID |
-| p_tenant_id | BIGINT | Evet | - | Tenant ID |
+| p_client_id | BIGINT | Evet | - | Client ID |
 | p_provider_id | BIGINT | Evet | - | Provider ID |
 | p_rollout_status | VARCHAR(20) | Evet | - | 'shadow' veya 'production' |
 
 **Dönüş:** `VOID`
 
 **İş Kuralları:**
-1. IDOR koruması: `user_assert_access_tenant`
+1. IDOR koruması: `user_assert_access_client`
 2. `p_rollout_status` sadece `'shadow'` veya `'production'` olabilir
-3. `core.tenant_providers` tablosunda rollout_status güncellenir
-4. **Backend sorumluluğu:** Bu fonksiyon çağrıldıktan sonra backend Tenant DB'de `game_provider_rollout_sync` ve `payment_provider_rollout_sync` fonksiyonlarını çağırmalı
+3. `core.client_providers` tablosunda rollout_status güncellenir
+4. **Backend sorumluluğu:** Bu fonksiyon çağrıldıktan sonra backend Client DB'de `game_provider_rollout_sync` ve `payment_provider_rollout_sync` fonksiyonlarını çağırmalı
 
 **Hata Kodları:**
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
+| error.client.not-found | P0404 | Client bulunamadı |
 | error.provider.invalid-rollout-status | P0400 | rollout_status geçersiz |
-| error.tenant-provider.not-found | P0404 | Tenant-provider eşleşmesi yok |
+| error.client-provider.not-found | P0404 | Client-provider eşleşmesi yok |
 
-**Güvenlik:** IDOR korumalı (`user_assert_access_tenant`), SECURITY DEFINER
+**Güvenlik:** IDOR korumalı (`user_assert_access_client`), SECURITY DEFINER
 
 ---
 
-### 4.6 Shadow Tester Yönetimi (4 fonksiyon — Tenant DB)
+### 4.6 Shadow Tester Yönetimi (4 fonksiyon — Client DB)
 
 #### `auth.shadow_tester_add`
 
@@ -1058,7 +1058,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 
 ---
 
-### 4.7 Rollout Senkronizasyonu (2 fonksiyon — Tenant DB)
+### 4.7 Rollout Senkronizasyonu (2 fonksiyon — Client DB)
 
 #### `game.game_provider_rollout_sync`
 
@@ -1074,7 +1074,7 @@ CHECK: `rollout_status IN ('shadow', 'production')`
 2. `game.game_settings` tablosunda `provider_id` eşleşen TÜM kayıtların `rollout_status`'u toplu güncellenir
 3. `updated_at = NOW()` güncellenir
 4. Güncellenen satır sayısı dönülür
-5. Backend, `tenant_provider_set_rollout` çağrıldıktan sonra bu fonksiyonu çağırır
+5. Backend, `client_provider_set_rollout` çağrıldıktan sonra bu fonksiyonu çağırır
 6. Auth-agnostic
 
 **Hata Kodları:**
@@ -1117,10 +1117,10 @@ Aşağıdaki fonksiyonlar shadow mode desteği için `p_rollout_status` parametr
 
 | Fonksiyon | DB | Modifikasyon | SPEC |
 |-----------|-----|-------------|------|
-| `game.game_settings_sync` | Tenant | +`p_rollout_status VARCHAR(20) DEFAULT 'production'` parametresi. INSERT'te kullanılır, UPDATE'te değişmez | SPEC_GAME_GATEWAY |
-| `game.game_settings_list` | Tenant | Shadow visibility filtresi: `(rollout_status = 'production' OR v_is_shadow_tester = true)`. `p_player_id` ile `auth.shadow_testers` kontrol edilir | SPEC_GAME_GATEWAY |
-| `finance.payment_method_settings_sync` | Tenant | +`p_rollout_status VARCHAR(20) DEFAULT 'production'` parametresi. INSERT'te kullanılır, UPDATE'te değişmez | SPEC_FINANCE_GATEWAY |
-| `finance.payment_method_settings_list` | Tenant | Shadow visibility filtresi: `(rollout_status = 'production' OR v_is_shadow_tester = true)`. `p_player_id` ile `auth.shadow_testers` kontrol edilir | SPEC_FINANCE_GATEWAY |
+| `game.game_settings_sync` | Client | +`p_rollout_status VARCHAR(20) DEFAULT 'production'` parametresi. INSERT'te kullanılır, UPDATE'te değişmez | SPEC_GAME_GATEWAY |
+| `game.game_settings_list` | Client | Shadow visibility filtresi: `(rollout_status = 'production' OR v_is_shadow_tester = true)`. `p_player_id` ile `auth.shadow_testers` kontrol edilir | SPEC_GAME_GATEWAY |
+| `finance.payment_method_settings_sync` | Client | +`p_rollout_status VARCHAR(20) DEFAULT 'production'` parametresi. INSERT'te kullanılır, UPDATE'te değişmez | SPEC_FINANCE_GATEWAY |
+| `finance.payment_method_settings_list` | Client | Shadow visibility filtresi: `(rollout_status = 'production' OR v_is_shadow_tester = true)`. `p_player_id` ile `auth.shadow_testers` kontrol edilir | SPEC_FINANCE_GATEWAY |
 
 **Shadow Visibility SQL Pattern:**
 ```sql
@@ -1133,7 +1133,7 @@ v_is_shadow_tester := EXISTS (
 AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 ```
 
-**Performans:** production kayıtlar (%99+) için OR hemen TRUE → EXISTS çalışmaz → ek maliyet 0. Shadow kayıtlar (1-3 tenant) için EXISTS on UNIQUE index (5-10 kayıt) → nanosaniye.
+**Performans:** production kayıtlar (%99+) için OR hemen TRUE → EXISTS çalışmaz → ek maliyet 0. Shadow kayıtlar (1-3 client) için EXISTS on UNIQUE index (5-10 kayıt) → nanosaniye.
 
 ---
 
@@ -1143,8 +1143,8 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 
 | Kural | Açıklama |
 |-------|----------|
-| Domain zorunlu | `tenants.domain` tanımlanmış olmalı |
-| Base currency zorunlu | `tenants.base_currency_code` tanımlanmış olmalı |
+| Domain zorunlu | `clients.domain` tanımlanmış olmalı |
+| Base currency zorunlu | `clients.base_currency_code` tanımlanmış olmalı |
 | Sunucu atamaları | En az `db_primary`, `backend`, `frontend` rolleri atanmış olmalı |
 | Durum kontrolü | Sadece `draft` veya `failed` durumundan provisioning başlatılabilir |
 | Decommission kontrolü | Sadece `active` veya `suspended` durumundan decommission başlatılabilir |
@@ -1156,7 +1156,7 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 | server_code benzersiz | Case-insensitive UNIQUE |
 | server_type | `dedicated` veya `shared` |
 | server_purpose | `all`, `db_only`, `app_only` |
-| Kapasite | Shared sunucularda `current_tenants < max_tenants` |
+| Kapasite | Shared sunucularda `current_clients < max_clients` |
 | Durum değerleri | `active`, `maintenance`, `full`, `decommissioned` |
 
 ### Rollout Kuralları
@@ -1164,8 +1164,8 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 | Kural | Açıklama |
 |-------|----------|
 | rollout_status | Sadece `'shadow'` veya `'production'` |
-| Cascade sync | Core DB'de değişiklik sonrası backend Tenant DB sync fonksiyonlarını çağırmalı |
-| Denormalizasyon tutarlılığı | Core (tenant_providers) ve Tenant (game_settings, payment_method_settings) aynı olmalı |
+| Cascade sync | Core DB'de değişiklik sonrası backend Client DB sync fonksiyonlarını çağırmalı |
+| Denormalizasyon tutarlılığı | Core (client_providers) ve Client (game_settings, payment_method_settings) aynı olmalı |
 
 ---
 
@@ -1175,8 +1175,8 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 
 | Hata Key | ERRCODE | Koşul |
 |----------|---------|-------|
-| error.tenant.not-found | P0404 | Tenant bulunamadı |
-| error.tenant.id-required | P0400 | tenant_id NULL |
+| error.client.not-found | P0404 | Client bulunamadı |
+| error.client.id-required | P0400 | client_id NULL |
 | error.provision.invalid-status | P0400 | Provisioning için uygun olmayan durum |
 | error.provision.domain-required | P0400 | Domain tanımlanmamış |
 | error.provision.base-currency-required | P0400 | Baz para birimi tanımlanmamış |
@@ -1184,7 +1184,7 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 | error.provision.run-id-required | P0400 | run_id NULL |
 | error.provision.invalid-step-status | P0400 | Geçersiz adım durum değeri |
 | error.provision.step-not-found | P0404 | Adım kaydı bulunamadı |
-| error.provision.not-in-provisioning | P0400 | Tenant provisioning durumunda değil |
+| error.provision.not-in-provisioning | P0400 | Client provisioning durumunda değil |
 | error.provision.steps-not-complete | P0400 | Tamamlanmamış adımlar var |
 
 ### Decommission
@@ -1213,7 +1213,7 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 | error.server.role-required | P0400 | server_role NULL |
 | error.server.invalid-role | P0400 | Geçersiz server_role |
 | error.server.invalid-container-status | P0400 | Geçersiz container status |
-| error.tenant-server.not-found | P0404 | Tenant-sunucu kaydı bulunamadı |
+| error.client-server.not-found | P0404 | Client-sunucu kaydı bulunamadı |
 
 ### Shadow Mode
 
@@ -1223,7 +1223,7 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 | error.shadow-tester.not-found | P0404 | Shadow tester bulunamadı |
 | error.provider.id-required | P0400 | provider_id NULL |
 | error.provider.invalid-rollout-status | P0400 | Geçersiz rollout_status |
-| error.tenant-provider.not-found | P0404 | Tenant-provider eşleşmesi yok |
+| error.client-provider.not-found | P0404 | Client-provider eşleşmesi yok |
 
 ---
 
@@ -1234,10 +1234,10 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 | Index | Tablo | Açıklama |
 |-------|-------|----------|
 | UNIQUE (server_code) | infrastructure_servers | Benzersiz sunucu kodu |
-| (tenant_id, server_id, server_role) | tenant_servers | UPSERT pattern |
-| (tenant_id, provision_run_id) | tenant_provisioning_log | Run bazlı adım sorguları |
+| (client_id, server_id, server_role) | client_servers | UPSERT pattern |
+| (client_id, provision_run_id) | client_provisioning_log | Run bazlı adım sorguları |
 
-### Tenant DB
+### Client DB
 
 | Index | Tablo | Açıklama |
 |-------|-------|----------|
@@ -1249,7 +1249,7 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 
 1. **Shadow tester kontrolü:** `auth.shadow_testers` tipik olarak 5-10 kayıt içerir. UNIQUE index üzerinde EXISTS → nanosaniye
 2. **Rollout filtre optimizasyonu:** `rollout_status = 'production'` kayıtlar %99+ olduğundan OR koşulunun sol tarafı hemen TRUE döner, EXISTS hiç çalışmaz
-3. **Provisioning log:** Tenant başına ortalama 1-3 run, run başına 11-15 adım → küçük veri seti
+3. **Provisioning log:** Client başına ortalama 1-3 run, run başına 11-15 adım → küçük veri seti
 4. **Kapasite kontrolü:** `infrastructure_server_list` ile `p_has_capacity = true` filtresi sunucu seçiminde kullanılır
 
 ---
@@ -1260,20 +1260,20 @@ AND (gs.rollout_status = 'production' OR v_is_shadow_tester = true)
 
 ```
 core/functions/core/provisioning/
-├── tenant_provision_start.sql
-├── tenant_provision_step_update.sql
-├── tenant_provision_complete.sql
-├── tenant_provision_fail.sql
-├── tenant_provision_status.sql
-└── tenant_provision_history_list.sql
+├── client_provision_start.sql
+├── client_provision_step_update.sql
+├── client_provision_complete.sql
+├── client_provision_fail.sql
+├── client_provision_status.sql
+└── client_provision_history_list.sql
 ```
 
 ### 8.2 Decommission Fonksiyonları (Core DB)
 
 ```
 core/functions/core/provisioning/
-├── tenant_decommission_start.sql
-└── tenant_decommission_complete.sql
+├── client_decommission_start.sql
+└── client_decommission_complete.sql
 ```
 
 ### 8.3 Infrastructure Fonksiyonları (Core DB)
@@ -1286,39 +1286,39 @@ core/functions/core/infrastructure/
 └── infrastructure_server_list.sql
 ```
 
-### 8.4 Tenant Server Fonksiyonları (Core DB)
+### 8.4 Client Server Fonksiyonları (Core DB)
 
 ```
-core/functions/core/tenant_servers/
-├── tenant_server_assign.sql
-├── tenant_server_update.sql
-└── tenant_server_list.sql
+core/functions/core/client_servers/
+├── client_server_assign.sql
+├── client_server_update.sql
+└── client_server_list.sql
 ```
 
 ### 8.5 Provider Rollout (Core DB)
 
 ```
-core/functions/core/tenant_providers/
-└── tenant_provider_set_rollout.sql
+core/functions/core/client_providers/
+└── client_provider_set_rollout.sql
 ```
 
-### 8.6 Shadow Tester Fonksiyonları (Tenant DB)
+### 8.6 Shadow Tester Fonksiyonları (Client DB)
 
 ```
-tenant/functions/backoffice/auth/
+client/functions/backoffice/auth/
 ├── shadow_tester_add.sql
 ├── shadow_tester_remove.sql
 ├── shadow_tester_list.sql
 └── shadow_tester_get.sql
 ```
 
-### 8.7 Rollout Sync Fonksiyonları (Tenant DB)
+### 8.7 Rollout Sync Fonksiyonları (Client DB)
 
 ```
-tenant/functions/backoffice/game/
+client/functions/backoffice/game/
 └── game_provider_rollout_sync.sql
 
-tenant/functions/backoffice/finance/
+client/functions/backoffice/finance/
 └── payment_provider_rollout_sync.sql
 ```
 
@@ -1327,25 +1327,25 @@ tenant/functions/backoffice/finance/
 ```
 core/tables/core/configuration/
 ├── infrastructure_servers.sql
-├── tenant_servers.sql
-├── tenant_provisioning_log.sql
+├── client_servers.sql
+├── client_provisioning_log.sql
 └── template_dumps.sql
 
 core/tables/core/organization/
-└── tenants.sql                    (provisioning kolonları)
+└── clients.sql                    (provisioning kolonları)
 
-tenant/tables/player_auth/
+client/tables/player_auth/
 └── shadow_testers.sql
 ```
 
 ### 8.9 Mevcut Fonksiyonlar (Shadow Mode Modifikasyonları)
 
 ```
-tenant/functions/backoffice/game/
+client/functions/backoffice/game/
 ├── game_settings_sync.sql         (+p_rollout_status parametresi)
 └── game_settings_list.sql         (+shadow visibility filtresi)
 
-tenant/functions/backoffice/finance/
+client/functions/backoffice/finance/
 ├── payment_method_settings_sync.sql  (+p_rollout_status parametresi)
 └── payment_method_settings_list.sql  (+shadow visibility filtresi)
 ```

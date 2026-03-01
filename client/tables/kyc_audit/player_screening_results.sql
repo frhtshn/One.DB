@@ -2,7 +2,7 @@
 -- Player Screening Results (Tarama Sonuçları)
 -- PEP, Sanctions ve Adverse Media taramaları
 -- Düzenleyici uyumluluk için zorunlu kontroller
--- TENANT_AUDIT DB - 5-10 yıl retention
+-- CLIENT_AUDIT DB - 5-10 yıl retention
 -- =============================================
 
 DROP TABLE IF EXISTS kyc_audit.player_screening_results CASCADE;
@@ -10,8 +10,8 @@ DROP TABLE IF EXISTS kyc_audit.player_screening_results CASCADE;
 CREATE TABLE kyc_audit.player_screening_results (
     id bigserial PRIMARY KEY,
 
-    player_id bigint NOT NULL,                    -- Oyuncu ID (tenant DB referans)
-    kyc_case_id bigint,                           -- Bağlı KYC vakası (tenant DB referans)
+    player_id bigint NOT NULL,                    -- Oyuncu ID (client DB referans)
+    kyc_case_id bigint,                           -- Bağlı KYC vakası (client DB referans)
 
     -- Tarama tipi
     screening_type varchar(30) NOT NULL,          -- Tarama türü

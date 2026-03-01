@@ -3,7 +3,7 @@
 -- ================================================================
 -- Auth-agnostic. Oyuncu promo kod kullandığında çağrılır.
 -- Backend promo kodu Bonus DB'de doğrular (aktif, geçerli, limit),
--- sonra bu fonksiyonu Tenant DB'de çağırır.
+-- sonra bu fonksiyonu Client DB'de çağırır.
 -- bonus_award_id NULL gelebilir (award Worker tarafından yapılır).
 -- ================================================================
 
@@ -58,4 +58,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION bonus.promo_redeem(BIGINT, BIGINT, VARCHAR, BIGINT, VARCHAR) IS 'Records a promo code redemption. Backend validates code in Bonus DB first, then calls this in Tenant DB. bonus_award_id may be NULL if award is created asynchronously by Worker.';
+COMMENT ON FUNCTION bonus.promo_redeem(BIGINT, BIGINT, VARCHAR, BIGINT, VARCHAR) IS 'Records a promo code redemption. Backend validates code in Bonus DB first, then calls this in Client DB. bonus_award_id may be NULL if award is created asynchronously by Worker.';

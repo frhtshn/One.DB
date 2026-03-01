@@ -1,7 +1,7 @@
 -- =============================================
 -- 2. ROLE_GET: Code ile rol detayi
 -- Returns: JSONB - dogrudan rol verisi (success wrapper YOK)
--- Birleşik user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
+-- Birleşik user_roles: client_id IS NULL = global, client_id IS NOT NULL = client
 -- =============================================
 
 DROP FUNCTION IF EXISTS security.role_get(VARCHAR);
@@ -27,8 +27,8 @@ BEGIN
     -- Tek sorguda tum bilgileri al (birleşik user_roles)
     WITH role_stats AS (
         SELECT
-            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NULL THEN ur.user_id END) AS global_user_count,
-            COUNT(DISTINCT CASE WHEN ur.tenant_id IS NOT NULL THEN ur.user_id END) AS tenant_user_count,
+            COUNT(DISTINCT CASE WHEN ur.client_id IS NULL THEN ur.user_id END) AS global_user_count,
+            COUNT(DISTINCT CASE WHEN ur.client_id IS NOT NULL THEN ur.user_id END) AS client_user_count,
             COUNT(DISTINCT rp.permission_id) AS permission_count
         FROM security.roles r
         LEFT JOIN security.user_roles ur ON ur.role_id = r.id
@@ -53,7 +53,7 @@ BEGIN
         'status', r.status,
         'createdAt', r.created_at,
         'updatedAt', r.updated_at,
-        'userCount', COALESCE(rs.global_user_count, 0) + COALESCE(rs.tenant_user_count, 0),
+        'userCount', COALESCE(rs.global_user_count, 0) + COALESCE(rs.client_user_count, 0),
         'permissionCount', COALESCE(rs.permission_count, 0),
         'permissions', rp.permissions
     )

@@ -20,10 +20,10 @@ ALTER TABLE security.secrets_provider
     ADD CONSTRAINT fk_secrets_provider_provider
     FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
 
--- secrets_tenant -> tenants
-ALTER TABLE security.secrets_tenant
-    ADD CONSTRAINT fk_secrets_tenant_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+-- secrets_client -> clients
+ALTER TABLE security.secrets_client
+    ADD CONSTRAINT fk_secrets_client_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
 -- user_roles -> users
 ALTER TABLE security.user_roles
@@ -35,15 +35,15 @@ ALTER TABLE security.user_roles
     ADD CONSTRAINT fk_user_roles_role
     FOREIGN KEY (role_id) REFERENCES security.roles(id) ON DELETE CASCADE;
 
--- user_roles -> tenants (nullable - global roller için NULL)
+-- user_roles -> clients (nullable - global roller için NULL)
 ALTER TABLE security.user_roles
-    ADD CONSTRAINT fk_user_roles_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_user_roles_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id) ON DELETE CASCADE;
 
--- user_permission_overrides -> tenants
+-- user_permission_overrides -> clients
 ALTER TABLE security.user_permission_overrides
-    ADD CONSTRAINT fk_user_permission_overrides_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    ADD CONSTRAINT fk_user_permission_overrides_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
 -- user_permission_overrides -> users
 ALTER TABLE security.user_permission_overrides
@@ -60,19 +60,19 @@ ALTER TABLE security.user_permission_overrides
     ADD CONSTRAINT fk_user_permission_overrides_assigned_by
     FOREIGN KEY (assigned_by) REFERENCES security.users(id) ON DELETE SET NULL;
 
--- user_allowed_tenants -> users
-ALTER TABLE security.user_allowed_tenants
-    ADD CONSTRAINT fk_user_allowed_tenants_user
+-- user_allowed_clients -> users
+ALTER TABLE security.user_allowed_clients
+    ADD CONSTRAINT fk_user_allowed_clients_user
     FOREIGN KEY (user_id) REFERENCES security.users(id) ON DELETE CASCADE;
 
--- user_allowed_tenants -> tenants
-ALTER TABLE security.user_allowed_tenants
-    ADD CONSTRAINT fk_user_allowed_tenants_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id) ON DELETE CASCADE;
+-- user_allowed_clients -> clients
+ALTER TABLE security.user_allowed_clients
+    ADD CONSTRAINT fk_user_allowed_clients_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id) ON DELETE CASCADE;
 
--- user_allowed_tenants -> created_by
-ALTER TABLE security.user_allowed_tenants
-    ADD CONSTRAINT fk_user_allowed_tenants_created_by
+-- user_allowed_clients -> created_by
+ALTER TABLE security.user_allowed_clients
+    ADD CONSTRAINT fk_user_allowed_clients_created_by
     FOREIGN KEY (created_by) REFERENCES security.users(id);
 
 -- user_password_history -> users
@@ -155,10 +155,10 @@ ALTER TABLE security.permission_template_assignments
     ADD CONSTRAINT fk_permission_template_assignments_template
     FOREIGN KEY (template_id) REFERENCES security.permission_templates(id);
 
--- permission_template_assignments -> tenants
+-- permission_template_assignments -> clients
 ALTER TABLE security.permission_template_assignments
-    ADD CONSTRAINT fk_permission_template_assignments_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    ADD CONSTRAINT fk_permission_template_assignments_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
 -- permission_template_assignments -> assigned_by
 ALTER TABLE security.permission_template_assignments

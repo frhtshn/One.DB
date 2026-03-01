@@ -1,16 +1,16 @@
 -- ================================================================
--- TENANT_PROVIDER_LIST: Tenant game provider listesi
+-- CLIENT_PROVIDER_LIST: Client game provider listesi
 -- ================================================================
 -- Sadece GAME tipli provider'ları döner.
 -- gameCount subquery ile oyun sayısı eklenir.
 -- rolloutStatus shadow mode durumunu gösterir.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_provider_list(BIGINT, BIGINT);
+DROP FUNCTION IF EXISTS core.client_provider_list(BIGINT, BIGINT);
 
-CREATE OR REPLACE FUNCTION core.tenant_provider_list(
+CREATE OR REPLACE FUNCTION core.client_provider_list(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT
+    p_client_id BIGINT
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -21,12 +21,12 @@ DECLARE
     v_company_id BIGINT;
     v_result JSONB;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -44,8 +44,8 @@ BEGIN
             'rolloutStatus', tp.rollout_status,
             'gameCount', (
                 SELECT COUNT(*)
-                FROM core.tenant_games tg
-                WHERE tg.tenant_id = tp.tenant_id
+                FROM core.client_games tg
+                WHERE tg.client_id = tp.client_id
                   AND EXISTS(
                       SELECT 1 FROM catalog.providers prov
                       WHERE prov.id = tp.provider_id
@@ -57,14 +57,14 @@ BEGIN
         ) ORDER BY p.provider_name
     ), '[]'::jsonb)
     INTO v_result
-    FROM core.tenant_providers tp
+    FROM core.client_providers tp
     JOIN catalog.providers p ON p.id = tp.provider_id
     JOIN catalog.provider_types pt ON pt.id = p.provider_type_id
-    WHERE tp.tenant_id = p_tenant_id
+    WHERE tp.client_id = p_client_id
       AND pt.provider_type_code = 'GAME';
 
     RETURN v_result;
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_provider_list IS 'Returns GAME-type provider list for a tenant with game counts and rollout status. IDOR protected.';
+COMMENT ON FUNCTION core.client_provider_list IS 'Returns GAME-type provider list for a client with game counts and rollout status. IDOR protected.';

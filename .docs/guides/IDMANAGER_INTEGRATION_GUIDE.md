@@ -28,7 +28,7 @@ flowchart TD
         I2["AnalyzeDocument — Adres Pipeline"]
     end
 
-    subgraph tenant_db["Tenant DB"]
+    subgraph client_db["Client DB"]
         T1["kyc.player_documents"]
         T2["kyc.document_analysis"]
         T3["kyc.document_decisions"]
@@ -138,7 +138,7 @@ public class IdManagerClient
 sequenceDiagram
     participant P as Oyuncu
     participant BE as Backend
-    participant DB as Tenant DB
+    participant DB as Client DB
     participant IDM as IDManager
 
     P->>BE: POST /documents (kimlik + selfie)
@@ -166,7 +166,7 @@ sequenceDiagram
 sequenceDiagram
     participant P as Oyuncu
     participant BE as Backend
-    participant DB as Tenant DB
+    participant DB as Client DB
     participant IDM as IDManager
 
     P->>BE: POST /documents (fatura PDF)
@@ -192,7 +192,7 @@ sequenceDiagram
 sequenceDiagram
     participant OP as Operatör
     participant BE as Backend
-    participant DB as Tenant DB
+    participant DB as Client DB
     participant IDM as IDManager
 
     OP->>BE: POST /documents/{id}/reanalyze
@@ -220,7 +220,7 @@ sequenceDiagram
 public class KycAnalysisService
 {
     private readonly IdManagerClient _idManager;
-    private readonly ITenantDbConnection _db;
+    private readonly IClientDbConnection _db;
 
     /// <summary>
     /// Belge yüklendikten sonra analiz başlat.

@@ -1,6 +1,6 @@
 -- Get paginated entity audit logs
-CREATE OR REPLACE FUNCTION backoffice.audit_list(
-    p_tenant_id VARCHAR(100) DEFAULT NULL,
+CREATE OR REPLACE FUNCTION backoffice_log.audit_list(
+    p_client_id VARCHAR(100) DEFAULT NULL,
     p_user_id VARCHAR(255) DEFAULT NULL,
     p_action VARCHAR(100) DEFAULT NULL,
     p_entity_type VARCHAR(100) DEFAULT NULL,
@@ -21,8 +21,8 @@ BEGIN
     v_offset := (p_page - 1) * p_page_size;
 
     SELECT COUNT(*) INTO v_total
-    FROM backoffice.audit_logs a
-    WHERE (p_tenant_id IS NULL OR a.tenant_id = p_tenant_id)
+    FROM backoffice_log.audit_logs a
+    WHERE (p_client_id IS NULL OR a.client_id = p_client_id)
       AND (p_user_id IS NULL OR a.user_id = p_user_id)
       AND (p_action IS NULL OR a.action = p_action)
       AND (p_entity_type IS NULL OR a.entity_type = p_entity_type)
@@ -37,7 +37,7 @@ BEGIN
                     'id', a.id,
                     'eventId', a.event_id,
                     'originalEventId', a.original_event_id,
-                    'tenantId', a.tenant_id,
+                    'clientId', a.client_id,
                     'userId', a.user_id,
                     'action', a.action,
                     'entityType', a.entity_type,
@@ -51,8 +51,8 @@ BEGIN
                 )
                 ORDER BY a.created_at DESC
             )
-            FROM backoffice.audit_logs a
-            WHERE (p_tenant_id IS NULL OR a.tenant_id = p_tenant_id)
+            FROM backoffice_log.audit_logs a
+            WHERE (p_client_id IS NULL OR a.client_id = p_client_id)
               AND (p_user_id IS NULL OR a.user_id = p_user_id)
               AND (p_action IS NULL OR a.action = p_action)
               AND (p_entity_type IS NULL OR a.entity_type = p_entity_type)
@@ -70,4 +70,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.audit_list IS 'Retrieves paginated entity audit logs as JSONB';
+COMMENT ON FUNCTION backoffice_log.audit_list IS 'Retrieves paginated entity audit logs as JSONB';

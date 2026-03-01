@@ -40,10 +40,10 @@ flowchart TD
     end
 
     subgraph databases["Veritabanları"]
-        TR["Tenant Report DB<br/>(per-tenant)"]
+        TR["Client Report DB<br/>(per-client)"]
         CR["Core Report DB<br/>(platform)"]
         AN["Analytics DB<br/>(risk)"]
-        TD["Tenant DB<br/>(read-only)"]
+        TD["Client DB<br/>(read-only)"]
     end
 
     FG & GG & BW & AS & CS --> EX
@@ -68,12 +68,12 @@ flowchart TD
 | | Report Cluster | RiskManager |
 |--|--|--|
 | **Girdi** | RabbitMQ: transaction events | RabbitMQ: transaction events |
-| **Çıktı** | Tenant Report + Core Report + Analytics (baselines) | Analytics (scores) |
+| **Çıktı** | Client Report + Core Report + Analytics (baselines) | Analytics (scores) |
 | **Yapısı** | .NET Worker Service | .NET gRPC + Worker Service |
 | **İşlem** | Agregasyon (saatlik/günlük) | Gerçek zamanlı anomali tespiti |
-| **DB yazma** | 3 DB (tenant_report, core_report, analytics) | 1 DB (analytics) |
-| **DB okuma** | Tenant DB (read-only, gerekirse) | Analytics (baselines, cache) |
-| **Ölçek** | Tenant başına bir worker instance | Platform geneli tek instance |
+| **DB yazma** | 3 DB (client_report, core_report, analytics) | 1 DB (analytics) |
+| **DB okuma** | Client DB (read-only, gerekirse) | Analytics (baselines, cache) |
+| **Ölçek** | Client başına bir worker instance | Platform geneli tek instance |
 
 ---
 
@@ -122,7 +122,7 @@ flowchart LR
 {
   "eventId": "uuid",
   "eventType": "TransactionCreated",
-  "tenantId": 1001,
+  "clientId": 1001,
   "playerId": 50234,
   "timestamp": "2026-02-26T14:30:00.000Z",
   "data": {
@@ -155,7 +155,7 @@ ReportCluster/
 │
 ├── Configuration/
 │   ├── ReportClusterOptions.cs        # Flush interval, batch size, connection strings
-│   └── TenantConnectionFactory.cs     # Tenant bazlı connection resolver
+│   └── ClientConnectionFactory.cs     # Client bazlı connection resolver
 │
 ├── Consumers/                         # RabbitMQ consumer'ları
 │   ├── TransactionEventConsumer.cs    # TransactionCreated handler
@@ -173,12 +173,12 @@ ReportCluster/
 │   │   ├── GameStatsBuffer.cs         # game_hourly_stats accumulator
 │   │   ├── GamePerformanceBuffer.cs   # game_performance_daily accumulator
 │   │   ├── TicketStatsBuffer.cs       # ticket_daily_stats accumulator
-│   │   ├── TenantKpiBuffer.cs         # tenant_daily_kpi accumulator (core_report)
+│   │   ├── ClientKpiBuffer.cs         # client_daily_kpi accumulator (core_report)
 │   │   ├── ProviderGlobalBuffer.cs    # provider_global_daily accumulator
 │   │   ├── PaymentGlobalBuffer.cs     # payment_global_daily accumulator
-│   │   └── TrafficBuffer.cs           # tenant_traffic_hourly accumulator
+│   │   └── TrafficBuffer.cs           # client_traffic_hourly accumulator
 │   ├── Flushers/
-│   │   ├── TenantReportFlusher.cs     # Buffer → tenant_report DB UPSERT
+│   │   ├── ClientReportFlusher.cs     # Buffer → client_report DB UPSERT
 │   │   ├── CoreReportFlusher.cs       # Buffer → core_report DB UPSERT
 │   │   └── FlushCoordinator.cs        # Zamanlanmış flush orkestrasyon
 │   └── Models/
@@ -188,13 +188,13 @@ ReportCluster/
 ├── Baseline/                          # Analytics DB baseline hesaplama
 │   ├── BaselineCalculator.cs          # İstatistiksel hesaplama
 │   ├── PlayerBaselineService.cs       # player_baseline_upsert() çağrısı
-│   └── TenantBaselineService.cs       # tenant_baseline_upsert() çağrısı
+│   └── ClientBaselineService.cs       # client_baseline_upsert() çağrısı
 │
 ├── Workers/                           # Background cron jobs
 │   ├── FlushWorker.cs                 # Periyodik buffer flush (her 30 sn)
 │   ├── DailyRollupWorker.cs           # Saatlik → günlük toplama (gece 01:00)
 │   ├── MonthlyInvoiceWorker.cs        # Aylık fatura oluşturma (ayın 1'i)
-│   ├── TenantBaselineWorker.cs        # Tenant baseline güncelleme (saatlik)
+│   ├── ClientBaselineWorker.cs        # Client baseline güncelleme (saatlik)
 │   └── PartitionMaintenanceWorker.cs  # Partition oluşturma/temizlik (haftalık)
 │
 └── Infrastructure/
@@ -206,10 +206,10 @@ ReportCluster/
 
 | Bağlantı | DB | Erişim | Kullanım |
 |-----------|-----|--------|----------|
-| `TenantReportConnection` | Tenant Report DB | Read + Write | Saatlik/günlük raporlar |
+| `ClientReportConnection` | Client Report DB | Read + Write | Saatlik/günlük raporlar |
 | `CoreReportConnection` | Core Report DB | Read + Write | Platform KPI, fatura, trafik |
 | `AnalyticsConnection` | Analytics DB | Write only | Baseline upsert |
-| `TenantConnection` | Tenant DB | Read only | Gerekirse ek veri okuma |
+| `ClientConnection` | Client DB | Read only | Gerekirse ek veri okuma |
 
 ### 3.3 In-Memory Buffer & Flush Akışı
 
@@ -226,14 +226,14 @@ sequenceDiagram
     loop Her event
         MQ->>C: TransactionCreated event
         C->>B: Accumulate (thread-safe)
-        Note over B: ConcurrentDictionary<br/>Key: (tenantId, playerId, hourBucket)<br/>Value: running totals
+        Note over B: ConcurrentDictionary<br/>Key: (clientId, playerId, hourBucket)<br/>Value: running totals
     end
 
     Note over F: Her 30 saniye
     F->>B: Drain & snapshot
     B-->>F: Accumulated buckets
 
-    F->>DB: Batch UPSERT (tenant_report)
+    F->>DB: Batch UPSERT (client_report)
     F->>DB: Batch UPSERT (core_report)
     F->>DB: Baseline upsert (analytics)
 
@@ -251,16 +251,16 @@ Her buffer tipi için benzersiz key:
 
 | Buffer | Key | Açıklama |
 |--------|-----|----------|
-| SystemKpiBuffer | `(tenantId, currency, hourBucket)` | Tenant × para birimi × saat |
-| PlayerStatsBuffer | `(tenantId, playerId, walletId, hourBucket)` | Oyuncu × cüzdan × saat |
-| TransactionStatsBuffer | `(tenantId, playerId, walletId, hourBucket)` | Oyuncu × cüzdan × saat |
-| GameStatsBuffer | `(tenantId, playerId, walletId, hourBucket)` | Oyuncu × cüzdan × saat |
-| GamePerformanceBuffer | `(tenantId, gameId, providerId, currency, dateBucket)` | Oyun × provider × gün |
-| TenantKpiBuffer | `(companyId, tenantId, currency, dateBucket)` | Tenant × para birimi × gün |
+| SystemKpiBuffer | `(clientId, currency, hourBucket)` | Client × para birimi × saat |
+| PlayerStatsBuffer | `(clientId, playerId, walletId, hourBucket)` | Oyuncu × cüzdan × saat |
+| TransactionStatsBuffer | `(clientId, playerId, walletId, hourBucket)` | Oyuncu × cüzdan × saat |
+| GameStatsBuffer | `(clientId, playerId, walletId, hourBucket)` | Oyuncu × cüzdan × saat |
+| GamePerformanceBuffer | `(clientId, gameId, providerId, currency, dateBucket)` | Oyun × provider × gün |
+| ClientKpiBuffer | `(companyId, clientId, currency, dateBucket)` | Client × para birimi × gün |
 | ProviderGlobalBuffer | `(providerId, currency, dateBucket)` | Provider × para birimi × gün |
 | PaymentGlobalBuffer | `(methodId, currency, dateBucket)` | Ödeme metodu × para birimi × gün |
-| TrafficBuffer | `(companyId, tenantId, hourBucket)` | Tenant × saat |
-| TicketStatsBuffer | `(tenantId, categoryId, channel, repId, dateBucket)` | Çok boyutlu × gün |
+| TrafficBuffer | `(companyId, clientId, hourBucket)` | Client × saat |
+| TicketStatsBuffer | `(clientId, categoryId, channel, repId, dateBucket)` | Çok boyutlu × gün |
 
 ### 3.5 UPSERT Stratejisi
 
@@ -290,7 +290,7 @@ DO UPDATE SET
 
 ```csharp
 // Buffer'da biriktirme
-var key = (tenantId, playerId, walletId, hourBucket);
+var key = (clientId, playerId, walletId, hourBucket);
 var existing = _buffer.GetOrAdd(key, new PlayerStatsAccumulator());
 
 // game_stats merge: {"sports": {"bet": 100, "win": 50, "count": 10}}
@@ -304,15 +304,15 @@ existing.GameStats.AddOrMerge(gameType, bet, win, count);
 
 Hangi event hangi tabloları günceller:
 
-| Event | Tenant Report Tabloları | Core Report Tabloları | Analytics |
+| Event | Client Report Tabloları | Core Report Tabloları | Analytics |
 |-------|------------------------|----------------------|-----------|
-| `TransactionCreated` (deposit) | system_hourly_kpi, player_hourly_stats, transaction_hourly_stats | tenant_daily_kpi, payment_global_daily | player_baseline |
-| `TransactionCreated` (withdraw) | system_hourly_kpi, player_hourly_stats, transaction_hourly_stats | tenant_daily_kpi, payment_global_daily | player_baseline |
-| `BetPlaced` | system_hourly_kpi, player_hourly_stats, game_hourly_stats | tenant_daily_kpi, provider_global_daily | player_baseline |
-| `BetSettled` | system_hourly_kpi, player_hourly_stats, game_hourly_stats, game_performance_daily | tenant_daily_kpi, provider_global_daily | player_baseline |
-| `BonusAwarded` | system_hourly_kpi, player_hourly_stats | tenant_daily_kpi | player_baseline |
-| `PlayerRegistered` | system_hourly_kpi | tenant_daily_kpi | — |
-| `LoginCompleted` | — | tenant_traffic_hourly | — |
+| `TransactionCreated` (deposit) | system_hourly_kpi, player_hourly_stats, transaction_hourly_stats | client_daily_kpi, payment_global_daily | player_baseline |
+| `TransactionCreated` (withdraw) | system_hourly_kpi, player_hourly_stats, transaction_hourly_stats | client_daily_kpi, payment_global_daily | player_baseline |
+| `BetPlaced` | system_hourly_kpi, player_hourly_stats, game_hourly_stats | client_daily_kpi, provider_global_daily | player_baseline |
+| `BetSettled` | system_hourly_kpi, player_hourly_stats, game_hourly_stats, game_performance_daily | client_daily_kpi, provider_global_daily | player_baseline |
+| `BonusAwarded` | system_hourly_kpi, player_hourly_stats | client_daily_kpi | player_baseline |
+| `PlayerRegistered` | system_hourly_kpi | client_daily_kpi | — |
+| `LoginCompleted` | — | client_traffic_hourly | — |
 | `TicketCreated` | ticket_daily_stats | — | — |
 | `TicketResolved` | ticket_daily_stats | — | — |
 
@@ -332,7 +332,7 @@ int uniquePlayers = uapTracker.Count();
 ```
 
 **Neden HyperLogLog?**
-- Milyon oyunculu tenant'ta HashSet = GB RAM
+- Milyon oyunculu client'ta HashSet = GB RAM
 - HyperLogLog = sabit 16KB, %0.8 hata payı ile yeterli doğruluk
 - Saatlik pencere → yeni HyperLogLog instance
 
@@ -356,8 +356,8 @@ RiskManager/
 │
 ├── Cache/                             # In-memory baseline cache
 │   ├── BaselineCacheManager.cs        # Cache yöneticisi (load/refresh)
-│   ├── PlayerBaselineCache.cs         # Dictionary<(tenantId, playerId), PlayerBaseline>
-│   └── TenantBaselineCache.cs         # Dictionary<tenantId, TenantBaseline>
+│   ├── PlayerBaselineCache.cs         # Dictionary<(clientId, playerId), PlayerBaseline>
+│   └── ClientBaselineCache.cs         # Dictionary<clientId, ClientBaseline>
 │
 ├── Evaluation/                        # Anomali tespit motoru
 │   ├── AnomalyEvaluator.cs            # Ana değerlendirici
@@ -411,9 +411,9 @@ sequenceDiagram
     DB-->>W: Tüm player baselines
     W->>C: Load player cache
 
-    W->>DB: risk.tenant_baseline_list()
-    DB-->>W: Tüm tenant baselines
-    W->>C: Load tenant cache
+    W->>DB: risk.client_baseline_list()
+    DB-->>W: Tüm client baselines
+    W->>C: Load client cache
 
     loop Her 5 dakika
         W->>DB: risk.player_baseline_list()
@@ -437,13 +437,13 @@ sequenceDiagram
     participant A as AlertService
 
     MQ->>C: TransactionCreated event
-    C->>E: Evaluate(tenantId, playerId, eventData)
+    C->>E: Evaluate(clientId, playerId, eventData)
 
-    E->>E: playerBaseline = cache.Get(tenantId, playerId)
-    E->>E: tenantBaseline = cache.Get(tenantId)
+    E->>E: playerBaseline = cache.Get(clientId, playerId)
+    E->>E: clientBaseline = cache.Get(clientId)
 
     alt Baseline yok (yeni oyuncu)
-        E->>E: Tenant ortalaması ile değerlendir
+        E->>E: Client ortalaması ile değerlendir
     end
 
     par Paralel detektörler
@@ -458,7 +458,7 @@ sequenceDiagram
     E->>S: CalculateScore(deviations)
     S-->>E: anomalyScore (0-1), riskLevel
 
-    E->>DB: risk.player_score_upsert(tenantId, playerId, score, level, deviations, zscores)
+    E->>DB: risk.player_score_upsert(clientId, playerId, score, level, deviations, zscores)
 
     alt riskLevel = 'high'
         E->>A: SendAlert(playerId, score, deviations)
@@ -468,7 +468,7 @@ sequenceDiagram
 
 ### 4.5 Z-Score Hesaplama
 
-Her metrik için oyuncunun mevcut değeri, kendi baseline'ı ve tenant ortalaması ile karşılaştırılır:
+Her metrik için oyuncunun mevcut değeri, kendi baseline'ı ve client ortalaması ile karşılaştırılır:
 
 ```
 Z-score = (mevcut_değer - ortalama) / standart_sapma
@@ -552,25 +552,25 @@ public decimal CalculateScore(List<PatternDeviation> deviations)
 | Worker | Zamanlama | Açıklama |
 |--------|-----------|----------|
 | `FlushWorker` | Her 30 saniye | In-memory buffer'ları DB'ye UPSERT |
-| `DailyRollupWorker` | Her gün 01:00 | Saatlik verileri günlük tablolara topla (game_performance_daily, tenant_daily_kpi) |
+| `DailyRollupWorker` | Her gün 01:00 | Saatlik verileri günlük tablolara topla (game_performance_daily, client_daily_kpi) |
 | `MonthlyInvoiceWorker` | Ayın 1'i 03:00 | Önceki ayın verilerinden fatura oluştur (monthly_invoices) |
-| `TenantBaselineWorker` | Saatlik | Tenant bazlı istatistik özeti → `tenant_baseline_upsert()` |
+| `ClientBaselineWorker` | Saatlik | Client bazlı istatistik özeti → `client_baseline_upsert()` |
 | `PartitionMaintenanceWorker` | Haftalık Pazartesi 03:00 | `create_partitions(3)` + `drop_expired_partitions()` |
 
 ### 5.1 DailyRollupWorker Detayı
 
-Bazı tablolar (tenant_daily_kpi, game_performance_daily) günlük agregasyondur. Saatlik verilerden toplanır:
+Bazı tablolar (client_daily_kpi, game_performance_daily) günlük agregasyondur. Saatlik verilerden toplanır:
 
 ```sql
--- tenant_daily_kpi: Saatlik system_hourly_kpi'den günlük toplam
-INSERT INTO core_report.finance.tenant_daily_kpi
-    (report_date, company_id, tenant_id, currency,
+-- client_daily_kpi: Saatlik system_hourly_kpi'den günlük toplam
+INSERT INTO core_report.finance.client_daily_kpi
+    (report_date, company_id, client_id, currency,
      total_bet, total_win, total_deposits, total_withdrawals, total_bonuses,
      active_player_count, new_register_count, ftd_count)
 SELECT
     p_date,
     t.company_id,
-    t.tenant_id,
+    t.client_id,
     s.currency,
     SUM(s.total_bet),
     SUM(s.total_win),
@@ -582,10 +582,10 @@ SELECT
     v_daily_uap,
     SUM(s.new_registrations),
     SUM(s.first_time_depositors)
-FROM tenant_report.finance.system_hourly_kpi s
+FROM client_report.finance.system_hourly_kpi s
 WHERE s.period_hour >= p_date AND s.period_hour < p_date + INTERVAL '1 day'
 ...
-ON CONFLICT (tenant_id, report_date, currency)
+ON CONFLICT (client_id, report_date, currency)
 DO UPDATE SET ...;
 ```
 
@@ -594,7 +594,7 @@ DO UPDATE SET ...;
 Aylık fatura oluşturma akışı:
 
 ```
-1. Önceki ayın tenant_daily_kpi verilerini topla (GGR, bonus, deposit, withdraw)
+1. Önceki ayın client_daily_kpi verilerini topla (GGR, bonus, deposit, withdraw)
 2. Provider maliyetlerini hesapla (provider_global_daily × commission oranları)
 3. Ödeme işlemci maliyetlerini hesapla (payment_global_daily × fee oranları)
 4. Platform ücretini hesapla (sabit + GGR yüzdesi)
@@ -617,11 +617,11 @@ sequenceDiagram
     participant BL as BaselineCalculator
     participant DB as Analytics DB
 
-    RC->>BL: UpdatePlayerBaseline(tenantId, playerId, eventData)
+    RC->>BL: UpdatePlayerBaseline(clientId, playerId, eventData)
 
     BL->>BL: Yeni istatistikleri hesapla:<br/>- Running average (Welford's algorithm)<br/>- Running stddev<br/>- Frequency counters<br/>- Time-based metrics
 
-    BL->>DB: risk.player_baseline_upsert(<br/>  tenantId, playerId,<br/>  avg_deposit, deposit_stddev,<br/>  avg_deposits_per_day, ...<br/>  28 parametre)
+    BL->>DB: risk.player_baseline_upsert(<br/>  clientId, playerId,<br/>  avg_deposit, deposit_stddev,<br/>  avg_deposits_per_day, ...<br/>  28 parametre)
 ```
 
 ### 6.2 İstatistiksel Hesaplama Yöntemleri
@@ -636,14 +636,14 @@ sequenceDiagram
 | `bonus_to_deposit_ratio` | Kümülatif | `total_bonus / total_deposit` |
 | `avg_deposit_to_withdraw_min` | Event pair tracking | Deposit → ilk withdraw arası dakika |
 
-### 6.3 Tenant Baseline Güncelleme
+### 6.3 Client Baseline Güncelleme
 
-Saatlik cron ile tüm tenant'ların özet istatistiği:
+Saatlik cron ile tüm client'ların özet istatistiği:
 
 ```
-1. Her tenant için: aktif oyuncuların baseline ortalamaları
-2. tenant_baseline_upsert(tenantId, base_currency, avg_deposit, deposit_stddev, ...)
-3. RiskManager yeni oyuncuları (baseline'ı olmayan) tenant ortalaması ile değerlendirir
+1. Her client için: aktif oyuncuların baseline ortalamaları
+2. client_baseline_upsert(clientId, base_currency, avg_deposit, deposit_stddev, ...)
+3. RiskManager yeni oyuncuları (baseline'ı olmayan) client ortalaması ile değerlendirir
 ```
 
 ---
@@ -757,7 +757,7 @@ Buffer memory > threshold (512 MB)
     "Schedules": {
       "DailyRollup": "0 1 * * *",
       "MonthlyInvoice": "0 3 1 * *",
-      "TenantBaseline": "0 * * * *",
+      "ClientBaseline": "0 * * * *",
       "PartitionMaintenance": "0 3 * * MON"
     }
   },
@@ -798,17 +798,17 @@ Buffer memory > threshold (512 MB)
 
 | Strateji | Açıklama |
 |----------|----------|
-| **Tenant-based sharding** | Her Report Cluster instance belirli tenant grubunu işler |
-| **Consumer group** | RabbitMQ consistent hashing exchange ile tenant bazlı routing |
-| **Flush parallelism** | Tenant Report ve Core Report flush'ı paralel |
-| **Read replica** | Tenant DB okumalarını read replica'ya yönlendir |
+| **Client-based sharding** | Her Report Cluster instance belirli client grubunu işler |
+| **Consumer group** | RabbitMQ consistent hashing exchange ile client bazlı routing |
+| **Flush parallelism** | Client Report ve Core Report flush'ı paralel |
+| **Read replica** | Client DB okumalarını read replica'ya yönlendir |
 
 ### RiskManager
 
 | Strateji | Açıklama |
 |----------|----------|
 | **Tek instance** | Baseline cache tutarlılığı için tercih edilen |
-| **Horizontal scale** | Cache sharding (tenant bazlı) ile mümkün |
+| **Horizontal scale** | Cache sharding (client bazlı) ile mümkün |
 | **gRPC load balancing** | Backoffice istekleri için L7 load balancer |
 
 ---
@@ -819,8 +819,8 @@ Buffer memory > threshold (512 MB)
 |-----|--------|------------|
 | **Faz 1** | Altyapı: RabbitMQ topoloji, connection factory, dedup cache | — |
 | **Faz 2** | Report Cluster: buffer + flush mekanizması (system_hourly_kpi, player_hourly_stats) | Faz 1 |
-| **Faz 3** | Report Cluster: tüm tenant_report tabloları (game, transaction, ticket) | Faz 2 |
-| **Faz 4** | Report Cluster: core_report tabloları (tenant_daily_kpi, provider, payment) | Faz 2 |
+| **Faz 3** | Report Cluster: tüm client_report tabloları (game, transaction, ticket) | Faz 2 |
+| **Faz 4** | Report Cluster: core_report tabloları (client_daily_kpi, provider, payment) | Faz 2 |
 | **Faz 5** | Report Cluster: baseline hesaplama → Analytics DB upsert | Faz 2 |
 | **Faz 6** | RiskManager: cache mekanizması + baseline yükleme | Faz 5 |
 | **Faz 7** | RiskManager: anomali detektörleri + skor hesaplama | Faz 6 |
@@ -836,13 +836,13 @@ Buffer memory > threshold (512 MB)
 
 | Şema | Tablo | Granülarite | Key |
 |------|-------|-------------|-----|
-| finance | tenant_daily_kpi | Günlük | (tenant_id, report_date, currency) |
-| billing | monthly_invoices | Aylık | (tenant_id, period_year, period_month, currency) |
-| performance | tenant_traffic_hourly | Saatlik | (tenant_id, period_hour) |
+| finance | client_daily_kpi | Günlük | (client_id, report_date, currency) |
+| billing | monthly_invoices | Aylık | (client_id, period_year, period_month, currency) |
+| performance | client_traffic_hourly | Saatlik | (client_id, period_hour) |
 | performance | provider_global_daily | Günlük | (provider_id, report_date, currency) |
 | performance | payment_global_daily | Günlük | (method_id, report_date, currency) |
 
-### Tenant Report DB (6 tablo, Monthly partition, sınırsız retention)
+### Client Report DB (6 tablo, Monthly partition, sınırsız retention)
 
 | Şema | Tablo | Granülarite | JSONB Strateji |
 |------|-------|-------------|----------------|
@@ -858,7 +858,7 @@ Buffer memory > threshold (512 MB)
 | Şema | Tablo | Yazan | Okuyan |
 |------|-------|-------|--------|
 | risk | risk_player_baselines | Report Cluster | RiskManager (cache) |
-| risk | risk_tenant_baselines | Report Cluster | RiskManager (cache) |
+| risk | risk_client_baselines | Report Cluster | RiskManager (cache) |
 | risk | risk_player_scores | RiskManager | Backoffice |
 
 ---

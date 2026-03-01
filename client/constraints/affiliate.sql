@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Affiliate Schema Constraints
+-- Client Affiliate - Affiliate Schema Constraints
 -- =============================================
 
 -- affiliate_network -> affiliates (self)

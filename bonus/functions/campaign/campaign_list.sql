@@ -1,14 +1,14 @@
 -- ================================================================
 -- CAMPAIGN_LIST: Kampanya listesi
 -- ================================================================
--- Filtre: tenant_id, campaign_type, status.
--- Platform seviyesi kampanyalar (tenant_id=NULL) dahil.
+-- Filtre: client_id, campaign_type, status.
+-- Platform seviyesi kampanyalar (client_id=NULL) dahil.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS campaign.campaign_list(BIGINT, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION campaign.campaign_list(
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_campaign_type VARCHAR(50) DEFAULT NULL,
     p_status VARCHAR(20) DEFAULT NULL
 )
@@ -23,7 +23,7 @@ BEGIN
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'id', c.id,
-            'tenantId', c.tenant_id,
+            'clientId', c.client_id,
             'campaignCode', c.campaign_code,
             'campaignName', c.campaign_name,
             'campaignType', c.campaign_type,
@@ -39,7 +39,7 @@ BEGIN
     ), '[]'::jsonb)
     INTO v_result
     FROM campaign.campaigns c
-    WHERE (p_tenant_id IS NULL OR c.tenant_id IS NULL OR c.tenant_id = p_tenant_id)
+    WHERE (p_client_id IS NULL OR c.client_id IS NULL OR c.client_id = p_client_id)
       AND (p_campaign_type IS NULL OR c.campaign_type = LOWER(TRIM(p_campaign_type)))
       AND (p_status IS NULL OR c.status = p_status);
 
@@ -47,4 +47,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION campaign.campaign_list(BIGINT, VARCHAR, VARCHAR) IS 'Lists campaigns filtered by tenant, type, and status. Includes platform-level campaigns. Ordered by start_date descending.';
+COMMENT ON FUNCTION campaign.campaign_list(BIGINT, VARCHAR, VARCHAR) IS 'Lists campaigns filtered by client, type, and status. Includes platform-level campaigns. Ordered by start_date descending.';

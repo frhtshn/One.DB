@@ -1,20 +1,20 @@
 -- ================================================================
--- TENANT_NAVIGATION_LIST: Tenant navigasyon listesi
+-- CLIENT_NAVIGATION_LIST: Client navigasyon listesi
 -- ================================================================
 -- Açıklama:
---   Tenant'ın frontend navigasyon öğelerini listeler.
+--   Client'ın frontend navigasyon öğelerini listeler.
 --   Opsiyonel olarak menu_location ile filtrelenebilir.
 -- Erişim:
---   - Platform Admin: Tüm tenant'lar
---   - CompanyAdmin: Kendi company'sindeki tenant'lar
---   - TenantAdmin: user_allowed_tenants'taki tenant'lar
+--   - Platform Admin: Tüm client'lar
+--   - CompanyAdmin: Kendi company'sindeki client'lar
+--   - ClientAdmin: user_allowed_clients'taki client'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_navigation_list(BIGINT, BIGINT, VARCHAR);
+DROP FUNCTION IF EXISTS presentation.client_navigation_list(BIGINT, BIGINT, VARCHAR);
 
-CREATE OR REPLACE FUNCTION presentation.tenant_navigation_list(
+CREATE OR REPLACE FUNCTION presentation.client_navigation_list(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_menu_location VARCHAR(50) DEFAULT NULL
 )
 RETURNS JSONB
@@ -26,13 +26,13 @@ AS $$
 DECLARE
     v_result JSONB;
 BEGIN
-    -- 1. Tenant varlık kontrolü
-    IF NOT EXISTS(SELECT 1 FROM core.tenants WHERE id = p_tenant_id) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    -- 1. Client varlık kontrolü
+    IF NOT EXISTS(SELECT 1 FROM core.clients WHERE id = p_client_id) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
-    -- 2. Tenant erişim kontrolü
-    PERFORM security.user_assert_access_tenant(p_caller_id, p_tenant_id);
+    -- 2. Client erişim kontrolü
+    PERFORM security.user_assert_access_client(p_caller_id, p_client_id);
 
     -- ========================================
     -- 3. NAVİGASYON LİSTESİ
@@ -66,14 +66,14 @@ BEGIN
         ) ORDER BY tn.menu_location, tn.display_order
     ), '[]'::jsonb)
     INTO v_result
-    FROM presentation.tenant_navigation tn
-    WHERE tn.tenant_id = p_tenant_id
+    FROM presentation.client_navigation tn
+    WHERE tn.client_id = p_client_id
       AND (p_menu_location IS NULL OR tn.menu_location = p_menu_location);
 
     RETURN v_result;
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_navigation_list(BIGINT, BIGINT, VARCHAR) IS
-'Lists tenant navigation items, optionally filtered by menu_location.
-Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';
+COMMENT ON FUNCTION presentation.client_navigation_list(BIGINT, BIGINT, VARCHAR) IS
+'Lists client navigation items, optionally filtered by menu_location.
+Access: Platform Admin (all), CompanyAdmin (own company), ClientAdmin (allowed clients).';

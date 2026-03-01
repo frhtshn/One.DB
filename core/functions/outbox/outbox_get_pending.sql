@@ -12,7 +12,7 @@ RETURNS TABLE(
     aggregate_type VARCHAR(100),
     aggregate_id VARCHAR(100),
     payload JSONB,
-    tenant_id BIGINT,
+    client_id BIGINT,
     correlation_id UUID,
     retry_count INT,
     max_retries INT,
@@ -38,7 +38,7 @@ BEGIN
     WHERE m.id = p.id
     RETURNING
         m.id, m.action_type, m.aggregate_type, m.aggregate_id,
-        m.payload, m.tenant_id, m.correlation_id,
+        m.payload, m.client_id, m.correlation_id,
         m.retry_count, m.max_retries, m.sequence_number, m.created_at;
 END;
 $$;

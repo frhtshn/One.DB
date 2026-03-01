@@ -1,15 +1,15 @@
 -- =============================================
--- Tablo: billing.tenant_commission_aggregates
+-- Tablo: billing.client_commission_aggregates
 -- Açıklama: Dönem içi kümülatif GGR/NGR toplamları
 -- Worker her işlemde bu tabloyu günceller (upsert)
 -- Kademeli komisyon hesaplaması için dönem içi toplam takibi
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_commission_aggregates CASCADE;
+DROP TABLE IF EXISTS billing.client_commission_aggregates CASCADE;
 
-CREATE TABLE billing.tenant_commission_aggregates (
+CREATE TABLE billing.client_commission_aggregates (
     id bigserial PRIMARY KEY,                              -- Benzersiz kayıt kimliği
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
     provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     product_code varchar(30) NOT NULL,                     -- Ürün kodu: GAME, SPORTS
 
@@ -51,14 +51,14 @@ CREATE TABLE billing.tenant_commission_aggregates (
 
 );
 
-COMMENT ON TABLE billing.tenant_commission_aggregates IS 'Cumulative GGR/NGR totals within billing periods updated by workers for tiered commission calculations';
+COMMENT ON TABLE billing.client_commission_aggregates IS 'Cumulative GGR/NGR totals within billing periods updated by workers for tiered commission calculations';
 
 -- Worker upsert örneği:
--- INSERT INTO billing.tenant_commission_aggregates (...)
+-- INSERT INTO billing.client_commission_aggregates (...)
 -- VALUES (...)
--- ON CONFLICT (tenant_id, provider_id, product_code, period_key, currency)
+-- ON CONFLICT (client_id, provider_id, product_code, period_key, currency)
 -- DO UPDATE SET
---   total_bet = tenant_commission_aggregates.total_bet + EXCLUDED.total_bet,
---   total_ggr = tenant_commission_aggregates.total_ggr + EXCLUDED.total_ggr,
+--   total_bet = client_commission_aggregates.total_bet + EXCLUDED.total_bet,
+--   total_ggr = client_commission_aggregates.total_ggr + EXCLUDED.total_ggr,
 --   ...
 --   updated_at = now();

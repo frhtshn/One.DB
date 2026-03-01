@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Game Schema Indexes
+-- Client Game Schema Indexes
 -- =============================================
 
 -- game_settings - Temel indexler

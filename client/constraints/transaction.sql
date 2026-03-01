@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Transaction Schema Foreign Key Constraints
+-- Client Transaction Schema Foreign Key Constraints
 -- =============================================
 -- NOT: transactions tablosu PARTITION BY RANGE (created_at) ile partitioned.
 -- PK artık (id, created_at) composite. Bu nedenle sadece transactions(id)

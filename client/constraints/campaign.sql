@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Campaign Schema Constraints
+-- Client Affiliate - Campaign Schema Constraints
 -- =============================================
 
 -- campaigns -> traffic_sources

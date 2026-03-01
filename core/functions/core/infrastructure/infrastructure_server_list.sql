@@ -43,9 +43,9 @@ BEGIN
             'serverType', s.server_type,
             'serverPurpose', s.server_purpose,
             'specs', s.specs,
-            'maxTenants', s.max_tenants,
-            'currentTenants', s.current_tenants,
-            'availableSlots', GREATEST(s.max_tenants - s.current_tenants, 0),
+            'maxClients', s.max_clients,
+            'currentClients', s.current_clients,
+            'availableSlots', GREATEST(s.max_clients - s.current_clients, 0),
             'status', s.status,
             'healthStatus', s.health_status,
             'lastHealthAt', s.last_health_at
@@ -56,7 +56,7 @@ BEGIN
     WHERE (p_region IS NULL OR s.region = p_region)
       AND (p_server_type IS NULL OR s.server_type = p_server_type)
       AND (p_status IS NULL OR s.status = p_status)
-      AND (p_has_capacity IS NULL OR p_has_capacity = false OR s.current_tenants < s.max_tenants);
+      AND (p_has_capacity IS NULL OR p_has_capacity = false OR s.current_clients < s.max_clients);
 
     RETURN v_result;
 END;

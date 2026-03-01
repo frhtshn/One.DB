@@ -31,4 +31,4 @@ $$;
 
 COMMENT ON FUNCTION catalog.navigation_template_lookup() IS
 'Returns navigation template list for dropdowns.
-Used in tenant_navigation_init_from_template for template selection.';
+Used in client_navigation_init_from_template for template selection.';

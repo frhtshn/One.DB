@@ -2,9 +2,9 @@
 -- USER_LIST: Kullanıcı listesi (IDOR Korumalı, CTE Optimized)
 -- ================================================================
 -- Erişim Kuralları:
---   - Platform Admin: Her şeyi görebilir (p_tenant_id NULL = tümü)
---   - CompanyAdmin: Sadece kendi şirketi (p_tenant_id NULL = tüm şirket)
---   - TenantAdmin: Sadece kendi tenant'ları (p_tenant_id zorunlu)
+--   - Platform Admin: Her şeyi görebilir (p_client_id NULL = tümü)
+--   - CompanyAdmin: Sadece kendi şirketi (p_client_id NULL = tüm şirket)
+--   - ClientAdmin: Sadece kendi client'ları (p_client_id zorunlu)
 --   - Diğerleri: ERİŞİM YOK
 -- Güvenlik:
 --   - Kilitli caller erişemez
@@ -17,7 +17,7 @@ DROP FUNCTION IF EXISTS security.user_list(BIGINT, BIGINT, BIGINT, INT, INT, TEX
 CREATE OR REPLACE FUNCTION security.user_list(
     p_caller_id BIGINT,
     p_company_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL,
+    p_client_id BIGINT DEFAULT NULL,
     p_page INT DEFAULT 1,
     p_page_size INT DEFAULT 10,
     p_search TEXT DEFAULT NULL,
@@ -34,7 +34,7 @@ DECLARE
     v_caller_company_id BIGINT;
     v_caller_has_platform_role BOOLEAN;
     v_caller_is_company_admin BOOLEAN;
-    v_caller_tenant_ids BIGINT[];
+    v_caller_client_ids BIGINT[];
     v_offset INT;
     v_total_count BIGINT;
     v_items JSONB;
@@ -51,12 +51,12 @@ BEGIN
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.is_platform_role = TRUE
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.is_platform_role = TRUE
         ),
         EXISTS(
             SELECT 1 FROM security.user_roles ur2
             JOIN security.roles r2 ON ur2.role_id = r2.id AND r2.status = 1
-            WHERE ur2.user_id = u.id AND ur2.tenant_id IS NULL AND r2.code = 'companyadmin'
+            WHERE ur2.user_id = u.id AND ur2.client_id IS NULL AND r2.code = 'companyadmin'
         )
     INTO v_caller_company_id, v_caller_has_platform_role, v_caller_is_company_admin
     FROM security.users u
@@ -88,24 +88,24 @@ BEGIN
         v_effective_company_id := v_caller_company_id;
         v_can_see_global_roles := FALSE;
 
-        SELECT ARRAY_AGG(DISTINCT ur.tenant_id)
-        INTO v_caller_tenant_ids
+        SELECT ARRAY_AGG(DISTINCT ur.client_id)
+        INTO v_caller_client_ids
         FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
         WHERE ur.user_id = p_caller_id
-          AND ur.tenant_id IS NOT NULL
-          AND r.code = 'tenantadmin';
+          AND ur.client_id IS NOT NULL
+          AND r.code = 'clientadmin';
 
-        IF v_caller_tenant_ids IS NULL THEN
+        IF v_caller_client_ids IS NULL THEN
             RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.denied';
         END IF;
 
-        IF p_tenant_id IS NULL THEN
+        IF p_client_id IS NULL THEN
             RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.field.missing';
         END IF;
 
-        IF NOT (p_tenant_id = ANY(v_caller_tenant_ids)) THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.tenant-scope-denied';
+        IF NOT (p_client_id = ANY(v_caller_client_ids)) THEN
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.access.client-scope-denied';
         END IF;
     END IF;
 
@@ -139,8 +139,8 @@ BEGIN
     FROM security.users u
     WHERE u.company_id = v_effective_company_id
       AND (p_status IS NULL OR u.status = p_status)
-      AND (p_tenant_id IS NULL OR EXISTS (
-          SELECT 1 FROM security.user_roles ur WHERE ur.user_id = u.id AND ur.tenant_id = p_tenant_id
+      AND (p_client_id IS NULL OR EXISTS (
+          SELECT 1 FROM security.user_roles ur WHERE ur.user_id = u.id AND ur.client_id = p_client_id
       ))
       AND (p_search IS NULL OR p_search = '' OR (
           u.email ILIKE '%' || p_search || '%' OR
@@ -162,7 +162,7 @@ BEGIN
             WHERE u.company_id = $1
               AND ($2 IS NULL OR u.status = $2)
               AND ($3 IS NULL OR EXISTS (
-                  SELECT 1 FROM security.user_roles ur WHERE ur.user_id = u.id AND ur.tenant_id = $3
+                  SELECT 1 FROM security.user_roles ur WHERE ur.user_id = u.id AND ur.client_id = $3
               ))
               AND ($4 IS NULL OR $4 = '''' OR (
                   u.email ILIKE ''%%'' || $4 || ''%%'' OR
@@ -182,15 +182,15 @@ BEGIN
                         ''roleCode'', r.code,
                         ''roleName'', r.name
                     )
-                ) FILTER (WHERE ur.tenant_id IS NULL) AS global_roles,
+                ) FILTER (WHERE ur.client_id IS NULL) AS global_roles,
                 jsonb_agg(
                     jsonb_build_object(
-                        ''tenantId'', ur.tenant_id,
+                        ''clientId'', ur.client_id,
                         ''roleId'', r.id,
                         ''roleCode'', r.code,
                         ''roleName'', r.name
                     )
-                ) FILTER (WHERE ur.tenant_id IS NOT NULL AND ($3 IS NULL OR ur.tenant_id = $3)) AS tenant_roles
+                ) FILTER (WHERE ur.client_id IS NOT NULL AND ($3 IS NULL OR ur.client_id = $3)) AS client_roles
             FROM security.user_roles ur
             JOIN security.roles r ON r.id = ur.role_id AND r.status = 1
             WHERE ur.user_id IN (SELECT id FROM filtered_users)
@@ -229,7 +229,7 @@ BEGIN
                 ''requirePasswordChange'', fu.require_password_change,
                 ''createdAt'', fu.created_at,
                 ''roles'', CASE WHEN $7 THEN COALESCE(ura.global_roles, ''[]''::jsonb) ELSE ''[]''::jsonb END,
-                ''tenantRoles'', COALESCE(ura.tenant_roles, ''[]''::jsonb),
+                ''clientRoles'', COALESCE(ura.client_roles, ''[]''::jsonb),
                 ''primaryDepartment'', uda.primary_department
             ) ORDER BY fu.%s %s
         ), ''[]''::jsonb)
@@ -240,7 +240,7 @@ BEGIN
         v_sort_column, v_sort_dir
     )
     INTO v_items
-    USING v_effective_company_id, p_status, p_tenant_id, p_search,
+    USING v_effective_company_id, p_status, p_client_id, p_search,
           p_page_size, v_offset, v_can_see_global_roles;
 
     -- ========================================
@@ -259,6 +259,6 @@ $$;
 COMMENT ON FUNCTION security.user_list(BIGINT, BIGINT, BIGINT, INT, INT, TEXT, SMALLINT, TEXT, TEXT) IS
 'Returns paginated user list with IDOR protection (CTE optimized).
 Includes primaryDepartment (JSONB multi-language name) for each user.
-Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (own tenants).
-p_tenant_id NULL means all tenants for Platform/CompanyAdmin, required for TenantAdmin.
+Access: Platform Admin (all), CompanyAdmin (own company), ClientAdmin (own clients).
+p_client_id NULL means all clients for Platform/CompanyAdmin, required for ClientAdmin.
 Locked callers are rejected. Roles and departments fetched in single pass (no N+1).';

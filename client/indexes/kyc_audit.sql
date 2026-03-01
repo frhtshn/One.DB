@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Audit KYC Schema Indexes
+-- Client Audit KYC Schema Indexes
 -- player_screening_results, player_risk_assessments
 -- =============================================
 

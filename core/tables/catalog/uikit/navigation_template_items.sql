@@ -17,7 +17,7 @@ CREATE TABLE catalog.navigation_template_items (
 
     icon varchar(50),
 
-    -- Hedef (Master Data - Tenant değiştiremez)
+    -- Hedef (Master Data - Client değiştiremez)
     target_type varchar(20) NOT NULL DEFAULT 'internal',
     target_url varchar(255),
     target_action varchar(50),
@@ -27,11 +27,11 @@ CREATE TABLE catalog.navigation_template_items (
     display_order int DEFAULT 0,
 
     -- Kurallar
-    is_locked boolean DEFAULT true,                       -- Tenant bunu silebilir mi? (True = Silemez)
-    is_mandatory boolean DEFAULT true,                    -- Tenant bunu gizleyebilir mi? (True = Gizleyemez)
+    is_locked boolean DEFAULT true,                       -- Client bunu silebilir mi? (True = Silemez)
+    is_mandatory boolean DEFAULT true,                    -- Client bunu gizleyebilir mi? (True = Gizleyemez)
 
     created_at timestamp NOT NULL DEFAULT now(),
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE catalog.navigation_template_items IS 'Master navigation items defined in templates. Copied to tenant_navigation on setup.';
+COMMENT ON TABLE catalog.navigation_template_items IS 'Master navigation items defined in templates. Copied to client_navigation on setup.';

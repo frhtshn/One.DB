@@ -1,6 +1,6 @@
 -- ================================================================
 -- PERMISSION_TEMPLATE_ASSIGNMENT_LIST: User'in template atamalari
--- IDOR: Company + Tenant scope kontrolu
+-- IDOR: Company + Client scope kontrolu
 -- Returns: JSONB - aktif atamalar listesi
 -- ================================================================
 
@@ -9,7 +9,7 @@ DROP FUNCTION IF EXISTS security.permission_template_assignment_list(BIGINT, BIG
 CREATE OR REPLACE FUNCTION security.permission_template_assignment_list(
     p_caller_id BIGINT,
     p_user_id BIGINT,
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -42,7 +42,7 @@ BEGIN
     SELECT EXISTS(
         SELECT 1 FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id
-        WHERE ur.user_id = p_caller_id AND ur.tenant_id IS NULL AND r.is_platform_role = TRUE
+        WHERE ur.user_id = p_caller_id AND ur.client_id IS NULL AND r.is_platform_role = TRUE
     ) INTO v_has_platform_role;
 
     IF NOT v_has_platform_role THEN
@@ -59,7 +59,7 @@ BEGIN
             'id', pta.id,
             'templateId', pta.template_id,
             'templateSnapshot', pta.template_snapshot,
-            'tenantId', pta.tenant_id,
+            'clientId', pta.client_id,
             'assignedPermissions', pta.assigned_permissions,
             'skippedPermissions', pta.skipped_permissions,
             'assignedBy', pta.assigned_by,
@@ -75,7 +75,7 @@ BEGIN
     FROM security.permission_template_assignments pta
     WHERE pta.user_id = p_user_id
       AND pta.removed_at IS NULL
-      AND (p_tenant_id IS NULL OR pta.tenant_id = p_tenant_id);
+      AND (p_client_id IS NULL OR pta.client_id = p_client_id);
 
     RETURN jsonb_build_object(
         'userId', p_user_id,

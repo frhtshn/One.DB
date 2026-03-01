@@ -2,7 +2,7 @@
 -- Player Risk Assessments (Risk Değerlendirmeleri)
 -- Oyuncu risk skorlama ve değerlendirme geçmişi
 -- AML/KYC risk bazlı yaklaşım için
--- TENANT_AUDIT DB - 5-10 yıl retention
+-- CLIENT_AUDIT DB - 5-10 yıl retention
 -- =============================================
 
 DROP TABLE IF EXISTS kyc_audit.player_risk_assessments CASCADE;
@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS kyc_audit.player_risk_assessments CASCADE;
 CREATE TABLE kyc_audit.player_risk_assessments (
     id bigserial PRIMARY KEY,
 
-    player_id bigint NOT NULL,                    -- Oyuncu ID (tenant DB referans)
+    player_id bigint NOT NULL,                    -- Oyuncu ID (client DB referans)
 
     -- Değerlendirme tipi
     assessment_type varchar(30) NOT NULL,         -- Değerlendirme türü

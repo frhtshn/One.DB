@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS campaign.campaigns CASCADE;
 
 CREATE TABLE campaign.campaigns (
     id bigserial PRIMARY KEY,
-    tenant_id bigint,  -- NULL = platform seviyesi, değer = tenant'a ait
+    client_id bigint,  -- NULL = platform seviyesi, değer = client'a ait
     campaign_code varchar(100) NOT NULL,
     campaign_name varchar(255) NOT NULL,
     description text,

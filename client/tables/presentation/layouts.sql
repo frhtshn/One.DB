@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: presentation.layouts
 -- Açıklama: Sayfa yerleşimleri ve widget tanımları.
---           Core'dan taşındı (tenant_id kaldırıldı).
+--           Core'dan taşındı (client_id kaldırıldı).
 --           JSONB structure ile FE render optimizasyonu.
 -- =============================================
 
@@ -33,4 +33,4 @@ CREATE TABLE presentation.layouts (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE presentation.layouts IS 'Defines widget placements for tenant pages or global layouts using JSONB structure.';
+COMMENT ON TABLE presentation.layouts IS 'Defines widget placements for client pages or global layouts using JSONB structure.';

@@ -10,7 +10,7 @@ CREATE TABLE security.user_permission_overrides (
     id BIGSERIAL PRIMARY KEY,                              -- Kayıt ID
     user_id BIGINT NOT NULL,                               -- Kullanıcı ID (FK: security.users)
     permission_id BIGINT NOT NULL,                         -- Yetki ID (FK: security.permissions)
-    tenant_id BIGINT,                                      -- Tenant ID (FK: core.tenants - opsiyonel)
+    client_id BIGINT,                                      -- Client ID (FK: core.clients - opsiyonel)
     context_id BIGINT,                                     -- Context ID (FK: presentation.contexts - NULL = global override)
     is_granted BOOLEAN NOT NULL DEFAULT TRUE,              -- Verildi (True) / Yasaklandı (False)
     reason VARCHAR(500),                                   -- Sebep

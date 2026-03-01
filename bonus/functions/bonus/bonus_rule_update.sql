@@ -39,7 +39,7 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.bonus-rule.id-required';
     END IF;
 
-    SELECT id, tenant_id, rule_code INTO v_current
+    SELECT id, client_id, rule_code INTO v_current
     FROM bonus.bonus_rules WHERE id = p_id;
 
     IF NOT FOUND THEN
@@ -50,7 +50,7 @@ BEGIN
     IF p_rule_code IS NOT NULL AND UPPER(TRIM(p_rule_code)) != v_current.rule_code THEN
         IF EXISTS (
             SELECT 1 FROM bonus.bonus_rules
-            WHERE tenant_id IS NOT DISTINCT FROM v_current.tenant_id
+            WHERE client_id IS NOT DISTINCT FROM v_current.client_id
               AND rule_code = UPPER(TRIM(p_rule_code))
               AND id != p_id
         ) THEN

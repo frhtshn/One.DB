@@ -5,12 +5,12 @@
 -- Partitioned tablo: created_at üzerinden otomatik partition pruning
 -- ================================================================
 
-DROP FUNCTION IF EXISTS backoffice.auth_audit_create(BIGINT,BIGINT,BIGINT,VARCHAR,TEXT,VARCHAR,VARCHAR,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
+DROP FUNCTION IF EXISTS backoffice_audit.auth_audit_create(BIGINT,BIGINT,BIGINT,VARCHAR,TEXT,VARCHAR,VARCHAR,VARCHAR,CHAR,VARCHAR,CHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,DECIMAL,DECIMAL,VARCHAR,INTEGER,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,VARCHAR,BOOLEAN,BOOLEAN,BOOLEAN,BOOLEAN,VARCHAR);
 
-CREATE OR REPLACE FUNCTION backoffice.auth_audit_create(
+CREATE OR REPLACE FUNCTION backoffice_audit.auth_audit_create(
     p_user_id         BIGINT,
     p_company_id      BIGINT,
-    p_tenant_id       BIGINT,
+    p_client_id       BIGINT,
     p_event_type      VARCHAR(50),
     p_event_data      TEXT DEFAULT NULL,
     p_ip_address      VARCHAR(50) DEFAULT NULL,
@@ -46,8 +46,8 @@ AS $$
 DECLARE
     v_id BIGINT; -- Oluşturulan kimlik denetim logunun ID'si
 BEGIN
-    INSERT INTO backoffice.auth_audit_log (
-        user_id, company_id, tenant_id, event_type,
+    INSERT INTO backoffice_audit.auth_audit_log (
+        user_id, company_id, client_id, event_type,
         event_data, ip_address, user_agent,
         country, country_code, continent, continent_code,
         region, region_name, city, district, zip,
@@ -57,7 +57,7 @@ BEGIN
         success, error_message
     )
     VALUES (
-        p_user_id, p_company_id, p_tenant_id, p_event_type,
+        p_user_id, p_company_id, p_client_id, p_event_type,
         CASE WHEN p_event_data IS NOT NULL THEN p_event_data::JSONB ELSE NULL END,
         p_ip_address, p_user_agent,
         p_country, p_country_code, p_continent, p_continent_code,
@@ -73,4 +73,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_create IS 'Adds an auth audit log entry with full GeoIP data. Returns BIGINT.';
+COMMENT ON FUNCTION backoffice_audit.auth_audit_create IS 'Adds an auth audit log entry with full GeoIP data. Returns BIGINT.';

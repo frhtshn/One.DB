@@ -17,7 +17,7 @@ CREATE TABLE tracking.promo_codes (
     campaign_id bigint,                                    -- Bağlı kampanya ID
 
     -- Bonus/Promosyon (opsiyonel)
-    bonus_id bigint,                                       -- Bağlı bonus ID (tenant bonus tablosu)
+    bonus_id bigint,                                       -- Bağlı bonus ID (client bonus tablosu)
     bonus_description varchar(255),                        -- Bonus açıklaması
 
     -- Kullanım Limitleri

@@ -1,27 +1,27 @@
 <#
 .SYNOPSIS
-    Nucleo.DB - Tenant Provisioning Script
-    Bir veya birden fazla tenant için tüm veritabanlarını oluşturur ve deploy eder.
+    OneDB - Client Provisioning Script
+    Bir veya birden fazla client için tüm veritabanlarını oluşturur ve deploy eder.
 
 .DESCRIPTION
     Bu script aşağıdaki işlemleri yapar:
-    1. Her tenant için 5 veritabanı oluşturur: tenant_{code}, tenant_log_{code}, tenant_audit_{code},
-       tenant_report_{code}, tenant_affiliate_{code}
-    2. Tüm deploy'ları paralel çalıştırır (tenant'lar arası + DB'ler arası)
-    3. Hata durumunda tenant bazında rollback yapar
+    1. Her client için tek birleşik veritabanı oluşturur: client_{code}
+       (30 schema: core business + log + audit + report + affiliate)
+    2. Tüm deploy'ları paralel çalıştırır (client'lar arası)
+    3. Hata durumunda client bazında rollback yapar
 
 .EXAMPLE
-    .\deploy_new_tenant.ps1 -TenantCode "acme"
-    .\deploy_new_tenant.ps1 -TenantCode "1","2","3"
-    .\deploy_new_tenant.ps1 -TenantCode "1","2","3" -Reset
-    .\deploy_new_tenant.ps1 -TenantCode "acme" -Dry
-    .\deploy_new_tenant.ps1 -TenantCode "acme" -SkipIfExists
-    .\deploy_new_tenant.ps1 -TenantCode "acme" -Reset -Dry
+    .\deploy_new_client.ps1 -ClientCode "acme"
+    .\deploy_new_client.ps1 -ClientCode "1","2","3"
+    .\deploy_new_client.ps1 -ClientCode "1","2","3" -Reset
+    .\deploy_new_client.ps1 -ClientCode "acme" -Dry
+    .\deploy_new_client.ps1 -ClientCode "acme" -SkipIfExists
+    .\deploy_new_client.ps1 -ClientCode "acme" -Reset -Dry
 #>
 
 param(
     [Parameter(Mandatory = $true, Position = 0)]
-    [string[]]$TenantCode,
+    [string[]]$ClientCode,
 
     [switch]$Reset,
     [switch]$Dry,
@@ -32,9 +32,9 @@ param(
 # VALIDATION
 # ============================================================
 
-foreach ($code in $TenantCode) {
+foreach ($code in $ClientCode) {
     if ($code -notmatch '^[a-z0-9_]+$') {
-        Write-Host "  [XX] Gecersiz tenant kodu: '$code' (sadece a-z, 0-9, _ kullanilabilir)" -ForegroundColor Red
+        Write-Host "  [XX] Gecersiz client kodu: '$code' (sadece a-z, 0-9, _ kullanilabilir)" -ForegroundColor Red
         exit 1
     }
 }
@@ -56,14 +56,10 @@ $env:PGPASSWORD = $PASS
 # YARDIMCI FONKSİYONLAR
 # ============================================================
 
-function Get-TenantDatabases {
+function Get-ClientDatabases {
     param([string]$Code)
     return @(
-        @{ Name = "tenant_$Code";           DeployFile = "deploy_tenant.sql" },
-        @{ Name = "tenant_log_$Code";       DeployFile = "deploy_tenant_log.sql" },
-        @{ Name = "tenant_audit_$Code";     DeployFile = "deploy_tenant_audit.sql" },
-        @{ Name = "tenant_report_$Code";    DeployFile = "deploy_tenant_report.sql" },
-        @{ Name = "tenant_affiliate_$Code"; DeployFile = "deploy_tenant_affiliate.sql" }
+        @{ Name = "client_$Code"; DeployFile = "deploy_client.sql" }
     )
 }
 
@@ -96,11 +92,11 @@ function Remove-Database {
 
 Write-Host ""
 Write-Host "  ============================================" -ForegroundColor Blue
-Write-Host "  NUCLEO.DB - TENANT PROVISIONING (PARALLEL)" -ForegroundColor Blue
+Write-Host "  ONEDB - CLIENT PROVISIONING (PARALLEL)" -ForegroundColor Blue
 Write-Host "  ============================================" -ForegroundColor Blue
 Write-Host ""
-Write-Host "  Tenant Codes : $($TenantCode -join ', ')" -ForegroundColor Cyan
-Write-Host "  Toplam       : $($TenantCode.Count) tenant" -ForegroundColor Cyan
+Write-Host "  Client Codes : $($ClientCode -join ', ')" -ForegroundColor Cyan
+Write-Host "  Toplam       : $($ClientCode.Count) client" -ForegroundColor Cyan
 Write-Host "  Server       : ${HOST_IP}:${PORT}" -ForegroundColor Cyan
 if ($Reset) {
     Write-Host "  Mode         : RESET (sil + yeniden olustur)" -ForegroundColor Red
@@ -119,7 +115,7 @@ if (-not (Get-Command psql -ErrorAction SilentlyContinue)) {
 }
 
 # Deploy dosyaları var mı?
-$deployFiles = @("deploy_tenant.sql", "deploy_tenant_log.sql", "deploy_tenant_audit.sql", "deploy_tenant_report.sql", "deploy_tenant_affiliate.sql")
+$deployFiles = @("deploy_client.sql")
 $missingFiles = @()
 foreach ($f in $deployFiles) {
     $filePath = Join-Path $PSScriptRoot $f
@@ -147,13 +143,13 @@ Write-Host "  [OK] Baglanti basarili" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================
-# RESET ONAY (tum tenant'lar icin tek seferde)
+# RESET ONAY (tum client'lar icin tek seferde)
 # ============================================================
 
 if ($Reset) {
     $allExistingDbs = @()
-    foreach ($code in $TenantCode) {
-        $dbs = Get-TenantDatabases $code
+    foreach ($code in $ClientCode) {
+        $dbs = Get-ClientDatabases $code
         foreach ($db in $dbs) {
             if (Test-DatabaseExists $db.Name) {
                 $allExistingDbs += $db.Name
@@ -197,10 +193,10 @@ if ($Reset) {
 
 if ($Dry -and -not $Reset) {
     Write-Host "  Olusturulacak veritabanlari:" -ForegroundColor White
-    foreach ($code in $TenantCode) {
+    foreach ($code in $ClientCode) {
         Write-Host ""
         Write-Host "  [$code]" -ForegroundColor Cyan
-        $dbs = Get-TenantDatabases $code
+        $dbs = Get-ClientDatabases $code
         foreach ($db in $dbs) {
             $exists = Test-DatabaseExists $db.Name
             if ($exists -and $SkipIfExists) {
@@ -224,13 +220,13 @@ if ($Dry -and -not $Reset) {
 # GOREV LISTESI OLUSTUR
 # ============================================================
 
-# Her (tenant, db) cifti icin gorev listesi
+# Her (client, db) cifti icin gorev listesi
 $tasks          = @()  # deploy edilecekler
 $skippedTasks   = @()  # atlananlar
-$blockedTenants = @()  # mevcut DB yuzunden bloklanan tenant'lar
+$blockedClients = @()  # mevcut DB yuzunden bloklanan client'lar
 
-foreach ($code in $TenantCode) {
-    $dbs = Get-TenantDatabases $code
+foreach ($code in $ClientCode) {
+    $dbs = Get-ClientDatabases $code
 
     # Mevcut DB kontrolu
     $existingDbs = @()
@@ -245,27 +241,27 @@ foreach ($code in $TenantCode) {
         if ($SkipIfExists) {
             foreach ($db in $dbs) {
                 if ($existingDbs -contains $db.Name) {
-                    $skippedTasks += @{ TenantCode = $code; DbName = $db.Name; DeployFile = $db.DeployFile }
+                    $skippedTasks += @{ ClientCode = $code; DbName = $db.Name; DeployFile = $db.DeployFile }
                 }
                 else {
-                    $tasks += @{ TenantCode = $code; DbName = $db.Name; DeployFile = $db.DeployFile }
+                    $tasks += @{ ClientCode = $code; DbName = $db.Name; DeployFile = $db.DeployFile }
                 }
             }
         }
         else {
-            Write-Host "  [XX] Tenant '$code' - asagidaki DB'ler zaten mevcut:" -ForegroundColor Red
+            Write-Host "  [XX] Client '$code' - asagidaki DB'ler zaten mevcut:" -ForegroundColor Red
             foreach ($e in $existingDbs) {
                 Write-Host "       - $e" -ForegroundColor Red
             }
             Write-Host "       -Reset veya -SkipIfExists ile tekrar deneyin." -ForegroundColor Gray
             Write-Host ""
-            $blockedTenants += $code
+            $blockedClients += $code
             continue
         }
     }
     else {
         foreach ($db in $dbs) {
-            $tasks += @{ TenantCode = $code; DbName = $db.Name; DeployFile = $db.DeployFile }
+            $tasks += @{ ClientCode = $code; DbName = $db.Name; DeployFile = $db.DeployFile }
         }
     }
 }
@@ -329,7 +325,7 @@ Write-Host ""
 $jobs = @()
 
 foreach ($task in $tasks) {
-    $jobName = "$($task.TenantCode)::$($task.DbName)"
+    $jobName = "$($task.ClientCode)::$($task.DbName)"
 
     $job = Start-Job -Name $jobName -ScriptBlock {
         param($HostIP, $Port, $User, $Pass, $DbName, $SqlFile, $ScriptRoot)
@@ -382,13 +378,13 @@ do {
                 $result = Receive-Job $j
                 $exitCode = if ($result -and $null -ne $result.ExitCode) { $result.ExitCode } else { 1 }
 
-                $jobResults[$key] = @{ TenantCode = $t.TenantCode; ExitCode = $exitCode }
+                $jobResults[$key] = @{ ClientCode = $t.ClientCode; ExitCode = $exitCode }
 
                 if ($exitCode -eq 0) {
-                    Write-Host "  [OK] [$done/$totalJobs] $($t.TenantCode)::$($t.DbName)" -ForegroundColor Green
+                    Write-Host "  [OK] [$done/$totalJobs] $($t.ClientCode)::$($t.DbName)" -ForegroundColor Green
                 }
                 else {
-                    Write-Host "  [XX] [$done/$totalJobs] $($t.TenantCode)::$($t.DbName)" -ForegroundColor Red
+                    Write-Host "  [XX] [$done/$totalJobs] $($t.ClientCode)::$($t.DbName)" -ForegroundColor Red
                     if ($result.Errors) {
                         foreach ($line in $result.Errors) {
                             Write-Host "       $line" -ForegroundColor Yellow
@@ -397,8 +393,8 @@ do {
                 }
             }
             else {
-                $jobResults[$key] = @{ TenantCode = $t.TenantCode; ExitCode = 1 }
-                Write-Host "  [XX] [$done/$totalJobs] $($t.TenantCode)::$($t.DbName) (job state: $($j.State))" -ForegroundColor Red
+                $jobResults[$key] = @{ ClientCode = $t.ClientCode; ExitCode = 1 }
+                Write-Host "  [XX] [$done/$totalJobs] $($t.ClientCode)::$($t.DbName) (job state: $($j.State))" -ForegroundColor Red
             }
 
             Remove-Job $j -Force -ErrorAction SilentlyContinue
@@ -412,38 +408,38 @@ Write-Host ""
 # PHASE 3: SONUC ANALIZI + ROLLBACK
 # ============================================================
 
-# Tenant bazinda basari/basarisizlik
-$tenantResults = @{}
-foreach ($code in $TenantCode) {
-    if ($blockedTenants -contains $code) { continue }
-    $tenantResults[$code] = @{ Success = $true; FailedDbs = @(); CreatedDbs = @() }
+# Client bazinda basari/basarisizlik
+$clientResults = @{}
+foreach ($code in $ClientCode) {
+    if ($blockedClients -contains $code) { continue }
+    $clientResults[$code] = @{ Success = $true; FailedDbs = @(); CreatedDbs = @() }
 }
 
 foreach ($task in $tasks) {
-    $code = $task.TenantCode
-    if (-not $tenantResults.ContainsKey($code)) { continue }
+    $code = $task.ClientCode
+    if (-not $clientResults.ContainsKey($code)) { continue }
 
-    $tenantResults[$code].CreatedDbs += $task.DbName
+    $clientResults[$code].CreatedDbs += $task.DbName
 
     $jr = $jobResults[$task.DbName]
     if ($jr -and $jr.ExitCode -ne 0) {
-        $tenantResults[$code].Success = $false
-        $tenantResults[$code].FailedDbs += $task.DbName
+        $clientResults[$code].Success = $false
+        $clientResults[$code].FailedDbs += $task.DbName
     }
 }
 
-# Basarisiz tenant'lari rollback
-$successTenants = @()
-$failedTenants  = @() + $blockedTenants
+# Basarisiz client'lari rollback
+$successClients = @()
+$failedClients  = @() + $blockedClients
 
-foreach ($code in $tenantResults.Keys) {
-    $tr = $tenantResults[$code]
+foreach ($code in $clientResults.Keys) {
+    $tr = $clientResults[$code]
 
     if ($tr.Success) {
-        $successTenants += $code
+        $successClients += $code
     }
     else {
-        $failedTenants += $code
+        $failedClients += $code
         Write-Host "  [..] ROLLBACK '$code' - basarisiz DB'ler nedeniyle tum DB'leri siliniyor..." -ForegroundColor Yellow
 
         foreach ($dbName in $tr.CreatedDbs) {
@@ -469,38 +465,38 @@ Write-Host ""
 Write-Host "  Sure: $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) saniye" -ForegroundColor Cyan
 Write-Host ""
 
-if ($successTenants.Count -gt 0) {
-    Write-Host "  Basarili ($($successTenants.Count)):" -ForegroundColor Green
-    foreach ($t in $successTenants) {
+if ($successClients.Count -gt 0) {
+    Write-Host "  Basarili ($($successClients.Count)):" -ForegroundColor Green
+    foreach ($t in $successClients) {
         Write-Host "    [OK] $t" -ForegroundColor Green
     }
 }
 
 if ($skippedTasks.Count -gt 0) {
-    $skippedTenants = $skippedTasks | ForEach-Object { $_.TenantCode } | Sort-Object -Unique
+    $skippedClients = $skippedTasks | ForEach-Object { $_.ClientCode } | Sort-Object -Unique
     Write-Host "  Atlanan DB'ler:" -ForegroundColor Yellow
     foreach ($st in $skippedTasks) {
         Write-Host "    [--] $($st.DbName) (zaten mevcuttu)" -ForegroundColor Yellow
     }
 }
 
-if ($failedTenants.Count -gt 0) {
-    Write-Host "  Basarisiz ($($failedTenants.Count)):" -ForegroundColor Red
-    foreach ($t in $failedTenants) {
+if ($failedClients.Count -gt 0) {
+    Write-Host "  Basarisiz ($($failedClients.Count)):" -ForegroundColor Red
+    foreach ($t in $failedClients) {
         Write-Host "    [XX] $t" -ForegroundColor Red
     }
 }
 
 Write-Host ""
 
-if ($failedTenants.Count -gt 0) {
-    Write-Host "  Basarisiz tenant'lar icin: -Reset veya -SkipIfExists ile tekrar deneyin." -ForegroundColor Gray
+if ($failedClients.Count -gt 0) {
+    Write-Host "  Basarisiz client'lar icin: -Reset veya -SkipIfExists ile tekrar deneyin." -ForegroundColor Gray
     Write-Host ""
     exit 1
 }
 
 Write-Host "  Sonraki adimlar:" -ForegroundColor White
-Write-Host "    1. Backend'de tenant kaydini olustur (core DB)" -ForegroundColor Gray
-Write-Host "    2. Tenant seed verilerini backend uzerinden yukle" -ForegroundColor Gray
+Write-Host "    1. Backend'de client kaydini olustur (core DB)" -ForegroundColor Gray
+Write-Host "    2. Client seed verilerini backend uzerinden yukle" -ForegroundColor Gray
 Write-Host "    3. Connection string'i yapilandir" -ForegroundColor Gray
 Write-Host ""

@@ -30,12 +30,12 @@ BEGIN
         SET status = 'retrying', updated_at = NOW()
         FROM candidates c
         WHERE m.id = c.id
-        RETURNING m.id, m.event_id, m.event_type, m.tenant_id, m.payload,
+        RETURNING m.id, m.event_id, m.event_type, m.client_id, m.payload,
                   m.retry_count, m.failure_category, m.original_event_id, m.correlation_id
     )
     SELECT COALESCE(jsonb_agg(jsonb_build_object(
         'id', id, 'eventId', event_id, 'eventType', event_type,
-        'tenantId', tenant_id, 'payload', payload,
+        'clientId', client_id, 'payload', payload,
         'retryCount', retry_count, 'failureCategory', failure_category,
         'originalEventId', original_event_id, 'correlationId', correlation_id
     )), '[]'::JSONB)

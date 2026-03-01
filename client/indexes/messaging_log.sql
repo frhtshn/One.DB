@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log - Messaging Schema Indexes
+-- Client Log - Messaging Schema Indexes
 -- =============================================
 
 -- message_delivery_logs

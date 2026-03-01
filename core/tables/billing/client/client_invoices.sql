@@ -1,15 +1,15 @@
 -- =============================================
--- Tablo: billing.tenant_invoices
--- Açıklama: Tenant'lara kesilen faturalar
--- Nucleo'nun whitelabel'lardan alacağı komisyon faturaları
+-- Tablo: billing.client_invoices
+-- Açıklama: Client'lara kesilen faturalar
+-- Sortis One'ın whitelabel'lardan alacağı komisyon faturaları
 -- Birden fazla komisyon kaydı tek faturada toplanabilir
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_invoices CASCADE;
+DROP TABLE IF EXISTS billing.client_invoices CASCADE;
 
-CREATE TABLE billing.tenant_invoices (
+CREATE TABLE billing.client_invoices (
     id bigserial PRIMARY KEY,                              -- Benzersiz fatura kimliği
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
 
     -- Fatura bilgileri
     invoice_number varchar(50) NOT NULL UNIQUE,            -- Benzersiz fatura numarası
@@ -55,4 +55,4 @@ CREATE TABLE billing.tenant_invoices (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
-COMMENT ON TABLE billing.tenant_invoices IS 'Invoices issued to tenants for commission charges with payment tracking, e-invoice integration, and cancellation support';
+COMMENT ON TABLE billing.client_invoices IS 'Invoices issued to clients for commission charges with payment tracking, e-invoice integration, and cancellation support';

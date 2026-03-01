@@ -28,8 +28,8 @@ CREATE TABLE core.infrastructure_servers (
 
     -- Kapasite
     specs JSONB DEFAULT '{}',                                     -- {"cpu": 8, "ram_gb": 32, "disk_gb": 500, "disk_type": "nvme"}
-    max_tenants INTEGER DEFAULT 10,                               -- Bu sunucuda max kaç tenant
-    current_tenants INTEGER DEFAULT 0,                            -- Mevcut tenant sayısı
+    max_clients INTEGER DEFAULT 10,                               -- Bu sunucuda max kaç client
+    current_clients INTEGER DEFAULT 0,                            -- Mevcut client sayısı
 
     -- Durum
     status VARCHAR(20) DEFAULT 'active',                          -- active, maintenance, full, decommissioned
@@ -43,4 +43,4 @@ CREATE TABLE core.infrastructure_servers (
     created_by BIGINT                                             -- Ekleyen kullanıcı
 );
 
-COMMENT ON TABLE core.infrastructure_servers IS 'Physical/virtual server inventory for tenant provisioning. Tracks capacity, health, and hosting type (dedicated/shared). Read by ProductionManager.';
+COMMENT ON TABLE core.infrastructure_servers IS 'Physical/virtual server inventory for client provisioning. Tracks capacity, health, and hosting type (dedicated/shared). Read by ProductionManager.';

@@ -2,8 +2,8 @@
 -- ADMIN_MESSAGE_DRAFT_UPDATE: Mesaj taslağını günceller
 -- Sadece draft durumundakiler güncellenebilir
 -- NULL parametreler mevcut değeri korur (COALESCE — partial update)
--- tenant_ids array olarak çoklu tenant destekler
--- Caller scope kontrolü: company_id ve tenant_ids erişim doğrulaması
+-- client_ids array olarak çoklu client destekler
+-- Caller scope kontrolü: company_id ve client_ids erişim doğrulaması
 -- Ownership kontrolü: sender_id != p_caller_id AND NOT p_is_admin → RAISE
 -- ================================================================
 
@@ -18,7 +18,7 @@ CREATE OR REPLACE FUNCTION messaging.admin_message_draft_update(
     p_message_type  VARCHAR(30) DEFAULT NULL,                 -- Mesaj tipi (NULL = değiştirme)
     p_priority      VARCHAR(10) DEFAULT NULL,                 -- Öncelik (NULL = değiştirme)
     p_company_id    BIGINT DEFAULT NULL,                      -- Şirket filtresi
-    p_tenant_ids    BIGINT[] DEFAULT NULL,                    -- Tenant filtresi (çoklu)
+    p_client_ids    BIGINT[] DEFAULT NULL,                    -- Client filtresi (çoklu)
     p_department_id BIGINT DEFAULT NULL,                      -- Departman filtresi
     p_role_id       BIGINT DEFAULT NULL,                      -- Rol filtresi
     p_scheduled_at  TIMESTAMPTZ DEFAULT NULL,                 -- Zamanlama
@@ -65,10 +65,10 @@ BEGIN
         PERFORM security.user_assert_access_company(p_caller_id, p_company_id);
     END IF;
 
-    -- Scope kontrolü: caller hedef tenant'lara erişebilir mi?
-    IF p_tenant_ids IS NOT NULL AND array_length(p_tenant_ids, 1) > 0 THEN
-        PERFORM security.user_assert_access_tenant(p_caller_id, tid)
-        FROM unnest(p_tenant_ids) AS tid;
+    -- Scope kontrolü: caller hedef client'lara erişebilir mi?
+    IF p_client_ids IS NOT NULL AND array_length(p_client_ids, 1) > 0 THEN
+        PERFORM security.user_assert_access_client(p_caller_id, tid)
+        FROM unnest(p_client_ids) AS tid;
     END IF;
 
     -- TÜM alanlara COALESCE: NULL = mevcut değer korunur
@@ -78,7 +78,7 @@ BEGIN
         message_type = COALESCE(p_message_type, message_type),
         priority = COALESCE(p_priority, priority),
         company_id = COALESCE(p_company_id, company_id),
-        tenant_ids = COALESCE(p_tenant_ids, tenant_ids),
+        client_ids = COALESCE(p_client_ids, client_ids),
         department_id = COALESCE(p_department_id, department_id),
         role_id = COALESCE(p_role_id, role_id),
         scheduled_at = COALESCE(p_scheduled_at, scheduled_at),

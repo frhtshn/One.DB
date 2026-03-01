@@ -1,18 +1,18 @@
 -- =============================================
--- Tablo: billing.monthly_invoices
+-- Tablo: billing_report.monthly_invoices
 -- Açıklama: Ay sonu faturalandırma ve komisyon hesaplama tablosu.
--- Tenant/Company bazlı net gelir ve kesintileri tutar.
+-- Client/Company bazlı net gelir ve kesintileri tutar.
 -- =============================================
 
-DROP TABLE IF EXISTS billing.monthly_invoices CASCADE;
+DROP TABLE IF EXISTS billing_report.monthly_invoices CASCADE;
 
-CREATE TABLE billing.monthly_invoices (
+CREATE TABLE billing_report.monthly_invoices (
     id bigserial,
     period_year int NOT NULL,                              -- Yıl (Örn: 2026)
     period_month int NOT NULL,                             -- Ay (Örn: 1)
 
     company_id bigint NOT NULL,
-    tenant_id bigint NOT NULL,
+    client_id bigint NOT NULL,
     currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Gelir Kalemleri
@@ -38,6 +38,6 @@ CREATE TABLE billing.monthly_invoices (
     PRIMARY KEY (id, created_at)
 ) PARTITION BY RANGE (created_at);
 
-CREATE TABLE billing.monthly_invoices_default PARTITION OF billing.monthly_invoices DEFAULT;
+CREATE TABLE billing_report.monthly_invoices_default PARTITION OF billing_report.monthly_invoices DEFAULT;
 
-COMMENT ON TABLE billing.monthly_invoices IS 'Monthly billing and commission summary for tenants, partitioned monthly by created_at';
+COMMENT ON TABLE billing_report.monthly_invoices IS 'Monthly billing and commission summary for clients, partitioned monthly by created_at';

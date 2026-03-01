@@ -1,13 +1,13 @@
 -- ================================================================
--- NUCLEO PLATFORM - NOTIFICATION TEMPLATES SEED
+-- SORTIS ONE - NOTIFICATION TEMPLATES SEED
 -- ================================================================
 -- Platform bildirim şablonları: BO kullanıcılarına yönelik
 -- sistem/transaksiyonel e-posta ve SMS şablonları.
 -- Tüm şablonlar is_system=TRUE olarak işaretlenir.
 -- ================================================================
--- Çalıştırma: psql -U postgres -d nucleo -f core/data/notification_templates_seed.sql
+-- Çalıştırma: psql -U postgres -d core -f core/data/notification_templates_seed.sql
 -- ================================================================
--- NOT: Tenant şablonları backend tarafından tenant provisioning
+-- NOT: Client şablonları backend tarafından client provisioning
 -- sırasında seed'lenir (bu dosyada değil).
 -- ================================================================
 
@@ -152,7 +152,7 @@ VALUES (
 -- user.welcome.email — EN
 INSERT INTO messaging.message_template_translations (template_id, language_code, subject, body_html, body_text, preview_text, created_by)
 SELECT id, 'en',
-    'Welcome to Nucleo Platform',
+    'Welcome to Sortis One Platform',
     '<h1>Welcome, {{user_name}}!</h1><p>Your account has been created. You can log in at <a href="{{login_url}}">{{login_url}}</a>.</p>',
     'Welcome, {{user_name}}! Your account has been created. You can log in at {{login_url}}.',
     'Your account has been created',
@@ -230,7 +230,7 @@ FROM messaging.message_templates WHERE code = 'user.two_factor_code.sms';
 -- user.welcome.email — TR
 INSERT INTO messaging.message_template_translations (template_id, language_code, subject, body_html, body_text, preview_text, created_by)
 SELECT id, 'tr',
-    'Nucleo Platformuna Hoş Geldiniz',
+    'Sortis One Platformuna Hoş Geldiniz',
     '<h1>Hoş geldiniz, {{user_name}}!</h1><p>Hesabınız oluşturuldu. <a href="{{login_url}}">{{login_url}}</a> adresinden giriş yapabilirsiniz.</p>',
     'Hoş geldiniz, {{user_name}}! Hesabınız oluşturuldu. Giriş için: {{login_url}}',
     'Hesabınız oluşturuldu',

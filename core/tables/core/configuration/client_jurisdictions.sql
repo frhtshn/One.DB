@@ -1,15 +1,15 @@
 -- =============================================
--- Tenant Jurisdictions (Tenant Lisansları)
--- Tenant'ın hangi jurisdiction'lar altında çalıştığı
+-- Client Jurisdictions (Client Lisansları)
+-- Client'ın hangi jurisdiction'lar altında çalıştığı
 -- Çoklu lisans desteği için M:N ilişki
 -- =============================================
 
-DROP TABLE IF EXISTS core.tenant_jurisdictions CASCADE;
+DROP TABLE IF EXISTS core.client_jurisdictions CASCADE;
 
-CREATE TABLE core.tenant_jurisdictions (
+CREATE TABLE core.client_jurisdictions (
     id bigserial PRIMARY KEY,
 
-    tenant_id bigint NOT NULL,                    -- Hangi tenant
+    client_id bigint NOT NULL,                    -- Hangi client
     jurisdiction_id int NOT NULL,                 -- Hangi lisans otoritesi
 
     -- Lisans detayları
@@ -27,7 +27,7 @@ CREATE TABLE core.tenant_jurisdictions (
     -- revoked: İptal edilmiş
 
     -- Özelleştirme (junction bazlı override'lar için)
-    custom_settings jsonb,                        -- Tenant-specific jurisdiction ayarları
+    custom_settings jsonb,                        -- Client-specific jurisdiction ayarları
 
     created_at timestamp NOT NULL DEFAULT now(),
     updated_at timestamp NOT NULL DEFAULT now()
@@ -35,4 +35,4 @@ CREATE TABLE core.tenant_jurisdictions (
 
 );
 
-COMMENT ON TABLE core.tenant_jurisdictions IS 'Links tenants to their operating jurisdictions/licenses. Enables multi-license operations and jurisdiction-specific configurations.';
+COMMENT ON TABLE core.client_jurisdictions IS 'Links clients to their operating jurisdictions/licenses. Enables multi-license operations and jurisdiction-specific configurations.';

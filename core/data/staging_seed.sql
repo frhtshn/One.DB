@@ -1,8 +1,8 @@
 -- ================================================================
--- NUCLEO PLATFORM - TEST SEED DATA
+-- SORTIS ONE - TEST SEED DATA
 -- ================================================================
 -- Staging ve development ortamları için test verileri.
--- Companies, roles, tenants, users, settings, compliance.
+-- Companies, roles, clients, users, settings, compliance.
 -- Menu/presentation yapısı bu dosyada YOK — seed_presentation.sql'de.
 -- ================================================================
 -- ÇALIŞTIRMA SIRASI:
@@ -27,18 +27,18 @@
 -- Security (permissions hariç)
 TRUNCATE TABLE security.user_password_history RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.company_password_policy RESTART IDENTITY CASCADE;
-TRUNCATE TABLE security.user_allowed_tenants RESTART IDENTITY CASCADE;
+TRUNCATE TABLE security.user_allowed_clients RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.user_roles RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.users RESTART IDENTITY CASCADE;
 TRUNCATE TABLE security.roles RESTART IDENTITY CASCADE;
 
 -- Core
-TRUNCATE TABLE core.tenant_jurisdictions RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenant_settings RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenant_languages RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenant_currencies RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenant_cryptocurrencies RESTART IDENTITY CASCADE;
-TRUNCATE TABLE core.tenants RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_jurisdictions RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_settings RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_languages RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_currencies RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.client_cryptocurrencies RESTART IDENTITY CASCADE;
+TRUNCATE TABLE core.clients RESTART IDENTITY CASCADE;
 TRUNCATE TABLE core.companies RESTART IDENTITY CASCADE;
 
 -- Compliance/Catalog
@@ -50,14 +50,14 @@ TRUNCATE TABLE catalog.jurisdictions RESTART IDENTITY CASCADE;
 
 -- Sequence reset
 SELECT setval('core.companies_id_seq', 1, false);
-SELECT setval('core.tenants_id_seq', 1, false);
+SELECT setval('core.clients_id_seq', 1, false);
 
 -- ================================================================
 -- 2. COMPANIES (4)
 -- ================================================================
 
 INSERT INTO core.companies (id, company_code, company_name, status, country_code, timezone) VALUES
-(0, 'NUCLEO', 'Nucleo Platform', 1, 'TR', 'Europe/Istanbul'),
+(0, 'SORTIS', 'Sortis One Platform', 1, 'TR', 'Europe/Istanbul'),
 (1, 'EUROBET', 'EuroBet Gaming Ltd', 1, 'MT', 'Europe/Malta'),
 (2, 'CYPRUSPLAY', 'CyprusPlay Entertainment', 1, 'CY', 'Asia/Nicosia'),
 (3, 'TURKBET', 'TurkBet Oyun Teknolojileri', 1, 'TR', 'Europe/Istanbul');
@@ -67,29 +67,29 @@ SELECT setval('core.companies_id_seq', (SELECT MAX(id) FROM core.companies) + 1)
 -- ================================================================
 -- 3. ROLES (8)
 -- ================================================================
--- Hierarchy: superadmin > admin > companyadmin > tenantadmin > moderator > editor > operator > user
+-- Hierarchy: superadmin > admin > companyadmin > clientadmin > moderator > editor > operator > user
 
 INSERT INTO security.roles (code, name, description, level, status, is_platform_role) VALUES
 ('superadmin', 'Super Admin', 'Platform sahibi - Tüm yetkiler', 100, 1, TRUE),
-('admin', 'Admin', 'Sistem yöneticisi - Tüm company ve tenant işlemleri', 90, 1, TRUE),
-('companyadmin', 'Company Admin', 'Şirket yöneticisi - Kendi company altındaki tenant işlemleri', 80, 1, FALSE),
-('tenantadmin', 'Tenant Admin', 'Tenant yöneticisi - Kendi tenant içindeki işlemler', 70, 1, FALSE),
+('admin', 'Admin', 'Sistem yöneticisi - Tüm company ve client işlemleri', 90, 1, TRUE),
+('companyadmin', 'Company Admin', 'Şirket yöneticisi - Kendi company altındaki client işlemleri', 80, 1, FALSE),
+('clientadmin', 'Client Admin', 'Client yöneticisi - Kendi client içindeki işlemler', 70, 1, FALSE),
 ('moderator', 'Moderator', 'İçerik moderatörü - Player düzenleme yetkisi', 60, 1, FALSE),
 ('editor', 'Editor', 'İçerik editörü - Banner, slider, içerik yönetimi', 50, 1, FALSE),
 ('operator', 'Operator', 'Müşteri hizmetleri - Player görüntüleme ve KYC', 40, 1, FALSE),
 ('user', 'User', 'Standart kullanıcı - Sadece görüntüleme', 10, 1, FALSE);
 
 -- ================================================================
--- 4. TENANTS (4)
+-- 4. CLIENTS (4)
 -- ================================================================
 
-INSERT INTO core.tenants (company_id, tenant_code, tenant_name, environment, base_currency, default_language, default_country, timezone, status) VALUES
--- EUROBET (Malta) - 2 tenant
+INSERT INTO core.clients (company_id, client_code, client_name, environment, base_currency, default_language, default_country, timezone, status) VALUES
+-- EUROBET (Malta) - 2 client
 (1, 'eurobet_eu', 'EuroBet Europe', 'prod', 'EUR', 'en', 'MT', 'Europe/Malta', 1),
 (1, 'eurobet_uk', 'EuroBet UK', 'prod', 'USD', 'en', 'GB', 'Europe/London', 1),
--- CYPRUSPLAY (Kıbrıs) - 1 tenant
+-- CYPRUSPLAY (Kıbrıs) - 1 client
 (2, 'cyprus_main', 'CyprusPlay Main', 'prod', 'EUR', 'en', 'CY', 'Asia/Nicosia', 1),
--- TURKBET (Türkiye) - 1 tenant
+-- TURKBET (Türkiye) - 1 client
 (3, 'turkbet_tr', 'TurkBet Türkiye', 'prod', 'TRY', 'tr', 'TR', 'Europe/Istanbul', 1);
 
 -- ================================================================
@@ -99,64 +99,64 @@ INSERT INTO core.tenants (company_id, tenant_code, tenant_name, environment, bas
 -- Hash: $argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s
 
 INSERT INTO security.users (company_id, first_name, last_name, email, username, password, status, language, timezone, currency, country) VALUES
--- Superadmin (NUCLEO)
+-- Superadmin (SORTIS)
 -- UYARI: Production'da şifre MUTLAKA değiştirilmeli!
-(0, 'Super', 'Admin', 'superadmin@nucleo.io', 'superadmin',
+(0, 'Super', 'Admin', 'superadmin@sortisgaming.com', 'superadmin',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
--- Platform Admin (NUCLEO)
-(0, 'System', 'Admin', 'admin@nucleo.io', 'admin',
+-- Platform Admin (SORTIS)
+(0, 'System', 'Admin', 'admin@sortisgaming.com', 'admin',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Europe/Istanbul', 'EUR', 'MT'),
 
 -- CompanyAdmin - EUROBET (Malta)
-(1, 'James', 'Wilson', 'eurobet@nucleo.io', 'eurobet',
+(1, 'James', 'Wilson', 'eurobet@sortisgaming.com', 'eurobet',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Europe/Malta', 'EUR', 'MT'),
 
 -- CompanyAdmin - CYPRUSPLAY (Kıbrıs)
-(2, 'Andreas', 'Georgiou', 'cyprus@nucleo.io', 'cyprus',
+(2, 'Andreas', 'Georgiou', 'cyprus@sortisgaming.com', 'cyprus',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Asia/Nicosia', 'EUR', 'CY'),
 
 -- CompanyAdmin - TURKBET (Türkiye)
-(3, 'Ahmet', 'Yılmaz', 'turkbet@nucleo.io', 'turkbet',
+(3, 'Ahmet', 'Yılmaz', 'turkbet@sortisgaming.com', 'turkbet',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
--- TenantAdmin - eurobet_eu
-(1, 'Maria', 'Santos', 'eurobet.eu@nucleo.io', 'eurobet_eu',
+-- ClientAdmin - eurobet_eu
+(1, 'Maria', 'Santos', 'eurobet.eu@sortisgaming.com', 'eurobet_eu',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Europe/Malta', 'EUR', 'MT'),
 
--- TenantAdmin - cyprus_main
-(2, 'Nikos', 'Papadopoulos', 'cyprus.admin@nucleo.io', 'cyprus_admin',
+-- ClientAdmin - cyprus_main
+(2, 'Nikos', 'Papadopoulos', 'cyprus.admin@sortisgaming.com', 'cyprus_admin',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Asia/Nicosia', 'EUR', 'CY'),
 
--- TenantAdmin - turkbet_tr
-(3, 'Mehmet', 'Demir', 'turkbet.admin@nucleo.io', 'turkbet_admin',
+-- ClientAdmin - turkbet_tr
+(3, 'Mehmet', 'Demir', 'turkbet.admin@sortisgaming.com', 'turkbet_admin',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
--- Moderator - turkbet_tr (multi-tenant test: 3 tenant, 3 farklı rol)
-(3, 'Ayşe', 'Kaya', 'turkbet.mod@nucleo.io', 'turkbet_mod',
+-- Moderator - turkbet_tr (multi-client test: 3 client, 3 farklı rol)
+(3, 'Ayşe', 'Kaya', 'turkbet.mod@sortisgaming.com', 'turkbet_mod',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- Editor - turkbet_tr
-(3, 'Zeynep', 'Çelik', 'turkbet.edit@nucleo.io', 'turkbet_edit',
+(3, 'Zeynep', 'Çelik', 'turkbet.edit@sortisgaming.com', 'turkbet_edit',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- Operator - turkbet_tr
-(3, 'Ali', 'Öztürk', 'turkbet.op@nucleo.io', 'turkbet_op',
+(3, 'Ali', 'Öztürk', 'turkbet.op@sortisgaming.com', 'turkbet_op',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'tr', 'Europe/Istanbul', 'TRY', 'TR'),
 
 -- User - eurobet_eu
-(1, 'John', 'Smith', 'eurobet.user@nucleo.io', 'eurobet_user',
+(1, 'John', 'Smith', 'eurobet.user@sortisgaming.com', 'eurobet_user',
  '$argon2id$v=19$m=47104,t=1,p=1$/+pv+y99FW+8eHgBq9/RCg$ghMOBDkXj8OLGz8J9RF4m1xnrTm0o78HnG+Bkd2UJ+s',
  1, 'en', 'Europe/Malta', 'EUR', 'MT');
 
@@ -165,7 +165,7 @@ INSERT INTO security.users (company_id, first_name, last_name, email, username, 
 -- ================================================================
 -- NOT: Users tablosu dolduktan SONRA çalıştırılmalı (created_by FK)
 
--- Company ID 0 (Nucleo Platform) — 90 gün, son 5 şifre
+-- Company ID 0 (Sortis One Platform) — 90 gün, son 5 şifre
 INSERT INTO security.company_password_policy (company_id, expiry_days, history_count, created_by)
 VALUES (0, 90, 5, 1);
 
@@ -180,202 +180,202 @@ INSERT INTO security.company_password_policy (company_id, expiry_days, history_c
 VALUES (3, 60, 4, 1);
 
 -- ================================================================
--- 7. GLOBAL ROL ATAMALARI (security.user_roles - tenant_id = NULL)
+-- 7. GLOBAL ROL ATAMALARI (security.user_roles - client_id = NULL)
 -- ================================================================
 
--- superadmin@nucleo.io → superadmin (global)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- superadmin@sortisgaming.com → superadmin (global)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, NULL FROM security.users u, security.roles r
-WHERE u.email = 'superadmin@nucleo.io' AND r.code = 'superadmin';
+WHERE u.email = 'superadmin@sortisgaming.com' AND r.code = 'superadmin';
 
--- admin@nucleo.io → admin (global)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- admin@sortisgaming.com → admin (global)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, NULL FROM security.users u, security.roles r
-WHERE u.email = 'admin@nucleo.io' AND r.code = 'admin';
+WHERE u.email = 'admin@sortisgaming.com' AND r.code = 'admin';
 
--- eurobet@nucleo.io → companyadmin (global)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- eurobet@sortisgaming.com → companyadmin (global)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, NULL FROM security.users u, security.roles r
-WHERE u.email = 'eurobet@nucleo.io' AND r.code = 'companyadmin';
+WHERE u.email = 'eurobet@sortisgaming.com' AND r.code = 'companyadmin';
 
--- cyprus@nucleo.io → companyadmin (global)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- cyprus@sortisgaming.com → companyadmin (global)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, NULL FROM security.users u, security.roles r
-WHERE u.email = 'cyprus@nucleo.io' AND r.code = 'companyadmin';
+WHERE u.email = 'cyprus@sortisgaming.com' AND r.code = 'companyadmin';
 
--- turkbet@nucleo.io → companyadmin (global)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet@sortisgaming.com → companyadmin (global)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, NULL FROM security.users u, security.roles r
-WHERE u.email = 'turkbet@nucleo.io' AND r.code = 'companyadmin';
+WHERE u.email = 'turkbet@sortisgaming.com' AND r.code = 'companyadmin';
 
 -- ================================================================
--- 8. TENANT ROL ATAMALARI (security.user_roles - tenant_id = değer)
+-- 8. CLIENT ROL ATAMALARI (security.user_roles - client_id = değer)
 -- ================================================================
 
--- eurobet.eu@nucleo.io → tenantadmin @ eurobet_eu
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- eurobet.eu@sortisgaming.com → clientadmin @ eurobet_eu
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'eurobet.eu@nucleo.io' AND r.code = 'tenantadmin' AND t.tenant_code = 'eurobet_eu';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'eurobet.eu@sortisgaming.com' AND r.code = 'clientadmin' AND t.client_code = 'eurobet_eu';
 
--- cyprus.admin@nucleo.io → tenantadmin @ cyprus_main
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- cyprus.admin@sortisgaming.com → clientadmin @ cyprus_main
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'cyprus.admin@nucleo.io' AND r.code = 'tenantadmin' AND t.tenant_code = 'cyprus_main';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'cyprus.admin@sortisgaming.com' AND r.code = 'clientadmin' AND t.client_code = 'cyprus_main';
 
--- turkbet.admin@nucleo.io → tenantadmin @ turkbet_tr
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet.admin@sortisgaming.com → clientadmin @ turkbet_tr
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'turkbet.admin@nucleo.io' AND r.code = 'tenantadmin' AND t.tenant_code = 'turkbet_tr';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'turkbet.admin@sortisgaming.com' AND r.code = 'clientadmin' AND t.client_code = 'turkbet_tr';
 
--- turkbet.mod@nucleo.io → moderator @ turkbet_tr
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet.mod@sortisgaming.com → moderator @ turkbet_tr
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'turkbet.mod@nucleo.io' AND r.code = 'moderator' AND t.tenant_code = 'turkbet_tr';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'turkbet.mod@sortisgaming.com' AND r.code = 'moderator' AND t.client_code = 'turkbet_tr';
 
--- turkbet.mod@nucleo.io → operator @ eurobet_eu (multi-tenant)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet.mod@sortisgaming.com → operator @ eurobet_eu (multi-client)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'turkbet.mod@nucleo.io' AND r.code = 'operator' AND t.tenant_code = 'eurobet_eu';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'turkbet.mod@sortisgaming.com' AND r.code = 'operator' AND t.client_code = 'eurobet_eu';
 
--- turkbet.mod@nucleo.io → tenantadmin @ cyprus_main (multi-tenant)
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet.mod@sortisgaming.com → clientadmin @ cyprus_main (multi-client)
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'turkbet.mod@nucleo.io' AND r.code = 'tenantadmin' AND t.tenant_code = 'cyprus_main';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'turkbet.mod@sortisgaming.com' AND r.code = 'clientadmin' AND t.client_code = 'cyprus_main';
 
--- turkbet.edit@nucleo.io → editor @ turkbet_tr
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet.edit@sortisgaming.com → editor @ turkbet_tr
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'turkbet.edit@nucleo.io' AND r.code = 'editor' AND t.tenant_code = 'turkbet_tr';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'turkbet.edit@sortisgaming.com' AND r.code = 'editor' AND t.client_code = 'turkbet_tr';
 
--- turkbet.op@nucleo.io → operator @ turkbet_tr
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- turkbet.op@sortisgaming.com → operator @ turkbet_tr
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'turkbet.op@nucleo.io' AND r.code = 'operator' AND t.tenant_code = 'turkbet_tr';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'turkbet.op@sortisgaming.com' AND r.code = 'operator' AND t.client_code = 'turkbet_tr';
 
--- eurobet.user@nucleo.io → user @ eurobet_eu
-INSERT INTO security.user_roles (user_id, role_id, tenant_id)
+-- eurobet.user@sortisgaming.com → user @ eurobet_eu
+INSERT INTO security.user_roles (user_id, role_id, client_id)
 SELECT u.id, r.id, t.id
-FROM security.users u, security.roles r, core.tenants t
-WHERE u.email = 'eurobet.user@nucleo.io' AND r.code = 'user' AND t.tenant_code = 'eurobet_eu';
+FROM security.users u, security.roles r, core.clients t
+WHERE u.email = 'eurobet.user@sortisgaming.com' AND r.code = 'user' AND t.client_code = 'eurobet_eu';
 
 -- ================================================================
--- 9. TENANT ERİŞİM İZİNLERİ (security.user_allowed_tenants)
+-- 9. CLIENT ERİŞİM İZİNLERİ (security.user_allowed_clients)
 -- ================================================================
--- Sadece tenant-level kullanıcılar için.
+-- Sadece client-level kullanıcılar için.
 -- Platform (superadmin, admin) bypass eder, company admin company üzerinden erişir.
 
--- eurobet.eu@nucleo.io → eurobet_eu
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'eurobet.eu@nucleo.io' AND t.tenant_code = 'eurobet_eu';
+-- eurobet.eu@sortisgaming.com → eurobet_eu
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'eurobet.eu@sortisgaming.com' AND t.client_code = 'eurobet_eu';
 
--- cyprus.admin@nucleo.io → cyprus_main
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'cyprus.admin@nucleo.io' AND t.tenant_code = 'cyprus_main';
+-- cyprus.admin@sortisgaming.com → cyprus_main
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'cyprus.admin@sortisgaming.com' AND t.client_code = 'cyprus_main';
 
--- turkbet.admin@nucleo.io → turkbet_tr
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'turkbet.admin@nucleo.io' AND t.tenant_code = 'turkbet_tr';
+-- turkbet.admin@sortisgaming.com → turkbet_tr
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'turkbet.admin@sortisgaming.com' AND t.client_code = 'turkbet_tr';
 
--- turkbet.mod@nucleo.io → turkbet_tr + eurobet_eu + cyprus_main (multi-tenant)
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'turkbet.mod@nucleo.io' AND t.tenant_code = 'turkbet_tr';
+-- turkbet.mod@sortisgaming.com → turkbet_tr + eurobet_eu + cyprus_main (multi-client)
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'turkbet.mod@sortisgaming.com' AND t.client_code = 'turkbet_tr';
 
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'turkbet.mod@nucleo.io' AND t.tenant_code = 'eurobet_eu';
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'turkbet.mod@sortisgaming.com' AND t.client_code = 'eurobet_eu';
 
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'turkbet.mod@nucleo.io' AND t.tenant_code = 'cyprus_main';
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'turkbet.mod@sortisgaming.com' AND t.client_code = 'cyprus_main';
 
--- turkbet.edit@nucleo.io → turkbet_tr
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'turkbet.edit@nucleo.io' AND t.tenant_code = 'turkbet_tr';
+-- turkbet.edit@sortisgaming.com → turkbet_tr
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'turkbet.edit@sortisgaming.com' AND t.client_code = 'turkbet_tr';
 
--- turkbet.op@nucleo.io → turkbet_tr
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'turkbet.op@nucleo.io' AND t.tenant_code = 'turkbet_tr';
+-- turkbet.op@sortisgaming.com → turkbet_tr
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'turkbet.op@sortisgaming.com' AND t.client_code = 'turkbet_tr';
 
--- eurobet.user@nucleo.io → eurobet_eu
-INSERT INTO security.user_allowed_tenants (user_id, tenant_id)
-SELECT u.id, t.id FROM security.users u, core.tenants t
-WHERE u.email = 'eurobet.user@nucleo.io' AND t.tenant_code = 'eurobet_eu';
+-- eurobet.user@sortisgaming.com → eurobet_eu
+INSERT INTO security.user_allowed_clients (user_id, client_id)
+SELECT u.id, t.id FROM security.users u, core.clients t
+WHERE u.email = 'eurobet.user@sortisgaming.com' AND t.client_code = 'eurobet_eu';
 
 -- ================================================================
--- 10. TENANT PARA BİRİMLERİ (11)
+-- 10. CLIENT PARA BİRİMLERİ (11)
 -- ================================================================
 
-INSERT INTO core.tenant_currencies (tenant_id, currency_code, is_enabled)
-SELECT t.id, c.code, true FROM core.tenants t
+INSERT INTO core.client_currencies (client_id, currency_code, is_enabled)
+SELECT t.id, c.code, true FROM core.clients t
 CROSS JOIN (VALUES ('EUR'), ('USD'), ('GBP')) AS c(code)
-WHERE t.tenant_code = 'eurobet_eu';
+WHERE t.client_code = 'eurobet_eu';
 
-INSERT INTO core.tenant_currencies (tenant_id, currency_code, is_enabled)
-SELECT t.id, c.code, true FROM core.tenants t
+INSERT INTO core.client_currencies (client_id, currency_code, is_enabled)
+SELECT t.id, c.code, true FROM core.clients t
 CROSS JOIN (VALUES ('GBP'), ('EUR'), ('USD')) AS c(code)
-WHERE t.tenant_code = 'eurobet_uk';
+WHERE t.client_code = 'eurobet_uk';
 
-INSERT INTO core.tenant_currencies (tenant_id, currency_code, is_enabled)
-SELECT t.id, c.code, true FROM core.tenants t
+INSERT INTO core.client_currencies (client_id, currency_code, is_enabled)
+SELECT t.id, c.code, true FROM core.clients t
 CROSS JOIN (VALUES ('EUR'), ('USD')) AS c(code)
-WHERE t.tenant_code = 'cyprus_main';
+WHERE t.client_code = 'cyprus_main';
 
-INSERT INTO core.tenant_currencies (tenant_id, currency_code, is_enabled)
-SELECT t.id, c.code, true FROM core.tenants t
+INSERT INTO core.client_currencies (client_id, currency_code, is_enabled)
+SELECT t.id, c.code, true FROM core.clients t
 CROSS JOIN (VALUES ('TRY'), ('EUR'), ('USD')) AS c(code)
-WHERE t.tenant_code = 'turkbet_tr';
+WHERE t.client_code = 'turkbet_tr';
 
 -- ================================================================
--- 11. TENANT KRİPTO PARA BİRİMLERİ (9)
+-- 11. CLIENT KRİPTO PARA BİRİMLERİ (9)
 -- ================================================================
 
-INSERT INTO core.tenant_cryptocurrencies (tenant_id, symbol, is_enabled)
-SELECT t.id, c.symbol, true FROM core.tenants t
+INSERT INTO core.client_cryptocurrencies (client_id, symbol, is_enabled)
+SELECT t.id, c.symbol, true FROM core.clients t
 CROSS JOIN (VALUES ('BTC'), ('ETH'), ('SOL')) AS c(symbol)
-WHERE t.tenant_code = 'eurobet_eu';
+WHERE t.client_code = 'eurobet_eu';
 
-INSERT INTO core.tenant_cryptocurrencies (tenant_id, symbol, is_enabled)
-SELECT t.id, c.symbol, true FROM core.tenants t
+INSERT INTO core.client_cryptocurrencies (client_id, symbol, is_enabled)
+SELECT t.id, c.symbol, true FROM core.clients t
 CROSS JOIN (VALUES ('BTC'), ('ETH')) AS c(symbol)
-WHERE t.tenant_code = 'eurobet_uk';
+WHERE t.client_code = 'eurobet_uk';
 
-INSERT INTO core.tenant_cryptocurrencies (tenant_id, symbol, is_enabled)
-SELECT t.id, c.symbol, true FROM core.tenants t
+INSERT INTO core.client_cryptocurrencies (client_id, symbol, is_enabled)
+SELECT t.id, c.symbol, true FROM core.clients t
 CROSS JOIN (VALUES ('BTC'), ('ETH')) AS c(symbol)
-WHERE t.tenant_code = 'cyprus_main';
+WHERE t.client_code = 'cyprus_main';
 
-INSERT INTO core.tenant_cryptocurrencies (tenant_id, symbol, is_enabled)
-SELECT t.id, c.symbol, true FROM core.tenants t
+INSERT INTO core.client_cryptocurrencies (client_id, symbol, is_enabled)
+SELECT t.id, c.symbol, true FROM core.clients t
 CROSS JOIN (VALUES ('BTC'), ('SOL')) AS c(symbol)
-WHERE t.tenant_code = 'turkbet_tr';
+WHERE t.client_code = 'turkbet_tr';
 
 -- ================================================================
--- 12. TENANT DİLLERİ (8 — 4 tenant × 2 dil)
+-- 12. CLIENT DİLLERİ (8 — 4 client × 2 dil)
 -- ================================================================
 
-INSERT INTO core.tenant_languages (tenant_id, language_code, is_enabled)
-SELECT t.id, l.code, true FROM core.tenants t
+INSERT INTO core.client_languages (client_id, language_code, is_enabled)
+SELECT t.id, l.code, true FROM core.clients t
 CROSS JOIN (VALUES ('en'), ('tr')) AS l(code);
 
 -- ================================================================
 -- 13. JURISDICTIONS & KYC COMPLIANCE DATA
 -- ================================================================
--- Jurisdiction ve KYC verileri tenant_jurisdictions'dan ONCE yuklenmeli.
--- tenant_jurisdictions INSERT'leri catalog.jurisdictions tablosuna bagli.
+-- Jurisdiction ve KYC verileri client_jurisdictions'dan ONCE yuklenmeli.
+-- client_jurisdictions INSERT'leri catalog.jurisdictions tablosuna bagli.
 
 -- ================================================================
 -- 13.1 JURISDICTIONS (12 — Lisans Otoriteleri)
@@ -578,163 +578,135 @@ INSERT INTO catalog.responsible_gaming_policies (jurisdiction_id,
     TRUE, TRUE, FALSE, TRUE);
 
 -- ================================================================
--- 14. TENANT JURISDICTIONS (5)
+-- 14. CLIENT JURISDICTIONS (5)
 -- ================================================================
 
 -- eurobet_eu → MGA (primary) + UKGC
-INSERT INTO core.tenant_jurisdictions (tenant_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
+INSERT INTO core.client_jurisdictions (client_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
 SELECT t.id, j.id, 'MGA/B2C/123/2024', '2024-01-01', '2029-01-01', TRUE, 'active'
-FROM core.tenants t, catalog.jurisdictions j
-WHERE t.tenant_code = 'eurobet_eu' AND j.code = 'MGA';
+FROM core.clients t, catalog.jurisdictions j
+WHERE t.client_code = 'eurobet_eu' AND j.code = 'MGA';
 
-INSERT INTO core.tenant_jurisdictions (tenant_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
+INSERT INTO core.client_jurisdictions (client_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
 SELECT t.id, j.id, 'GC-000123-R-123456', '2024-01-01', '2029-01-01', FALSE, 'active'
-FROM core.tenants t, catalog.jurisdictions j
-WHERE t.tenant_code = 'eurobet_eu' AND j.code = 'UKGC';
+FROM core.clients t, catalog.jurisdictions j
+WHERE t.client_code = 'eurobet_eu' AND j.code = 'UKGC';
 
 -- cyprus_main → CUR
-INSERT INTO core.tenant_jurisdictions (tenant_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
+INSERT INTO core.client_jurisdictions (client_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
 SELECT t.id, j.id, 'CEG/1234/2024', '2024-01-01', '2025-01-01', TRUE, 'active'
-FROM core.tenants t, catalog.jurisdictions j
-WHERE t.tenant_code = 'cyprus_main' AND j.code = 'CUR';
+FROM core.clients t, catalog.jurisdictions j
+WHERE t.client_code = 'cyprus_main' AND j.code = 'CUR';
 
 -- eurobet_uk → UKGC (primary, strict)
-INSERT INTO core.tenant_jurisdictions (tenant_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
+INSERT INTO core.client_jurisdictions (client_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
 SELECT t.id, j.id, 'GC-000456-R-789012', '2024-01-01', '2029-01-01', TRUE, 'active'
-FROM core.tenants t, catalog.jurisdictions j
-WHERE t.tenant_code = 'eurobet_uk' AND j.code = 'UKGC';
+FROM core.clients t, catalog.jurisdictions j
+WHERE t.client_code = 'eurobet_uk' AND j.code = 'UKGC';
 
 -- turkbet_tr → CUR
-INSERT INTO core.tenant_jurisdictions (tenant_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
+INSERT INTO core.client_jurisdictions (client_id, jurisdiction_id, license_number, license_issued_at, license_expires_at, is_primary, status)
 SELECT t.id, j.id, 'CEG/5678/2024', '2024-01-01', '2025-01-01', TRUE, 'active'
-FROM core.tenants t, catalog.jurisdictions j
-WHERE t.tenant_code = 'turkbet_tr' AND j.code = 'CUR';
+FROM core.clients t, catalog.jurisdictions j
+WHERE t.client_code = 'turkbet_tr' AND j.code = 'CUR';
 
 -- ================================================================
--- 15. TENANT AYARLARI
+-- 15. CLIENT AYARLARI
 -- ================================================================
 
 -- SMS API Ayarları
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Integration', 'sms_provider',
     '{"provider": "twilio", "account_sid": "AC_STAGING_SID", "auth_token": "STAGING_AUTH_TOKEN", "from_number": "+15005550006", "enabled": true, "sandbox_mode": true}'::jsonb,
     'SMS provider configuration (Twilio)'
-FROM core.tenants t;
+FROM core.clients t;
 
 -- Email Ayarları
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Integration', 'email_provider',
-    '{"provider": "smtp", "host": "smtp.mailtrap.io", "port": 587, "username": "staging_user", "password": "staging_pass", "from_address": "noreply@staging.nucleo.io", "from_name": "Nucleo Platform", "use_ssl": true, "enabled": true}'::jsonb,
+    '{"provider": "smtp", "host": "smtp.mailtrap.io", "port": 587, "username": "staging_user", "password": "staging_pass", "from_address": "noreply@staging.sortisgaming.com", "from_name": "Sortis One Platform", "use_ssl": true, "enabled": true}'::jsonb,
     'Email/SMTP provider configuration'
-FROM core.tenants t;
+FROM core.clients t;
 
--- Tenant Ana DB Bağlantısı (tenant_{id})
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Database', 'connection_tenant',
-    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 5, "max_pool_size": 50, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 10}', t.id)::jsonb,
-    'Tenant main database connection settings'
-FROM core.tenants t;
-
--- Tenant Audit DB Bağlantısı (tenant_audit_{id})
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Database', 'connection_tenant_audit',
-    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_audit_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}', t.id)::jsonb,
-    'Tenant audit database connection settings'
-FROM core.tenants t;
-
--- Tenant Log DB Bağlantısı (tenant_log_{id})
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Database', 'connection_tenant_log',
-    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_log_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}', t.id)::jsonb,
-    'Tenant log database connection settings'
-FROM core.tenants t;
-
--- Tenant Affiliate DB Bağlantısı (tenant_affiliate_{id})
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Database', 'connection_tenant_affiliate',
-    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_affiliate_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 20, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 1, "replica_max_pool_size": 5}', t.id)::jsonb,
-    'Tenant affiliate database connection settings'
-FROM core.tenants t;
-
--- Tenant Report DB Bağlantısı (tenant_report_{id})
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
-SELECT t.id, 'Database', 'connection_tenant_report',
-    format('{"host": "207.180.241.230", "port": 5433, "database": "tenant_report_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 2, "max_pool_size": 30, "connection_timeout": 30, "command_timeout": 120, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 15}', t.id)::jsonb,
-    'Tenant report database connection settings (replica enabled for heavy queries)'
-FROM core.tenants t;
+-- Client Birleşik DB Bağlantısı (client_{id}) - Tüm schema'lar tek DB'de
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
+SELECT t.id, 'Database', 'connection_client',
+    format('{"host": "207.180.241.230", "port": 5433, "database": "client_%s", "username": "postgres", "password": "NucleoPostgres2026", "ssl_mode": "prefer", "min_pool_size": 5, "max_pool_size": 50, "connection_timeout": 30, "command_timeout": 60, "replica_enabled": true, "replica_port": 5434, "replica_min_pool_size": 2, "replica_max_pool_size": 15}', t.id)::jsonb,
+    'Unified client database connection (30 schemas: core business, log, audit, report, affiliate)'
+FROM core.clients t;
 
 -- Password Policy Ayarları
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Security', 'password_expiry_days',
     '30'::jsonb,
     'Player password expiry period in days (0 = never expires)'
-FROM core.tenants t;
+FROM core.clients t;
 
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Security', 'password_history_count',
     '3'::jsonb,
     'Number of previous passwords to check for reuse prevention'
-FROM core.tenants t;
+FROM core.clients t;
 
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Security', 'password_min_length',
     '8'::jsonb,
     'Minimum password length requirement'
-FROM core.tenants t;
+FROM core.clients t;
 
--- Encryption: PII Key (Player PII sifreleme — AES-256, her tenant'a unique sabit test key)
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+-- Encryption: PII Key (Player PII sifreleme — AES-256, her client'a unique sabit test key)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Security', 'encryption_pii_key',
-    CASE t.tenant_code
+    CASE t.client_code
         WHEN 'eurobet_eu'  THEN '"QnGgAo7/r9A8HcZlyFEuR6B07rmbvR+o0p/kz5VQHO8="'::jsonb
         WHEN 'eurobet_uk'  THEN '"+styQB8cdu/BgKHq8LVQSK62pwlVKajAwjh5oNZI8n4="'::jsonb
         WHEN 'cyprus_main' THEN '"xJggE72dj8dL/Amoc2TySlc+80wLzOo1VmRsQQhAGbs="'::jsonb
         WHEN 'turkbet_tr'  THEN '"Bo5+mdYOdDdbXA5ZXvzrWhz4dhcr2kTXTI0q6OuXn60="'::jsonb
     END,
     'Player PII encryption key (AES-256-GCM, Base64)'
-FROM core.tenants t;
+FROM core.clients t;
 
--- Encryption: Master Key (SignalR group key wrap KEK — AES-256, her tenant'a unique sabit test key)
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+-- Encryption: Master Key (SignalR group key wrap KEK — AES-256, her client'a unique sabit test key)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Security', 'encryption_master_key',
-    CASE t.tenant_code
+    CASE t.client_code
         WHEN 'eurobet_eu'  THEN '"9l1eVTgIbM5QGmi+0gAApow+Oe1KiCWer9eqmiCa6u8="'::jsonb
         WHEN 'eurobet_uk'  THEN '"EyoH/exSZdfXZbuzB5J9JGTY0k3h9HQZXSxL4N0Sfj8="'::jsonb
         WHEN 'cyprus_main' THEN '"TaRXIdDSZFNZkfcTnrb9psFLRdF/TzBGRg5Pzk9VdxQ="'::jsonb
         WHEN 'turkbet_tr'  THEN '"KdfI3HTA3q8pNc9WVnGdJhjQoijgJroNm9gu82p4zu0="'::jsonb
     END,
-    'Tenant master encryption key for key wrapping (KEK, AES-256-GCM, Base64)'
-FROM core.tenants t;
+    'Client master encryption key for key wrapping (KEK, AES-256-GCM, Base64)'
+FROM core.clients t;
 
--- Silo Placement Ayarlari (Tenant Cluster grain placement)
--- Tenant 2 (eurobet_uk) ve Tenant 3 (cyprus_main) dedicated-s2 pool'unda, digerleri general
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+-- Silo Placement Ayarlari (Client Cluster grain placement)
+-- Client 2 (eurobet_uk) ve Client 3 (cyprus_main) dedicated-s2 pool'unda, digerleri general
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Infrastructure', 'silo_placement',
-    CASE WHEN t.tenant_code IN ('eurobet_uk', 'cyprus_main') THEN '"dedicated-s2"'::jsonb
+    CASE WHEN t.client_code IN ('eurobet_uk', 'cyprus_main') THEN '"dedicated-s2"'::jsonb
          ELSE '"general"'::jsonb
     END,
     'Silo placement pool assignment (general, dedicated-s2, etc.)'
-FROM core.tenants t;
+FROM core.clients t;
 
 -- ================================================================
--- TENANT REDIS BAĞLANTILARI (HER TENANT İÇİN ZORUNLU)
+-- CLIENT REDIS BAĞLANTILARI (HER CLIENT İÇİN ZORUNLU)
 -- ================================================================
 
 -- eurobet_eu + turkbet_tr → Shared Redis (207.180.241.230:7003)
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Infrastructure', 'connection_redis',
     jsonb_build_object(
         'host', '207.180.241.230', 'port', 7003,
         'password', 'NucleoRedis2026!',
         'default_database', 0, 'cluster_mode', false, 'use_ssl', false,
         'connect_timeout', 10000, 'sync_timeout', 5000, 'async_timeout', 5000,
-        'keep_alive', 60, 'client_name', t.tenant_code || '-redis'
+        'keep_alive', 60, 'client_name', t.client_code || '-redis'
     ),
-    'Tenant Redis connection configuration'
-FROM core.tenants t WHERE t.tenant_code IN ('eurobet_eu', 'turkbet_tr');
+    'Client Redis connection configuration'
+FROM core.clients t WHERE t.client_code IN ('eurobet_eu', 'turkbet_tr');
 
 -- eurobet_uk → Dedicated Redis (207.180.241.193:7003)
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Infrastructure', 'connection_redis',
     jsonb_build_object(
         'host', '207.180.241.193', 'port', 7003,
@@ -743,11 +715,11 @@ SELECT t.id, 'Infrastructure', 'connection_redis',
         'connect_timeout', 10000, 'sync_timeout', 5000, 'async_timeout', 5000,
         'keep_alive', 60, 'client_name', 'eurobet_uk-redis'
     ),
-    'Tenant Redis connection configuration'
-FROM core.tenants t WHERE t.tenant_code = 'eurobet_uk';
+    'Client Redis connection configuration'
+FROM core.clients t WHERE t.client_code = 'eurobet_uk';
 
 -- cyprus_main → Dedicated Redis (207.180.241.142:7003)
-INSERT INTO core.tenant_settings (tenant_id, category, setting_key, setting_value, description)
+INSERT INTO core.client_settings (client_id, category, setting_key, setting_value, description)
 SELECT t.id, 'Infrastructure', 'connection_redis',
     jsonb_build_object(
         'host', '207.180.241.142', 'port', 7003,
@@ -756,15 +728,15 @@ SELECT t.id, 'Infrastructure', 'connection_redis',
         'connect_timeout', 10000, 'sync_timeout', 5000, 'async_timeout', 5000,
         'keep_alive', 60, 'client_name', 'cyprus_main-redis'
     ),
-    'Tenant Redis connection configuration'
-FROM core.tenants t WHERE t.tenant_code = 'cyprus_main';
+    'Client Redis connection configuration'
+FROM core.clients t WHERE t.client_code = 'cyprus_main';
 
 -- ================================================================
 -- 16. SEQUENCE RESET'LER
 -- ================================================================
 
 SELECT setval('core.companies_id_seq', COALESCE((SELECT MAX(id) FROM core.companies), 0) + 1, false);
-SELECT setval('core.tenants_id_seq', COALESCE((SELECT MAX(id) FROM core.tenants), 0) + 1, false);
+SELECT setval('core.clients_id_seq', COALESCE((SELECT MAX(id) FROM core.clients), 0) + 1, false);
 SELECT setval('catalog.jurisdictions_id_seq', COALESCE((SELECT MAX(id) FROM catalog.jurisdictions), 0) + 1, false);
 
 -- ================================================================
@@ -774,39 +746,39 @@ SELECT setval('catalog.jurisdictions_id_seq', COALESCE((SELECT MAX(id) FROM cata
 -- Blok 1: Ana Veriler
 DO $$
 DECLARE
-    v_companies INT; v_roles INT; v_tenants INT; v_users INT;
-    v_global_roles INT; v_tenant_roles INT; v_tenant_access INT;
+    v_companies INT; v_roles INT; v_clients INT; v_users INT;
+    v_global_roles INT; v_client_roles INT; v_client_access INT;
     v_password_policies INT; v_currencies INT; v_cryptocurrencies INT;
     v_languages INT; v_settings INT;
 BEGIN
     SELECT COUNT(*) INTO v_companies FROM core.companies;
     SELECT COUNT(*) INTO v_roles FROM security.roles;
-    SELECT COUNT(*) INTO v_tenants FROM core.tenants;
+    SELECT COUNT(*) INTO v_clients FROM core.clients;
     SELECT COUNT(*) INTO v_users FROM security.users;
-    SELECT COUNT(*) INTO v_global_roles FROM security.user_roles WHERE tenant_id IS NULL;
-    SELECT COUNT(*) INTO v_tenant_roles FROM security.user_roles WHERE tenant_id IS NOT NULL;
-    SELECT COUNT(*) INTO v_tenant_access FROM security.user_allowed_tenants;
+    SELECT COUNT(*) INTO v_global_roles FROM security.user_roles WHERE client_id IS NULL;
+    SELECT COUNT(*) INTO v_client_roles FROM security.user_roles WHERE client_id IS NOT NULL;
+    SELECT COUNT(*) INTO v_client_access FROM security.user_allowed_clients;
     SELECT COUNT(*) INTO v_password_policies FROM security.company_password_policy;
-    SELECT COUNT(*) INTO v_currencies FROM core.tenant_currencies;
-    SELECT COUNT(*) INTO v_cryptocurrencies FROM core.tenant_cryptocurrencies;
-    SELECT COUNT(*) INTO v_languages FROM core.tenant_languages;
-    SELECT COUNT(*) INTO v_settings FROM core.tenant_settings;
+    SELECT COUNT(*) INTO v_currencies FROM core.client_currencies;
+    SELECT COUNT(*) INTO v_cryptocurrencies FROM core.client_cryptocurrencies;
+    SELECT COUNT(*) INTO v_languages FROM core.client_languages;
+    SELECT COUNT(*) INTO v_settings FROM core.client_settings;
 
     RAISE NOTICE '================================================';
     RAISE NOTICE 'SEED TEST DATA — ANA VERİLER';
     RAISE NOTICE '================================================';
     RAISE NOTICE 'Companies: % (beklenen: 4)', v_companies;
     RAISE NOTICE 'Roles: % (beklenen: 8)', v_roles;
-    RAISE NOTICE 'Tenants: % (beklenen: 4)', v_tenants;
+    RAISE NOTICE 'Clients: % (beklenen: 4)', v_clients;
     RAISE NOTICE 'Users: % (beklenen: 12)', v_users;
     RAISE NOTICE 'Global Role Assignments: % (beklenen: 5)', v_global_roles;
-    RAISE NOTICE 'Tenant Role Assignments: % (beklenen: 9)', v_tenant_roles;
-    RAISE NOTICE 'Tenant Access: % (beklenen: 9)', v_tenant_access;
+    RAISE NOTICE 'Client Role Assignments: % (beklenen: 9)', v_client_roles;
+    RAISE NOTICE 'Client Access: % (beklenen: 9)', v_client_access;
     RAISE NOTICE 'Company Password Policies: % (beklenen: 3)', v_password_policies;
-    RAISE NOTICE 'Tenant Currencies: % (beklenen: 11)', v_currencies;
-    RAISE NOTICE 'Tenant Cryptocurrencies: % (beklenen: 9)', v_cryptocurrencies;
-    RAISE NOTICE 'Tenant Languages: % (beklenen: 8)', v_languages;
-    RAISE NOTICE 'Tenant Settings: % (beklenen: 40)', v_settings;
+    RAISE NOTICE 'Client Currencies: % (beklenen: 11)', v_currencies;
+    RAISE NOTICE 'Client Cryptocurrencies: % (beklenen: 9)', v_cryptocurrencies;
+    RAISE NOTICE 'Client Languages: % (beklenen: 8)', v_languages;
+    RAISE NOTICE 'Client Settings: % (beklenen: 40)', v_settings;
     RAISE NOTICE '================================================';
 END $$;
 
@@ -814,14 +786,14 @@ END $$;
 DO $$
 DECLARE
     v_jurisdictions INT; v_kyc_policies INT; v_doc_reqs INT;
-    v_level_reqs INT; v_rg_policies INT; v_tenant_j INT;
+    v_level_reqs INT; v_rg_policies INT; v_client_j INT;
 BEGIN
     SELECT COUNT(*) INTO v_jurisdictions FROM catalog.jurisdictions;
     SELECT COUNT(*) INTO v_kyc_policies FROM catalog.kyc_policies;
     SELECT COUNT(*) INTO v_doc_reqs FROM catalog.kyc_document_requirements;
     SELECT COUNT(*) INTO v_level_reqs FROM catalog.kyc_level_requirements;
     SELECT COUNT(*) INTO v_rg_policies FROM catalog.responsible_gaming_policies;
-    SELECT COUNT(*) INTO v_tenant_j FROM core.tenant_jurisdictions;
+    SELECT COUNT(*) INTO v_client_j FROM core.client_jurisdictions;
 
     RAISE NOTICE '================================================';
     RAISE NOTICE 'SEED TEST DATA — COMPLIANCE';
@@ -831,7 +803,7 @@ BEGIN
     RAISE NOTICE 'Document Requirements: % (beklenen: 10)', v_doc_reqs;
     RAISE NOTICE 'Level Requirements: % (beklenen: 9)', v_level_reqs;
     RAISE NOTICE 'Responsible Gaming Policies: % (beklenen: 4)', v_rg_policies;
-    RAISE NOTICE 'Tenant Jurisdictions: % (beklenen: 5)', v_tenant_j;
+    RAISE NOTICE 'Client Jurisdictions: % (beklenen: 5)', v_client_j;
     RAISE NOTICE '================================================';
 END $$;
 
@@ -839,20 +811,20 @@ END $$;
 -- TEST KULLANICILARI ÖZETİ
 -- ================================================================
 --
--- | #  | Email                   | Company     | Global Rol   | Tenant Rolleri                                              |
+-- | #  | Email                   | Company     | Global Rol   | Client Rolleri                                              |
 -- |----|-------------------------|-------------|--------------|-------------------------------------------------------------|
--- | 1  | superadmin@nucleo.io    | NUCLEO      | superadmin   | —                                                           |
--- | 2  | admin@nucleo.io         | NUCLEO      | admin        | —                                                           |
--- | 3  | eurobet@nucleo.io       | EUROBET     | companyadmin | —                                                           |
--- | 4  | cyprus@nucleo.io        | CYPRUSPLAY  | companyadmin | —                                                           |
--- | 5  | turkbet@nucleo.io       | TURKBET     | companyadmin | —                                                           |
--- | 6  | eurobet.eu@nucleo.io    | EUROBET     | —            | tenantadmin@eurobet_eu                                      |
--- | 7  | cyprus.admin@nucleo.io  | CYPRUSPLAY  | —            | tenantadmin@cyprus_main                                     |
--- | 8  | turkbet.admin@nucleo.io | TURKBET     | —            | tenantadmin@turkbet_tr                                      |
--- | 9  | turkbet.mod@nucleo.io   | TURKBET     | —            | moderator@turkbet_tr, operator@eurobet_eu, tenantadmin@cyprus_main |
--- | 10 | turkbet.edit@nucleo.io  | TURKBET     | —            | editor@turkbet_tr                                           |
--- | 11 | turkbet.op@nucleo.io    | TURKBET     | —            | operator@turkbet_tr                                         |
--- | 12 | eurobet.user@nucleo.io  | EUROBET     | —            | user@eurobet_eu                                             |
+-- | 1  | superadmin@sortisgaming.com    | SORTIS      | superadmin   | —                                                           |
+-- | 2  | admin@sortisgaming.com         | SORTIS      | admin        | —                                                           |
+-- | 3  | eurobet@sortisgaming.com       | EUROBET     | companyadmin | —                                                           |
+-- | 4  | cyprus@sortisgaming.com        | CYPRUSPLAY  | companyadmin | —                                                           |
+-- | 5  | turkbet@sortisgaming.com       | TURKBET     | companyadmin | —                                                           |
+-- | 6  | eurobet.eu@sortisgaming.com    | EUROBET     | —            | clientadmin@eurobet_eu                                      |
+-- | 7  | cyprus.admin@sortisgaming.com  | CYPRUSPLAY  | —            | clientadmin@cyprus_main                                     |
+-- | 8  | turkbet.admin@sortisgaming.com | TURKBET     | —            | clientadmin@turkbet_tr                                      |
+-- | 9  | turkbet.mod@sortisgaming.com   | TURKBET     | —            | moderator@turkbet_tr, operator@eurobet_eu, clientadmin@cyprus_main |
+-- | 10 | turkbet.edit@sortisgaming.com  | TURKBET     | —            | editor@turkbet_tr                                           |
+-- | 11 | turkbet.op@sortisgaming.com    | TURKBET     | —            | operator@turkbet_tr                                         |
+-- | 12 | eurobet.user@sortisgaming.com  | EUROBET     | —            | user@eurobet_eu                                             |
 --
 -- Tüm şifreler: deneme
 -- ================================================================

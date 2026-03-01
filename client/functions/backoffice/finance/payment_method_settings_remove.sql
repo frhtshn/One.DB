@@ -29,4 +29,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION finance.payment_method_settings_remove(BIGINT) IS 'Soft-disables a payment method in tenant DB (is_enabled=false). No physical DELETE, payment_method_limits preserved. Auth-agnostic.';
+COMMENT ON FUNCTION finance.payment_method_settings_remove(BIGINT) IS 'Soft-disables a payment method in client DB (is_enabled=false). No physical DELETE, payment_method_limits preserved. Auth-agnostic.';

@@ -1,8 +1,8 @@
 -- ================================================================
--- GAME_SETTINGS_UPDATE: Tenant customization güncelleme
+-- GAME_SETTINGS_UPDATE: Client customization güncelleme
 -- ================================================================
 -- COALESCE pattern (NULL = mevcut değeri koru).
--- Sadece tenant-editable alanları günceller.
+-- Sadece client-editable alanları günceller.
 -- Auth-agnostic (cross-DB auth pattern).
 -- ================================================================
 
@@ -60,4 +60,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION game.game_settings_update IS 'Updates tenant-editable game settings (custom_name, display_order, blocked_countries, etc). COALESCE pattern. Auth-agnostic.';
+COMMENT ON FUNCTION game.game_settings_update IS 'Updates client-editable game settings (custom_name, display_order, blocked_countries, etc). COALESCE pattern. Auth-agnostic.';

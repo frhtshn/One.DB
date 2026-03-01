@@ -1,4 +1,4 @@
-# Nucleo.DB - Workflow Rehberleri
+# OneDB - Workflow Rehberleri
 
 Bu dosya, veritabanı geliştirme süreçlerinde izlenmesi gereken adımları içerir.
 
@@ -48,14 +48,14 @@ Yeni bir şema oluşturulduğunda.
 
 1. **Deploy Script'e Şema Ekle**
    - Core şemaları → `deploy_core.sql`
-   - Tenant şemaları → `deploy_tenant.sql`
+   - Client şemaları (iş + log + audit + report + affiliate) → `deploy_client.sql`
    ```sql
    CREATE SCHEMA IF NOT EXISTS yeni_sema;
    ```
 
 2. **Tablo Klasörü Oluştur**
    - Core: `core/tables/<yeni_sema>/`
-   - Tenant: `tenant/tables/<yeni_sema>/`
+   - Client: `client/tables/<yeni_sema>/`
 
 3. **Dokümantasyonu Güncelle**
    - `.docs/DATABASE_ARCHITECTURE.md` dosyasına yeni şema bölümü ekle
@@ -71,7 +71,7 @@ Yeni bir SQL tablo dosyası eklendiğinde.
 
 1. **Tablo SQL Dosyasını Oluştur**
    - Core tabloları: `core/tables/<şema>/<tablo_adı>.sql`
-   - Tenant tabloları: `tenant/tables/<şema>/<tablo_adı>.sql`
+   - Client tabloları: `client/tables/<şema>/<tablo_adı>.sql`
    - Diğer: `<db>/tables/<tablo_adı>.sql`
 
 2. **Deploy Script'i Güncelle**
@@ -96,7 +96,7 @@ Yeni bir stored procedure veya veritabanı fonksiyonu eklendiğinde.
    - Kalıp: `<db_folder>/functions/<schema_name>/<submodule>/`
    - Örnekler:
      - `core/functions/security/auth/`
-     - `tenant/functions/game/logic/`
+     - `client/functions/game/logic/`
 
 2. **SQL Dosyası Oluştur**
    - Dosya adı: `snake_case` formatında fonksiyon adı (örn: `user_authenticate.sql`)
@@ -156,9 +156,9 @@ Fonksiyon/trigger ekleme, değiştirme veya silme sonrasında dokümantasyonun g
 
 2. **Güncelleme**
    - İlgili fonksiyon dökümanını güncelle:
-     - Core/core_log/core_audit/core_report → `.docs/FUNCTIONS_CORE.md`
-     - Tenant/tenant_log/tenant_audit/tenant_report/tenant_affiliate → `.docs/FUNCTIONS_TENANT.md`
-     - Game/game_log/finance/finance_log/bonus → `.docs/FUNCTIONS_GATEWAY.md`
+     - Core DB (iş + log + audit + report schema'ları) → `.docs/FUNCTIONS_CORE.md`
+     - Client (birleşik DB: iş + log + audit + report + affiliate schema'ları) → `.docs/FUNCTIONS_CLIENT.md`
+     - Game/finance/bonus → `.docs/FUNCTIONS_GATEWAY.md`
    - Format:
      ```markdown
      ## Core Veritabanı
@@ -180,7 +180,7 @@ Fonksiyon/trigger ekleme, değiştirme veya silme sonrasında dokümantasyonun g
 - Tablo, şema veya veritabanı ekleme/silme/değiştirme
 - Deploy scriptlerinde değişiklik
 - Extension, view veya function ekleme
-- Multi-tenant yapısı, partition veya retention politikası değişikliği
+- Multi-client yapısı, partition veya retention politikası değişikliği
 
 ### Güncellenecek Dosya
 `.docs/DATABASE_ARCHITECTURE.md`
@@ -188,7 +188,7 @@ Fonksiyon/trigger ekleme, değiştirme veya silme sonrasında dokümantasyonun g
 ### Bölümler
 - Core tabloları → Bölüm 4
 - Gateway tabloları → Bölüm 5
-- Tenant tabloları → Bölüm 6
+- Client tabloları → Bölüm 6
 - Log/Audit/Report → Bölüm 7
 
 ### Tablo Ekleme Formatı
@@ -228,22 +228,13 @@ Deploy scriptleri belirli bir sırayla düzenlenir. Yeni öğeler ilgili bölüm
 
 ### Deploy Script Eşleştirmesi
 
-| Veritabanı | Deploy Script | Klasör |
-|------------|---------------|--------|
-| core | `deploy_core.sql` | `core/` |
-| core_log | `deploy_core_log.sql` | `core_log/` |
-| core_audit | `deploy_core_audit.sql` | `core_audit/` |
-| core_report | `deploy_core_report.sql` | `core_report/` |
-| game | `deploy_game.sql` | `game/` |
-| game_log | `deploy_game_log.sql` | `game_log/` |
-| finance | `deploy_finance.sql` | `finance/` |
-| finance_log | `deploy_finance_log.sql` | `finance_log/` |
-| bonus | `deploy_bonus.sql` | `bonus/` |
-| tenant | `deploy_tenant.sql` | `tenant/` |
-| tenant_log | `deploy_tenant_log.sql` | `tenant_log/` |
-| tenant_audit | `deploy_tenant_audit.sql` | `tenant_audit/` |
-| tenant_report | `deploy_tenant_report.sql` | `tenant_report/` |
-| tenant_affiliate | `deploy_tenant_affiliate.sql` | `tenant_affiliate/` |
+| Veritabanı | Deploy Script | Klasör | Not |
+|------------|---------------|--------|-----|
+| core (16 schema: iş + log + audit + report) | `deploy_core.sql` | `core/` | Eski core_log, core_audit, core_report DB'leri bu DB'ye birleştirildi |
+| game (iş + log) | `deploy_game.sql` | `game/` | Eski game_log DB'si bu DB'ye birleştirildi |
+| finance (iş + log) | `deploy_finance.sql` | `finance/` | Eski finance_log DB'si bu DB'ye birleştirildi |
+| bonus | `deploy_bonus.sql` | `bonus/` | |
+| client (birleşik, 30 schema) | `deploy_client.sql` | `client/` | |
 
 ---
 

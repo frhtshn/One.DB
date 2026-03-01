@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Affiliate Schema Indexes
+-- Client Affiliate - Affiliate Schema Indexes
 -- =============================================
 
 -- affiliates

@@ -1,15 +1,15 @@
 -- =============================================
--- Tablo: billing.tenant_invoice_payments
--- Açıklama: Tenant fatura ödeme kayıtları
--- Tenant'lardan gelen ödemelerin takibi
+-- Tablo: billing.client_invoice_payments
+-- Açıklama: Client fatura ödeme kayıtları
+-- Client'lardan gelen ödemelerin takibi
 -- Kısmi ödemeler için birden fazla kayıt olabilir
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_invoice_payments CASCADE;
+DROP TABLE IF EXISTS billing.client_invoice_payments CASCADE;
 
-CREATE TABLE billing.tenant_invoice_payments (
+CREATE TABLE billing.client_invoice_payments (
     id bigserial PRIMARY KEY,                              -- Benzersiz ödeme kimliği
-    tenant_invoice_id bigint NOT NULL,                     -- Fatura ID (FK: billing.tenant_invoices)
+    client_invoice_id bigint NOT NULL,                     -- Fatura ID (FK: billing.client_invoices)
 
     -- Ödeme bilgileri
     payment_date date NOT NULL,                            -- Ödeme tarihi
@@ -32,4 +32,4 @@ CREATE TABLE billing.tenant_invoice_payments (
     created_at timestamp without time zone NOT NULL DEFAULT now() -- Kayıt oluşturma zamanı
 );
 
-COMMENT ON TABLE billing.tenant_invoice_payments IS 'Payment records from tenants for invoices including partial payments, bank transfers, and netting arrangements';
+COMMENT ON TABLE billing.client_invoice_payments IS 'Payment records from clients for invoices including partial payments, bank transfers, and netting arrangements';

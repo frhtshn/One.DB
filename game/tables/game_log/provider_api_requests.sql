@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: game_log.provider_api_requests
 -- Açıklama: Game provider'lara yapılan API çağrı logları
--- Gateway seviyesi: Tüm tenant'lar için ortak
+-- Gateway seviyesi: Tüm client'lar için ortak
 -- Game launch, bet, win, balance vb. istekler
 -- GAME_LOG DB - 7 gün retention (daily partition)
 -- =============================================
@@ -12,7 +12,7 @@ CREATE TABLE game_log.provider_api_requests (
     id bigserial,
 
     -- Bağlam bilgileri
-    tenant_id BIGINT NOT NULL,                           -- Hangi tenant adına çağrı yapıldı
+    client_id BIGINT NOT NULL,                           -- Hangi client adına çağrı yapıldı
     player_id BIGINT,                                    -- İlgili oyuncu (varsa)
     provider_code VARCHAR(50) NOT NULL,                  -- Provider kodu: PRAGMATIC, EVOLUTION, EGT
     game_code VARCHAR(100),                              -- İlgili oyun kodu (varsa)
@@ -47,4 +47,4 @@ CREATE TABLE game_log.provider_api_requests (
 
 CREATE TABLE game_log.provider_api_requests_default PARTITION OF game_log.provider_api_requests DEFAULT;
 
-COMMENT ON TABLE game_log.provider_api_requests IS 'Outbound API call logs to game providers (launch, bet, win, balance, refund). Gateway-level shared across all tenants. Partitioned daily by created_at. Retention: 7 days.';
+COMMENT ON TABLE game_log.provider_api_requests IS 'Outbound API call logs to game providers (launch, bet, win, balance, refund). Gateway-level shared across all clients. Partitioned daily by created_at. Retention: 7 days.';

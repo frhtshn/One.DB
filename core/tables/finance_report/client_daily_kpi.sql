@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: finance.tenant_daily_kpi
--- Açıklama: Tenant bazlı günlük özet KPI tablosu.
--- Yönetim panelinde "Hangi Tenant ne kadar ciro yapıyor?" sorusunu cevaplar.
+-- Tablo: finance_report.client_daily_kpi
+-- Açıklama: Client bazlı günlük özet KPI tablosu.
+-- Yönetim panelinde "Hangi Client ne kadar ciro yapıyor?" sorusunu cevaplar.
 -- =============================================
 
-DROP TABLE IF EXISTS finance.tenant_daily_kpi CASCADE;
+DROP TABLE IF EXISTS finance_report.client_daily_kpi CASCADE;
 
-CREATE TABLE finance.tenant_daily_kpi (
+CREATE TABLE finance_report.client_daily_kpi (
     id bigserial,                              -- Benzersiz ID
     report_date date NOT NULL,                             -- Rapor tarihi
     company_id bigint NOT NULL,                            -- Company ID (Hızlı filtreleme için)
-    tenant_id bigint NOT NULL,                             -- Tenant ID
+    client_id bigint NOT NULL,                             -- Client ID
     currency varchar(20) NOT NULL,                          -- Para birimi (Fiat: TRY, Crypto: BTC)
 
     -- Oyun Performansı
@@ -35,6 +35,6 @@ CREATE TABLE finance.tenant_daily_kpi (
     PRIMARY KEY (id, report_date)
 ) PARTITION BY RANGE (report_date);
 
-CREATE TABLE finance.tenant_daily_kpi_default PARTITION OF finance.tenant_daily_kpi DEFAULT;
+CREATE TABLE finance_report.client_daily_kpi_default PARTITION OF finance_report.client_daily_kpi DEFAULT;
 
-COMMENT ON TABLE finance.tenant_daily_kpi IS 'Daily aggregated KPIs per tenant for central management reporting, partitioned monthly by report_date';
+COMMENT ON TABLE finance_report.client_daily_kpi IS 'Daily aggregated KPIs per client for central management reporting, partitioned monthly by report_date';

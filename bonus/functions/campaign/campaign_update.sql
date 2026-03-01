@@ -33,7 +33,7 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.campaign.id-required';
     END IF;
 
-    SELECT id, tenant_id, campaign_code INTO v_current
+    SELECT id, client_id, campaign_code INTO v_current
     FROM campaign.campaigns WHERE id = p_id;
 
     IF NOT FOUND THEN
@@ -44,7 +44,7 @@ BEGIN
     IF p_campaign_code IS NOT NULL AND UPPER(TRIM(p_campaign_code)) != v_current.campaign_code THEN
         IF EXISTS (
             SELECT 1 FROM campaign.campaigns
-            WHERE tenant_id IS NOT DISTINCT FROM v_current.tenant_id
+            WHERE client_id IS NOT DISTINCT FROM v_current.client_id
               AND campaign_code = UPPER(TRIM(p_campaign_code))
               AND id != p_id
         ) THEN

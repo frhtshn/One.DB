@@ -2,13 +2,13 @@
 -- Tablo: risk.risk_player_baselines
 -- Açıklama: Oyuncu bazlı istatistiksel özet
 -- Report Cluster yazar, RiskManager okur
--- Tüm tutarlar tenant base currency'sine normalize
+-- Tüm tutarlar client base currency'sine normalize
 -- =============================================
 
 DROP TABLE IF EXISTS risk.risk_player_baselines CASCADE;
 
 CREATE TABLE risk.risk_player_baselines (
-    tenant_id               INT             NOT NULL,
+    client_id               INT             NOT NULL,
     player_id               BIGINT          NOT NULL,
 
     -- Deposit / Withdrawal istatistikleri
@@ -48,7 +48,7 @@ CREATE TABLE risk.risk_player_baselines (
 
     updated_at              TIMESTAMPTZ     NOT NULL,
 
-    PRIMARY KEY (tenant_id, player_id)
+    PRIMARY KEY (client_id, player_id)
 );
 
-COMMENT ON TABLE risk.risk_player_baselines IS 'Per-player statistical baseline summary for risk analysis. Written by Report Cluster, read by RiskManager. All amounts normalized to tenant base currency.';
+COMMENT ON TABLE risk.risk_player_baselines IS 'Per-player statistical baseline summary for risk analysis. Written by Report Cluster, read by RiskManager. All amounts normalized to client base currency.';

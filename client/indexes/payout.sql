@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Payout Schema Indexes
+-- Client Affiliate - Payout Schema Indexes
 -- =============================================
 
 -- payout_requests

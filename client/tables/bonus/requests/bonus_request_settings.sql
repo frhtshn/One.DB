@@ -1,6 +1,6 @@
 -- =============================================
 -- Tablo: bonus.bonus_request_settings
--- Açıklama: Tenant bazlı bonus talep ayarları.
+-- Açıklama: Client bazlı bonus talep ayarları.
 --           Hangi bonus tiplerinin talep edilebilir
 --           olduğunu, uygunluk filtrelerini,
 --           cooldown sürelerini ve lokalize
@@ -50,4 +50,4 @@ CREATE TABLE bonus.bonus_request_settings (
     updated_at                  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
-COMMENT ON TABLE bonus.bonus_request_settings IS 'Per-tenant bonus request settings. Defines which bonus types are requestable by players, eligibility by player groups/categories, cooldown periods, request limits, localized display names and HTML rules content.';
+COMMENT ON TABLE bonus.bonus_request_settings IS 'Per-client bonus request settings. Defines which bonus types are requestable by players, eligibility by player groups/categories, cooldown periods, request limits, localized display names and HTML rules content.';

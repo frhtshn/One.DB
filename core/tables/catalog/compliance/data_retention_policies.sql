@@ -2,7 +2,7 @@
 -- Tablo: catalog.data_retention_policies
 -- Açıklama: Jurisdiction bazlı veri saklama süreleri
 -- Partition silme ve GDPR uyumu için kullanılır
--- Backend bu tabloyu okuyarak tenant başına
+-- Backend bu tabloyu okuyarak client başına
 -- doğru retention süresi ile maintenance çağırır
 -- =============================================
 

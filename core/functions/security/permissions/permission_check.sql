@@ -1,7 +1,7 @@
 -- ================================================================
 -- PERMISSION_CHECK: Kullanicinin belirli bir permission'a sahip olup olmadigini kontrol et
 -- Override destegi + manage fallback
--- Unified user_roles: tenant_id IS NULL = global, tenant_id IS NOT NULL = tenant
+-- Unified user_roles: client_id IS NULL = global, client_id IS NOT NULL = client
 -- Manage fallback: field scope haric, son segment 'manage' ile degistirilip kontrol edilir
 -- ================================================================
 
@@ -10,7 +10,7 @@ DROP FUNCTION IF EXISTS security.permission_check(BIGINT, VARCHAR, BIGINT);
 CREATE OR REPLACE FUNCTION security.permission_check(
     p_user_id BIGINT,
     p_permission_code VARCHAR(100),
-    p_tenant_id BIGINT DEFAULT NULL
+    p_client_id BIGINT DEFAULT NULL
 )
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -37,7 +37,7 @@ BEGIN
         WHERE upo.user_id = p_user_id
           AND upo.permission_id = v_permission_id
           AND upo.is_granted = FALSE
-          AND (upo.tenant_id IS NULL OR upo.tenant_id = p_tenant_id)
+          AND (upo.client_id IS NULL OR upo.client_id = p_client_id)
           AND (upo.expires_at IS NULL OR upo.expires_at > NOW())
     ) INTO v_is_denied;
 
@@ -51,7 +51,7 @@ BEGIN
         WHERE upo.user_id = p_user_id
           AND upo.permission_id = v_permission_id
           AND upo.is_granted = TRUE
-          AND (upo.tenant_id IS NULL OR upo.tenant_id = p_tenant_id)
+          AND (upo.client_id IS NULL OR upo.client_id = p_client_id)
           AND (upo.expires_at IS NULL OR upo.expires_at > NOW())
     ) INTO v_has_permission;
 
@@ -59,14 +59,14 @@ BEGIN
         RETURN TRUE;  -- Explicitly granted
     END IF;
 
-    -- 2. Global rollerden kontrol et (tenant_id IS NULL)
+    -- 2. Global rollerden kontrol et (client_id IS NULL)
     SELECT EXISTS (
         SELECT 1
         FROM security.user_roles ur
         JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
         JOIN security.role_permissions rp ON ur.role_id = rp.role_id
         WHERE ur.user_id = p_user_id
-          AND ur.tenant_id IS NULL
+          AND ur.client_id IS NULL
           AND rp.permission_id = v_permission_id
     ) INTO v_has_permission;
 
@@ -74,15 +74,15 @@ BEGIN
         RETURN TRUE;
     END IF;
 
-    -- 3. Tenant rollerinden kontrol et (tenant belirtilmişse, tenant_id IS NOT NULL)
-    IF p_tenant_id IS NOT NULL THEN
+    -- 3. Client rollerinden kontrol et (client belirtilmişse, client_id IS NOT NULL)
+    IF p_client_id IS NOT NULL THEN
         SELECT EXISTS (
             SELECT 1
             FROM security.user_roles ur
             JOIN security.roles r ON ur.role_id = r.id AND r.status = 1
             JOIN security.role_permissions rp ON ur.role_id = rp.role_id
             WHERE ur.user_id = p_user_id
-              AND ur.tenant_id = p_tenant_id
+              AND ur.client_id = p_client_id
               AND rp.permission_id = v_permission_id
         ) INTO v_has_permission;
     END IF;
@@ -91,7 +91,7 @@ BEGIN
     IF NOT v_has_permission AND LEFT(p_permission_code, 6) != 'field.' THEN
         v_manage_code := regexp_replace(p_permission_code, '\.[^.]+$', '.manage');
         IF v_manage_code != p_permission_code THEN
-            RETURN security.permission_check(p_user_id, v_manage_code, p_tenant_id);
+            RETURN security.permission_check(p_user_id, v_manage_code, p_client_id);
         END IF;
     END IF;
 
@@ -101,5 +101,5 @@ $$;
 
 COMMENT ON FUNCTION security.permission_check IS
 'Checks if a user has a specific permission.
-Priority: 1) Deny override (blocks), 2) Grant override, 3) Global roles (tenant_id IS NULL), 4) Tenant roles (tenant_id = value).
+Priority: 1) Deny override (blocks), 2) Grant override, 3) Global roles (client_id IS NULL), 4) Client roles (client_id = value).
 Manage fallback: If specific permission not found, checks {scope}.{entity}.manage (field scope haric).';

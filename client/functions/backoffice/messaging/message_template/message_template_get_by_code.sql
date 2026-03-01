@@ -51,4 +51,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.message_template_get_by_code(VARCHAR, CHAR) IS 'Get active tenant message template content by code and language. Used by backend for rendering. No auth check.';
+COMMENT ON FUNCTION messaging.message_template_get_by_code(VARCHAR, CHAR) IS 'Get active client message template content by code and language. Used by backend for rendering. No auth check.';

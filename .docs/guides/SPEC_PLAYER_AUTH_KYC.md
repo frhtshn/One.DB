@@ -30,29 +30,29 @@ Oyuncu yaşam döngüsünün fonksiyonel spesifikasyonu: kayıt, doğrulama, log
 
 | DB | Schema | Fonksiyon | Tablo | Açıklama |
 |----|--------|-----------|-------|----------|
-| **tenant** | auth | 32 | 8 | Kayıt, login, şifre, BO yönetimi, sınıflandırma, shadow tester |
-| **tenant** | profile | 5 | 2 | Profil, kimlik belgesi |
-| **tenant** | kyc | 28 | 8 | KYC vaka, belge, kısıtlama, limit, AML, yetki alanı |
-| **tenant** | wallet | 1 | — | Cüzdan oluşturma (tablolar Finance domain'inde) |
-| **tenant_audit** | kyc_audit | 7 | 2 | Tarama sonuçları, risk değerlendirme |
-| **tenant_log** | kyc_log | 2 | 1 | Provider API logları (günlük partition) |
+| **client** | auth | 32 | 8 | Kayıt, login, şifre, BO yönetimi, sınıflandırma, shadow tester |
+| **client** | profile | 5 | 2 | Profil, kimlik belgesi |
+| **client** | kyc | 28 | 8 | KYC vaka, belge, kısıtlama, limit, AML, yetki alanı |
+| **client** | wallet | 1 | — | Cüzdan oluşturma (tablolar Finance domain'inde) |
+| **client_audit** | kyc_audit | 7 | 2 | Tarama sonuçları, risk değerlendirme |
+| **client_log** | kyc_log | 2 | 1 | Provider API logları (günlük partition) |
 
 ### 1.3 Cross-DB İlişki
 
 ```mermaid
 flowchart LR
-    subgraph tenant["Tenant DB"]
+    subgraph client["Client DB"]
         AUTH[auth schema<br/>32 fn, 8 tbl]
         PROF[profile schema<br/>5 fn, 2 tbl]
         KYC[kyc schema<br/>28 fn, 8 tbl]
         WAL[wallet schema<br/>1 fn]
     end
 
-    subgraph audit["Tenant Audit DB"]
+    subgraph audit["Client Audit DB"]
         KAUD[kyc_audit schema<br/>7 fn, 2 tbl]
     end
 
-    subgraph log["Tenant Log DB"]
+    subgraph log["Client Log DB"]
         KLOG[kyc_log schema<br/>2 fn, 1 tbl]
     end
 
@@ -63,7 +63,7 @@ flowchart LR
     AUTH -.-|"player_id (cross-DB)"| KLOG
 ```
 
-> **Cross-DB kuralı:** Tenant Audit ve Tenant Log DB'lerinde FK yoktur. `player_id` referansı uygulama katmanında korunur. DB'ler arası doğrudan sorgu yapılmaz.
+> **Cross-DB kuralı:** Client Audit ve Client Log DB'lerinde FK yoktur. `player_id` referansı uygulama katmanında korunur. DB'ler arası doğrudan sorgu yapılmaz.
 
 ---
 
@@ -166,27 +166,27 @@ stateDiagram-v2
 
 | # | Tablo | DB | Kolon | Açıklama |
 |---|-------|-----|-------|----------|
-| 1 | `auth.players` | tenant | 20 | Oyuncu ana tablosu (şifreli email, Argon2id şifre, 2FA) |
-| 2 | `auth.email_verification_tokens` | tenant | 6 | E-posta doğrulama tokenları (UUID, TTL 24h) |
-| 3 | `auth.password_reset_tokens` | tenant | 6 | Şifre sıfırlama tokenları (UUID, TTL 60m) |
-| 4 | `auth.player_password_history` | tenant | 4 | Şifre geçmişi (son N hash saklanır) |
-| 5 | `auth.player_categories` | tenant | 8 | VIP kategorileri (Bronze, Silver, Gold) |
-| 6 | `auth.player_groups` | tenant | 8 | Oyuncu grupları (hedefleme için) |
-| 7 | `auth.player_classification` | tenant | 5 | Oyuncu-kategori/grup eşleme |
-| 8 | `auth.shadow_testers` | tenant | 5 | Shadow mode test oyuncuları |
-| 9 | `profile.player_profile` | tenant | 17 | Kişisel bilgiler (şifreli PII, GDPR/KVKK) |
-| 10 | `profile.player_identity` | tenant | 6 | Kimlik belgesi (şifreli, doğrulama durumu) |
-| 11 | `kyc.player_kyc_cases` | tenant | 9 | KYC vakaları |
-| 12 | `kyc.player_kyc_workflows` | tenant | 8 | KYC durum değişiklik tarihçesi |
-| 13 | `kyc.player_documents` | tenant | 18 | KYC belgeleri (DB veya object storage) |
-| 14 | `kyc.player_jurisdiction` | tenant | 24 | Yetki alanı ve GeoIP takibi |
-| 15 | `kyc.player_limits` | tenant | 14 | Sorumlu oyun limitleri (cooling period) |
-| 16 | `kyc.player_restrictions` | tenant | 15 | Kısıtlamalar (self-exclusion, cooling-off) |
-| 17 | `kyc.player_limit_history` | tenant | 13 | Limit/kısıtlama değişiklik logu |
-| 18 | `kyc.player_aml_flags` | tenant | 35 | AML uyarıları ve SAR yönetimi |
-| 19 | `kyc_audit.player_risk_assessments` | tenant_audit | 26 | Risk skorlama (6 bileşen) |
-| 20 | `kyc_audit.player_screening_results` | tenant_audit | 21 | PEP/Sanctions tarama sonuçları |
-| 21 | `kyc_log.player_kyc_provider_logs` | tenant_log | 14 | Provider API logları (günlük partition) |
+| 1 | `auth.players` | client | 20 | Oyuncu ana tablosu (şifreli email, Argon2id şifre, 2FA) |
+| 2 | `auth.email_verification_tokens` | client | 6 | E-posta doğrulama tokenları (UUID, TTL 24h) |
+| 3 | `auth.password_reset_tokens` | client | 6 | Şifre sıfırlama tokenları (UUID, TTL 60m) |
+| 4 | `auth.player_password_history` | client | 4 | Şifre geçmişi (son N hash saklanır) |
+| 5 | `auth.player_categories` | client | 8 | VIP kategorileri (Bronze, Silver, Gold) |
+| 6 | `auth.player_groups` | client | 8 | Oyuncu grupları (hedefleme için) |
+| 7 | `auth.player_classification` | client | 5 | Oyuncu-kategori/grup eşleme |
+| 8 | `auth.shadow_testers` | client | 5 | Shadow mode test oyuncuları |
+| 9 | `profile.player_profile` | client | 17 | Kişisel bilgiler (şifreli PII, GDPR/KVKK) |
+| 10 | `profile.player_identity` | client | 6 | Kimlik belgesi (şifreli, doğrulama durumu) |
+| 11 | `kyc.player_kyc_cases` | client | 9 | KYC vakaları |
+| 12 | `kyc.player_kyc_workflows` | client | 8 | KYC durum değişiklik tarihçesi |
+| 13 | `kyc.player_documents` | client | 18 | KYC belgeleri (DB veya object storage) |
+| 14 | `kyc.player_jurisdiction` | client | 24 | Yetki alanı ve GeoIP takibi |
+| 15 | `kyc.player_limits` | client | 14 | Sorumlu oyun limitleri (cooling period) |
+| 16 | `kyc.player_restrictions` | client | 15 | Kısıtlamalar (self-exclusion, cooling-off) |
+| 17 | `kyc.player_limit_history` | client | 13 | Limit/kısıtlama değişiklik logu |
+| 18 | `kyc.player_aml_flags` | client | 35 | AML uyarıları ve SAR yönetimi |
+| 19 | `kyc_audit.player_risk_assessments` | client_audit | 26 | Risk skorlama (6 bileşen) |
+| 20 | `kyc_audit.player_screening_results` | client_audit | 21 | PEP/Sanctions tarama sonuçları |
+| 21 | `kyc_log.player_kyc_provider_logs` | client_log | 14 | Provider API logları (günlük partition) |
 
 ### 3.3 Temel Tablo Yapıları
 
@@ -1168,7 +1168,7 @@ COALESCE partial update. Önemli: `jurisdiction_id` değiştiğinde `previous_ju
 
 ---
 
-### 4.16 Tarama ve Risk Değerlendirme (Tenant Audit DB)
+### 4.16 Tarama ve Risk Değerlendirme (Client Audit DB)
 
 #### `kyc_audit.screening_result_create`
 
@@ -1248,7 +1248,7 @@ COALESCE partial update. Önemli: `jurisdiction_id` değiştiğinde `previous_ju
 
 ---
 
-### 4.17 KYC Provider Logları (Tenant Log DB)
+### 4.17 KYC Provider Logları (Client Log DB)
 
 | Fonksiyon | Parametreler | Dönüş | Açıklama |
 |-----------|-------------|-------|----------|
@@ -1321,7 +1321,7 @@ COALESCE partial update. Önemli: `jurisdiction_id` değiştiğinde `previous_ju
 
 | Tablo | DB | Strateji | Retention |
 |-------|-----|----------|-----------|
-| kyc_log.player_kyc_provider_logs | tenant_log | Daily (created_at) | 90+ gün |
+| kyc_log.player_kyc_provider_logs | client_log | Daily (created_at) | 90+ gün |
 
 ---
 
@@ -1331,27 +1331,27 @@ COALESCE partial update. Önemli: `jurisdiction_id` değiştiğinde `previous_ju
 
 | Dizin | Dosya Sayısı |
 |-------|-------------|
-| `tenant/tables/player_auth/` | 8 (players, tokens×2, password_history, categories, groups, classification, shadow_testers) |
-| `tenant/tables/player_profile/` | 2 (player_profile, player_identity) |
-| `tenant/tables/kyc/` | 8 (kyc_cases, workflows, documents, jurisdiction, limits, restrictions, limit_history, aml_flags) |
-| `tenant_audit/tables/` | 2 (risk_assessments, screening_results) |
-| `tenant_log/tables/` | 1 (provider_logs) |
+| `client/tables/player_auth/` | 8 (players, tokens×2, password_history, categories, groups, classification, shadow_testers) |
+| `client/tables/player_profile/` | 2 (player_profile, player_identity) |
+| `client/tables/kyc/` | 8 (kyc_cases, workflows, documents, jurisdiction, limits, restrictions, limit_history, aml_flags) |
+| `client_audit/tables/` | 2 (risk_assessments, screening_results) |
+| `client_log/tables/` | 1 (provider_logs) |
 
 ### Fonksiyonlar
 
 | Dizin | Dosya Sayısı |
 |-------|-------------|
-| `tenant/functions/frontend/auth/` | 10 |
-| `tenant/functions/frontend/profile/` | 5 |
-| `tenant/functions/backoffice/auth/` | 22 |
-| `tenant/functions/backoffice/kyc/` | 28 |
-| `tenant/functions/gateway/wallet/` | 1 (wallet_create) |
-| `tenant_audit/functions/kyc_audit/` | 7 |
-| `tenant_log/functions/kyc_log/` | 2 |
+| `client/functions/frontend/auth/` | 10 |
+| `client/functions/frontend/profile/` | 5 |
+| `client/functions/backoffice/auth/` | 22 |
+| `client/functions/backoffice/kyc/` | 28 |
+| `client/functions/gateway/wallet/` | 1 (wallet_create) |
+| `client_audit/functions/kyc_audit/` | 7 |
+| `client_log/functions/kyc_log/` | 2 |
 
 ### Constraint & Index
 
 | Dosya | Açıklama |
 |-------|----------|
-| `tenant/constraints/auth.sql` | FK constraints (tokens → players) |
-| `tenant/indexes/auth.sql` | Auth schema index'leri |
+| `client/constraints/auth.sql` | FK constraints (tokens → players) |
+| `client/indexes/auth.sql` | Auth schema index'leri |

@@ -1,5 +1,5 @@
 -- ================================================================
--- GAME_LIMITS_SYNC: Core->Tenant currency limits senkronizasyonu
+-- GAME_LIMITS_SYNC: Core->Client currency limits senkronizasyonu
 -- ================================================================
 -- p_limits TEXT → JSONB array cast.
 -- Mevcut kayıtlar güncellenir, yeniler eklenir.
@@ -80,4 +80,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION game.game_limits_sync(BIGINT, TEXT) IS 'Syncs per-game currency limits from Core to Tenant DB. Accepts TEXT→JSONB array. Limits not in payload are soft-deleted (is_active=false). Auth-agnostic.';
+COMMENT ON FUNCTION game.game_limits_sync(BIGINT, TEXT) IS 'Syncs per-game currency limits from Core to Client DB. Accepts TEXT→JSONB array. Limits not in payload are soft-deleted (is_active=false). Auth-agnostic.';

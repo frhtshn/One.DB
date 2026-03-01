@@ -23,7 +23,7 @@ BEGIN
 
     SELECT jsonb_build_object(
         'id', pc.id,
-        'tenantId', pc.tenant_id,
+        'clientId', pc.client_id,
         'code', pc.code,
         'promoName', pc.promo_name,
         'bonusRuleId', pc.bonus_rule_id,

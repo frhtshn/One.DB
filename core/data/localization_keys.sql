@@ -97,16 +97,16 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 -- System - Database Exceptions
 ('error.system.database.connection-failed', 'error', 'system', 'Veritabanı bağlantı hatası'),
 ('error.system.database.query-failed', 'error', 'system', 'Veritabanı sorgu hatası. Args: {0}=operation'),
-('error.system.database.invalid-tenant-id', 'error', 'system', 'Geçersiz tenant ID. Args: {0}=tenantId'),
+('error.system.database.invalid-client-id', 'error', 'system', 'Geçersiz client ID. Args: {0}=clientId'),
 ('error.system.database.command-failed', 'error', 'system', 'Veritabanı işlem hatası. Args: {0}=operation'),
 
 -- Forbidden Exceptions
 ('error.forbidden.resource', 'error', 'forbidden', 'Kaynak erişim yetkisi yok. Args: {0}=resource, {1}=permission'),
-('error.tenant.access-denied', 'error', 'tenant', 'Tenant erişim engellendi. Args: {0}=tenantId'),
-('error.tenant.mismatch', 'error', 'tenant', 'Tenant uyuşmazlığı - farklı tenant için işlem yapılamaz'),
-('error.tenant.scope-missing', 'error', 'tenant', 'Tenant kapsam parametresi bulunamadı'),
+('error.client.access-denied', 'error', 'client', 'Client erişim engellendi. Args: {0}=clientId'),
+('error.client.mismatch', 'error', 'client', 'Client uyuşmazlığı - farklı client için işlem yapılamaz'),
+('error.client.scope-missing', 'error', 'client', 'Client kapsam parametresi bulunamadı'),
 ('error.access.company-scope-denied', 'error', 'access', 'Şirket kapsamı dışında işlem yapılamaz'),
-('error.access.tenant-scope-denied', 'error', 'access', 'Tenant kapsamı dışında işlem yapılamaz'),
+('error.access.client-scope-denied', 'error', 'access', 'Client kapsamı dışında işlem yapılamaz'),
 ('error.access.hierarchy-violation', 'error', 'access', 'Hiyerarşi ihlali - yetkisiz işlem'),
 ('error.access.denied', 'error', 'access', 'Erişim engellendi'),
 
@@ -131,11 +131,11 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.system.silo.cluster-unavailable', 'error', 'system', 'Orleans cluster erişilemez'),
 ('error.system.silo.auth-init-failed', 'error', 'system', 'Auth altyapısı başlatılamadı'),
 
--- Tenant Exceptions
-('error.tenant.not-active', 'error', 'tenant', 'Tenant aktif değil. Args: {0}=tenantId'),
-('error.tenant.configuration-invalid', 'error', 'tenant', 'Tenant konfigürasyon hatası. Args: {0}=tenantId, {1}=reason'),
-('error.tenant.code-exists', 'error', 'tenant', 'Tenant kodu zaten mevcut'),
-('error.tenant.not-found', 'error', 'tenant', 'Tenant bulunamadı'),
+-- Client Exceptions
+('error.client.not-active', 'error', 'client', 'Client aktif değil. Args: {0}=clientId'),
+('error.client.configuration-invalid', 'error', 'client', 'Client konfigürasyon hatası. Args: {0}=clientId, {1}=reason'),
+('error.client.code-exists', 'error', 'client', 'Client kodu zaten mevcut'),
+('error.client.not-found', 'error', 'client', 'Client bulunamadı'),
 
 -- Resource Not Found Exceptions
 ('error.resource.not-found', 'error', 'notfound', 'Kaynak bulunamadı. Args: {0}=resourceType, {1}=resourceId'),
@@ -236,13 +236,13 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.role.bulk-assign.failed', 'error', 'role', 'Toplu yetki atama başarısız'),
 ('error.role.assign-permission.failed', 'error', 'role', 'Role yetki atama başarısız'),
 ('error.role.remove-permission.failed', 'error', 'role', 'Rolden yetki kaldırma başarısız'),
-('error.role.assign-tenant.failed', 'error', 'role', 'Tenant rol atama başarısız'),
-('error.role.remove-tenant.failed', 'error', 'role', 'Tenant rol kaldırma başarısız'),
+('error.role.assign-client.failed', 'error', 'role', 'Client rol atama başarısız'),
+('error.role.remove-client.failed', 'error', 'role', 'Client rol kaldırma başarısız'),
 ('error.role.user-not-found', 'error', 'role', 'Kullanıcı bulunamadı'),
 ('error.role.permission-not-found', 'error', 'role', 'Yetki bulunamadı'),
 ('error.role.permission-deleted', 'error', 'role', 'Silinmiş yetki atanamaz'),
 ('error.role.operation-failed', 'error', 'role', 'Rol işlemi başarısız'),
-('error.role.tenant-mismatch', 'error', 'role', 'Tenant uyuşmazlığı'),
+('error.role.client-mismatch', 'error', 'role', 'Client uyuşmazlığı'),
 
 -- User Exceptions
 ('error.user.not-found', 'error', 'user', 'Kullanıcı bulunamadı'),
@@ -297,8 +297,8 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.currency.create.code-exists', 'error', 'currency', 'Para birimi kodu zaten mevcut'),
 ('error.currency.code-invalid', 'error', 'currency', 'Geçersiz para birimi kodu (3 karakter olmalı)'),
 ('error.currency.name-invalid', 'error', 'currency', 'Geçersiz para birimi adı (min 2 karakter)'),
-('error.currency.delete.in-use', 'error', 'currency', 'Para birimi silinemez, tenant tarafından kullanılıyor'),
-('error.currency.delete.is-base-currency', 'error', 'currency', 'Para birimi silinemez, tenant base currency olarak kullanıyor'),
+('error.currency.delete.in-use', 'error', 'currency', 'Para birimi silinemez, client tarafından kullanılıyor'),
+('error.currency.delete.is-base-currency', 'error', 'currency', 'Para birimi silinemez, client base currency olarak kullanıyor'),
 
 -- SQL Validation Exceptions
 ('error.sql.function-name-invalid', 'error', 'sql', 'Geçersiz function adı. Args: {0}=functionName'),
@@ -355,7 +355,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.payment-method.name-invalid', 'error', 'payment-method', 'Geçersiz ödeme yöntemi adı (min 2 karakter)'),
 ('error.payment-method.type-invalid', 'error', 'payment-method', 'Geçersiz ödeme tipi (CARD, EWALLET, BANK, CRYPTO, MOBILE, VOUCHER)'),
 ('error.payment-method.code-exists', 'error', 'payment-method', 'Ödeme yöntemi kodu bu provider altında zaten mevcut'),
-('error.payment-method.in-use', 'error', 'payment-method', 'Ödeme yöntemi silinemez, tenant tarafından kullanılıyor'),
+('error.payment-method.in-use', 'error', 'payment-method', 'Ödeme yöntemi silinemez, client tarafından kullanılıyor'),
 
 -- ============================================================================
 -- CATALOG - COMPLIANCE EXCEPTIONS
@@ -373,7 +373,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.jurisdiction.has-document-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı belge gereksinimleri mevcut'),
 ('error.jurisdiction.has-level-requirements', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı seviye gereksinimleri mevcut'),
 ('error.jurisdiction.has-gaming-policy', 'error', 'jurisdiction', 'Jurisdiction silinemez, bağlı sorumlu oyun politikası mevcut'),
-('error.jurisdiction.in-use-by-tenants', 'error', 'jurisdiction', 'Jurisdiction silinemez, tenant tarafından kullanılıyor'),
+('error.jurisdiction.in-use-by-clients', 'error', 'jurisdiction', 'Jurisdiction silinemez, client tarafından kullanılıyor'),
 
 -- KYC Policy Exceptions
 ('error.kyc-policy.not-found', 'error', 'kyc-policy', 'KYC politikası bulunamadı'),
@@ -452,23 +452,23 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.navigation-template-item.self-parent', 'error', 'navigation-template-item', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
 ('error.navigation-template-item.has-children', 'error', 'navigation-template-item', 'Öğe silinemez, alt öğeleri mevcut'),
 
--- Tenant Navigation Errors
-('error.tenant-navigation.not-found', 'error', 'tenant-navigation', 'Navigasyon öğesi bulunamadı'),
-('error.tenant-navigation.already-initialized', 'error', 'tenant-navigation', 'Tenant navigasyonu zaten mevcut'),
-('error.tenant-navigation.is-locked', 'error', 'tenant-navigation', 'Kilitli öğe silinemez'),
-('error.tenant-navigation.has-children', 'error', 'tenant-navigation', 'Öğe silinemez, alt öğeleri mevcut'),
-('error.tenant-navigation.parent-not-found', 'error', 'tenant-navigation', 'Üst öğe bulunamadı'),
-('error.tenant-navigation.self-parent', 'error', 'tenant-navigation', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
-('error.tenant-navigation.readonly-field-update', 'error', 'tenant-navigation', 'Salt okunur alan güncellenemez'),
-('error.tenant-navigation.invalid-item-ids', 'error', 'tenant-navigation', 'Geçersiz öğe ID listesi'),
+-- Client Navigation Errors
+('error.client-navigation.not-found', 'error', 'client-navigation', 'Navigasyon öğesi bulunamadı'),
+('error.client-navigation.already-initialized', 'error', 'client-navigation', 'Client navigasyonu zaten mevcut'),
+('error.client-navigation.is-locked', 'error', 'client-navigation', 'Kilitli öğe silinemez'),
+('error.client-navigation.has-children', 'error', 'client-navigation', 'Öğe silinemez, alt öğeleri mevcut'),
+('error.client-navigation.parent-not-found', 'error', 'client-navigation', 'Üst öğe bulunamadı'),
+('error.client-navigation.self-parent', 'error', 'client-navigation', 'Bir öğe kendi kendisinin üst öğesi olamaz'),
+('error.client-navigation.readonly-field-update', 'error', 'client-navigation', 'Salt okunur alan güncellenemez'),
+('error.client-navigation.invalid-item-ids', 'error', 'client-navigation', 'Geçersiz öğe ID listesi'),
 
--- Tenant Theme Errors
-('error.tenant-theme.not-found', 'error', 'tenant-theme', 'Tenant tema yapılandırması bulunamadı'),
-('error.tenant-theme.no-active-theme', 'error', 'tenant-theme', 'Aktif tema bulunamadı'),
+-- Client Theme Errors
+('error.client-theme.not-found', 'error', 'client-theme', 'Client tema yapılandırması bulunamadı'),
+('error.client-theme.no-active-theme', 'error', 'client-theme', 'Aktif tema bulunamadı'),
 
--- Tenant Layout Errors
-('error.tenant-layout.not-found', 'error', 'tenant-layout', 'Layout bulunamadı'),
-('error.tenant-layout.no-filter', 'error', 'tenant-layout', 'En az bir filtre parametresi gerekli'),
+-- Client Layout Errors
+('error.client-layout.not-found', 'error', 'client-layout', 'Layout bulunamadı'),
+('error.client-layout.no-filter', 'error', 'client-layout', 'En az bir filtre parametresi gerekli'),
 
 -- ============================================================================
 -- MESSAGING EXCEPTIONS
@@ -525,7 +525,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.role.hierarchy-violation', 'error', 'role', 'Rol hiyerarşi ihlali'),
 ('error.role.insufficient-level', 'error', 'role', 'Yetersiz rol seviyesi'),
 ('error.role.target-level-violation', 'error', 'role', 'Hedef rol seviyesi ihlali'),
-('error.role.tenant-required', 'error', 'role', 'Tenant ID zorunlu'),
+('error.role.client-required', 'error', 'role', 'Client ID zorunlu'),
 
 -- ============================================================================
 -- USER (ek)
@@ -541,12 +541,12 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.department.not-found', 'error', 'department', 'Departman bulunamadı'),
 
 -- ============================================================================
--- TENANT (ek)
+-- CLIENT (ek)
 -- ============================================================================
-('error.tenant.id-required', 'error', 'tenant', 'Tenant ID zorunlu'),
-('error.tenant-provider.not-found', 'error', 'tenant-provider', 'Tenant provider kaydı bulunamadı'),
-('error.tenant-game.not-found', 'error', 'tenant-game', 'Tenant oyun kaydı bulunamadı'),
-('error.tenant-payment-method.not-found', 'error', 'tenant-payment-method', 'Tenant ödeme yöntemi kaydı bulunamadı'),
+('error.client.id-required', 'error', 'client', 'Client ID zorunlu'),
+('error.client-provider.not-found', 'error', 'client-provider', 'Client provider kaydı bulunamadı'),
+('error.client-game.not-found', 'error', 'client-game', 'Client oyun kaydı bulunamadı'),
+('error.client-payment-method.not-found', 'error', 'client-payment-method', 'Client ödeme yöntemi kaydı bulunamadı'),
 
 -- ============================================================================
 -- PROVIDER (ek)
@@ -602,7 +602,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.payment-method.limits-invalid-format', 'error', 'payment-method', 'Geçersiz limit veri formatı'),
 
 -- ============================================================================
--- PLAYER (Tenant DB)
+-- PLAYER (Client DB)
 -- ============================================================================
 ('error.player.id-required', 'error', 'player', 'Oyuncu ID zorunlu'),
 ('error.player-limit.invalid-type', 'error', 'player-limit', 'Geçersiz limit tipi'),
@@ -688,7 +688,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.crypto-rates.timestamp-required', 'error', 'crypto-rates', 'Zaman damgası zorunlu'),
 
 -- ============================================================================
--- MESSAGING — TENANT (campaign, template, inbox)
+-- MESSAGING — CLIENT (campaign, template, inbox)
 -- ============================================================================
 ('error.messaging.player-id-required', 'error', 'messaging', 'Oyuncu ID zorunlu'),
 ('error.messaging.message-not-found', 'error', 'messaging', 'Mesaj bulunamadı'),
@@ -706,7 +706,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.messaging.campaign-not-cancellable', 'error', 'messaging', 'Kampanya iptal edilemez'),
 
 -- ============================================================================
--- NOTIFICATION TEMPLATES (platform + tenant)
+-- NOTIFICATION TEMPLATES (platform + client)
 -- ============================================================================
 ('error.notification-template.code-required', 'error', 'notification-template', 'Şablon kodu zorunlu'),
 ('error.notification-template.name-required', 'error', 'notification-template', 'Şablon adı zorunlu'),
@@ -1071,7 +1071,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.kyc-jurisdiction.already-exists', 'error', 'kyc-jurisdiction', 'Jurisdiction kaydı zaten mevcut'),
 ('error.kyc-jurisdiction.not-found', 'error', 'kyc-jurisdiction', 'Jurisdiction kaydı bulunamadı'),
 
--- KYC — Tarama Sonuçları (tenant_audit)
+-- KYC — Tarama Sonuçları (client_audit)
 ('error.kyc-screening.player-required', 'error', 'kyc-screening', 'Oyuncu ID zorunlu'),
 ('error.kyc-screening.screening-required', 'error', 'kyc-screening', 'Tarama ID zorunlu'),
 ('error.kyc-screening.type-required', 'error', 'kyc-screening', 'Tarama tipi zorunlu'),
@@ -1081,18 +1081,18 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.kyc-screening.reviewer-required', 'error', 'kyc-screening', 'İncelemeci ID zorunlu'),
 ('error.kyc-screening.not-found', 'error', 'kyc-screening', 'Tarama sonucu bulunamadı'),
 
--- KYC — Risk Değerlendirme (tenant_audit)
+-- KYC — Risk Değerlendirme (client_audit)
 ('error.kyc-risk.player-required', 'error', 'kyc-risk', 'Oyuncu ID zorunlu'),
 ('error.kyc-risk.type-required', 'error', 'kyc-risk', 'Değerlendirme tipi zorunlu'),
 ('error.kyc-risk.level-required', 'error', 'kyc-risk', 'Risk seviyesi zorunlu'),
 
--- KYC — Provider Log (tenant_log)
+-- KYC — Provider Log (client_log)
 ('error.kyc-provider-log.player-required', 'error', 'kyc-provider-log', 'Oyuncu ID zorunlu'),
 ('error.kyc-provider-log.case-required', 'error', 'kyc-provider-log', 'Case ID zorunlu'),
 ('error.kyc-provider-log.provider-required', 'error', 'kyc-provider-log', 'Sağlayıcı kodu zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Content Management (CMS)
+-- CLIENT BACKOFFICE — Content Management (CMS)
 -- ============================================================================
 ('error.content.id-required', 'error', 'content', 'İçerik ID zorunlu'),
 ('error.content.not-found', 'error', 'content', 'İçerik bulunamadı'),
@@ -1109,7 +1109,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.content.type-has-active-contents', 'error', 'content', 'Aktif içerikleri olan tip silinemez'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — FAQ Yönetimi
+-- CLIENT BACKOFFICE — FAQ Yönetimi
 -- ============================================================================
 ('error.faq.user-id-required', 'error', 'faq', 'Kullanıcı ID zorunlu'),
 ('error.faq.category-code-required', 'error', 'faq', 'FAQ kategori kodu zorunlu'),
@@ -1120,7 +1120,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.faq.item-not-found', 'error', 'faq', 'FAQ öğesi bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Layout Yönetimi
+-- CLIENT BACKOFFICE — Layout Yönetimi
 -- ============================================================================
 ('error.layout.id-required', 'error', 'layout', 'Layout ID zorunlu'),
 ('error.layout.not-found', 'error', 'layout', 'Layout bulunamadı'),
@@ -1128,13 +1128,13 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.layout.structure-required', 'error', 'layout', 'Layout yapısı zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Mesaj Tercihleri
+-- CLIENT BACKOFFICE — Mesaj Tercihleri
 -- ============================================================================
 ('error.messaging.preference.invalid-channel-type', 'error', 'messaging', 'Geçersiz tercih kanal tipi'),
 ('error.messaging.preference.opted-in-required', 'error', 'messaging', 'Tercih durumu (opted_in) zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Navigation Yönetimi
+-- CLIENT BACKOFFICE — Navigation Yönetimi
 -- ============================================================================
 ('error.navigation.id-required', 'error', 'navigation', 'Navigasyon öğesi ID zorunlu'),
 ('error.navigation.item-not-found', 'error', 'navigation', 'Navigasyon öğesi bulunamadı'),
@@ -1146,7 +1146,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.navigation.item-ids-required', 'error', 'navigation', 'Öğe ID listesi zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Popup Yönetimi
+-- CLIENT BACKOFFICE — Popup Yönetimi
 -- ============================================================================
 ('error.popup.id-required', 'error', 'popup', 'Popup ID zorunlu'),
 ('error.popup.not-found', 'error', 'popup', 'Popup bulunamadı'),
@@ -1156,7 +1156,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.popup.type-not-found', 'error', 'popup', 'Popup tipi bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Promosyon Yönetimi
+-- CLIENT BACKOFFICE — Promosyon Yönetimi
 -- ============================================================================
 ('error.promotion.id-required', 'error', 'promotion', 'Promosyon ID zorunlu'),
 ('error.promotion.not-found', 'error', 'promotion', 'Promosyon bulunamadı'),
@@ -1167,7 +1167,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.promotion.type-not-found', 'error', 'promotion', 'Promosyon tipi bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Slide/Banner Yönetimi
+-- CLIENT BACKOFFICE — Slide/Banner Yönetimi
 -- ============================================================================
 ('error.slide.id-required', 'error', 'slide', 'Slide ID zorunlu'),
 ('error.slide.not-found', 'error', 'slide', 'Slide bulunamadı'),
@@ -1181,12 +1181,12 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.slide.category-not-found', 'error', 'slide', 'Slide kategorisi bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Tema Yönetimi (ek)
+-- CLIENT BACKOFFICE — Tema Yönetimi (ek)
 -- ============================================================================
 ('error.theme.theme-id-required', 'error', 'theme', 'Tema referans ID zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Güven Elementleri (Trust Logos)
+-- CLIENT BACKOFFICE — Güven Elementleri (Trust Logos)
 -- ============================================================================
 ('error.trust-logo.code-required', 'error', 'trust-logo', 'Logo kodu zorunlu'),
 ('error.trust-logo.type-required', 'error', 'trust-logo', 'Logo tipi zorunlu'),
@@ -1197,7 +1197,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.trust-logo.id-required', 'error', 'trust-logo', 'Logo ID zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Operatör Lisansları
+-- CLIENT BACKOFFICE — Operatör Lisansları
 -- ============================================================================
 ('error.operator-license.jurisdiction-required', 'error', 'operator-license', 'Yetki alanı zorunlu'),
 ('error.operator-license.license-number-required', 'error', 'operator-license', 'Lisans numarası zorunlu'),
@@ -1206,7 +1206,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.operator-license.not-found', 'error', 'operator-license', 'Lisans bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — SEO Yönlendirme
+-- CLIENT BACKOFFICE — SEO Yönlendirme
 -- ============================================================================
 ('error.seo-redirect.from-slug-required', 'error', 'seo-redirect', 'Kaynak URL zorunlu'),
 ('error.seo-redirect.to-url-required', 'error', 'seo-redirect', 'Hedef URL zorunlu'),
@@ -1217,7 +1217,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.seo-redirect.not-found', 'error', 'seo-redirect', 'Yönlendirme bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — İçerik SEO Meta
+-- CLIENT BACKOFFICE — İçerik SEO Meta
 -- ============================================================================
 ('error.content-seo-meta.content-id-required', 'error', 'content-seo-meta', 'İçerik ID zorunlu'),
 ('error.content-seo-meta.language-required', 'error', 'content-seo-meta', 'Dil kodu zorunlu'),
@@ -1225,7 +1225,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.content-seo-meta.translation-not-found', 'error', 'content-seo-meta', 'İçerik çevirisi bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Sosyal Medya Bağlantıları
+-- CLIENT BACKOFFICE — Sosyal Medya Bağlantıları
 -- ============================================================================
 ('error.social-link.platform-required', 'error', 'social-link', 'Platform adı zorunlu'),
 ('error.social-link.url-required', 'error', 'social-link', 'URL zorunlu'),
@@ -1234,7 +1234,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.social-link.not-found', 'error', 'social-link', 'Bağlantı bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Site Ayarları
+-- CLIENT BACKOFFICE — Site Ayarları
 -- ============================================================================
 ('error.site-settings.field-name-required', 'error', 'site-settings', 'Alan adı zorunlu'),
 ('error.site-settings.value-required', 'error', 'site-settings', 'Alan değeri zorunlu'),
@@ -1242,7 +1242,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.site-settings.not-found', 'error', 'site-settings', 'Site ayarları bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Duyuru Çubukları
+-- CLIENT BACKOFFICE — Duyuru Çubukları
 -- ============================================================================
 ('error.announcement-bar.code-required', 'error', 'announcement-bar', 'Duyuru çubuğu kodu zorunlu'),
 ('error.announcement-bar.invalid-audience', 'error', 'announcement-bar', 'Geçersiz hedef kitle'),
@@ -1254,7 +1254,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.announcement-bar-translation.text-required', 'error', 'announcement-bar-translation', 'Duyuru metni zorunlu'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Lobi Bölümleri
+-- CLIENT BACKOFFICE — Lobi Bölümleri
 -- ============================================================================
 ('error.lobby-section.code-required', 'error', 'lobby-section', 'Bölüm kodu zorunlu'),
 ('error.lobby-section.max-items-invalid', 'error', 'lobby-section', 'Maksimum öğe sayısı geçersiz'),
@@ -1270,7 +1270,7 @@ INSERT INTO catalog.localization_keys (localization_key, domain, category, descr
 ('error.lobby-section-game.not-found', 'error', 'lobby-section-game', 'Bölüm-oyun ilişkisi bulunamadı'),
 
 -- ============================================================================
--- TENANT BACKOFFICE — Oyun Etiketleri
+-- CLIENT BACKOFFICE — Oyun Etiketleri
 -- ============================================================================
 ('error.game-label.game-id-required', 'error', 'game-label', 'Oyun ID zorunlu'),
 ('error.game-label.label-type-required', 'error', 'game-label', 'Etiket tipi zorunlu'),

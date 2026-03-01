@@ -45,7 +45,7 @@ BEGIN
         'rewardDetails', ba.reward_details,
         'expiresAt', ba.expires_at,
         'status', ba.status,
-        'tenantTransactionId', ba.tenant_transaction_id,
+        'clientTransactionId', ba.client_transaction_id,
         'completionTransactionId', ba.completion_transaction_id,
         'awardedBy', ba.awarded_by,
         'cancellationReason', ba.cancellation_reason,

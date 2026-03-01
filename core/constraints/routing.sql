@@ -5,10 +5,10 @@ ALTER TABLE routing.callback_routes
     ADD CONSTRAINT fk_callback_routes_provider
     FOREIGN KEY (provider_id) REFERENCES catalog.providers(id);
 
--- callback_routes -> tenants
+-- callback_routes -> clients
 ALTER TABLE routing.callback_routes
-    ADD CONSTRAINT fk_callback_routes_tenant
-    FOREIGN KEY (tenant_id) REFERENCES core.tenants(id);
+    ADD CONSTRAINT fk_callback_routes_client
+    FOREIGN KEY (client_id) REFERENCES core.clients(id);
 
 -- provider_callbacks -> providers
 ALTER TABLE routing.provider_callbacks

@@ -23,7 +23,7 @@ BEGIN
 
     SELECT jsonb_build_object(
         'id', bt.id,
-        'tenantId', bt.tenant_id,
+        'clientId', bt.client_id,
         'typeCode', bt.type_code,
         'typeName', bt.type_name,
         'description', bt.description,

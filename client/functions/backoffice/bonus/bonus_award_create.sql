@@ -155,7 +155,7 @@ BEGIN
 
     -- Award'a transaction referansı yaz
     UPDATE bonus.bonus_awards SET
-        tenant_transaction_id = v_tx_id
+        client_transaction_id = v_tx_id
     WHERE id = v_new_id;
 
     RETURN v_new_id;

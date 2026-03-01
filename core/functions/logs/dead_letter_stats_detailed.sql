@@ -41,10 +41,10 @@ BEGIN
             FROM (SELECT failure_category, COUNT(*) cnt FROM logs.dead_letter_messages
                   WHERE is_archived = FALSE AND failure_category IS NOT NULL GROUP BY failure_category) t
         ),
-        'byTenant', (
-            SELECT COALESCE(jsonb_agg(jsonb_build_object('key', tenant_id, 'total', cnt, 'pending', pending_cnt) ORDER BY cnt DESC), '[]'::JSONB)
-            FROM (SELECT tenant_id, COUNT(*) cnt, COUNT(*) FILTER (WHERE status = 'pending') pending_cnt
-                  FROM logs.dead_letter_messages WHERE is_archived = FALSE AND tenant_id IS NOT NULL GROUP BY tenant_id LIMIT 20) t
+        'byClient', (
+            SELECT COALESCE(jsonb_agg(jsonb_build_object('key', client_id, 'total', cnt, 'pending', pending_cnt) ORDER BY cnt DESC), '[]'::JSONB)
+            FROM (SELECT client_id, COUNT(*) cnt, COUNT(*) FILTER (WHERE status = 'pending') pending_cnt
+                  FROM logs.dead_letter_messages WHERE is_archived = FALSE AND client_id IS NOT NULL GROUP BY client_id LIMIT 20) t
         ),
         'hourlyTrend', (
             SELECT COALESCE(jsonb_agg(jsonb_build_object('hour', h, 'count', cnt) ORDER BY h), '[]'::JSONB)

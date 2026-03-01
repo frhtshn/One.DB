@@ -2,7 +2,7 @@
 -- Tablo: core.template_dumps
 -- Açıklama: Template DB dump versiyonları
 -- ProductionManager en güncel dump'ı kullanarak
--- yeni tenant DB'lerini pg_restore ile oluşturur.
+-- yeni client DB'lerini pg_restore ile oluşturur.
 -- Her DB tipi için ayrı dump kaydı tutulur.
 -- =============================================
 
@@ -10,9 +10,9 @@ DROP TABLE IF EXISTS core.template_dumps CASCADE;
 
 CREATE TABLE core.template_dumps (
     id BIGSERIAL PRIMARY KEY,                                     -- Benzersiz kayıt kimliği
-    db_type VARCHAR(30) NOT NULL,                                  -- tenant, tenant_audit, tenant_log, tenant_report, tenant_affiliate
+    db_type VARCHAR(30) NOT NULL,                                  -- client, client_audit, client_log, client_report, client_affiliate
     version VARCHAR(50) NOT NULL,                                  -- Versiyon: 2026.02.12-001
-    dump_path VARCHAR(500) NOT NULL,                               -- Dump konumu: s3://nucleo-dumps/tenant/2026.02.12-001.dump
+    dump_path VARCHAR(500) NOT NULL,                               -- Dump konumu: s3://so-dumps/client/2026.02.12-001.dump
     dump_size_bytes BIGINT,                                        -- Dump dosya boyutu
 
     -- Dump Formatı
@@ -32,4 +32,4 @@ CREATE TABLE core.template_dumps (
     created_by BIGINT                                              -- Oluşturan (sistem veya kullanıcı)
 );
 
-COMMENT ON TABLE core.template_dumps IS 'Template DB dump versions for tenant provisioning. ProductionManager uses the latest active dump for pg_restore. Each of the 5 tenant DB types has separate dump entries.';
+COMMENT ON TABLE core.template_dumps IS 'Template DB dump versions for client provisioning. ProductionManager uses the latest active dump for pg_restore. Each of the 5 client DB types has separate dump entries.';

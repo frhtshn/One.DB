@@ -27,7 +27,7 @@ BEGIN
         'message_type', d.message_type,
         'priority', d.priority,
         'company_id', d.company_id,
-        'tenant_ids', d.tenant_ids,
+        'client_ids', d.client_ids,
         'department_id', d.department_id,
         'role_id', d.role_id,
         'status', d.status,

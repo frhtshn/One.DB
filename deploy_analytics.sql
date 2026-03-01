@@ -28,7 +28,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Risk analiz tabloları (baseline + skor)
 -- =============================================================================
 \i analytics/tables/risk/risk_player_baselines.sql
-\i analytics/tables/risk/risk_tenant_baselines.sql
+\i analytics/tables/risk/risk_client_baselines.sql
 \i analytics/tables/risk/risk_player_scores.sql
 
 -- =============================================================================
@@ -36,7 +36,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Baseline okuma + skor yazma
 -- =============================================================================
 \i analytics/functions/risk/player_baseline_list.sql
-\i analytics/functions/risk/tenant_baseline_list.sql
+\i analytics/functions/risk/client_baseline_list.sql
 \i analytics/functions/risk/player_score_upsert.sql
 
 -- =============================================================================
@@ -44,7 +44,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA infra;
 -- Baseline yazma
 -- =============================================================================
 \i analytics/functions/risk/player_baseline_upsert.sql
-\i analytics/functions/risk/tenant_baseline_upsert.sql
+\i analytics/functions/risk/client_baseline_upsert.sql
 
 -- =============================================================================
 -- FUNCTIONS - Risk (BO Cluster)

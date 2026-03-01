@@ -9,7 +9,7 @@
 DROP FUNCTION IF EXISTS risk.player_score_upsert(INT, BIGINT, NUMERIC, VARCHAR, JSONB, JSONB, VARCHAR, TIMESTAMPTZ);
 
 CREATE OR REPLACE FUNCTION risk.player_score_upsert(
-    p_tenant_id          INT,
+    p_client_id          INT,
     p_player_id          BIGINT,
     p_anomaly_score      NUMERIC(5,4),
     p_risk_level         VARCHAR(10),
@@ -24,19 +24,19 @@ SECURITY DEFINER
 AS $$
 BEGIN
     INSERT INTO risk.risk_player_scores (
-        tenant_id, player_id,
+        client_id, player_id,
         anomaly_score, risk_level, pattern_deviations, zscore_details,
         model_version, high_risk_count, evaluation_count,
         evaluated_at, first_evaluated_at
     ) VALUES (
-        p_tenant_id, p_player_id,
+        p_client_id, p_player_id,
         p_anomaly_score, p_risk_level, p_pattern_deviations, p_zscore_details,
         p_model_version,
         CASE WHEN p_risk_level = 'high' THEN 1 ELSE 0 END,
         1,
         p_evaluated_at, p_evaluated_at
     )
-    ON CONFLICT (tenant_id, player_id) DO UPDATE SET
+    ON CONFLICT (client_id, player_id) DO UPDATE SET
         anomaly_score      = EXCLUDED.anomaly_score,
         risk_level         = EXCLUDED.risk_level,
         pattern_deviations = EXCLUDED.pattern_deviations,

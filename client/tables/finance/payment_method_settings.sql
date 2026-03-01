@@ -1,8 +1,8 @@
 -- =============================================
 -- Tablo: finance.payment_method_settings
--- Açıklama: Tenant ödeme yöntemi ayarları
--- Core DB'den denormalize edilmiş ödeme yöntemi bilgileri + tenant özelleştirmeleri
--- catalog.payment_methods + core.tenant_payment_methods verilerinin tenant kopyası
+-- Açıklama: Client ödeme yöntemi ayarları
+-- Core DB'den denormalize edilmiş ödeme yöntemi bilgileri + client özelleştirmeleri
+-- catalog.payment_methods + core.client_payment_methods verilerinin client kopyası
 -- =============================================
 
 DROP TABLE IF EXISTS finance.payment_method_settings CASCADE;
@@ -25,11 +25,11 @@ CREATE TABLE finance.payment_method_settings (
     payment_subtype VARCHAR(50),                                    -- Alt tip: CREDIT, DEBIT, PREPAID
     channel VARCHAR(50) DEFAULT 'ONLINE',                           -- Kanal: ONLINE, OFFLINE, MOBILE
 
-    -- Görseller (catalog veya tenant override)
+    -- Görseller (catalog veya client override)
     icon_url VARCHAR(500),                                          -- Yöntem ikonu
     logo_url VARCHAR(500),                                          -- Yöntem logosu
 
-    -- İşlem Yönleri (tenant seviyesinde)
+    -- İşlem Yönleri (client seviyesinde)
     allow_deposit BOOLEAN NOT NULL DEFAULT true,                    -- Para yatırmaya izin ver
     allow_withdrawal BOOLEAN NOT NULL DEFAULT true,                 -- Para çekmeye izin ver
     supports_refund BOOLEAN NOT NULL DEFAULT false,                 -- İade destekler mi
@@ -48,13 +48,13 @@ CREATE TABLE finance.payment_method_settings (
     is_mobile BOOLEAN NOT NULL DEFAULT true,                        -- Mobil uyumlu mu
     is_desktop BOOLEAN NOT NULL DEFAULT true,                       -- Desktop uyumlu mu
 
-    -- Tenant Görünüm Ayarları (core.tenant_payment_methods override)
+    -- Client Görünüm Ayarları (core.client_payment_methods override)
     display_order INTEGER DEFAULT 0,                                -- Sıralama
     is_visible BOOLEAN NOT NULL DEFAULT true,                       -- Görünür mü
     is_enabled BOOLEAN NOT NULL DEFAULT true,                       -- Aktif mi
     is_featured BOOLEAN NOT NULL DEFAULT false,                     -- Öne çıkarılmış mı
 
-    -- Tenant Özelleştirmeleri
+    -- Client Özelleştirmeleri
     custom_name VARCHAR(255),                                       -- Özel görünen ad
     custom_icon_url VARCHAR(500),                                   -- Özel ikon URL
     custom_description TEXT,                                        -- Özel açıklama
@@ -73,7 +73,7 @@ CREATE TABLE finance.payment_method_settings (
     available_from TIMESTAMP,                                       -- Ne zamandan itibaren mevcut
     available_until TIMESTAMP,                                      -- Ne zamana kadar mevcut
 
-    -- İşlem Süreleri (tenant override edilebilir)
+    -- İşlem Süreleri (client override edilebilir)
     deposit_processing_time VARCHAR(50),                            -- Para yatırma süresi
     withdrawal_processing_time VARCHAR(50),                         -- Para çekme süresi
 
@@ -89,4 +89,4 @@ CREATE TABLE finance.payment_method_settings (
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE finance.payment_method_settings IS 'Tenant payment method configurations with denormalized data from core, display settings, and platform restrictions';
+COMMENT ON TABLE finance.payment_method_settings IS 'Client payment method configurations with denormalized data from core, display settings, and platform restrictions';

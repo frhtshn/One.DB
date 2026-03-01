@@ -13,7 +13,7 @@
 DROP FUNCTION IF EXISTS presentation.get_layout(BIGINT, BIGINT);
 
 CREATE OR REPLACE FUNCTION presentation.get_layout(
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_layout_name VARCHAR(50) DEFAULT NULL,
     p_page_id BIGINT DEFAULT NULL
 )
@@ -27,9 +27,9 @@ DECLARE
     v_result JSONB;
 BEGIN
     -- ========================================
-    -- 1. TENANT VARLIK KONTROLÜ
+    -- 1. CLIENT VARLIK KONTROLÜ
     -- ========================================
-    IF NOT EXISTS (SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
+    IF NOT EXISTS (SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
         RETURN NULL;
     END IF;
 
@@ -50,8 +50,8 @@ BEGIN
         'structure', tl.structure
     )
     INTO v_result
-    FROM presentation.tenant_layouts tl
-    WHERE tl.tenant_id = p_tenant_id
+    FROM presentation.client_layouts tl
+    WHERE tl.client_id = p_client_id
       AND tl.is_active = TRUE
       AND (p_layout_name IS NULL OR tl.layout_name = p_layout_name)
       AND (p_page_id IS NULL OR tl.page_id = p_page_id);

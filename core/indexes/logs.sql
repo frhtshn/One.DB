@@ -7,8 +7,8 @@
 -- logs.error_logs
 -- =============================================
 
--- Tenant filtering (error_list, error_stats)
-CREATE INDEX IF NOT EXISTS idx_error_logs_tenant ON logs.error_logs USING btree(tenant_id) WHERE tenant_id IS NOT NULL;
+-- Client filtering (error_list, error_stats)
+CREATE INDEX IF NOT EXISTS idx_error_logs_client ON logs.error_logs USING btree(client_id) WHERE client_id IS NOT NULL;
 
 -- Error code lookup (error_list, error_stats)
 CREATE INDEX IF NOT EXISTS idx_error_logs_code ON logs.error_logs USING btree(error_code);
@@ -28,8 +28,8 @@ CREATE INDEX IF NOT EXISTS idx_error_logs_cluster ON logs.error_logs USING btree
 -- Correlation tracking
 CREATE INDEX IF NOT EXISTS idx_error_logs_correlation ON logs.error_logs USING btree(correlation_id) WHERE correlation_id IS NOT NULL;
 
--- Composite: tenant + occurred_at (common filter)
-CREATE INDEX IF NOT EXISTS idx_error_logs_tenant_date ON logs.error_logs USING btree(tenant_id, occurred_at DESC);
+-- Composite: client + occurred_at (common filter)
+CREATE INDEX IF NOT EXISTS idx_error_logs_client_date ON logs.error_logs USING btree(client_id, occurred_at DESC);
 
 -- Composite: error_code + occurred_at (top errors query)
 CREATE INDEX IF NOT EXISTS idx_error_logs_code_date ON logs.error_logs USING btree(error_code, occurred_at DESC);
@@ -49,8 +49,8 @@ CREATE INDEX IF NOT EXISTS idx_dead_letter_pending ON logs.dead_letter_messages 
 -- Event type filtering (dead_letter_stats)
 CREATE INDEX IF NOT EXISTS idx_dead_letter_event_type ON logs.dead_letter_messages USING btree(event_type);
 
--- Tenant filtering
-CREATE INDEX IF NOT EXISTS idx_dead_letter_tenant ON logs.dead_letter_messages USING btree(tenant_id) WHERE tenant_id IS NOT NULL;
+-- Client filtering
+CREATE INDEX IF NOT EXISTS idx_dead_letter_client ON logs.dead_letter_messages USING btree(client_id) WHERE client_id IS NOT NULL;
 
 -- Event ID lookup (dead_letter_get)
 CREATE INDEX IF NOT EXISTS idx_dead_letter_event ON logs.dead_letter_messages USING btree(event_id);

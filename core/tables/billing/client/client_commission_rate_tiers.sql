@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: billing.tenant_commission_rate_tiers
--- Açıklama: Tenant standart komisyon kademeleri
--- Nucleo'nun tenant'lardan alacağı standart kademe tanımları
--- tenant_commission_rates.rate_type=TIERED ise kullanılır
--- Belirli tenant özel kademeleri: tenant_commission_plan_tiers
+-- Tablo: billing.client_commission_rate_tiers
+-- Açıklama: Client standart komisyon kademeleri
+-- Sortis One'ın client'lardan alacağı standart kademe tanımları
+-- client_commission_rates.rate_type=TIERED ise kullanılır
+-- Belirli client özel kademeleri: client_commission_plan_tiers
 -- =============================================
 
-DROP TABLE IF EXISTS billing.tenant_commission_rate_tiers CASCADE;
+DROP TABLE IF EXISTS billing.client_commission_rate_tiers CASCADE;
 
-CREATE TABLE billing.tenant_commission_rate_tiers (
+CREATE TABLE billing.client_commission_rate_tiers (
     id bigserial PRIMARY KEY,                              -- Benzersiz kademe kimliği
-    rate_id bigint NOT NULL,                               -- Hangi komisyon oranına ait (tenant_commission_rates.id)
+    rate_id bigint NOT NULL,                               -- Hangi komisyon oranına ait (client_commission_rates.id)
 
     -- Kademe tanımı
     tier_order smallint NOT NULL,                          -- Kademe sırası: 1, 2, 3...
@@ -25,5 +25,5 @@ CREATE TABLE billing.tenant_commission_rate_tiers (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
-COMMENT ON TABLE billing.tenant_commission_rate_tiers IS 'Standard tiered commission rate brackets for progressive tenant billing based on volume thresholds';
+COMMENT ON TABLE billing.client_commission_rate_tiers IS 'Standard tiered commission rate brackets for progressive client billing based on volume thresholds';
 

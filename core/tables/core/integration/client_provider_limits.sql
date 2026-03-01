@@ -1,16 +1,16 @@
 -- =============================================
--- Tablo: core.tenant_provider_limits
--- Açıklama: Tenant provider limit tanımları
--- Her tenant/provider/ödeme yöntemi kombinasyonu için
+-- Tablo: core.client_provider_limits
+-- Açıklama: Client provider limit tanımları
+-- Her client/provider/ödeme yöntemi kombinasyonu için
 -- para yatırma ve çekme limitleri
 -- decimal(18,8) — crypto hassasiyeti desteği
 -- =============================================
 
-DROP TABLE IF EXISTS core.tenant_provider_limits CASCADE;
+DROP TABLE IF EXISTS core.client_provider_limits CASCADE;
 
-CREATE TABLE core.tenant_provider_limits (
+CREATE TABLE core.client_provider_limits (
     id bigserial PRIMARY KEY,                              -- Benzersiz limit kimliği
-    tenant_id bigint NOT NULL,                             -- Tenant ID (FK: core.tenants)
+    client_id bigint NOT NULL,                             -- Client ID (FK: core.clients)
     provider_id bigint NOT NULL,                           -- Provider ID (FK: catalog.providers)
     payment_method_id bigint NOT NULL,                     -- Ödeme yöntemi ID (FK: catalog.payment_methods)
 
@@ -32,4 +32,4 @@ CREATE TABLE core.tenant_provider_limits (
     updated_at timestamp without time zone NOT NULL DEFAULT now()  -- Son güncelleme zamanı
 );
 
-COMMENT ON TABLE core.tenant_provider_limits IS 'Tenant provider limit definitions for deposit and withdrawal limits per provider and payment method combination';
+COMMENT ON TABLE core.client_provider_limits IS 'Client provider limit definitions for deposit and withdrawal limits per provider and payment method combination';

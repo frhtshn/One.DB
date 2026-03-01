@@ -2,6 +2,6 @@
 -- Core Report - Billing Constraints
 -- =============================================
 
-ALTER TABLE billing.monthly_invoices
+ALTER TABLE billing_report.monthly_invoices
     ADD CONSTRAINT uq_monthly_invoices
-    UNIQUE (tenant_id, period_year, period_month, currency, created_at);
+    UNIQUE (client_id, period_year, period_month, currency, created_at);

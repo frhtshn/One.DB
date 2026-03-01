@@ -4,8 +4,8 @@
 -- callback_routes.provider_id -> providers.id
 CREATE INDEX idx_callback_routes_provider_id ON routing.callback_routes USING btree(provider_id);
 
--- callback_routes.tenant_id -> tenants.id
-CREATE INDEX idx_callback_routes_tenant_id ON routing.callback_routes USING btree(tenant_id);
+-- callback_routes.client_id -> clients.id
+CREATE INDEX idx_callback_routes_client_id ON routing.callback_routes USING btree(client_id);
 
 -- callback_routes (unique lookup by route_key)
 CREATE INDEX idx_callback_routes_route_key ON routing.callback_routes USING btree(route_key);

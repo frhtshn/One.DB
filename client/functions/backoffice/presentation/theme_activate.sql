@@ -7,7 +7,7 @@
 DROP FUNCTION IF EXISTS presentation.theme_activate(BIGINT);
 
 CREATE OR REPLACE FUNCTION presentation.theme_activate(
-    p_id                BIGINT              -- Tenant theme kayıt ID
+    p_id                BIGINT              -- Client theme kayıt ID
 )
 RETURNS VOID
 LANGUAGE plpgsql

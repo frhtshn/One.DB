@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Affiliate - Campaign Schema Indexes
+-- Client Affiliate - Campaign Schema Indexes
 -- =============================================
 
 -- traffic_sources

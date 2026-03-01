@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Log - Affiliate Schema Indexes
+-- Client Log - Affiliate Schema Indexes
 -- =============================================
 
 -- api_requests

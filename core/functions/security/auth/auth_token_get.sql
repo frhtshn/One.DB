@@ -17,7 +17,7 @@ BEGIN
         'tokenId', t.token_id,
         'userId', t.user_id,
         'companyId', t.company_id,
-        'tenantId', t.tenant_id,
+        'clientId', t.client_id,
         'sessionId', t.session_id,
         'type', t.token_type,
         'globalRoles', to_jsonb(t.global_roles),

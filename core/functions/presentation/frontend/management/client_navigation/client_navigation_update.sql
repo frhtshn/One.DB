@@ -1,27 +1,27 @@
 -- ================================================================
--- TENANT_NAVIGATION_UPDATE: Navigasyon öğesi güncelle
+-- CLIENT_NAVIGATION_UPDATE: Navigasyon öğesi güncelle
 -- ================================================================
 -- Açıklama:
---   Tenant navigasyon öğesini günceller.
+--   Client navigasyon öğesini günceller.
 --   is_readonly=TRUE olan öğelerde sadece görünürlük alanları güncellenebilir.
 -- Kurallar:
 --   - is_readonly=TRUE: Sadece custom_label, icon, badge, display_order, visibility alanları
 --   - is_readonly=FALSE: Tüm alanlar güncellenebilir
 -- Erişim:
---   - Platform Admin: Tüm tenant'lar
---   - CompanyAdmin: Kendi company'sindeki tenant'lar
---   - TenantAdmin: user_allowed_tenants'taki tenant'lar
+--   - Platform Admin: Tüm client'lar
+--   - CompanyAdmin: Kendi company'sindeki client'lar
+--   - ClientAdmin: user_allowed_clients'taki client'lar
 -- ================================================================
 
-DROP FUNCTION IF EXISTS presentation.tenant_navigation_update(
+DROP FUNCTION IF EXISTS presentation.client_navigation_update(
     BIGINT, BIGINT, BIGINT, VARCHAR, TEXT, VARCHAR, VARCHAR, VARCHAR,
     VARCHAR, VARCHAR, VARCHAR, BOOLEAN, BIGINT, INT, BOOLEAN, BOOLEAN,
     BOOLEAN, VARCHAR[], VARCHAR, VARCHAR
 );
 
-CREATE OR REPLACE FUNCTION presentation.tenant_navigation_update(
+CREATE OR REPLACE FUNCTION presentation.client_navigation_update(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_id BIGINT,
     -- Readonly olsa da güncellenebilen alanlar
     p_custom_label TEXT DEFAULT NULL,
@@ -52,24 +52,24 @@ AS $$
 DECLARE
     v_item RECORD;
 BEGIN
-    -- 1. Tenant varlık kontrolü
-    IF NOT EXISTS(SELECT 1 FROM core.tenants WHERE id = p_tenant_id AND status = 1) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+    -- 1. Client varlık kontrolü
+    IF NOT EXISTS(SELECT 1 FROM core.clients WHERE id = p_client_id AND status = 1) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
-    -- 2. Tenant erişim kontrolü
-    PERFORM security.user_assert_access_tenant(p_caller_id, p_tenant_id);
+    -- 2. Client erişim kontrolü
+    PERFORM security.user_assert_access_client(p_caller_id, p_client_id);
 
     -- ========================================
     -- 3. MEVCUT ÖĞEYİ AL
     -- ========================================
     SELECT id, is_readonly
     INTO v_item
-    FROM presentation.tenant_navigation
-    WHERE id = p_id AND tenant_id = p_tenant_id;
+    FROM presentation.client_navigation
+    WHERE id = p_id AND client_id = p_client_id;
 
     IF v_item.id IS NULL THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant-navigation.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client-navigation.not-found';
     END IF;
 
     -- ========================================
@@ -81,7 +81,7 @@ BEGIN
            p_target_type IS NOT NULL OR p_target_url IS NOT NULL OR
            p_target_action IS NOT NULL OR p_open_in_new_tab IS NOT NULL OR
            p_parent_id IS NOT NULL THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.tenant-navigation.readonly-field-update';
+            RAISE EXCEPTION USING ERRCODE = 'P0403', MESSAGE = 'error.client-navigation.readonly-field-update';
         END IF;
     END IF;
 
@@ -90,21 +90,21 @@ BEGIN
     -- ========================================
     IF p_parent_id IS NOT NULL THEN
         IF p_parent_id = p_id THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.tenant-navigation.self-parent';
+            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.client-navigation.self-parent';
         END IF;
 
         IF NOT EXISTS (
-            SELECT 1 FROM presentation.tenant_navigation
-            WHERE id = p_parent_id AND tenant_id = p_tenant_id
+            SELECT 1 FROM presentation.client_navigation
+            WHERE id = p_parent_id AND client_id = p_client_id
         ) THEN
-            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.tenant-navigation.parent-not-found';
+            RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.client-navigation.parent-not-found';
         END IF;
     END IF;
 
     -- ========================================
     -- 7. GÜNCELLE
     -- ========================================
-    UPDATE presentation.tenant_navigation
+    UPDATE presentation.client_navigation
     SET
         -- Her zaman güncellenebilen alanlar
         custom_label = COALESCE(p_custom_label::jsonb, custom_label),
@@ -131,8 +131,8 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION presentation.tenant_navigation_update IS
-'Updates a tenant navigation item.
+COMMENT ON FUNCTION presentation.client_navigation_update IS
+'Updates a client navigation item.
 Readonly items (is_readonly=TRUE) can only have visibility fields updated.
 Non-readonly items can have all fields updated.
-Access: Platform Admin (all), CompanyAdmin (own company), TenantAdmin (allowed tenants).';
+Access: Platform Admin (all), CompanyAdmin (own company), ClientAdmin (allowed clients).';

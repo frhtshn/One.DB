@@ -5,7 +5,7 @@
 -- Anti-abuse kontrolleri dahil:
 --   - Açık ticket limiti (max_open_tickets)
 --   - Cooldown süresi (son kapatmadan bu yana bekleme)
--- Parametreler backend tarafından core.tenant_settings'ten
+-- Parametreler backend tarafından core.client_settings'ten
 -- okunup iletilir — fonksiyon Core DB'ye erişmez.
 -- Auth-agnostic (backend çağırır).
 -- ================================================================
@@ -74,4 +74,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION support.player_ticket_create IS 'Player self-service ticket creation with anti-abuse controls (max open tickets, cooldown). Parameters are passed by backend from core.tenant_settings.';
+COMMENT ON FUNCTION support.player_ticket_create IS 'Player self-service ticket creation with anti-abuse controls (max open tickets, cooldown). Parameters are passed by backend from core.client_settings.';

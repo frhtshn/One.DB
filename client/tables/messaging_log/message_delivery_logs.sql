@@ -2,7 +2,7 @@
 -- Tablo: messaging_log.message_delivery_logs
 -- Mesaj gönderim detay logları
 -- Worker tarafından yazılır
--- TENANT_LOG DB - 90 gün retention
+-- CLIENT_LOG DB - 90 gün retention
 -- Günlük partition (created_at)
 -- =============================================
 
@@ -11,9 +11,9 @@ DROP TABLE IF EXISTS messaging_log.message_delivery_logs CASCADE;
 CREATE TABLE messaging_log.message_delivery_logs (
     id bigserial,
 
-    campaign_id INTEGER NOT NULL,                 -- Kampanya ID (tenant DB referans)
-    recipient_id BIGINT NOT NULL,                 -- Alıcı kaydı ID (tenant DB referans)
-    player_id BIGINT NOT NULL,                    -- Oyuncu ID (tenant DB referans)
+    campaign_id INTEGER NOT NULL,                 -- Kampanya ID (client DB referans)
+    recipient_id BIGINT NOT NULL,                 -- Alıcı kaydı ID (client DB referans)
+    player_id BIGINT NOT NULL,                    -- Oyuncu ID (client DB referans)
 
     -- Kanal ve durum
     channel_type VARCHAR(10) NOT NULL,            -- Kanal tipi: email, sms, local

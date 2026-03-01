@@ -123,7 +123,7 @@ Risk analiz baseline ve skor yönetimi. RiskManager skor yazar, Report Cluster b
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `player_baseline_list` | Tüm oyuncu baseline verilerini listele (cache yenileme için full scan) |
-| `tenant_baseline_list` | Tüm tenant baseline verilerini listele (cache yenileme için full scan) |
+| `client_baseline_list` | Tüm client baseline verilerini listele (cache yenileme için full scan) |
 | `player_score_upsert` | Oyuncu risk skorunu yaz/güncelle. high_risk_count ve evaluation_count atomik artırılır |
 
 ### Risk Schema — Report Cluster (2)
@@ -131,7 +131,7 @@ Risk analiz baseline ve skor yönetimi. RiskManager skor yazar, Report Cluster b
 | Fonksiyon | Açıklama |
 |-----------|----------|
 | `player_baseline_upsert` | Oyuncu baseline verilerini yaz/güncelle (istatistiksel profil) |
-| `tenant_baseline_upsert` | Tenant baseline verilerini yaz/güncelle (tenant geneli ortalamalar) |
+| `client_baseline_upsert` | Client baseline verilerini yaz/güncelle (client geneli ortalamalar) |
 
 ### Risk Schema — BO Cluster (2)
 

@@ -9,7 +9,7 @@ Oyuncu yaşam döngüsünün tamamını kapsayan geliştirici rehberi: kayıt �
 > **Tasarım dokümanları:**
 > - [PLAYER_AUTH_REGISTRATION.md](../../.planning/PLAYER_AUTH_REGISTRATION.md) — Kayıt, doğrulama, profil (18 fonksiyon)
 > - [KYC_OPERATIONS.md](../../.planning/KYC_OPERATIONS.md) — KYC operasyonları (37 fonksiyon)
-> - [FUNCTIONS_TENANT.md](../reference/FUNCTIONS_TENANT.md) — Fonksiyon referansı
+> - [FUNCTIONS_CLIENT.md](../reference/FUNCTIONS_CLIENT.md) — Fonksiyon referansı
 > - [PII_ENCRYPTION_GUIDE.md](PII_ENCRYPTION_GUIDE.md) — C# backend: AES-256, SHA-256, Argon2id implementasyonu
 
 ---
@@ -20,19 +20,19 @@ Oyuncu yaşam döngüsünün tamamını kapsayan geliştirici rehberi: kayıt �
 
 ```mermaid
 flowchart LR
-    subgraph tenant["Tenant DB"]
+    subgraph client["Client DB"]
         A1[auth schema<br/>31 fonksiyon]
         A2[profile schema<br/>5 fonksiyon]
         A3[kyc schema<br/>28 fonksiyon]
         A4[wallet schema<br/>+1 fonksiyon]
     end
 
-    subgraph tenant_audit["Tenant Audit DB"]
+    subgraph client_audit["Client Audit DB"]
         B1[player_audit schema<br/>8 fonksiyon]
         B2[kyc_audit schema<br/>7 fonksiyon]
     end
 
-    subgraph tenant_log["Tenant Log DB"]
+    subgraph client_log["Client Log DB"]
         C1[kyc_log schema<br/>2 fonksiyon]
     end
 
@@ -49,17 +49,17 @@ flowchart LR
 
 | DB | Schema | Fonksiyon | Açıklama |
 |----|--------|-----------|----------|
-| tenant | auth | 12 (yeni) | Kayıt, doğrulama, login, şifre, BO yönetimi |
-| tenant | profile | 5 (yeni) | Profil CRUD, kimlik belgesi |
-| tenant | kyc | 28 (yeni) | Vaka, belge, kısıtlama, limit, AML, yetki alanı |
-| tenant | wallet | 1 (yeni) | Cüzdan oluşturma |
-| tenant_audit | kyc_audit | 7 (yeni) | PEP/Sanctions tarama, risk değerlendirme |
-| tenant_log | kyc_log | 2 (yeni) | KYC sağlayıcı API logları |
+| client | auth | 12 (yeni) | Kayıt, doğrulama, login, şifre, BO yönetimi |
+| client | profile | 5 (yeni) | Profil CRUD, kimlik belgesi |
+| client | kyc | 28 (yeni) | Vaka, belge, kısıtlama, limit, AML, yetki alanı |
+| client | wallet | 1 (yeni) | Cüzdan oluşturma |
+| client_audit | kyc_audit | 7 (yeni) | PEP/Sanctions tarama, risk değerlendirme |
+| client_log | kyc_log | 2 (yeni) | KYC sağlayıcı API logları |
 | **Toplam** | | **55** | |
 
 ### Temel Prensipler
 
-- **Auth-agnostic:** Tüm DB fonksiyonları yetkilendirme kontrolü yapmaz. Backend, Core DB'den `user_assert_access_tenant()` ile yetki doğrular, sonra tenant fonksiyonunu çağırır.
+- **Auth-agnostic:** Tüm DB fonksiyonları yetkilendirme kontrolü yapmaz. Backend, Core DB'den `user_assert_access_client()` ile yetki doğrular, sonra client fonksiyonunu çağırır.
 - **Şifreleme uygulama katmanında:** DB'ye yalnızca hash/şifreli veri gelir. Argon2id (şifre), AES-256 (PII), SHA-256 (arama hash'i) backend tarafından yapılır.
 - **Cross-DB orchestration:** Backend ayrı bağlantılar üzerinden birden fazla DB'yi koordine eder. DB'ler arası doğrudan sorgu yapılmaz.
 
@@ -138,8 +138,8 @@ flowchart TD
 sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
-    participant TD as Tenant DB
-    participant TA as Tenant Audit
+    participant TD as Client DB
+    participant TA as Client Audit
     participant ES as Email Service
 
     FE->>BE: POST /register {username, email, password}
@@ -172,8 +172,8 @@ sequenceDiagram
 sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
-    participant TD as Tenant DB
-    participant TA as Tenant Audit
+    participant TD as Client DB
+    participant TA as Client Audit
 
     FE->>BE: POST /login {email, password}
     BE->>BE: SHA-256(email) → hash
@@ -234,7 +234,7 @@ DB: history_count'tan fazla kayıt varsa eski olanları sil
 sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
-    participant TD as Tenant DB
+    participant TD as Client DB
     participant ES as Email Service
 
     FE->>BE: POST /forgot-password {email}
@@ -335,8 +335,8 @@ stateDiagram-v2
 sequenceDiagram
     participant BO as BO Operatör
     participant BE as Backend
-    participant TD as Tenant DB
-    participant TA as Tenant Audit
+    participant TD as Client DB
+    participant TA as Client Audit
 
     Note over BO,TA: Faz 1 - Vaka Oluşturma
     BE->>TD: kyc.kyc_case_create(player_id)
@@ -496,17 +496,17 @@ stateDiagram-v2
 | `kyc.aml_flag_get` | flag_id | JSONB (STABLE) | Tam detay |
 | `kyc.aml_flag_list` | player_id, status, severity, flag_type, assigned_to, page, page_size | JSONB | Sayfalı liste |
 
-### Tarama & Risk Değerlendirme (Tenant Audit DB)
+### Tarama & Risk Değerlendirme (Client Audit DB)
 
 | Fonksiyon | DB | Açıklama |
 |-----------|-----|----------|
-| `kyc_audit.screening_result_create` | tenant_audit | PEP/Sanctions tarama sonucu kaydet |
-| `kyc_audit.screening_result_review` | tenant_audit | Tarama sonucunu incele |
-| `kyc_audit.screening_result_get` | tenant_audit | Tarama detayı |
-| `kyc_audit.screening_result_list` | tenant_audit | Sayfalı tarama listesi |
-| `kyc_audit.risk_assessment_create` | tenant_audit | Risk değerlendirmesi oluştur (6 bileşen skor) |
-| `kyc_audit.risk_assessment_get` | tenant_audit | Son risk değerlendirmesi |
-| `kyc_audit.risk_assessment_list` | tenant_audit | Risk tarihçesi |
+| `kyc_audit.screening_result_create` | client_audit | PEP/Sanctions tarama sonucu kaydet |
+| `kyc_audit.screening_result_review` | client_audit | Tarama sonucunu incele |
+| `kyc_audit.screening_result_get` | client_audit | Tarama detayı |
+| `kyc_audit.screening_result_list` | client_audit | Sayfalı tarama listesi |
+| `kyc_audit.risk_assessment_create` | client_audit | Risk değerlendirmesi oluştur (6 bileşen skor) |
+| `kyc_audit.risk_assessment_get` | client_audit | Son risk değerlendirmesi |
+| `kyc_audit.risk_assessment_list` | client_audit | Risk tarihçesi |
 
 #### Risk Skoru Bileşenleri
 
@@ -519,12 +519,12 @@ stateDiagram-v2
 | `sof_risk_score` | Kaynak fonları (Source of Funds) skoru |
 | `behavioral_risk_score` | Davranış analizi skoru |
 
-### KYC Sağlayıcı Logları (Tenant Log DB)
+### KYC Sağlayıcı Logları (Client Log DB)
 
 | Fonksiyon | DB | Açıklama |
 |-----------|-----|----------|
-| `kyc_log.provider_log_create` | tenant_log | API istek/yanıt logu |
-| `kyc_log.provider_log_list` | tenant_log | Sayfalı log listesi |
+| `kyc_log.provider_log_create` | client_log | API istek/yanıt logu |
+| `kyc_log.provider_log_list` | client_log | Sayfalı log listesi |
 
 ---
 
@@ -632,8 +632,8 @@ Desteklenen filtreler: status, email_verified, username (ILIKE), email_hash, fir
 
 | Tablo | DB | Açıklama |
 |-------|-----|----------|
-| `auth.email_verification_tokens` | tenant | E-posta doğrulama tokenları (UUID, TTL 24h) |
-| `auth.password_reset_tokens` | tenant | Şifre sıfırlama tokenları (UUID, TTL 60m) |
+| `auth.email_verification_tokens` | client | E-posta doğrulama tokenları (UUID, TTL 24h) |
+| `auth.password_reset_tokens` | client | Şifre sıfırlama tokenları (UUID, TTL 60m) |
 
 ### Modifiye Tablolar
 
@@ -642,14 +642,14 @@ Desteklenen filtreler: status, email_verified, username (ILIKE), email_hash, fir
 | `auth.players` | `status DEFAULT 1` → `DEFAULT 0`, +`email_verified BOOLEAN DEFAULT FALSE`, +`email_verified_at TIMESTAMPTZ` |
 | `profile.player_profile` | `birth_date BYTEA` → `DATE` (şifrelenmeden düz metin olarak saklanır) |
 
-### FK Constraints (tenant/constraints/auth.sql)
+### FK Constraints (client/constraints/auth.sql)
 
 | FK | Kaynak → Hedef | Kural |
 |----|---------------|-------|
 | `fk_email_verification_tokens_player` | email_verification_tokens.player_id → players.id | ON DELETE CASCADE |
 | `fk_password_reset_tokens_player` | password_reset_tokens.player_id → players.id | ON DELETE CASCADE |
 
-### Indexes (tenant/indexes/auth.sql)
+### Indexes (client/indexes/auth.sql)
 
 | Index | Tablo | Kolon | Not |
 |-------|-------|-------|-----|
@@ -708,32 +708,32 @@ Desteklenen filtreler: status, email_verified, username (ILIKE), email_hash, fir
 
 | Dosya | Açıklama |
 |-------|----------|
-| `tenant/tables/player_auth/email_verification_tokens.sql` | E-posta doğrulama tokenları |
-| `tenant/tables/player_auth/password_reset_tokens.sql` | Şifre sıfırlama tokenları |
+| `client/tables/player_auth/email_verification_tokens.sql` | E-posta doğrulama tokenları |
+| `client/tables/player_auth/password_reset_tokens.sql` | Şifre sıfırlama tokenları |
 
 ### Yeni Fonksiyonlar
 
 | Dizin | Dosya Sayısı | Açıklama |
 |-------|-------------|----------|
-| `tenant/functions/frontend/auth/` | 9 | Kayıt, doğrulama, login, şifre |
-| `tenant/functions/frontend/profile/` | 5 | Profil, kimlik belgesi |
-| `tenant/functions/backoffice/auth/` | 3 | BO oyuncu yönetimi |
-| `tenant/functions/backoffice/kyc/` | 28 | KYC operasyonları |
-| `tenant/functions/gateway/wallet/` | 1 | Cüzdan oluşturma |
-| `tenant_audit/functions/kyc_audit/` | 7 | Tarama, risk değerlendirme |
-| `tenant_log/functions/kyc_log/` | 2 | Sağlayıcı API logları |
+| `client/functions/frontend/auth/` | 9 | Kayıt, doğrulama, login, şifre |
+| `client/functions/frontend/profile/` | 5 | Profil, kimlik belgesi |
+| `client/functions/backoffice/auth/` | 3 | BO oyuncu yönetimi |
+| `client/functions/backoffice/kyc/` | 28 | KYC operasyonları |
+| `client/functions/gateway/wallet/` | 1 | Cüzdan oluşturma |
+| `client_audit/functions/kyc_audit/` | 7 | Tarama, risk değerlendirme |
+| `client_log/functions/kyc_log/` | 2 | Sağlayıcı API logları |
 
 ### Güncellenen Dosyalar
 
 | Dosya | Değişiklik |
 |-------|-----------|
-| `tenant/tables/player_auth/players.sql` | +email_verified, status default 0 |
-| `tenant/tables/player_profile/player_profile.sql` | birth_date BYTEA→DATE |
-| `tenant/constraints/auth.sql` | +2 FK |
-| `tenant/indexes/auth.sql` | +7 index |
-| `deploy_tenant.sql` | +48 entry |
-| `deploy_tenant_audit.sql` | +7 entry |
-| `deploy_tenant_log.sql` | +2 entry |
+| `client/tables/player_auth/players.sql` | +email_verified, status default 0 |
+| `client/tables/player_profile/player_profile.sql` | birth_date BYTEA→DATE |
+| `client/constraints/auth.sql` | +2 FK |
+| `client/indexes/auth.sql` | +7 index |
+| `deploy_client.sql` | +48 entry |
+| `deploy_client_audit.sql` | +7 entry |
+| `deploy_client_log.sql` | +2 entry |
 | `core/data/localization_keys.sql` | +97 key |
 | `core/data/localization_values_en.sql` | +97 EN çeviri |
 | `core/data/localization_values_tr.sql` | +97 TR çeviri |
@@ -750,7 +750,7 @@ Desteklenen filtreler: status, email_verified, username (ILIKE), email_hash, fir
 | Yeni FK constraint | 2 |
 | Yeni index | 7 |
 | Hata key | ~97 |
-| Etkilenen DB | 3 (tenant, tenant_audit, tenant_log) |
+| Etkilenen DB | 3 (client, client_audit, client_log) |
 | Etkilenen schema | 6 (auth, profile, kyc, wallet, kyc_audit, kyc_log) |
 | Deploy script | 3 güncelleme |
 | Localization | 3 dosya × 97 key |

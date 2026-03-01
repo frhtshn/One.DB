@@ -4,9 +4,9 @@
 -- Partitioned tablo: tüm partition'lar taranır (user_id index ile)
 -- ================================================================
 
-DROP FUNCTION IF EXISTS backoffice.auth_audit_list_by_user(BIGINT,INT);
+DROP FUNCTION IF EXISTS backoffice_audit.auth_audit_list_by_user(BIGINT,INT);
 
-CREATE OR REPLACE FUNCTION backoffice.auth_audit_list_by_user(
+CREATE OR REPLACE FUNCTION backoffice_audit.auth_audit_list_by_user(
     p_user_id BIGINT,
     p_limit INT DEFAULT 50
 )
@@ -22,7 +22,7 @@ BEGIN
                 'id', a.id,
                 'userId', a.user_id,
                 'companyId', a.company_id,
-                'tenantId', a.tenant_id,
+                'clientId', a.client_id,
                 'eventType', a.event_type,
                 'eventData', a.event_data,
                 'ipAddress', a.ip_address,
@@ -57,7 +57,7 @@ BEGIN
         ),
         '[]'::JSONB
     ) INTO v_result
-    FROM backoffice.auth_audit_log a
+    FROM backoffice_audit.auth_audit_log a
     WHERE a.user_id = p_user_id
     LIMIT p_limit;
 
@@ -65,4 +65,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION backoffice.auth_audit_list_by_user IS 'Retrieves auth audit logs for a user as JSONB array with full GeoIP data';
+COMMENT ON FUNCTION backoffice_audit.auth_audit_list_by_user IS 'Retrieves auth audit logs for a user as JSONB array with full GeoIP data';

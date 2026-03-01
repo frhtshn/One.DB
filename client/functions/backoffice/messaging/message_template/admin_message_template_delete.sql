@@ -41,4 +41,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION messaging.admin_message_template_delete(INTEGER, INTEGER) IS 'Soft delete a tenant message template. System templates (is_system=true) cannot be deleted.';
+COMMENT ON FUNCTION messaging.admin_message_template_delete(INTEGER, INTEGER) IS 'Soft delete a client message template. System templates (is_system=true) cannot be deleted.';

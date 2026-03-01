@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Finance Schema Constraints
+-- Client Finance Schema Constraints
 -- =============================================
 
 -- payment_method_settings unique constraint

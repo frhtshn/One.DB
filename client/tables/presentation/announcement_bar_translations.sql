@@ -18,4 +18,4 @@ CREATE TABLE presentation.announcement_bar_translations (
     CONSTRAINT uq_announcement_bar_translation UNIQUE (announcement_bar_id, language_code)
 );
 
-COMMENT ON TABLE presentation.announcement_bar_translations IS 'Language-specific text and link content for announcement bars. FK to announcement_bars defined in tenant/constraints/content.sql.';
+COMMENT ON TABLE presentation.announcement_bar_translations IS 'Language-specific text and link content for announcement bars. FK to announcement_bars defined in client/constraints/content.sql.';

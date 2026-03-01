@@ -1,12 +1,12 @@
 -- =============================================
--- Tablo: finance.transaction_hourly_stats
+-- Tablo: finance_report.transaction_hourly_stats
 -- Açıklama: Oyuncu bazlı finansal işlem detaylarının saatlik JSONB özeti.
 -- İşlem tipi ve metoduna göre gruplanmış veriler tek satırda tutulur.
 -- =============================================
 
-DROP TABLE IF EXISTS finance.transaction_hourly_stats CASCADE;
+DROP TABLE IF EXISTS finance_report.transaction_hourly_stats CASCADE;
 
-CREATE TABLE finance.transaction_hourly_stats (
+CREATE TABLE finance_report.transaction_hourly_stats (
     id bigserial,                              -- Benzersiz kayıt ID
     period_hour timestamp with time zone NOT NULL,         -- İlgili saat
 
@@ -40,8 +40,8 @@ CREATE TABLE finance.transaction_hourly_stats (
     PRIMARY KEY (id, period_hour)                              -- Partition key PK'ya dahil
 ) PARTITION BY RANGE (period_hour);
 
--- Index moved to indexes/finance.sql
+-- Index moved to indexes/finance_report.sql
 
-CREATE TABLE finance.transaction_hourly_stats_default PARTITION OF finance.transaction_hourly_stats DEFAULT;
+CREATE TABLE finance_report.transaction_hourly_stats_default PARTITION OF finance_report.transaction_hourly_stats DEFAULT;
 
-COMMENT ON TABLE finance.transaction_hourly_stats IS 'Consolidated hourly transaction stats using JSONB to group by type and method. Partitioned monthly by period_hour.';
+COMMENT ON TABLE finance_report.transaction_hourly_stats IS 'Consolidated hourly transaction stats using JSONB to group by type and method. Partitioned monthly by period_hour.';

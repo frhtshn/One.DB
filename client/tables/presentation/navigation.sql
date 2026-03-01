@@ -2,7 +2,7 @@
 -- Tablo: presentation.navigation
 -- Açıklama: Frontend navigasyon yönetimi.
 --           Header, Footer, Sidebar, Mobile Menu vb.
---           Core'dan taşındı (tenant_id kaldırıldı).
+--           Core'dan taşındı (client_id kaldırıldı).
 --           Provisioning ile template öğeleri kopyalanır.
 -- =============================================
 
@@ -18,7 +18,7 @@ CREATE TABLE presentation.navigation (
 
     -- Menü Metni (Hibrit Lokalizasyon)
     translation_key VARCHAR(100),                         -- Sistem çevirisi için key: 'menu.main.home'
-    custom_label JSONB,                                   -- Tenant override veya özel metin: {"en": "My Home", "tr": "Evim"}
+    custom_label JSONB,                                   -- Client override veya özel metin: {"en": "My Home", "tr": "Evim"}
 
     icon VARCHAR(50),                                     -- İkon (fa-home, custom-icon)
     badge_text VARCHAR(20),                               -- Badge (NEW, HOT)
@@ -43,8 +43,8 @@ CREATE TABLE presentation.navigation (
     device_visibility VARCHAR(20) DEFAULT 'all',          -- all, mobile_only, desktop_only
 
     -- Korumalar (Master Data Yönetimi)
-    is_locked BOOLEAN DEFAULT FALSE,                      -- TRUE = Tenant bu kaydı SİLEMEZ (Master'dan geldi)
-    is_readonly BOOLEAN DEFAULT FALSE,                    -- TRUE = Tenant target/type/action değiştiremez
+    is_locked BOOLEAN DEFAULT FALSE,                      -- TRUE = Client bu kaydı SİLEMEZ (Master'dan geldi)
+    is_readonly BOOLEAN DEFAULT FALSE,                    -- TRUE = Client target/type/action değiştiremez
 
     custom_css_class VARCHAR(100),                        -- Özel CSS sınıfı
 

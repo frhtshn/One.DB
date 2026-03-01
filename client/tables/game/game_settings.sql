@@ -1,8 +1,8 @@
 -- =============================================
 -- Tablo: game.game_settings
--- Açıklama: Tenant oyun ayarları
--- Core DB'den denormalize edilmiş oyun bilgileri + tenant özelleştirmeleri
--- catalog.games + core.tenant_games verilerinin tenant kopyası
+-- Açıklama: Client oyun ayarları
+-- Core DB'den denormalize edilmiş oyun bilgileri + client özelleştirmeleri
+-- catalog.games + core.client_games verilerinin client kopyası
 -- =============================================
 
 DROP TABLE IF EXISTS game.game_settings CASCADE;
@@ -33,7 +33,7 @@ CREATE TABLE game.game_settings (
     max_multiplier DECIMAL(10,2),                                   -- Maksimum çarpan
     paylines INTEGER,                                               -- Ödeme çizgi sayısı
 
-    -- Görseller (catalog.games'den veya tenant override)
+    -- Görseller (catalog.games'den veya client override)
     thumbnail_url VARCHAR(500),                                     -- Küçük resim URL
     background_url VARCHAR(500),                                    -- Arka plan resim URL
     logo_url VARCHAR(500),                                          -- Oyun logo URL
@@ -49,25 +49,25 @@ CREATE TABLE game.game_settings (
     is_mobile BOOLEAN NOT NULL DEFAULT true,                        -- Mobil uyumlu mu
     is_desktop BOOLEAN NOT NULL DEFAULT true,                       -- Desktop uyumlu mu
 
-    -- Tenant Görünüm Ayarları (core.tenant_games override)
+    -- Client Görünüm Ayarları (core.client_games override)
     display_order INTEGER DEFAULT 0,                                -- Sıralama
     is_visible BOOLEAN NOT NULL DEFAULT true,                       -- Lobide görünsün mü
     is_enabled BOOLEAN NOT NULL DEFAULT true,                       -- Oynanabilir mi
     is_featured BOOLEAN NOT NULL DEFAULT false,                     -- Öne çıkarılsın mı
 
-    -- Tenant Özelleştirmeleri (core.tenant_games override)
+    -- Client Özelleştirmeleri (core.client_games override)
     custom_name VARCHAR(255),                                       -- Özel oyun adı
     custom_thumbnail_url VARCHAR(500),                              -- Özel küçük resim URL
-    custom_categories VARCHAR(50)[] DEFAULT '{}',                   -- Tenant'a özel kategoriler
-    custom_tags VARCHAR(50)[] DEFAULT '{}',                         -- Tenant'a özel etiketler
+    custom_categories VARCHAR(50)[] DEFAULT '{}',                   -- Client'a özel kategoriler
+    custom_tags VARCHAR(50)[] DEFAULT '{}',                         -- Client'a özel etiketler
 
     -- RTP Varyantı
     rtp_variant VARCHAR(20),                                        -- RTP varyantı: DEFAULT, HIGH, LOW
 
-    -- Platform Kısıtlamaları (Tenant override)
+    -- Platform Kısıtlamaları (Client override)
     allowed_platforms VARCHAR(20)[] DEFAULT '{WEB,MOBILE,APP}',     -- İzin verilen platformlar
 
-    -- Coğrafi Kısıtlamalar (Tenant override)
+    -- Coğrafi Kısıtlamalar (Client override)
     blocked_countries CHAR(2)[] DEFAULT '{}',                       -- Engelli ülkeler
     allowed_countries CHAR(2)[] DEFAULT '{}',                       -- Sadece izin verilen ülkeler (boşsa tümü)
 
@@ -90,4 +90,4 @@ CREATE TABLE game.game_settings (
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE game.game_settings IS 'Tenant game configurations with denormalized game data from core, display settings, custom branding, and platform restrictions';
+COMMENT ON TABLE game.game_settings IS 'Client game configurations with denormalized game data from core, display settings, custom branding, and platform restrictions';

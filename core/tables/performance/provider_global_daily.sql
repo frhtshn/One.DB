@@ -16,7 +16,7 @@ CREATE TABLE performance.provider_global_daily (
     total_win numeric(18, 8) DEFAULT 0,
     total_rounds bigint DEFAULT 0,                         -- Toplam oyun eli/spin sayısı
 
-    active_tenants_count int DEFAULT 0,                    -- Bu provider'ı bugün kullanan tenant sayısı
+    active_clients_count int DEFAULT 0,                    -- Bu provider'ı bugün kullanan client sayısı
 
     created_at timestamp without time zone NOT NULL DEFAULT now(),
     updated_at timestamp without time zone,
@@ -26,4 +26,4 @@ CREATE TABLE performance.provider_global_daily (
 
 CREATE TABLE performance.provider_global_daily_default PARTITION OF performance.provider_global_daily DEFAULT;
 
-COMMENT ON TABLE performance.provider_global_daily IS 'Global aggregations per provider across all tenants, partitioned monthly by report_date';
+COMMENT ON TABLE performance.provider_global_daily IS 'Global aggregations per provider across all clients, partitioned monthly by report_date';

@@ -1,11 +1,11 @@
 -- ================================================================
--- NUCLEO PLATFORM - ROLE PERMISSIONS MAPPING
+-- SORTIS ONE - ROLE PERMISSIONS MAPPING
 -- ================================================================
 -- Convention: PERMISSION_CONVENTION.md Section 10 (source of truth)
 -- Role-Permission iliskilendirme dosyasi.
 -- permissions_full.sql'den SONRA calistirilmalidir.
 -- ================================================================
--- Calistirma: psql -U postgres -d nucleo -f core/data/role_permissions_full.sql
+-- Calistirma: psql -U postgres -d core -f core/data/role_permissions_full.sql
 -- ================================================================
 -- DELETE + INSERT: Mevcut mappingleri temizler, yeniden olusturur.
 -- ================================================================
@@ -25,7 +25,7 @@ DELETE FROM security.role_permissions;
 -- ================================================================
 -- 3. ADMIN (Level 90) — 92 API + 13 field(edit) = 105
 -- ================================================================
--- Platform haric TUM scope'lara erisim. Tenant sub-entity yazma dahil.
+-- Platform haric TUM scope'lara erisim. Client sub-entity yazma dahil.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
@@ -38,17 +38,17 @@ WHERE r.code = 'admin'
     'company.password-policy.view', 'company.password-policy.edit',
     -- company.user (5)
     'company.user.list', 'company.user.view', 'company.user.create', 'company.user.edit', 'company.user.delete',
-    -- tenant (14)
-    'tenant.list', 'tenant.view', 'tenant.create', 'tenant.edit', 'tenant.delete',
-    'tenant.setting.view', 'tenant.setting.edit',
-    'tenant.currency.list', 'tenant.currency.edit',
-    'tenant.cryptocurrency.list', 'tenant.cryptocurrency.edit',
-    'tenant.language.list', 'tenant.language.edit',
-    'tenant.presentation.manage',
-    -- tenant.user (5)
-    'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
+    -- client (14)
+    'client.list', 'client.view', 'client.create', 'client.edit', 'client.delete',
+    'client.setting.view', 'client.setting.edit',
+    'client.currency.list', 'client.currency.edit',
+    'client.cryptocurrency.list', 'client.cryptocurrency.edit',
+    'client.language.list', 'client.language.edit',
+    'client.presentation.manage',
+    -- client.user (5)
+    'client.user.list', 'client.user.view', 'client.user.create', 'client.user.edit', 'client.user.delete',
     -- RBAC (3)
-    'tenant.user-role.assign', 'tenant.user-permission.grant', 'tenant.user-permission.deny',
+    'client.user-role.assign', 'client.user-permission.grant', 'client.user-permission.deny',
     -- catalog (15)
     'catalog.provider.list', 'catalog.provider.view', 'catalog.provider.create',
     'catalog.provider.edit', 'catalog.provider.delete', 'catalog.provider.manage',
@@ -59,23 +59,23 @@ WHERE r.code = 'admin'
     -- audit (2)
     'audit.list', 'audit.view',
     -- template (2)
-    'company.permission-template.manage', 'tenant.permission-template.assign',
+    'company.permission-template.manage', 'client.permission-template.assign',
     -- segmentation (3)
-    'tenant.player-category.manage', 'tenant.player-group.manage', 'tenant.player-classification.manage',
+    'client.player-category.manage', 'client.player-group.manage', 'client.player-classification.manage',
     -- bonus-request (6)
-    'tenant.bonus-request.list', 'tenant.bonus-request.view', 'tenant.bonus-request.create',
-    'tenant.bonus-request.review', 'tenant.bonus-request.assign', 'tenant.bonus-request-settings.manage',
+    'client.bonus-request.list', 'client.bonus-request.view', 'client.bonus-request.create',
+    'client.bonus-request.review', 'client.bonus-request.assign', 'client.bonus-request-settings.manage',
     -- content (4)
-    'tenant.content.manage', 'tenant.site-settings.manage',
-    'tenant.operator-license.view', 'tenant.operator-license.manage',
+    'client.content.manage', 'client.site-settings.manage',
+    'client.operator-license.view', 'client.operator-license.manage',
     -- support (15)
-    'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
-    'tenant.support-ticket.assign', 'tenant.support-ticket.manage',
-    'tenant.support-player-note.list', 'tenant.support-player-note.manage',
-    'tenant.support-representative.view', 'tenant.support-representative.manage',
-    'tenant.support-agent.manage', 'tenant.support-category.manage',
-    'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    'client.support-ticket.list', 'client.support-ticket.view', 'client.support-ticket.create',
+    'client.support-ticket.assign', 'client.support-ticket.manage',
+    'client.support-player-note.list', 'client.support-player-note.manage',
+    'client.support-representative.view', 'client.support-representative.manage',
+    'client.support-agent.manage', 'client.support-category.manage',
+    'client.support-tag.manage', 'client.support-canned-response.manage',
+    'client.support-dashboard.view', 'client.support-welcome-call.manage',
     -- messaging (12)
     'messaging.draft.create', 'messaging.draft.read', 'messaging.draft.update', 'messaging.draft.delete',
     'messaging.draft.cancel', 'messaging.draft.unschedule', 'messaging.draft.publish', 'messaging.draft.recall',
@@ -83,7 +83,7 @@ WHERE r.code = 'admin'
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete',
     -- notification templates (3)
     'platform.notification-template.view',
-    'tenant.notification-template.manage', 'tenant.notification-template.view'
+    'client.notification-template.manage', 'client.notification-template.view'
   );
 
 -- ADMIN: Field protection (edit level — tam erisim, 13 alan)
@@ -98,8 +98,8 @@ WHERE r.code = 'admin'
 -- ================================================================
 -- 4. COMPANYADMIN (Level 80) — 44 API + 13 field(edit) = 57
 -- ================================================================
--- Tenant okuma + sub-entity okuma + user yonetimi + RBAC + audit + template.
--- Tenant CRUD (create/edit/delete) YAPAMAZ. Sub-entity yazma YAPAMAZ.
+-- Client okuma + sub-entity okuma + user yonetimi + RBAC + audit + template.
+-- Client CRUD (create/edit/delete) YAPAMAZ. Sub-entity yazma YAPAMAZ.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
@@ -107,38 +107,38 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'companyadmin'
   AND p.code IN (
-    -- tenant okuma (2)
-    'tenant.list', 'tenant.view',
-    -- tenant sub-entity okuma (4)
-    'tenant.setting.view',
-    'tenant.currency.list',
-    'tenant.cryptocurrency.list',
-    'tenant.language.list',
+    -- client okuma (2)
+    'client.list', 'client.view',
+    -- client sub-entity okuma (4)
+    'client.setting.view',
+    'client.currency.list',
+    'client.cryptocurrency.list',
+    'client.language.list',
     -- content (1 — sadece lisans okuma)
-    'tenant.operator-license.view',
-    -- tenant.user (5)
-    'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
+    'client.operator-license.view',
+    -- client.user (5)
+    'client.user.list', 'client.user.view', 'client.user.create', 'client.user.edit', 'client.user.delete',
     -- RBAC (3)
-    'tenant.user-role.assign', 'tenant.user-permission.grant', 'tenant.user-permission.deny',
+    'client.user-role.assign', 'client.user-permission.grant', 'client.user-permission.deny',
     -- audit (2)
     'audit.list', 'audit.view',
     -- template (2)
-    'company.permission-template.manage', 'tenant.permission-template.assign',
+    'company.permission-template.manage', 'client.permission-template.assign',
     -- bonus-request (6)
-    'tenant.bonus-request.list', 'tenant.bonus-request.view', 'tenant.bonus-request.create',
-    'tenant.bonus-request.review', 'tenant.bonus-request.assign', 'tenant.bonus-request-settings.manage',
+    'client.bonus-request.list', 'client.bonus-request.view', 'client.bonus-request.create',
+    'client.bonus-request.review', 'client.bonus-request.assign', 'client.bonus-request-settings.manage',
     -- support (15)
-    'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
-    'tenant.support-ticket.assign', 'tenant.support-ticket.manage',
-    'tenant.support-player-note.list', 'tenant.support-player-note.manage',
-    'tenant.support-representative.view', 'tenant.support-representative.manage',
-    'tenant.support-agent.manage', 'tenant.support-category.manage',
-    'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    'client.support-ticket.list', 'client.support-ticket.view', 'client.support-ticket.create',
+    'client.support-ticket.assign', 'client.support-ticket.manage',
+    'client.support-player-note.list', 'client.support-player-note.manage',
+    'client.support-representative.view', 'client.support-representative.manage',
+    'client.support-agent.manage', 'client.support-category.manage',
+    'client.support-tag.manage', 'client.support-canned-response.manage',
+    'client.support-dashboard.view', 'client.support-welcome-call.manage',
     -- messaging inbox (3)
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete',
     -- notification templates (2)
-    'tenant.notification-template.manage', 'tenant.notification-template.view'
+    'client.notification-template.manage', 'client.notification-template.view'
   );
 
 -- COMPANYADMIN: Field protection (edit level — tam erisim, 13 alan)
@@ -151,54 +151,54 @@ WHERE r.code = 'companyadmin'
   AND p.code LIKE 'field.%.edit';
 
 -- ================================================================
--- 5. TENANTADMIN (Level 70) — 41 API + 13 field(view) = 54
+-- 5. CLIENTADMIN (Level 70) — 41 API + 13 field(view) = 54
 -- ================================================================
 -- User yonetimi + RBAC + presentation + audit + template atama.
--- Tenant list/view YOK. Sub-entity okuma YOK.
+-- Client list/view YOK. Sub-entity okuma YOK.
 
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
-WHERE r.code = 'tenantadmin'
+WHERE r.code = 'clientadmin'
   AND p.code IN (
-    -- tenant presentation (1)
-    'tenant.presentation.manage',
+    -- client presentation (1)
+    'client.presentation.manage',
     -- content (3 — site settings + içerik yönetimi + lisans okuma)
-    'tenant.content.manage', 'tenant.site-settings.manage', 'tenant.operator-license.view',
-    -- tenant.user (5)
-    'tenant.user.list', 'tenant.user.view', 'tenant.user.create', 'tenant.user.edit', 'tenant.user.delete',
+    'client.content.manage', 'client.site-settings.manage', 'client.operator-license.view',
+    -- client.user (5)
+    'client.user.list', 'client.user.view', 'client.user.create', 'client.user.edit', 'client.user.delete',
     -- RBAC (3)
-    'tenant.user-role.assign', 'tenant.user-permission.grant', 'tenant.user-permission.deny',
+    'client.user-role.assign', 'client.user-permission.grant', 'client.user-permission.deny',
     -- audit (2)
     'audit.list', 'audit.view',
     -- template (1)
-    'tenant.permission-template.assign',
+    'client.permission-template.assign',
     -- segmentation (3)
-    'tenant.player-category.manage', 'tenant.player-group.manage', 'tenant.player-classification.manage',
+    'client.player-category.manage', 'client.player-group.manage', 'client.player-classification.manage',
     -- bonus-request (6)
-    'tenant.bonus-request.list', 'tenant.bonus-request.view', 'tenant.bonus-request.create',
-    'tenant.bonus-request.review', 'tenant.bonus-request.assign', 'tenant.bonus-request-settings.manage',
+    'client.bonus-request.list', 'client.bonus-request.view', 'client.bonus-request.create',
+    'client.bonus-request.review', 'client.bonus-request.assign', 'client.bonus-request-settings.manage',
     -- support (15)
-    'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
-    'tenant.support-ticket.assign', 'tenant.support-ticket.manage',
-    'tenant.support-player-note.list', 'tenant.support-player-note.manage',
-    'tenant.support-representative.view', 'tenant.support-representative.manage',
-    'tenant.support-agent.manage', 'tenant.support-category.manage',
-    'tenant.support-tag.manage', 'tenant.support-canned-response.manage',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    'client.support-ticket.list', 'client.support-ticket.view', 'client.support-ticket.create',
+    'client.support-ticket.assign', 'client.support-ticket.manage',
+    'client.support-player-note.list', 'client.support-player-note.manage',
+    'client.support-representative.view', 'client.support-representative.manage',
+    'client.support-agent.manage', 'client.support-category.manage',
+    'client.support-tag.manage', 'client.support-canned-response.manage',
+    'client.support-dashboard.view', 'client.support-welcome-call.manage',
     -- messaging inbox (3)
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete',
     -- notification templates (2)
-    'tenant.notification-template.manage', 'tenant.notification-template.view'
+    'client.notification-template.manage', 'client.notification-template.view'
   );
 
--- TENANTADMIN: Field protection (view level — acik okuma, 13 alan)
+-- CLIENTADMIN: Field protection (view level — acik okuma, 13 alan)
 INSERT INTO security.role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM security.roles r
 CROSS JOIN security.permissions p
-WHERE r.code = 'tenantadmin'
+WHERE r.code = 'clientadmin'
   AND p.category = 'field'
   AND p.code LIKE 'field.%.view';
 
@@ -216,16 +216,16 @@ WHERE r.code = 'moderator'
     -- audit (2)
     'audit.list', 'audit.view',
     -- segmentation (1)
-    'tenant.player-classification.manage',
+    'client.player-classification.manage',
     -- bonus-request (4 — review ve settings yok)
-    'tenant.bonus-request.list', 'tenant.bonus-request.view', 'tenant.bonus-request.create',
-    'tenant.bonus-request.assign',
+    'client.bonus-request.list', 'client.bonus-request.view', 'client.bonus-request.create',
+    'client.bonus-request.assign',
     -- support (10 — config yok, rep.manage yok)
-    'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
-    'tenant.support-ticket.assign', 'tenant.support-ticket.manage',
-    'tenant.support-player-note.list', 'tenant.support-player-note.manage',
-    'tenant.support-representative.view',
-    'tenant.support-dashboard.view', 'tenant.support-welcome-call.manage',
+    'client.support-ticket.list', 'client.support-ticket.view', 'client.support-ticket.create',
+    'client.support-ticket.assign', 'client.support-ticket.manage',
+    'client.support-player-note.list', 'client.support-player-note.manage',
+    'client.support-representative.view',
+    'client.support-dashboard.view', 'client.support-welcome-call.manage',
     -- messaging inbox (3)
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
@@ -250,10 +250,10 @@ FROM security.roles r
 CROSS JOIN security.permissions p
 WHERE r.code = 'editor'
   AND p.code IN (
-    -- tenant presentation (1)
-    'tenant.presentation.manage',
+    -- client presentation (1)
+    'client.presentation.manage',
     -- content (1 — içerik yönetimi, site-settings ve lisans YOK)
-    'tenant.content.manage',
+    'client.content.manage',
     -- messaging inbox (3)
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
@@ -279,12 +279,12 @@ CROSS JOIN security.permissions p
 WHERE r.code = 'operator'
   AND p.code IN (
     -- bonus-request (3 — review, assign, settings yok)
-    'tenant.bonus-request.list', 'tenant.bonus-request.view', 'tenant.bonus-request.create',
+    'client.bonus-request.list', 'client.bonus-request.view', 'client.bonus-request.create',
     -- support (7 — assign/manage/config yok)
-    'tenant.support-ticket.list', 'tenant.support-ticket.view', 'tenant.support-ticket.create',
-    'tenant.support-player-note.list', 'tenant.support-player-note.manage',
-    'tenant.support-representative.view',
-    'tenant.support-welcome-call.manage',
+    'client.support-ticket.list', 'client.support-ticket.view', 'client.support-ticket.create',
+    'client.support-player-note.list', 'client.support-player-note.manage',
+    'client.support-representative.view',
+    'client.support-welcome-call.manage',
     -- messaging inbox (3)
     'messaging.inbox.read', 'messaging.inbox.read-all', 'messaging.inbox.delete'
   );
@@ -313,7 +313,7 @@ DECLARE
     v_superadmin INT;
     v_admin INT;
     v_companyadmin INT;
-    v_tenantadmin INT;
+    v_clientadmin INT;
     v_moderator INT;
     v_editor INT;
     v_operator INT;
@@ -330,8 +330,8 @@ BEGIN
     SELECT COUNT(*) INTO v_companyadmin FROM security.role_permissions rp
     JOIN security.roles r ON rp.role_id = r.id WHERE r.code = 'companyadmin';
 
-    SELECT COUNT(*) INTO v_tenantadmin FROM security.role_permissions rp
-    JOIN security.roles r ON rp.role_id = r.id WHERE r.code = 'tenantadmin';
+    SELECT COUNT(*) INTO v_clientadmin FROM security.role_permissions rp
+    JOIN security.roles r ON rp.role_id = r.id WHERE r.code = 'clientadmin';
 
     SELECT COUNT(*) INTO v_moderator FROM security.role_permissions rp
     JOIN security.roles r ON rp.role_id = r.id WHERE r.code = 'moderator';
@@ -351,7 +351,7 @@ BEGIN
     RAISE NOTICE 'superadmin:   % (expected: 0 — bypass)', v_superadmin;
     RAISE NOTICE 'admin:        % (expected: 105 = 92 API + 13 field)', v_admin;
     RAISE NOTICE 'companyadmin: % (expected: 57 = 44 API + 13 field)', v_companyadmin;
-    RAISE NOTICE 'tenantadmin:  % (expected: 54 = 41 API + 13 field)', v_tenantadmin;
+    RAISE NOTICE 'clientadmin:  % (expected: 54 = 41 API + 13 field)', v_clientadmin;
     RAISE NOTICE 'moderator:    % (expected: 33 = 20 API + 13 field)', v_moderator;
     RAISE NOTICE 'editor:       % (expected: 17 = 4 API + 13 field)', v_editor;
     RAISE NOTICE 'operator:     % (expected: 26 = 13 API + 13 field)', v_operator;
@@ -370,8 +370,8 @@ BEGIN
     IF v_companyadmin != 57 THEN
         RAISE WARNING 'CompanyAdmin permission sayisi hatali! Beklenen: 57, Gercek: %', v_companyadmin;
     END IF;
-    IF v_tenantadmin != 54 THEN
-        RAISE WARNING 'TenantAdmin permission sayisi hatali! Beklenen: 54, Gercek: %', v_tenantadmin;
+    IF v_clientadmin != 54 THEN
+        RAISE WARNING 'ClientAdmin permission sayisi hatali! Beklenen: 54, Gercek: %', v_clientadmin;
     END IF;
     IF v_moderator != 33 THEN
         RAISE WARNING 'Moderator permission sayisi hatali! Beklenen: 33, Gercek: %', v_moderator;

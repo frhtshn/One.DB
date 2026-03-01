@@ -1,7 +1,7 @@
 -- =============================================
 -- Tablo: billing.provider_payments
 -- Açıklama: Provider'lara yapılan ödemeler
--- Nucleo'dan provider'lara yapılan gerçek ödemeler
+-- Sortis One'dan provider'lara yapılan gerçek ödemeler
 -- Kısmi ödemeler için birden fazla kayıt olabilir
 -- =============================================
 

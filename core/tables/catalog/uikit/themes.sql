@@ -29,4 +29,4 @@ CREATE TABLE catalog.themes (
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE catalog.themes IS 'Available frontend themes for tenants';
+COMMENT ON TABLE catalog.themes IS 'Available frontend themes for clients';

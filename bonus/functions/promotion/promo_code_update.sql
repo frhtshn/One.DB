@@ -30,7 +30,7 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.promo.id-required';
     END IF;
 
-    SELECT id, tenant_id, code INTO v_current
+    SELECT id, client_id, code INTO v_current
     FROM promotion.promo_codes WHERE id = p_id;
 
     IF NOT FOUND THEN
@@ -41,7 +41,7 @@ BEGIN
     IF p_code IS NOT NULL AND UPPER(TRIM(p_code)) != v_current.code THEN
         IF EXISTS (
             SELECT 1 FROM promotion.promo_codes
-            WHERE tenant_id IS NOT DISTINCT FROM v_current.tenant_id
+            WHERE client_id IS NOT DISTINCT FROM v_current.client_id
               AND code = UPPER(TRIM(p_code))
               AND id != p_id
         ) THEN

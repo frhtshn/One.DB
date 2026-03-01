@@ -2,7 +2,7 @@
 -- Bonus Schema Foreign Key Constraints
 -- =============================================
 
--- bonus_types.tenant_id -> tenants (opsiyonel - NULL = platform seviyesi)
+-- bonus_types.client_id -> clients (opsiyonel - NULL = platform seviyesi)
 -- Not: Cross-database FK desteklenmez, uygulama seviyesinde kontrol edilmeli
 
 -- bonus_rules.bonus_type_id -> bonus_types

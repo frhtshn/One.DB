@@ -28,4 +28,4 @@ CREATE TABLE catalog.widgets (
     updated_at timestamp NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE catalog.widgets IS 'Reusable UI widgets available for placement on tenant pages';
+COMMENT ON TABLE catalog.widgets IS 'Reusable UI widgets available for placement on client pages';

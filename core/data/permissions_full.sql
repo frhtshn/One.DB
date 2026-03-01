@@ -1,11 +1,11 @@
 -- ================================================================
--- NUCLEO PLATFORM - MASTER PERMISSIONS SEED
+-- SORTIS ONE - MASTER PERMISSIONS SEED
 -- ================================================================
 -- Convention: PERMISSION_CONVENTION.md (source of truth)
 -- Format: {scope}.{entity}.{action} — max 3 segment, tekil, kucuk harf
 -- Bu dosya tek kaynak (single source of truth) olarak kullanilmalidir.
 -- ================================================================
--- Calistirma: psql -U postgres -d nucleo -f core/data/permissions_full.sql
+-- Calistirma: psql -U postgres -d core -f core/data/permissions_full.sql
 -- ================================================================
 -- UPSERT: ON CONFLICT kullanir, siralama onemli degil.
 -- Mevcut kayitlari gunceller, yenilerini ekler.
@@ -16,7 +16,7 @@
 -- ================================================================
 -- Toplam: 151 permission (112 API/System + 39 Field)
 -- Kategoriler (category kolonu bazinda):
---   platform (10), company (25), tenant (58), catalog (17),
+--   platform (10), company (25), client (58), catalog (17),
 --   audit (2), field (39)
 -- ================================================================
 
@@ -54,100 +54,100 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('company.user.delete', 'Delete Company User', 'Delete company user (soft delete)', 'company', 1),
 
 -- ================================================================
--- TENANT SCOPE (22) — Admin+ (sub-entity yazma Admin only)
+-- CLIENT SCOPE (22) — Admin+ (sub-entity yazma Admin only)
 -- ================================================================
-('tenant.list', 'Tenant List', 'List tenants', 'tenant', 1),
-('tenant.view', 'View Tenant', 'View tenant details', 'tenant', 1),
-('tenant.create', 'Create Tenant', 'Create new tenant', 'tenant', 1),
-('tenant.edit', 'Edit Tenant', 'Edit tenant information', 'tenant', 1),
-('tenant.delete', 'Delete Tenant', 'Delete tenant (soft delete)', 'tenant', 1),
-('tenant.setting.view', 'View Tenant Settings', 'View tenant configuration settings', 'tenant', 1),
-('tenant.setting.edit', 'Edit Tenant Settings', 'Edit tenant configuration settings (all categories)', 'tenant', 1),
-('tenant.currency.list', 'Tenant Currency List', 'View tenant currencies', 'tenant', 1),
-('tenant.currency.edit', 'Edit Tenant Currency', 'Add/update tenant currencies', 'tenant', 1),
-('tenant.language.list', 'Tenant Language List', 'View tenant languages', 'tenant', 1),
-('tenant.language.edit', 'Edit Tenant Language', 'Add/update tenant languages', 'tenant', 1),
-('tenant.cryptocurrency.list', 'Tenant Cryptocurrency List', 'View tenant cryptocurrencies', 'tenant', 1),
-('tenant.cryptocurrency.edit', 'Edit Tenant Cryptocurrency', 'Add/update tenant cryptocurrencies', 'tenant', 1),
-('tenant.presentation.manage', 'Manage Presentation', 'Manage tenant navigation, themes and layouts', 'tenant', 1),
+('client.list', 'Client List', 'List clients', 'client', 1),
+('client.view', 'View Client', 'View client details', 'client', 1),
+('client.create', 'Create Client', 'Create new client', 'client', 1),
+('client.edit', 'Edit Client', 'Edit client information', 'client', 1),
+('client.delete', 'Delete Client', 'Delete client (soft delete)', 'client', 1),
+('client.setting.view', 'View Client Settings', 'View client configuration settings', 'client', 1),
+('client.setting.edit', 'Edit Client Settings', 'Edit client configuration settings (all categories)', 'client', 1),
+('client.currency.list', 'Client Currency List', 'View client currencies', 'client', 1),
+('client.currency.edit', 'Edit Client Currency', 'Add/update client currencies', 'client', 1),
+('client.language.list', 'Client Language List', 'View client languages', 'client', 1),
+('client.language.edit', 'Edit Client Language', 'Add/update client languages', 'client', 1),
+('client.cryptocurrency.list', 'Client Cryptocurrency List', 'View client cryptocurrencies', 'client', 1),
+('client.cryptocurrency.edit', 'Edit Client Cryptocurrency', 'Add/update client cryptocurrencies', 'client', 1),
+('client.presentation.manage', 'Manage Presentation', 'Manage client navigation, themes and layouts', 'client', 1),
 
 -- ================================================================
--- TENANT.USER (5) — CompanyAdmin+
+-- CLIENT.USER (5) — CompanyAdmin+
 -- ================================================================
-('tenant.user.list', 'Tenant User List', 'List tenant users', 'tenant', 1),
-('tenant.user.view', 'View Tenant User', 'View tenant user details', 'tenant', 1),
-('tenant.user.create', 'Create Tenant User', 'Add user to tenant', 'tenant', 1),
-('tenant.user.edit', 'Edit Tenant User', 'Edit tenant user', 'tenant', 1),
-('tenant.user.delete', 'Delete Tenant User', 'Delete tenant user (soft delete)', 'tenant', 1),
+('client.user.list', 'Client User List', 'List client users', 'client', 1),
+('client.user.view', 'View Client User', 'View client user details', 'client', 1),
+('client.user.create', 'Create Client User', 'Add user to client', 'client', 1),
+('client.user.edit', 'Edit Client User', 'Edit client user', 'client', 1),
+('client.user.delete', 'Delete Client User', 'Delete client user (soft delete)', 'client', 1),
 
 -- ================================================================
 -- RBAC (3) — CompanyAdmin+
 -- ================================================================
-('tenant.user-role.assign', 'Assign Tenant Role', 'Assign/remove role to tenant user', 'tenant', 1),
-('tenant.user-permission.grant', 'Grant Permission', 'Grant permission override to user', 'tenant', 1),
-('tenant.user-permission.deny', 'Deny Permission', 'Deny permission override from user', 'tenant', 1),
+('client.user-role.assign', 'Assign Client Role', 'Assign/remove role to client user', 'client', 1),
+('client.user-permission.grant', 'Grant Permission', 'Grant permission override to user', 'client', 1),
+('client.user-permission.deny', 'Deny Permission', 'Deny permission override from user', 'client', 1),
 
 -- ================================================================
--- TENANT.BONUS (3) — Bonus Award yönetimi
+-- CLIENT.BONUS (3) — Bonus Award yönetimi
 -- ================================================================
-('tenant.bonus.list', 'Bonus Award List', 'List player bonus awards', 'tenant', 1),
-('tenant.bonus.view', 'View Bonus Award', 'View bonus award details', 'tenant', 1),
-('tenant.bonus.manage', 'Manage Bonus Awards', 'Cancel/manage player bonus awards', 'tenant', 1),
+('client.bonus.list', 'Bonus Award List', 'List player bonus awards', 'client', 1),
+('client.bonus.view', 'View Bonus Award', 'View bonus award details', 'client', 1),
+('client.bonus.manage', 'Manage Bonus Awards', 'Cancel/manage player bonus awards', 'client', 1),
 
 -- ================================================================
--- TENANT.BONUS-REQUEST (6) — Bonus Request yönetimi
+-- CLIENT.BONUS-REQUEST (6) — Bonus Request yönetimi
 -- ================================================================
-('tenant.bonus-request.list', 'Bonus Request List', 'List bonus requests', 'tenant', 1),
-('tenant.bonus-request.view', 'View Bonus Request', 'View bonus request details and action history', 'tenant', 1),
-('tenant.bonus-request.create', 'Create Bonus Request', 'Create manual bonus requests for players', 'tenant', 1),
-('tenant.bonus-request.review', 'Review Bonus Request', 'Approve or reject bonus requests', 'tenant', 1),
-('tenant.bonus-request.assign', 'Assign Bonus Request', 'Assign bonus requests to operators', 'tenant', 1),
-('tenant.bonus-request-settings.manage', 'Manage Bonus Request Settings', 'Configure requestable bonus types, cooldown periods, rules content and display names', 'tenant', 1),
+('client.bonus-request.list', 'Bonus Request List', 'List bonus requests', 'client', 1),
+('client.bonus-request.view', 'View Bonus Request', 'View bonus request details and action history', 'client', 1),
+('client.bonus-request.create', 'Create Bonus Request', 'Create manual bonus requests for players', 'client', 1),
+('client.bonus-request.review', 'Review Bonus Request', 'Approve or reject bonus requests', 'client', 1),
+('client.bonus-request.assign', 'Assign Bonus Request', 'Assign bonus requests to operators', 'client', 1),
+('client.bonus-request-settings.manage', 'Manage Bonus Request Settings', 'Configure requestable bonus types, cooldown periods, rules content and display names', 'client', 1),
 
 -- ================================================================
--- TENANT.PROVISION (2) — Provisioning/Decommission
+-- CLIENT.PROVISION (2) — Provisioning/Decommission
 -- ================================================================
-('tenant.provision.view', 'View Provisioning', 'View provisioning status and history', 'tenant', 1),
-('tenant.provision.manage', 'Manage Provisioning', 'Start/complete provision and decommission', 'tenant', 1),
+('client.provision.view', 'View Provisioning', 'View provisioning status and history', 'client', 1),
+('client.provision.manage', 'Manage Provisioning', 'Start/complete provision and decommission', 'client', 1),
 
 -- ================================================================
--- TENANT.SEGMENTATION (3) — Player Category/Group/Classification yönetimi
+-- CLIENT.SEGMENTATION (3) — Player Category/Group/Classification yönetimi
 -- ================================================================
-('tenant.player-category.manage', 'Manage Player Categories', 'Create, update, delete player VIP categories', 'tenant', 1),
-('tenant.player-group.manage', 'Manage Player Groups', 'Create, update, delete player behavioral groups', 'tenant', 1),
-('tenant.player-classification.manage', 'Manage Player Classification', 'Assign/remove player category and group memberships', 'tenant', 1),
+('client.player-category.manage', 'Manage Player Categories', 'Create, update, delete player VIP categories', 'client', 1),
+('client.player-group.manage', 'Manage Player Groups', 'Create, update, delete player behavioral groups', 'client', 1),
+('client.player-classification.manage', 'Manage Player Classification', 'Assign/remove player category and group memberships', 'client', 1),
 
 -- ================================================================
--- TENANT.CONTENT (4) — Frontend İçerik Yönetimi
+-- CLIENT.CONTENT (4) — Frontend İçerik Yönetimi
 -- ================================================================
-('tenant.content.manage', 'Manage Tenant Content', 'Manage trust logos, game lobby sections, game labels, SEO redirects', 'tenant', 1),
-('tenant.site-settings.manage', 'Manage Site Settings', 'Manage site settings: analytics config, cookie consent, age gate, live chat', 'tenant', 1),
-('tenant.operator-license.view', 'View Operator Licenses', 'View operator licenses (read-only)', 'tenant', 1),
-('tenant.operator-license.manage', 'Manage Operator Licenses', 'Full CRUD for operator licenses', 'tenant', 1),
+('client.content.manage', 'Manage Client Content', 'Manage trust logos, game lobby sections, game labels, SEO redirects', 'client', 1),
+('client.site-settings.manage', 'Manage Site Settings', 'Manage site settings: analytics config, cookie consent, age gate, live chat', 'client', 1),
+('client.operator-license.view', 'View Operator Licenses', 'View operator licenses (read-only)', 'client', 1),
+('client.operator-license.manage', 'Manage Operator Licenses', 'Full CRUD for operator licenses', 'client', 1),
 
 -- ================================================================
--- TENANT.SUPPORT (15) — Çağrı Merkezi & Müşteri Temsilcisi
+-- CLIENT.SUPPORT (15) — Çağrı Merkezi & Müşteri Temsilcisi
 -- ================================================================
 -- Ticket (5)
-('tenant.support-ticket.list', 'Support Ticket List', 'List support tickets', 'tenant', 1),
-('tenant.support-ticket.view', 'View Support Ticket', 'View support ticket details and action history', 'tenant', 1),
-('tenant.support-ticket.create', 'Create Support Ticket', 'Create support tickets on behalf of players', 'tenant', 1),
-('tenant.support-ticket.assign', 'Assign Support Ticket', 'Assign support tickets to agents', 'tenant', 1),
-('tenant.support-ticket.manage', 'Manage Support Ticket', 'Resolve, close, reopen, cancel tickets and manage priority/category', 'tenant', 1),
+('client.support-ticket.list', 'Support Ticket List', 'List support tickets', 'client', 1),
+('client.support-ticket.view', 'View Support Ticket', 'View support ticket details and action history', 'client', 1),
+('client.support-ticket.create', 'Create Support Ticket', 'Create support tickets on behalf of players', 'client', 1),
+('client.support-ticket.assign', 'Assign Support Ticket', 'Assign support tickets to agents', 'client', 1),
+('client.support-ticket.manage', 'Manage Support Ticket', 'Resolve, close, reopen, cancel tickets and manage priority/category', 'client', 1),
 -- Player Note (2)
-('tenant.support-player-note.list', 'Support Player Note List', 'List player notes', 'tenant', 1),
-('tenant.support-player-note.manage', 'Manage Player Notes', 'Create, update, delete player notes', 'tenant', 1),
+('client.support-player-note.list', 'Support Player Note List', 'List player notes', 'client', 1),
+('client.support-player-note.manage', 'Manage Player Notes', 'Create, update, delete player notes', 'client', 1),
 -- Representative (2)
-('tenant.support-representative.view', 'View Player Representative', 'View assigned representative and assignment history', 'tenant', 1),
-('tenant.support-representative.manage', 'Manage Player Representative', 'Assign or change player representative', 'tenant', 1),
+('client.support-representative.view', 'View Player Representative', 'View assigned representative and assignment history', 'client', 1),
+('client.support-representative.manage', 'Manage Player Representative', 'Assign or change player representative', 'client', 1),
 -- Agent & Config (4)
-('tenant.support-agent.manage', 'Manage Support Agents', 'Configure agent availability, capacity, and skills', 'tenant', 1),
-('tenant.support-category.manage', 'Manage Ticket Categories', 'Create, update, delete ticket categories', 'tenant', 1),
-('tenant.support-tag.manage', 'Manage Ticket Tags', 'Create, update ticket tags', 'tenant', 1),
-('tenant.support-canned-response.manage', 'Manage Canned Responses', 'Create, update, delete canned response templates', 'tenant', 1),
+('client.support-agent.manage', 'Manage Support Agents', 'Configure agent availability, capacity, and skills', 'client', 1),
+('client.support-category.manage', 'Manage Ticket Categories', 'Create, update, delete ticket categories', 'client', 1),
+('client.support-tag.manage', 'Manage Ticket Tags', 'Create, update ticket tags', 'client', 1),
+('client.support-canned-response.manage', 'Manage Canned Responses', 'Create, update, delete canned response templates', 'client', 1),
 -- Dashboard & Welcome Call (2)
-('tenant.support-dashboard.view', 'Support Dashboard', 'View support dashboard statistics and queue', 'tenant', 1),
-('tenant.support-welcome-call.manage', 'Manage Welcome Calls', 'View, assign, complete, reschedule welcome call tasks', 'tenant', 1),
+('client.support-dashboard.view', 'Support Dashboard', 'View support dashboard statistics and queue', 'client', 1),
+('client.support-welcome-call.manage', 'Manage Welcome Calls', 'View, assign, complete, reschedule welcome call tasks', 'client', 1),
 
 -- ================================================================
 -- CATALOG SCOPE (17) — Admin+
@@ -196,19 +196,19 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 ('messaging.inbox.delete', 'Delete Inbox Message', 'Delete inbox messages', 'company', 1),
 
 -- ================================================================
--- NOTIFICATION TEMPLATES (4) — Platform + Tenant
+-- NOTIFICATION TEMPLATES (4) — Platform + Client
 -- ================================================================
 -- Platform (2)
 ('platform.notification-template.manage', 'Manage Notification Templates', 'Create, update, delete platform notification templates', 'platform', 1),
 ('platform.notification-template.view', 'View Notification Templates', 'View platform notification templates', 'platform', 1),
--- Tenant (2)
-('tenant.notification-template.manage', 'Manage Notification Templates', 'Create, update, delete tenant notification templates', 'tenant', 1),
-('tenant.notification-template.view', 'View Notification Templates', 'View tenant notification templates', 'tenant', 1),
+-- Client (2)
+('client.notification-template.manage', 'Manage Notification Templates', 'Create, update, delete client notification templates', 'client', 1),
+('client.notification-template.view', 'View Notification Templates', 'View client notification templates', 'client', 1),
 
 -- ================================================================
 -- PLATFORM.INFRASTRUCTURE (1) — SuperAdmin
 -- ================================================================
-('platform.infrastructure.manage', 'Infrastructure Management', 'Infrastructure server CRUD and tenant server assignment', 'platform', 1),
+('platform.infrastructure.manage', 'Infrastructure Management', 'Infrastructure server CRUD and client server assignment', 'platform', 1),
 
 -- ================================================================
 -- AUDIT SCOPE (2) — Moderator+
@@ -221,7 +221,7 @@ INSERT INTO security.permissions (code, name, description, category, status) VAL
 -- ================================================================
 ('platform.permission-template.manage', 'Platform Template Management', 'Template CRUD + toggle + clone + from-user (platform scope)', 'platform', 1),
 ('company.permission-template.manage', 'Company Template Management', 'Template CRUD + toggle + clone + from-user (company scope)', 'company', 1),
-('tenant.permission-template.assign', 'Template Assignment', 'Template assign/unassign/list', 'tenant', 1),
+('client.permission-template.assign', 'Template Assignment', 'Template assign/unassign/list', 'client', 1),
 
 -- ================================================================
 -- FIELD PROTECTION — BackOffice User (12)
@@ -299,7 +299,7 @@ DECLARE
     v_total INT;
     v_platform INT;
     v_company INT;
-    v_tenant INT;
+    v_client INT;
     v_catalog INT;
     v_audit INT;
     v_field INT;
@@ -307,7 +307,7 @@ BEGIN
     SELECT COUNT(*) INTO v_total FROM security.permissions;
     SELECT COUNT(*) INTO v_platform FROM security.permissions WHERE category = 'platform';
     SELECT COUNT(*) INTO v_company FROM security.permissions WHERE category = 'company';
-    SELECT COUNT(*) INTO v_tenant FROM security.permissions WHERE category = 'tenant';
+    SELECT COUNT(*) INTO v_client FROM security.permissions WHERE category = 'client';
     SELECT COUNT(*) INTO v_catalog FROM security.permissions WHERE category = 'catalog';
     SELECT COUNT(*) INTO v_audit FROM security.permissions WHERE category = 'audit';
     SELECT COUNT(*) INTO v_field FROM security.permissions WHERE category = 'field';
@@ -317,7 +317,7 @@ BEGIN
     RAISE NOTICE '================================================';
     RAISE NOTICE 'Platform:     % (expected: 10)', v_platform;
     RAISE NOTICE 'Company:      % (expected: 13)', v_company;
-    RAISE NOTICE 'Tenant:       % (expected: 54)', v_tenant;
+    RAISE NOTICE 'Client:       % (expected: 54)', v_client;
     RAISE NOTICE 'Catalog:      % (expected: 17)', v_catalog;
     RAISE NOTICE 'Audit:        % (expected: 2)', v_audit;
     RAISE NOTICE 'Field:        % (expected: 39)', v_field;

@@ -1,13 +1,13 @@
 -- ================================================================
--- TENANT_PAYMENT_METHOD_UPSERT: Tekil ödeme metodu aç/düzenle
+-- CLIENT_PAYMENT_METHOD_UPSERT: Tekil ödeme metodu aç/düzenle
 -- ================================================================
--- BO admin tarafından tenant ödeme metot ayarlarını düzenlemek için.
+-- BO admin tarafından client ödeme metot ayarlarını düzenlemek için.
 -- Finance DB validasyonu YAPILMAZ (cross-DB, backend doğrular).
 -- Güncelleme sonrası sync_status = 'pending' olur.
 -- Limit/fee override, görünürlük, platform ayarları desteklenir.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_payment_method_upsert(
+DROP FUNCTION IF EXISTS core.client_payment_method_upsert(
     BIGINT, BIGINT, BIGINT,
     BOOLEAN, BOOLEAN, BOOLEAN, INTEGER,
     VARCHAR, VARCHAR, TEXT,
@@ -19,9 +19,9 @@ DROP FUNCTION IF EXISTS core.tenant_payment_method_upsert(
     TIMESTAMP, TIMESTAMP
 );
 
-CREATE OR REPLACE FUNCTION core.tenant_payment_method_upsert(
+CREATE OR REPLACE FUNCTION core.client_payment_method_upsert(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_payment_method_id BIGINT,
     p_is_enabled BOOLEAN DEFAULT NULL,
     p_is_visible BOOLEAN DEFAULT NULL,
@@ -56,12 +56,12 @@ AS $$
 DECLARE
     v_company_id BIGINT;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -72,16 +72,16 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.payment-method.id-required';
     END IF;
 
-    -- tenant_payment_methods kaydı mevcut olmalı (backend seed etmiş olmalı)
+    -- client_payment_methods kaydı mevcut olmalı (backend seed etmiş olmalı)
     IF NOT EXISTS(
-        SELECT 1 FROM core.tenant_payment_methods
-        WHERE tenant_id = p_tenant_id AND payment_method_id = p_payment_method_id
+        SELECT 1 FROM core.client_payment_methods
+        WHERE client_id = p_client_id AND payment_method_id = p_payment_method_id
     ) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant-payment-method.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client-payment-method.not-found';
     END IF;
 
     -- COALESCE güncelleme
-    UPDATE core.tenant_payment_methods SET
+    UPDATE core.client_payment_methods SET
         is_enabled = COALESCE(p_is_enabled, is_enabled),
         is_visible = COALESCE(p_is_visible, is_visible),
         is_featured = COALESCE(p_is_featured, is_featured),
@@ -110,8 +110,8 @@ BEGIN
         sync_status = 'pending',
         updated_at = NOW(),
         updated_by = p_caller_id
-    WHERE tenant_id = p_tenant_id AND payment_method_id = p_payment_method_id;
+    WHERE client_id = p_client_id AND payment_method_id = p_payment_method_id;
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_payment_method_upsert IS 'Updates tenant payment method customization (limits, fees, visibility, platforms, etc). COALESCE pattern. Sets sync_status=pending. IDOR protected.';
+COMMENT ON FUNCTION core.client_payment_method_upsert IS 'Updates client payment method customization (limits, fees, visibility, platforms, etc). COALESCE pattern. Sets sync_status=pending. IDOR protected.';

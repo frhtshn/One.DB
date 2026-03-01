@@ -1,12 +1,12 @@
 -- ================================================================
--- TENANT_GAME_UPSERT: Tekil oyun aç/düzenle (customization)
+-- CLIENT_GAME_UPSERT: Tekil oyun aç/düzenle (customization)
 -- ================================================================
--- BO admin tarafından tenant oyun ayarlarını düzenlemek için.
+-- BO admin tarafından client oyun ayarlarını düzenlemek için.
 -- catalog.games validasyonu YAPILMAZ (cross-DB, backend doğrular).
 -- Güncelleme sonrası sync_status = 'pending' olur.
 -- ================================================================
 
-DROP FUNCTION IF EXISTS core.tenant_game_upsert(
+DROP FUNCTION IF EXISTS core.client_game_upsert(
     BIGINT, BIGINT, BIGINT,
     BOOLEAN, BOOLEAN, BOOLEAN, INTEGER,
     VARCHAR, VARCHAR, VARCHAR(50)[], VARCHAR(50)[],
@@ -15,9 +15,9 @@ DROP FUNCTION IF EXISTS core.tenant_game_upsert(
     TIMESTAMP, TIMESTAMP
 );
 
-CREATE OR REPLACE FUNCTION core.tenant_game_upsert(
+CREATE OR REPLACE FUNCTION core.client_game_upsert(
     p_caller_id BIGINT,
-    p_tenant_id BIGINT,
+    p_client_id BIGINT,
     p_game_id BIGINT,
     p_is_enabled BOOLEAN DEFAULT NULL,
     p_is_visible BOOLEAN DEFAULT NULL,
@@ -41,12 +41,12 @@ AS $$
 DECLARE
     v_company_id BIGINT;
 BEGIN
-    -- Tenant varlık kontrolü
+    -- Client varlık kontrolü
     SELECT company_id INTO v_company_id
-    FROM core.tenants WHERE id = p_tenant_id;
+    FROM core.clients WHERE id = p_client_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant.not-found';
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client.not-found';
     END IF;
 
     -- IDOR kontrolü
@@ -57,13 +57,13 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0400', MESSAGE = 'error.game.id-required';
     END IF;
 
-    -- tenant_games kaydı mevcut olmalı (backend seed etmiş olmalı)
-    IF NOT EXISTS(SELECT 1 FROM core.tenant_games WHERE tenant_id = p_tenant_id AND game_id = p_game_id) THEN
-        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.tenant-game.not-found';
+    -- client_games kaydı mevcut olmalı (backend seed etmiş olmalı)
+    IF NOT EXISTS(SELECT 1 FROM core.client_games WHERE client_id = p_client_id AND game_id = p_game_id) THEN
+        RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.client-game.not-found';
     END IF;
 
     -- COALESCE güncelleme
-    UPDATE core.tenant_games SET
+    UPDATE core.client_games SET
         is_enabled = COALESCE(p_is_enabled, is_enabled),
         is_visible = COALESCE(p_is_visible, is_visible),
         is_featured = COALESCE(p_is_featured, is_featured),
@@ -81,8 +81,8 @@ BEGIN
         sync_status = 'pending',
         updated_at = NOW(),
         updated_by = p_caller_id
-    WHERE tenant_id = p_tenant_id AND game_id = p_game_id;
+    WHERE client_id = p_client_id AND game_id = p_game_id;
 END;
 $$;
 
-COMMENT ON FUNCTION core.tenant_game_upsert IS 'Updates tenant game customization (display_order, custom_name, blocked_countries, etc). COALESCE pattern. Sets sync_status=pending. IDOR protected.';
+COMMENT ON FUNCTION core.client_game_upsert IS 'Updates client game customization (display_order, custom_name, blocked_countries, etc). COALESCE pattern. Sets sync_status=pending. IDOR protected.';

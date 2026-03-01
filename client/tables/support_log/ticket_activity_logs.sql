@@ -3,7 +3,7 @@
 -- Açıklama: Ticket bildirim gönderim logları.
 --           Ticket güncellemelerinde oyuncuya/
 --           temsilciye gönderilen bildirimler.
--- TENANT_LOG DB - 90 gün retention
+-- CLIENT_LOG DB - 90 gün retention
 -- Günlük partition (created_at)
 -- =============================================
 

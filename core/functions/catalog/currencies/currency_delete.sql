@@ -1,6 +1,6 @@
 -- ================================================================
 -- CURRENCY_DELETE: Para birimini siler (Soft Delete)
--- Aktif durumunu false yapar. Tenant'ta kullanılıyorsa silmez.
+-- Aktif durumunu false yapar. Client'ta kullanılıyorsa silmez.
 -- ================================================================
 
 DROP FUNCTION IF EXISTS catalog.currency_delete(CHAR(3));
@@ -20,9 +20,9 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = 'P0404', MESSAGE = 'error.currency.not-found';
     END IF;
 
-    -- Referans kontrolu: Bu para birimi tenant'larda kullanılıyor mu?
+    -- Referans kontrolu: Bu para birimi client'larda kullanılıyor mu?
     SELECT COUNT(*) INTO v_usage_count
-    FROM core.tenant_currencies tc
+    FROM core.client_currencies tc
     WHERE tc.currency_code = v_code;
 
     IF v_usage_count > 0 THEN
@@ -31,7 +31,7 @@ BEGIN
 
     -- Base currency olarak kullanılıyor mu?
     SELECT COUNT(*) INTO v_usage_count
-    FROM core.tenants t
+    FROM core.clients t
     WHERE t.base_currency = v_code;
 
     IF v_usage_count > 0 THEN

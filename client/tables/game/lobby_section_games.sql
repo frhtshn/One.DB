@@ -21,4 +21,4 @@ CREATE TABLE game.lobby_section_games (
     CONSTRAINT uq_lobby_section_game UNIQUE (lobby_section_id, game_id)
 );
 
-COMMENT ON TABLE game.lobby_section_games IS 'Manual curation: game assignments to lobby sections with ordering. Only used when section_type = manual. game_id references core DB game catalog (validated by backend, no FK). FK to lobby_sections in tenant/constraints/content.sql.';
+COMMENT ON TABLE game.lobby_section_games IS 'Manual curation: game assignments to lobby sections with ordering. Only used when section_type = manual. game_id references core DB game catalog (validated by backend, no FK). FK to lobby_sections in client/constraints/content.sql.';

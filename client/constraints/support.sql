@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Support Schema Foreign Key Constraints
+-- Client Support Schema Foreign Key Constraints
 -- =============================================
 
 -- ticket_actions → tickets

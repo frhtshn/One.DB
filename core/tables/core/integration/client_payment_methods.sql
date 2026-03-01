@@ -1,18 +1,18 @@
 -- =============================================
--- Tablo: core.tenant_payment_methods
--- Açıklama: Tenant ödeme yöntemi etkinleştirme tablosu
--- Her tenant'in hangi ödeme yöntemlerini sunacağını belirler
--- Tenant DB'deki finance.payment_method_settings ile senkronize edilir
+-- Tablo: core.client_payment_methods
+-- Açıklama: Client ödeme yöntemi etkinleştirme tablosu
+-- Her client'in hangi ödeme yöntemlerini sunacağını belirler
+-- Client DB'deki finance.payment_method_settings ile senkronize edilir
 -- Denormalize alanlar: BO listesinde cross-DB JOIN yerine
 -- doğrudan gösterilir (backend seed/sync sırasında doldurur)
 -- payment_method_id FK yok — catalog.payment_methods Finance DB'de (cross-DB)
 -- =============================================
 
-DROP TABLE IF EXISTS core.tenant_payment_methods CASCADE;
+DROP TABLE IF EXISTS core.client_payment_methods CASCADE;
 
-CREATE TABLE core.tenant_payment_methods (
+CREATE TABLE core.client_payment_methods (
     id BIGSERIAL PRIMARY KEY,                                       -- Benzersiz kayıt kimliği
-    tenant_id BIGINT NOT NULL,                                      -- Tenant ID (FK: core.tenants)
+    client_id BIGINT NOT NULL,                                      -- Client ID (FK: core.clients)
     payment_method_id BIGINT NOT NULL,                              -- Ödeme yöntemi ID (Finance DB — FK yok, cross-DB, backend doğrular)
 
     -- Denormalize Alanlar (Finance DB'den — cross-DB JOIN yerine BO listesinde gösterilir)
@@ -33,7 +33,7 @@ CREATE TABLE core.tenant_payment_methods (
     is_featured BOOLEAN NOT NULL DEFAULT false,                     -- Öne çıkarılmış mı
     display_order INTEGER DEFAULT 0,                                -- Sıralama
 
-    -- Tenant Özelleştirmeleri
+    -- Client Özelleştirmeleri
     custom_name VARCHAR(255),                                       -- Özel görünen ad
     custom_icon_url VARCHAR(500),                                   -- Özel ikon URL
     custom_description TEXT,                                        -- Özel açıklama
@@ -42,7 +42,7 @@ CREATE TABLE core.tenant_payment_methods (
     allow_deposit BOOLEAN DEFAULT true,                             -- Para yatırmaya izin ver
     allow_withdrawal BOOLEAN DEFAULT true,                          -- Para çekmeye izin ver
 
-    -- Limit Override (Tenant seviyesinde)
+    -- Limit Override (Client seviyesinde)
     override_min_deposit DECIMAL(18,8),                             -- Override min para yatırma
     override_max_deposit DECIMAL(18,8),                             -- Override max para yatırma
     override_min_withdrawal DECIMAL(18,8),                          -- Override min para çekme
@@ -50,7 +50,7 @@ CREATE TABLE core.tenant_payment_methods (
     override_daily_deposit_limit DECIMAL(18,8),                     -- Günlük para yatırma limiti
     override_daily_withdrawal_limit DECIMAL(18,8),                  -- Günlük para çekme limiti
 
-    -- Ücret Override (Tenant seviyesinde)
+    -- Ücret Override (Client seviyesinde)
     override_deposit_fee_percent DECIMAL(5,4),                      -- Override para yatırma komisyon %
     override_deposit_fee_fixed DECIMAL(18,8),                       -- Override para yatırma sabit komisyon
     override_withdrawal_fee_percent DECIMAL(5,4),                   -- Override para çekme komisyon %
@@ -71,7 +71,7 @@ CREATE TABLE core.tenant_payment_methods (
     available_until TIMESTAMP,                                      -- Ne zamana kadar mevcut
 
     -- Senkronizasyon
-    sync_status VARCHAR(20) DEFAULT 'pending',                      -- Tenant DB senkronizasyon durumu
+    sync_status VARCHAR(20) DEFAULT 'pending',                      -- Client DB senkronizasyon durumu
     last_synced_at TIMESTAMP,                                       -- Son senkronizasyon tarihi
 
     -- Audit
@@ -81,4 +81,4 @@ CREATE TABLE core.tenant_payment_methods (
     updated_by BIGINT                                               -- Güncelleyen kullanıcı
 );
 
-COMMENT ON TABLE core.tenant_payment_methods IS 'Tenant payment method enablement with limit/fee overrides. Denormalized fields from Finance DB catalog for cross-DB BO listing without JOINs. payment_method_id has no FK (cross-DB, backend validates).';
+COMMENT ON TABLE core.client_payment_methods IS 'Client payment method enablement with limit/fee overrides. Denormalized fields from Finance DB catalog for cross-DB BO listing without JOINs. payment_method_id has no FK (cross-DB, backend validates).';

@@ -1,5 +1,5 @@
 -- =============================================
--- Tenant Audit - Player Audit Schema Indexes
+-- Client Audit - Player Audit Schema Indexes
 -- Oyuncu giriş denemeleri ve oturum kayıtları
 -- =============================================
 

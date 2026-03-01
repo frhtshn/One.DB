@@ -12,7 +12,7 @@ CREATE TABLE security.auth_tokens (
     token_id VARCHAR(100) NOT NULL,                               -- Token benzersiz kimligi (jti)
     user_id BIGINT NOT NULL,                                      -- Kullanici ID
     company_id BIGINT,                                            -- Company ID (nullable)
-    tenant_id BIGINT,                                             -- Tenant ID (nullable)
+    client_id BIGINT,                                             -- Client ID (nullable)
     session_id VARCHAR(50) NOT NULL,                              -- Session ID
     token_type SMALLINT NOT NULL DEFAULT 1,                       -- 1=Access, 2=Refresh (C# TokenType enum)
     global_roles TEXT[] NOT NULL DEFAULT '{}',                    -- Global roller
